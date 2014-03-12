@@ -1,0 +1,72 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inColor ("Vertex Color", vec4) = { COLOR_0 }
+     inNormal ("Vertex Normal", vec3) = { NORMAL }
+     inTexCoord ("Voxel 3D Texture Coordinate", vec3) = { TEXCOORD_0 }
+   }
+   Properties {
+       _voxelTex ("The VoxelGrid 3D Texture", sampler3D) = { DIFFUSE } // define a uniform sampler on the diffuse channel
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec3 normal;
+          vec4 eye;
+          vec4 color;
+          vec3 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.normal = matrices.normal_matrix * inNormal;
+            dataOut.eye = matrices.modelview_matrix * inPosition;
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+
+            dataOut.texCoord = inTexCoord;
+            dataOut.color = inColor;
+       }
+     #FRAGMENTPROGRAM
+       #INCLUDE "G2.material" // include GEAR default stuff
+
+        struct DirectionalLight {
+          vec3 dir; // camera space
+        };
+        uniform DirectionalLight light;
+
+        out vec4 outColor; // here goes the final color
+   
+        in Data
+        {
+           vec3 normal;
+           vec4 eye;
+           vec4 color;
+           vec3 texCoord;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          // set the specular term to black
+          vec4 spec = vec4(0.0);
+
+          // normalize both input vectors
+          vec3 n = normalize(dataIn.normal);
+          vec3 e = normalize(vec3(dataIn.eye));
+          float intensity = max(dot(n,light.dir), 0.0);
+
+          // if the vertex is lit compute the specular color
+          if (intensity > 0.0) 
+          {
+            // compute the half vector
+            vec3 h = normalize(light.dir + e);
+            // compute the specular term into spec
+            float intSpec = max(dot(h,n), 0.0);
+            spec = material.specular * pow(intSpec,material.shininess);
+          }
+          outColor = max(intensity * material.diffuse * texture(_voxelTex, dataIn.texCoord) + spec, material.ambient);
+        }
+   }
+ }

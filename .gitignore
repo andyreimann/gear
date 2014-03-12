@@ -11,3 +11,15 @@
 *.lai
 *.la
 *.a
+*.pdb
+*.log
+*.tlog
+*.lastbuildstate
+*.unsuccessfulbuild
+*.obj
+*.idb
+*.sdf
+*.exe
+*.suo
+*.opensdf
+v2.5/lib/x64/Debug/g2.lib

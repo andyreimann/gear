@@ -1,0 +1,37 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _diffuseTex ("The diffuse texture", sampler2D) = { DIFFUSE } // define a uniform sampler on the diffuse channel
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec2 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+       }
+     #FRAGMENTPROGRAM
+
+        in Data
+        {
+           vec2 texCoord;
+        } dataIn; // this data comes from the vertex program
+
+        out vec4 outColor; // here goes the final color
+   
+        void main() 
+        {
+          outColor = texture(_diffuseTex, dataIn.texCoord);
+        }
+   }
+ }

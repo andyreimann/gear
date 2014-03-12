@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Relese|Win32">
+      <Configuration>Relese</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Relese|x64">
+      <Configuration>Relese</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27}</ProjectGuid>
+    <RootNamespace>GEAR25</RootNamespace>
+    <CudaToolkitCustomDir>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5</CudaToolkitCustomDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Relese|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Relese|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\lib\</OutDir>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Relese|Win32'">
+    <OutDir>..\lib\</OutDir>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(SolutionDir)\lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'">
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ErrorReporting>Queue</ErrorReporting>
+      <AdditionalOptions>/MP8 %(AdditionalOptions)</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>..\lib\geard.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Relese|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ErrorReporting>Queue</ErrorReporting>
+      <AdditionalOptions>/MP8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>..\lib\geard.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ErrorReporting>Queue</ErrorReporting>
+      <AdditionalOptions>/MP8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>..\lib\geard.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
+    </PostBuildEvent>
+    <Lib>
+      <OutputFile>$(OutDir)g2.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
+    </Lib>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>compute_10,sm_10;compute_20,sm_20;compute_30,sm_30;compute_35,sm_35</CodeGeneration>
+      <Runtime>MTd</Runtime>
+      <AdditionalOptions>-Xcompiler "/wd 4819" -ccbin "C:\Program Files (x86)\Microsoft Visual C++ Compiler Nov 2012 CTP\bin\x86_amd64" %(AdditionalOptions)</AdditionalOptions>
+      <GenerateLineInfo>true</GenerateLineInfo>
+      <AdditionalCompilerOptions>
+      </AdditionalCompilerOptions>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ErrorReporting>Queue</ErrorReporting>
+      <AdditionalOptions>/MP8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>../include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>..\lib\geard.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <OutputFile>$(OutDir)g2.lib</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AABB.h" />
+    <ClInclude Include="AbstractShaderPart.h" />
+    <ClInclude Include="AbstractWindow.h" />
+    <ClInclude Include="BaseComponent.h" />
+    <ClInclude Include="BaseSystem.h" />
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CameraSystem.h" />
+    <ClInclude Include="CgShader.h" />
+    <ClInclude Include="clock_linux.h" />
+    <ClInclude Include="clock_win.h" />
+    <ClInclude Include="Comparator.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="ECSManager.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventDistributer.h" />
+    <ClInclude Include="FBXAnimationComponent.h" />
+    <ClInclude Include="FBXAnimationData.h" />
+    <ClInclude Include="FBXAnimationState.h" />
+    <ClInclude Include="FBXAnimationSystem.h" />
+    <ClInclude Include="FBXImporter.h" />
+    <ClInclude Include="FBXLightCache.h" />
+    <ClInclude Include="FBXMaterialCache.h" />
+    <ClInclude Include="FBXMesh.h" />
+    <ClInclude Include="FBXVBOMesh.h" />
+    <ClInclude Include="FileResource.h" />
+    <ClInclude Include="FrameInfo.h" />
+    <ClInclude Include="GEAR.h" />
+    <ClInclude Include="GlslShader.h" />
+    <ClInclude Include="IfElseMacro.h" />
+    <ClInclude Include="Importer.h" />
+    <ClInclude Include="InputEventListener.h" />
+    <ClInclude Include="Intersection.h" />
+    <ClInclude Include="KeyCodes.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightDefaultInclude.h" />
+    <ClInclude Include="LocationBinding.h" />
+    <ClInclude Include="LocationBindingsBlockParser.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="MacroCondition.h" />
+    <ClInclude Include="MacroResource.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialDefaultInclude.h" />
+    <ClInclude Include="MatricesDefaultInclude.h" />
+    <ClInclude Include="MatrixMultiplicator.h" />
+    <ClInclude Include="MD5AnimationComponent.h" />
+    <ClInclude Include="MD5AnimationSystem.h" />
+    <ClInclude Include="MD5Importer.h" />
+    <ClInclude Include="MD5Mesh.h" />
+    <ClInclude Include="NameComponent.h" />
+    <ClInclude Include="NameSystem.h" />
+    <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="NonInstanceable.h" />
+    <ClInclude Include="PassBlockParser.h" />
+    <ClInclude Include="PassesBlockParser.h" />
+    <ClInclude Include="PropertiesBlockParser.h" />
+    <ClInclude Include="Property.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="RefCounter.h" />
+    <ClInclude Include="RenderComponent.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="ResourceBuilder.h" />
+    <ClInclude Include="Sampler.h" />
+    <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="SettingsBlockParser.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderBlockParser.h" />
+    <ClInclude Include="ShaderCache.h" />
+    <ClInclude Include="ShaderMetaData.h" />
+    <ClInclude Include="SimpleShaderPart.h" />
+    <ClInclude Include="StringTools.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="Texture3D.h" />
+    <ClInclude Include="TextureCache.h" />
+    <ClInclude Include="TextureImporter.h" />
+    <ClInclude Include="TimeTracker.h" />
+    <ClInclude Include="timevalue_linux.h" />
+    <ClInclude Include="timevalue_win.h" />
+    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="TransformSystem.h" />
+    <ClInclude Include="UberShader.h" />
+    <ClInclude Include="UberShaderBlockParser.h" />
+    <ClInclude Include="UberShaderParser.h" />
+    <ClInclude Include="UniformBlock.h" />
+    <ClInclude Include="VersionTracker.h" />
+    <ClInclude Include="VertexArrayObject.h" />
+    <ClInclude Include="VertexBuffer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="AbstractShaderPart.cpp" />
+    <ClCompile Include="AbstractWindow.cpp" />
+    <ClCompile Include="BaseComponent.cpp" />
+    <ClCompile Include="BaseSystem.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CameraSystem.cpp" />
+    <ClCompile Include="CgShader.cpp" />
+    <ClCompile Include="clock_linux.cpp" />
+    <ClCompile Include="clock_win.cpp" />
+    <ClCompile Include="Comparator.cpp" />
+    <ClCompile Include="ECSManager.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="EventDistributer.cpp" />
+    <ClCompile Include="FBXAnimationComponent.cpp" />
+    <ClCompile Include="FBXAnimationData.cpp" />
+    <ClCompile Include="FBXAnimationState.cpp" />
+    <ClCompile Include="FBXAnimationSystem.cpp" />
+    <ClCompile Include="FBXImporter.cpp" />
+    <ClCompile Include="FBXLightCache.cpp" />
+    <ClCompile Include="FBXMaterialCache.cpp" />
+    <ClCompile Include="FBXMesh.cpp" />
+    <ClCompile Include="FBXVBOMesh.cpp" />
+    <ClCompile Include="FileResource.cpp" />
+    <ClCompile Include="GEAR.cpp" />
+    <ClCompile Include="GlslShader.cpp" />
+    <ClCompile Include="IfElseMacro.cpp" />
+    <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="InputEventListener.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightDefaultInclude.cpp" />
+    <ClCompile Include="LocationBinding.cpp" />
+    <ClCompile Include="LocationBindingsBlockParser.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MacroCondition.cpp" />
+    <ClCompile Include="MacroResource.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialDefaultInclude.cpp" />
+    <ClCompile Include="MatricesDefaultInclude.cpp" />
+    <ClCompile Include="MatrixMultiplicator.cpp" />
+    <ClCompile Include="MD5AnimationComponent.cpp" />
+    <ClCompile Include="MD5AnimationSystem.cpp" />
+    <ClCompile Include="MD5Importer.cpp" />
+    <ClCompile Include="MD5Mesh.cpp" />
+    <ClCompile Include="NameSystem.cpp" />
+    <ClCompile Include="PassBlockParser.cpp" />
+    <ClCompile Include="PassesBlockParser.cpp" />
+    <ClCompile Include="PropertiesBlockParser.cpp" />
+    <ClCompile Include="Property.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="ResourceBuilder.cpp" />
+    <ClCompile Include="Sampler.cpp" />
+    <ClCompile Include="SDLWindow.cpp" />
+    <ClCompile Include="SettingsBlockParser.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderBlockParser.cpp" />
+    <ClCompile Include="ShaderMetaData.cpp" />
+    <ClCompile Include="SimpleShaderPart.cpp" />
+    <ClCompile Include="StringTools.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="Texture3D.cpp" />
+    <ClCompile Include="TextureCache.cpp" />
+    <ClCompile Include="TextureImporter.cpp" />
+    <ClCompile Include="TimeTracker.cpp" />
+    <ClCompile Include="timevalue_linux.cpp" />
+    <ClCompile Include="timevalue_win.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="TransformSystem.cpp" />
+    <ClCompile Include="UberShader.cpp" />
+    <ClCompile Include="UberShaderBlockParser.cpp" />
+    <ClCompile Include="UberShaderParser.cpp" />
+    <ClCompile Include="UniformBlock.cpp" />
+    <ClCompile Include="VertexArrayObject.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
