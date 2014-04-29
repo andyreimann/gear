@@ -12,8 +12,11 @@ namespace G2
 	class RenderComponent;
 	class CameraComponent;
 	class Effect;
+	class TransformComponent;
+	class LightComponent;
+	class Material;
 	/** This class defines the whole render pipeline of the GEAR engine.
-	 * It renders all registered RenderComponents with their settings.
+	 * It render all registered RenderComponents with their settings.
 	 * The rendering takes place in the 'render' phase.
 	 * @created:	2014/01/30
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -33,7 +36,11 @@ namespace G2
 
 		private:
 			
-			
+			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera);
+			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera);
+			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
+			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
+
 			std::shared_ptr<G2::Effect>						defaultEffect;		// The default UberShader to use for rendering
 	};
 };

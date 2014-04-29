@@ -9,7 +9,7 @@ void
 TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
 	// nothing
-	if(name == "postUpdate") 
+	if(name == "update") 
 	{
 		for(auto i = 0; i < components.size(); ++i) 
 		{

@@ -7,7 +7,7 @@ namespace G2
 {
 	class TransformComponent;
 	/** This class is responsible for the local space matrix updates of the loaded TransformComponent.
-	 * The update itself takes place in the 'postUpdate' phase during rendering.
+	 * The update itself takes place in the 'update' phase during rendering.
 	 * @created:	2014/01/30
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */

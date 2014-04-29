@@ -97,7 +97,9 @@ TestScene::TestScene()
 	//createPlane(glm::vec4(3.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::LINEAR, false));
 	
 	//createPlane(glm::vec4(4.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::NEAREST, false));
-	
+
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	light->diffuse = glm::vec4(0.3,0.6,0.f,1.f);
 	std::vector<std::string> animFiles;
 	animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
@@ -109,7 +111,7 @@ TestScene::TestScene()
 	
 		glm::quat rot = glm::angleAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 
-		transformComponent->setRotation(rot);
+		//transformComponent->setRotation(rot);
 		//transformComponent->setPosition(glm::vec3(0,1,0));
 	}
 	
@@ -363,5 +365,14 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 	{
 		auto* tcomp = mFbxMeshes[i].get()->getComponent<G2::TransformComponent>();
 		tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
+	}
+	if(mSampleMesh.get()) 
+	{
+		
+		glm::quat rot = glm::angleAxis(-(frameInfo.frame%90)/1.f, glm::vec3(1.f,0.f,0.f));
+		
+		auto* transformComponent = mSampleMesh->addComponent<G2::TransformComponent>();
+		transformComponent->setRotation(rot);
+		//transformComponent->setPosition(glm::vec3(0,1,0));
 	}
 }

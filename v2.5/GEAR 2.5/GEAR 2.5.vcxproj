@@ -273,7 +273,9 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightComponent.h" />
     <ClInclude Include="LightDefaultInclude.h" />
+    <ClInclude Include="LightSystem.h" />
     <ClInclude Include="LocationBinding.h" />
     <ClInclude Include="LocationBindingsBlockParser.h" />
     <ClInclude Include="Logger.h" />
@@ -361,7 +363,9 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="InputEventListener.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="LightDefaultInclude.cpp" />
+    <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="LocationBinding.cpp" />
     <ClCompile Include="LocationBindingsBlockParser.cpp" />
     <ClCompile Include="Logger.cpp" />

@@ -4,6 +4,8 @@
 #include "RenderComponent.h"
 #include "CameraSystem.h"
 #include "CameraComponent.h"
+#include "LightSystem.h"
+#include "LightComponent.h"
 #include "TransformSystem.h"
 #include "TransformComponent.h"
 #include "NameComponent.h"
@@ -38,65 +40,28 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 				// no VAO attached
 				continue;
 			}
-			std::shared_ptr<Shader> shader;
+			
+			// calc which shader to use for rendering
+			std::shared_ptr<Shader> shader = getRenderShader(&comp);
 
-			/************************************************************
-			 * Shader Caching											*
-			 *----------------------------------------------------------*
-			 * Shader decisions are cached for RenderComponents.		*
-			 * The caching builds on top of a VersionTracking on the	*
-			 * vao and the material. Whenever the version check			*
-			 * with the versions of the material and the vao fails,		*
-			 * a new Shader will be calculated and cached.				*
-			 * When changing something on the UberShader assigned to	*
-			 * the RenderComponent, the cache is also invalidated!		*
-			 ************************************************************/
-			if(comp.shaderCache.isCacheValid(comp.material.getVersion(), comp.vaos[0].getVersion()))
-			{
-				shader = comp.shaderCache.getShader();
-			}
-			else if(comp.effect.get() != NULL && comp.effect->hasCompiledShaders()) 
-			{
-				shader = comp.effect->getShader(comp.material,comp.vaos[0]);
-				// update shader cache
-				comp.shaderCache.setShader(shader, comp.material.getVersion(), comp.vaos[0].getVersion());
-			}
-			else
-			{
-				shader = defaultEffect->getShader(comp.material,comp.vaos[0]);
-				// update shader cache
-				comp.shaderCache.setShader(shader, comp.material.getVersion(), comp.vaos[0].getVersion());
-			}
 			// bind shader, since also in case of a default shader, this could be a permuted shader!
 			shader->bind();
-			if(cameraUpdated) 
-			{
-				/** TODO: This normal matrix isn't the one, we need for normal transformation
-				 * Normal matrix calculation: (modelview^-1)^T, actually: (view^-1)^T
-				 */
-				shader->setProperty(Property("matrices.normal_matrix"), camera->getNormalMatrix());
-			}
 
-			// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
-			shader->setProperty(Property("matrices.projection_matrix"), camera->getProjectionMatrix());
-			shader->setProperty(Property("light.dir"), glm::normalize(glm::vec3(1.f, 1.f, 1.f)));
-			// TEMP END
-
-			// upload transformation
+			// Upload Matrices
 			auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(comp.getEntityId());
-			if(transformation != nullptr) 
+			uploadMatrices(shader, transformation, camera);
+
+			// Upload Lights
+			int maxLights = 1;
+			LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
+			for(int l = 0; l < maxLights; ++l)
 			{
-				shader->setProperty(Property("matrices.modelview_matrix"), camera->getCameraSpaceMatrix() * transformation->getWorldSpaceMatrix());
-			}
-			else 
-			{
-				shader->setProperty(Property("matrices.modelview_matrix"), camera->getCameraSpaceMatrix());
+				auto& lightComponent = lightSystem->components[l];
+				uploadLight(shader, &lightComponent, camera);
 			}
 
-			//DEBUG
-
+			// Bind Textures
 			auto const& textures = comp.material.getTextures();
-
 			for(auto it = textures.begin(); it != textures.end(); ++it)
 			{
 				if(it->second.get() != nullptr)
@@ -106,20 +71,96 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 				}
 			}
 
-			// upload material
-			shader->setProperty(Property("material.ambient"), comp.material.getAmbient());
-			shader->setProperty(Property("material.diffuse"), comp.material.getDiffuse());
+			// Upload Material
+			uploadMaterial(shader, &comp.material);
 
-			shader->setProperty(Property("material.specular"), comp.material.getSpecular());
-			shader->setProperty(Property("G2Material.specular"), comp.material.getSpecular());
-			shader->setProperty(Property("specular"), comp.material.getSpecular());
-
-			shader->setProperty(Property("material.shininess"), comp.material.getShininess());
-			// draw all attached VAO
+			// Draw all attached VAO
 			for (int k = 0; k < comp.vaos.size() ; ++k) 
 			{
 				comp.vaos[k].draw(comp.drawMode);
 			}
 		}
 	}
+}
+
+void
+RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera) 
+{
+
+	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
+	shader->setProperty(Property("matrices.projection_matrix"), camera->getProjectionMatrix());
+	// TEMP END
+	if(transformation != nullptr) 
+	{
+		glm::mat4 mv = camera->getCameraSpaceMatrix() * transformation->getWorldSpaceMatrix();
+		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
+		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
+		shader->setProperty(Property("matrices.modelview_matrix"), mv);
+		// this can be used as normal matrix if mv has a uniform scaling! Up to now we don't care!
+		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(mv));
+	}
+	else 
+	{
+		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
+		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
+		shader->setProperty(Property("matrices.modelview_matrix"), camera->getCameraSpaceMatrix());
+		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(camera->getCameraSpaceMatrix()));
+	}
+}
+
+void
+RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera) 
+{
+	glm::vec4 pos = camera->getCameraSpaceMatrix() * light->getTransformedPosition();
+	glm::vec3 shaderDir = glm::normalize(glm::vec3(pos.x,pos.y,pos.z));
+	shader->setProperty(Property("light.color"), light->diffuse);
+	shader->setProperty(Property("light.position"), pos);
+	shader->setProperty(Property("light.direction"), shaderDir);
+	shader->setProperty(Property("light.cosCutoff"), std::cosf(light->cutOffDegrees * 3.14f / 180.f)); // only needed for spotlight
+	shader->setProperty(Property("light.range"), 0.f); // only needed for spotlight/point light
+	shader->setProperty(Property("light.attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+}
+
+void
+RenderSystem::uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
+{
+	shader->setProperty(Property("material.ambient"), material->getAmbient());
+	shader->setProperty(Property("material.diffuse"), material->getDiffuse());
+	shader->setProperty(Property("material.specular"), material->getSpecular());
+	shader->setProperty(Property("material.shininess"), material->getShininess());
+}
+
+std::shared_ptr<Shader>
+RenderSystem::getRenderShader(RenderComponent* component) 
+{
+	std::shared_ptr<Shader> shader;
+
+	/************************************************************
+	 * Shader Caching											*
+	 *----------------------------------------------------------*
+	 * Shader decisions are cached for RenderComponents.		*
+	 * The caching builds on top of a VersionTracking on the	*
+	 * vao and the material. Whenever the version check			*
+	 * with the versions of the material and the vao fails,		*
+	 * a new Shader will be calculated and cached.				*
+	 * When changing something on the UberShader assigned to	*
+	 * the RenderComponent, the cache is also invalidated!		*
+	 ************************************************************/
+	if(component->shaderCache.isCacheValid(component->material.getVersion(), component->vaos[0].getVersion()))
+	{
+		shader = component->shaderCache.getShader();
+	}
+	else if(component->effect.get() != NULL && component->effect->hasCompiledShaders()) 
+	{
+		shader = component->effect->getShader(component->material,component->vaos[0]);
+		// update shader cache
+		component->shaderCache.setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+	}
+	else
+	{
+		shader = defaultEffect->getShader(component->material,component->vaos[0]);
+		// update shader cache
+		component->shaderCache.setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+	}
+	return shader;
 }

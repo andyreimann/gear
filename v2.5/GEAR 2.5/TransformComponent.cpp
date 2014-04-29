@@ -166,8 +166,8 @@ TransformComponent::updateWorldSpaceMatrix()
 
 	if(_isDirty())
 	{
-		mLocalSpace = glm::translate(mPosition) * glm::toMat4(mRotation) * glm::scale(mScale);
-		mWorldSpace = mLocalSpace;
+		mWorldSpaceOrthogonal = glm::translate(mPosition) * glm::toMat4(mRotation);
+		mLocalSpace = mWorldSpace = mWorldSpaceOrthogonal * glm::scale(mScale);
 		auto* parentTransformComponent = system->get(mParentEntityId);
 		if(parentTransformComponent != nullptr)
 		{

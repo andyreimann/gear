@@ -54,6 +54,8 @@ class TestScene
 		G2::FBXImporter		mMeshImporter2;
 		G2::EffectImporter  mEffectImporter;
 
+		GameObject mLight;
+
 		std::shared_ptr<G2::MD5Mesh> mSampleMesh;
 		std::shared_ptr<G2::FBXMesh> mSampleMesh2;
 		std::shared_ptr<G2::FBXMesh> mSampleMesh3;

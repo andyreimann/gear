@@ -265,6 +265,12 @@
     <ClInclude Include="Effect.h">
       <Filter>Importer\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="LightComponent.h">
+      <Filter>ECS\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSystem.h">
+      <Filter>ECS\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventDistributer.cpp">
@@ -500,6 +506,12 @@
     <ClCompile Include="Effect.cpp">
       <Filter>Importer\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="LightSystem.cpp">
+      <Filter>ECS\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>ECS\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -678,6 +690,9 @@
     </Filter>
     <Filter Include="Importer\Effect">
       <UniqueIdentifier>{e94a45ba-53c2-4744-9f68-4864ed34d434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Light">
+      <UniqueIdentifier>{d56ffde7-42ba-40c9-8ff0-c8fee66e402f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

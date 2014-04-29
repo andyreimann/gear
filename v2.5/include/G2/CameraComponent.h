@@ -27,6 +27,8 @@ namespace G2
 			glm::mat4 const& getCameraSpaceMatrix() const { return mCameraSpaceMatrix; }
 			/** This function will return the current normal matrix. 
 			* @return The current normal matrix (inverse transpose modelview matrix).
+			* @warning: This function is currently not used. Make sure to always use 
+			* uniform scaling to calculate normal vector correctly in eye-space!
 			*/
 			glm::mat3 const& getNormalMatrix() const { return mNormalMatrix; }
 

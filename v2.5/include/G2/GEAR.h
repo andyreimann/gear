@@ -14,6 +14,7 @@
 #include "RenderSystem.h"
 #include "RenderComponent.h"
 #include "CameraComponent.h"
+#include "LightComponent.h"
 
 // Importer
 #include "TextureImporter.h"
