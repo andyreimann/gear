@@ -46,7 +46,7 @@ namespace G2 {
 			 */
 			UberShader();
 			/** This function returns the state of the UberShader.
-			 * @return True if the UberShader has some compiled Shaders, false if not.
+			 * @return True if the UberShader has some compiled Shader, false if not.
 			 */
 			bool hasCompiledShaders() const;
 			/** This function will return the Shader, which passes the most MacroConditions
@@ -57,6 +57,10 @@ namespace G2 {
 			 * if no Shader was found.
 			 */
 			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao);
+			/** This function will return all Shader.
+			 * @return All Shader.
+			 */
+			std::vector<std::shared_ptr<Shader>> const& getAllShaders() const { return mShaderPermutations; };
 			/** This function will return the ShadingLanguage. 
 			* @return The current ShadingLanguage.
 			*/

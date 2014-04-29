@@ -19,6 +19,7 @@
 #include "TextureImporter.h"
 #include "MD5Importer.h"
 #include "FBXImporter.h"
+#include "EffectImporter.h"
 #include "FrameInfo.h"
 
 // TEXTURING

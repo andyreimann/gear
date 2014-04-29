@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Logger.h"
+#include "Effect.h"
 
 #include <iostream>
 
@@ -54,15 +55,15 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				shader = comp.shaderCache.getShader();
 			}
-			else if(comp.uberShader.hasCompiledShaders()) 
+			else if(comp.effect.get() != NULL && comp.effect->hasCompiledShaders()) 
 			{
-				shader = comp.uberShader.getShader(comp.material,comp.vaos[0]);
+				shader = comp.effect->getShader(comp.material,comp.vaos[0]);
 				// update shader cache
 				comp.shaderCache.setShader(shader, comp.material.getVersion(), comp.vaos[0].getVersion());
 			}
 			else
 			{
-				shader = defaultUberShader.getShader(comp.material,comp.vaos[0]);
+				shader = defaultEffect->getShader(comp.material,comp.vaos[0]);
 				// update shader cache
 				comp.shaderCache.setShader(shader, comp.material.getVersion(), comp.vaos[0].getVersion());
 			}

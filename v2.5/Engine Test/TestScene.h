@@ -52,6 +52,7 @@ class TestScene
 		G2::TextureImporter mTexImporter;
 		G2::MD5Importer		mMeshImporter;
 		G2::FBXImporter		mMeshImporter2;
+		G2::EffectImporter  mEffectImporter;
 
 		std::shared_ptr<G2::MD5Mesh> mSampleMesh;
 		std::shared_ptr<G2::FBXMesh> mSampleMesh2;

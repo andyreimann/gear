@@ -5,6 +5,7 @@
 #include <G2/MatrixMultiplicator.h>
 #include <G2/Logger.h>
 #include <G2/TimeTracker.h>
+#include <G2/Effect.h>
 
 TestScene::TestScene()
 	: mMoveForward(false),
@@ -60,9 +61,16 @@ TestScene::TestScene()
 	cameraComponent->setMoveSpeed(0.02f);
 	
 	// load default shader for the engine
+	/*G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem,G2::RenderComponent>()
+			->setDefaultShader(G2::UberShaderParser::parse("../../../Shader/Default.g2fx"));*/
+
+	// new way of loading shader
+	std::shared_ptr<G2::Effect> effect = mEffectImporter.import("../../../Shader/Default.g2fx");
 	G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
-			->setDefaultShader(G2::UberShaderParser::parse("../../../Shader/Default.g2fx"));
+		->setDefaultEffect(effect);
+
 
 	auto* renderComponent = mCube.addComponent<G2::RenderComponent>();
 
@@ -176,7 +184,7 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 	plane->vaos.push_back(std::move(vao));
 
 	// load and assign texturing shader
-	plane->setUberShader(G2::UberShaderParser::parse("../../../Shader/MultipassProposal.g2fx"));
+	plane->setEffect(mEffectImporter.import("../../../Shader/MultipassProposal.g2fx"));
 	
 	mPlanes.back().addComponent<G2::TransformComponent>();
 }

@@ -11,6 +11,7 @@ namespace G2
 {
 	class RenderComponent;
 	class CameraComponent;
+	class Effect;
 	/** This class defines the whole render pipeline of the GEAR engine.
 	 * It renders all registered RenderComponents with their settings.
 	 * The rendering takes place in the 'render' phase.
@@ -24,15 +25,15 @@ namespace G2
 			/** This function will return the DefaultShader. 
 			* @return The current DefaultShader.
 			*/
-			UberShader const& getDefaultShader() const { return defaultUberShader; }
+			std::shared_ptr<G2::Effect> const& getDefaultEffect() const { return defaultEffect; }
 			/** This function will set the DefaultShader to the given value.
 			* @param value The current DefaultShader.
 			*/
-			void setDefaultShader(UberShader const& value) { defaultUberShader = value; }
+			void setDefaultEffect(std::shared_ptr<G2::Effect> const& value) { defaultEffect = value; }
 
 		private:
 			
 			
-			UberShader						defaultUberShader;		// The default UberShader to use for rendering
+			std::shared_ptr<G2::Effect>						defaultEffect;		// The default UberShader to use for rendering
 	};
 };

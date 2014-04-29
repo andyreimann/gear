@@ -259,6 +259,12 @@
     <ClInclude Include="SettingsBlockParser.h">
       <Filter>UberShader\BlockParser\Settings</Filter>
     </ClInclude>
+    <ClInclude Include="EffectImporter.h">
+      <Filter>Importer\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Importer\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventDistributer.cpp">
@@ -488,6 +494,12 @@
     <ClCompile Include="SettingsBlockParser.cpp">
       <Filter>UberShader\BlockParser\Settings</Filter>
     </ClCompile>
+    <ClCompile Include="EffectImporter.cpp">
+      <Filter>Importer\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Importer\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -663,6 +675,9 @@
     </Filter>
     <Filter Include="UberShader\BlockParser\Settings">
       <UniqueIdentifier>{154e77d4-016b-4b17-a98c-98cf845d1498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect">
+      <UniqueIdentifier>{e94a45ba-53c2-4744-9f68-4864ed34d434}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -454,7 +454,7 @@ MD5Importer::_buildFrameSkeleton(const struct AnimationJointInfo* jointInfos,
 			thisJoint.orientation = parentJoint.orientation * animatedOrient;
 			thisJoint.orientation + glm::normalize(thisJoint.orientation);
 		}
-    }
+	}
 }
 
 void 

@@ -37,18 +37,18 @@ namespace G2
 			/** This function will return the UberShader. 
 			* @return The current UberShader.
 			*/
-			G2::UberShader const& getUberShader() const { return uberShader; }
+			std::shared_ptr<G2::Effect> const& getEffect() const { return effect; }
 			/** This function will set the UberShader to the given value.
 			* @param value The current UberShader.
 			*/
-			void setUberShader(G2::UberShader const& value) 
+			void setEffect(std::shared_ptr<G2::Effect> const& value) 
 			{ 
-				uberShader = value; 
+				effect = value; 
 				shaderCache = ShaderCache(); // invalidate
 			}
 			
 		private:
-			UberShader						uberShader;		// The UberShader of the RenderComponent (default is an empty UberShader!)
+			std::shared_ptr<G2::Effect>		effect;		// The UberShader of the RenderComponent (default is an empty UberShader!)
 			ShaderCache						shaderCache;	// The cache used for the Shader
 	};
 };
