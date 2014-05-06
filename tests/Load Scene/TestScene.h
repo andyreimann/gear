@@ -31,13 +31,18 @@ class TestScene
 
 		void onRenderFrame(G2::FrameInfo const&);
 
-		void createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> const& diffuseTex);
+		void createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> const& diffuseTex, glm::quat const& rot = glm::quat());
 		
+		void createWalls();
+
 		GameObject	mCamera;
 		
 		G2::AABB	mCube;
 
 		std::vector<GameObject> mPlanes;
+
+		std::vector<std::shared_ptr<G2::FBXMesh>> mWalls;
+
 		
 		bool		mMoveForward;
 		bool		mMoveBackward;
@@ -54,7 +59,9 @@ class TestScene
 		G2::FBXImporter		mMeshImporter2;
 		G2::EffectImporter  mEffectImporter;
 
-		GameObject mLight;
+		int							 mLightType;
+		std::shared_ptr<G2::FBXMesh> mLight;
+
 
 		std::shared_ptr<G2::MD5Mesh> mSampleMesh;
 		std::shared_ptr<G2::FBXMesh> mSampleMesh2;

@@ -119,15 +119,17 @@ FBXMesh::operator=(FBXMesh && rhs)
 std::shared_ptr<FBXMesh>
 FBXMesh::Builder::buildResource() 
 {
-	// prepare animationData
-	FBXAnimationData animData(cacheStart, cacheStop, animStackNameArray, 24.0);
-	// prepare animation state
-	FBXAnimationState animState(poseIndex, initialAnimLayer, initialAnimationStack, start, stop, false);
-	
 	// create mesh
 	std::shared_ptr<FBXMesh> mesh = std::shared_ptr<FBXMesh>(new FBXMesh);
-	auto* fbxAnimationComponent = mesh->addComponent<FBXAnimationComponent>(fbxScene, animState, animData);
-
+	if(isAnimated)
+	{
+		// prepare animationData
+		FBXAnimationData animData(cacheStart, cacheStop, animStackNameArray, 24.0);
+		// prepare animation state
+		FBXAnimationState animState(poseIndex, initialAnimLayer, initialAnimationStack, start, stop, false);
+	
+		auto* fbxAnimationComponent = mesh->addComponent<FBXAnimationComponent>(fbxScene, animState, animData);
+	}
 
 #ifdef USE_META_DATA
 	// create a RenderComponent with the requested amount of VertexArrayObjects

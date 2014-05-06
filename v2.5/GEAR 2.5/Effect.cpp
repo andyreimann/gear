@@ -49,7 +49,7 @@ Effect::getShader(Material const& material, VertexArrayObject const& vao)
 		}
 		else if(failCount < bestFitFailCount)
 		{
-			// check if more conditions have
+			// check if less condition checks failed
 			bestFitFailCount = failCount;
 			bestFit = mShaderPermutations[i];
 		}

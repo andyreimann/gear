@@ -23,3 +23,4 @@
 *.suo
 *.opensdf
 v2.5/lib/x64/Debug/g2.lib
+v2.5/lib/x64/Release/g2.lib

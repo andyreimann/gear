@@ -13,12 +13,13 @@
 #include "ECSManager.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Logger.h"
 #include "Effect.h"
 
 #include <iostream>
 
 using namespace G2;
+
+#define M_PI 3.14159265358979323846
 
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
@@ -52,13 +53,19 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			uploadMatrices(shader, transformation, camera);
 
 			// Upload Lights
-			int maxLights = 1;
 			LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
+			int maxLights = std::min(8,(int)lightSystem->components.size());
+			int numActive = 0;
 			for(int l = 0; l < maxLights; ++l)
 			{
 				auto& lightComponent = lightSystem->components[l];
-				uploadLight(shader, &lightComponent, camera);
+				if(!lightComponent.isEnabled())
+				{
+					continue;
+				}
+				uploadLight(shader, &lightComponent, camera, numActive++);
 			}
+			shader->setProperty(Property("G2ActiveLights"), numActive);
 
 			// Bind Textures
 			auto const& textures = comp.material.getTextures();
@@ -96,12 +103,19 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
 		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
 		shader->setProperty(Property("matrices.modelview_matrix"), mv);
-		// this can be used as normal matrix if mv has a uniform scaling! Up to now we don't care!
-		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(mv));
+		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
+		{
+			shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(mv));
+		}
+		else
+		{
+			// non-uniform scaling
+			shader->setProperty(Property("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(mv)));
+		}
 	}
 	else 
 	{
-		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
+		shader->setProperty(Property("matrices.model_matrix"), glm::mat4());
 		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
 		shader->setProperty(Property("matrices.modelview_matrix"), camera->getCameraSpaceMatrix());
 		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(camera->getCameraSpaceMatrix()));
@@ -109,16 +123,33 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 }
 
 void
-RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera) 
+RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera, int index) 
 {
-	glm::vec4 pos = camera->getCameraSpaceMatrix() * light->getTransformedPosition();
-	glm::vec3 shaderDir = glm::normalize(glm::vec3(pos.x,pos.y,pos.z));
-	shader->setProperty(Property("light.color"), light->diffuse);
-	shader->setProperty(Property("light.position"), pos);
-	shader->setProperty(Property("light.direction"), shaderDir);
-	shader->setProperty(Property("light.cosCutoff"), std::cosf(light->cutOffDegrees * 3.14f / 180.f)); // only needed for spotlight
-	shader->setProperty(Property("light.range"), 0.f); // only needed for spotlight/point light
-	shader->setProperty(Property("light.attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+	glm::vec4 lightPos;
+	glm::vec3 lightDir;
+	if(light->getType() != LightType::DIRECTIONAL)
+	{
+		lightPos = camera->getCameraSpaceMatrix() * light->getTransformedPosition();
+	}
+	if(light->getType() != LightType::POSITIONAL)
+	{
+		lightDir = glm::normalize(glm::mat3(camera->getCameraSpaceMatrix()) * light->getTransformedDirection());
+	}
+
+	std::stringstream baseStr;
+	baseStr << "light[" << index << "]";
+	std::string base = baseStr.str();
+	// set coloring
+	shader->setProperty(Property(base + ".ambient"), light->ambient);
+	shader->setProperty(Property(base + ".diffuse"), light->diffuse);
+	shader->setProperty(Property(base + ".specular"), light->specular);
+	// set positional
+	shader->setProperty(Property(base + ".position"), lightPos);
+	shader->setProperty(Property(base + ".direction"), lightDir);
+	shader->setProperty(Property(base + ".range"), 0.f); // only needed for spotlight/point light
+	shader->setProperty(Property(base + ".attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+	// set special
+	shader->setProperty(Property(base + ".cosCutoff"), std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
 }
 
 void

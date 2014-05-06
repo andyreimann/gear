@@ -68,11 +68,23 @@ FBXImporter::importResource(std::string const& meshFileName)
         // Get the list of all the animation stack.
         builder->fbxScene->FillAnimStackNameArray(builder->animStackNameArray);
 
-		logger << "[FBXImporter] Available Animations: " << endl;
-		for(int i = 0; i < builder->animStackNameArray.Size(); ++i)
+		if(builder->animStackNameArray.Size() == 0)
 		{
-			//std::string name((const char*)builder->animStackNameArray[i].Buffer());
-			logger << builder->animStackNameArray[i]->Buffer() << endl;
+			builder->isAnimated = false;
+		}
+		else 
+		{
+			builder->isAnimated = true;
+		}
+		logger << "[FBXImporter] Is animated: " << builder->isAnimated << endl;
+		
+		if(builder->isAnimated)
+		{
+			logger << "[FBXImporter] Available Animations: " << endl;
+			for(int i = 0; i < builder->animStackNameArray.Size(); ++i)
+			{
+				logger << builder->animStackNameArray[i]->Buffer() << endl;
+			}
 		}
 
         // Get the list of all the cameras in the scene.
@@ -100,46 +112,51 @@ FBXImporter::importResource(std::string const& meshFileName)
         _fillPoseArray(builder->fbxScene, builder->poseArray);
 		builder->poseIndex = 1; // set default pose
 
-		// select the base layer from the animation stack
-		FbxAnimStack * lCurrentAnimationStack = builder->fbxScene->FindMember<FbxAnimStack>(builder->animStackNameArray[builder->poseIndex]->Buffer());
-		if (lCurrentAnimationStack == NULL)
-		{
-			// this is a problem. The anim stack should be found in the scene!
-			logger << "[FBXImporter] Error: No AnimationStack found in FBX-Scene from file '" << meshFileName << "'! " << endl;
-			return std::shared_ptr<FBXMesh>();
-		}
 
-		// we assume that the first animation layer connected to the animation stack is the base layer
-		// (this is the assumption made in the FBXSDK)
-		builder->initialAnimLayer = lCurrentAnimationStack->GetMember<FbxAnimLayer>();
-		builder->initialAnimationStack = lCurrentAnimationStack;
+		if(builder->isAnimated)
+		{
+		
+			// select the base layer from the animation stack
+			FbxAnimStack * lCurrentAnimationStack = builder->fbxScene->FindMember<FbxAnimStack>(builder->animStackNameArray[builder->poseIndex]->Buffer());
+			if (lCurrentAnimationStack == NULL)
+			{
+				// this is a problem. The anim stack should be found in the scene!
+				logger << "[FBXImporter] Error: No AnimationStack found in FBX-Scene from file '" << meshFileName << "'! " << endl;
+				return std::shared_ptr<FBXMesh>();
+			}
+
+			// we assume that the first animation layer connected to the animation stack is the base layer
+			// (this is the assumption made in the FBXSDK)
+			builder->initialAnimLayer = lCurrentAnimationStack->GetMember<FbxAnimLayer>();
+			builder->initialAnimationStack = lCurrentAnimationStack;
 
 		
 
-		// init animation state
-		FbxTakeInfo* lCurrentTakeInfo = builder->fbxScene->GetTakeInfo(*(builder->animStackNameArray[builder->poseIndex]));
-		if (lCurrentTakeInfo)
-		{
-			builder->start = lCurrentTakeInfo->mLocalTimeSpan.GetStart();
-			builder->stop = lCurrentTakeInfo->mLocalTimeSpan.GetStop();
+			// init animation state
+			FbxTakeInfo* lCurrentTakeInfo = builder->fbxScene->GetTakeInfo(*(builder->animStackNameArray[builder->poseIndex]));
+			if (lCurrentTakeInfo)
+			{
+				builder->start = lCurrentTakeInfo->mLocalTimeSpan.GetStart();
+				builder->stop = lCurrentTakeInfo->mLocalTimeSpan.GetStop();
+			}
+			else
+			{
+				// Take the time line value
+				FbxTimeSpan lTimeLineTimeSpan;
+				builder->fbxScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
+
+				builder->start = lTimeLineTimeSpan.GetStart();
+				builder->stop  = lTimeLineTimeSpan.GetStop();
+			}
+
+			// check for smallest start with cache start
+			if(builder->cacheStart < builder->start)
+				builder->start = builder->cacheStop;
+
+			// check for biggest stop with cache stop
+			if(builder->cacheStop  > builder->stop)  
+				builder->stop  = builder->cacheStop;
 		}
-		else
-		{
-			// Take the time line value
-			FbxTimeSpan lTimeLineTimeSpan;
-			builder->fbxScene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
-
-			builder->start = lTimeLineTimeSpan.GetStart();
-			builder->stop  = lTimeLineTimeSpan.GetStop();
-		}
-
-		// check for smallest start with cache start
-		if(builder->cacheStart < builder->start)
-			builder->start = builder->cacheStop;
-
-		// check for biggest stop with cache stop
-		if(builder->cacheStop  > builder->stop)  
-			builder->stop  = builder->cacheStop;
 
 
 		// cache the builder

@@ -9,7 +9,7 @@ namespace G2
 	namespace LightType {
 		enum Name {
 			POSITIONAL,
-			//SPOT,
+			SPOT,
 			DIRECTIONAL,
 		};
 	};
@@ -39,6 +39,8 @@ namespace G2
 			
 			glm::vec4 const& getTransformedPosition() const { return mCachedPosition; }
 			
+			glm::vec3 const& getTransformedDirection() const { return mCachedDirection; }
+			
 			glm::vec4	ambient;			// default: (1.0f,1.0f,1.0f,1.0f)
 			glm::vec4	diffuse;			// default: (1.0f,1.0f,1.0f,1.0f)
 			glm::vec4	specular;			// default: (1.0f,1.0f,1.0f,1.0f)
@@ -46,13 +48,18 @@ namespace G2
 			float		attenuation;			// The constant attenuation of the Light. Default: 1.0
 			float		linearAttenuation;		// The linear attenuation of the Light. Default: 0.0
 			float		exponentialAttenuation; // The exponential attenuation of the Light. Default: 0.0
+
 		private:
 			void _updateTransformedPosition(glm::vec4 const& pos);
+			void _updateTransformedDirection(glm::vec3 const& pos);
 			glm::vec4 const& _getUntransformedPosition() const { return mDefaultPosition; }
+			glm::vec3 const& _getUntransformedDirection() const { return mDefaultDirection; }
 
 			LightType::Name mType;		// the type of light
 			bool	  mEnabled;			// Flag indicating whether the light is enabled or not.
-			glm::vec4 mCachedPosition;	// The finally transformed position/orientation
-			glm::vec4 mDefaultPosition; // The not transformed position/orientation
+			glm::vec4 mCachedPosition;	// The finally transformed position in world space
+			glm::vec4 mDefaultPosition; // The not transformed position in model space
+			glm::vec3 mDefaultDirection;// The not transformed direction in model space
+			glm::vec3 mCachedDirection;	// The finally transformed direction in world space
 	};
 };

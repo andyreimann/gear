@@ -37,7 +37,7 @@ namespace G2
 		private:
 			
 			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera);
-			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera);
+			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera, int index);
 			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
 

@@ -1,14 +1,15 @@
 #include "LightComponent.h"
+#include "Logger.h"
 
 using namespace G2;
 
 LightComponent::LightComponent(LightType::Name type)
 	: mType(type),
-	ambient(1.f,1.f,1.f,1.f),
+	ambient(0.f,0.f,0.f,0.f),
 	diffuse(1.f,1.f,1.f,1.f),
 	specular(1.f,1.f,1.f,1.f),
 	mEnabled(true),
-	cutOffDegrees(0.f),
+	cutOffDegrees(360.f),
 	attenuation(1.f),
 	linearAttenuation(0.f),
 	exponentialAttenuation(0.f)
@@ -20,7 +21,14 @@ LightComponent::LightComponent(LightType::Name type)
 	else if(type == LightType::DIRECTIONAL)
 	{
 		// final light dir=-Y!
+		mDefaultDirection = mCachedDirection = glm::vec3(0.f,1.f,0.f);
 		mDefaultPosition = mCachedPosition = glm::vec4(0.f,1.f,0.f,0.f);
+	}
+	else if(type == LightType::SPOT)
+	{
+		// final light dir=-Y!
+		mDefaultDirection = mCachedDirection = glm::vec3(0.f,-1.f,0.f);
+		mDefaultPosition = mCachedPosition = glm::vec4(0.f,0.f,0.f,1.f);
 	}
 }
 
@@ -37,8 +45,10 @@ void
 LightComponent::_updateTransformedPosition(glm::vec4 const& pos) 
 {
 	mCachedPosition = pos;
-	if(mType == LightType::DIRECTIONAL)
-	{
-		mCachedPosition = glm::normalize(mCachedPosition);
-	}
+}
+
+void
+LightComponent::_updateTransformedDirection(glm::vec3 const& dir) 
+{
+	mCachedDirection = dir;
 }

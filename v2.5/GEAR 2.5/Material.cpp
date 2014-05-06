@@ -9,7 +9,7 @@ Material::Material()
 	: mAmbient(0.2f,0.2f,0.2f,1.0f),
 	mDiffuse(1.0f,1.0f,1.0f,1.0f),
 	mSpecular(0.0f,0.0f,0.0f,1.0f),
-	mShininess(1.0f),
+	mShininess(0.0f),
 	mIsTransparent(false) 
 {
 }

@@ -11,14 +11,14 @@ Ubershader "GEAR/Default" {
        out Data
        {
           vec3 normal;
-          vec4 eye;
+          vec3 eye;
           vec4 color;
        } dataOut; 
  
        void main(void) 
        {
             dataOut.normal = matrices.normal_matrix * inNormal;
-            dataOut.eye = matrices.modelview_matrix * inPosition;
+            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
            	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
             dataOut.color = inColor;
        }
@@ -31,7 +31,7 @@ Ubershader "GEAR/Default" {
         in Data
         {
            vec3 normal;
-           vec4 eye;
+           vec3 eye;
            vec4 color;
         } dataIn; // this data comes from the vertex program
  
@@ -42,19 +42,84 @@ Ubershader "GEAR/Default" {
 
           // normalize both input vectors
           vec3 n = normalize(dataIn.normal);
-          vec3 e = normalize(vec3(dataIn.eye));
-          float intensity = max(dot(n,light.direction), 0.0);
+          vec3 e = normalize(dataIn.eye);
 
-          // if the vertex is lit compute the specular color
-          if (intensity > 0.0) 
+          // set color to ambient material term
+          outColor = material.ambient;
+
+          for(int i = 0; i < G2ActiveLights; ++i)
           {
-            // compute the half vector
-            vec3 h = normalize(light.direction + e);
-            // compute the specular term into spec
-            float intSpec = max(dot(h,n), 0.0);
-            spec = material.specular * pow(intSpec,material.shininess);
+            if(light[i].position.w == 0.0)
+            {
+              // directional light
+              float intensity = max(dot(n,light[i].direction), 0.0);
+
+              // if the vertex is lit compute the specular color
+              if (intensity > 0.0) 
+              {
+                // compute the half vector
+                vec3 h = normalize(light[i].direction + e);
+                // compute the specular term into spec
+                float intSpec = max(dot(h,n), 0.0);
+                spec = light[i].specular * material.specular * pow(intSpec,material.shininess);
+              }
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
+            }
+            else if(light[i].cosCutoff < 1.0)
+            {
+              // spot light
+              float intensity = 0.0;
+              vec4 spec = vec4(0.0);
+           
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              l = normalize(l);
+              vec3 sd = normalize(vec3(-light[i].direction));
+           
+              // inside the cone?
+              if (dot(sd,l) > light[i].cosCutoff) 
+              {
+                vec3 n = normalize(dataIn.normal);
+                intensity = max(dot(n,l), 0.0);
+         
+                if (intensity > 0.0) 
+                {
+                    vec3 eye = normalize(dataIn.eye);
+                    vec3 h = normalize(l + eye);
+                    float intSpec = max(dot(h,n), 0.0);
+                    spec = light[i].specular * material.specular * pow(intSpec, material.shininess);
+                }
+              }
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
+              //outColor = vec4(1.f,0.f,0.f,1.f);
+            }
+            else
+            {
+              // point light
+
+              vec4 spec = vec4(0.0);
+
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              l = normalize(l);
+              vec3 n = normalize(dataIn.normal);
+              vec3 e = normalize(dataIn.eye);
+
+              float intensity = max(dot(n,l), 0.0);
+              if (intensity > 0.0) 
+              {
+                float att = 1.0 / (light[i].attenuation.x +
+                        light[i].attenuation.y * dist +
+                        light[i].attenuation.z * dist * dist);
+                vec3 h = normalize(l + e);
+                float intSpec = max(dot(h,n), 0.0);
+                spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+              }
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
+            }
           }
-          outColor = max(intensity * material.diffuse * light.color + spec, material.ambient);
         }
    }
  }

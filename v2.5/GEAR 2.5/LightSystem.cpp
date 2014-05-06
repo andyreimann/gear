@@ -19,17 +19,24 @@ LightSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				continue; // Light not ready
 			}
-
 			auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(comp.getEntityId());
 			if(transformation != nullptr) 
 			{
-				// transform either position or orientation
-				comp._updateTransformedPosition(comp._getUntransformedPosition() * transformation->getWorldSpaceMatrix());
+				// transform position and/or orientation
+				if(comp.getType() != LightType::DIRECTIONAL)
+				{
+					comp._updateTransformedPosition(transformation->getWorldSpaceMatrix() * comp._getUntransformedPosition());
+				}
+				if(comp.getType() != LightType::POSITIONAL)
+				{
+					comp._updateTransformedDirection(glm::mat3(transformation->getWorldSpaceMatrix()) * comp._getUntransformedDirection());
+				}
 			}
 			else 
 			{
 				// no transformation applied
 				comp._updateTransformedPosition(comp._getUntransformedPosition());
+				comp._updateTransformedDirection(comp._getUntransformedDirection());
 			}
 		}
 	}

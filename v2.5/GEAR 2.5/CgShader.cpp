@@ -144,7 +144,7 @@ void cgErrorHandler(CGcontext context, CGerror error, void* appData)
 	if(error != CG_NO_ERROR)
 	{
 		const char* strPtr = cgGetErrorString(error);
-		logger << "[CgShader] Cg Error: " << std::string(strPtr != nullptr ? strPtr : "");
+		logger << "[CgShader] Cg Error: \n" << std::string(strPtr != nullptr ? strPtr : "");
 		
 		if(error == CG_COMPILER_ERROR)
 		{

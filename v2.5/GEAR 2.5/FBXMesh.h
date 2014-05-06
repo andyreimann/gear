@@ -63,8 +63,9 @@ namespace G2
 
 				std::shared_ptr<FBXMesh> buildResource();
 
-				FbxScene* fbxScene; // This object holds most objects imported from files.
-				FbxImporter * fbxImporter;
+				FbxScene*				fbxScene; // This object holds most objects imported from files.
+				FbxImporter *			fbxImporter;
+				bool					isAnimated;
 
 				FbxArray<FbxString*>	animStackNameArray;
 				FbxArray<FbxNode*>		cameraArray;

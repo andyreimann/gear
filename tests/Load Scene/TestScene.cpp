@@ -88,7 +88,7 @@ TestScene::TestScene()
 	G2::EventDistributer::onKeyDown.hook(this, &TestScene::onKeyDown);
 	G2::EventDistributer::onMouseMove.hook(this, &TestScene::onMouseMove);
 	
-	createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
+	//createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
 	
 	//createPlane(glm::vec4(1.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, true));
 	
@@ -98,14 +98,31 @@ TestScene::TestScene()
 	
 	//createPlane(glm::vec4(4.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::NEAREST, false));
 
-	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	createWalls();
+
+	mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
+
+	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::SPOT);
+	mLightType = G2::LightType::SPOT;
 	light->diffuse = glm::vec4(0.3,0.6,0.f,1.f);
+	light->specular = glm::vec4(1.f,1.f,1.f,1.f);
+	light->linearAttenuation = 1.f;
+	light->cutOffDegrees = 40.f;
+	
+	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
+	lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
+	//lightTransformation->setRotation(glm::angleAxis(30.0f, glm::vec3(1.f,0.f,0.f)));
+
 	std::vector<std::string> animFiles;
 	animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
-	mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
+	//mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
+	
 	if(mSampleMesh.get()) 
 	{
+		auto* renderComp = mSampleMesh->getComponent<G2::RenderComponent>();
+		renderComp->material.setShininess(128.f);
 		auto* transformComponent = mSampleMesh->addComponent<G2::TransformComponent>();
 		transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
 	
@@ -151,7 +168,7 @@ TestScene::~TestScene()
 }
 
 void
-TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> const& diffuseTex) 
+TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> const& diffuseTex, glm::quat const& rot) 
 {
 	mPlanes.push_back(GameObject());
 	auto* plane = mPlanes.back().addComponent<G2::RenderComponent>();
@@ -190,7 +207,57 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 	// load and assign texturing shader
 	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/MultipassProposal.g2fx"));
 	
-	mPlanes.back().addComponent<G2::TransformComponent>();
+	auto* transformation = mPlanes.back().addComponent<G2::TransformComponent>();
+	transformation->setRotation(rot);
+}
+
+void 
+TestScene::createWalls()
+{
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(5.f, 1.f, 0.1f));
+	transformation->setPosition(glm::vec3(0.f,1.f,5.f));
+
+	auto* renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
+	renderComp->material.setShininess(16.f);
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(5.f, 1.f, 0.1f));
+	transformation->setPosition(glm::vec3(0.f,1.f,-5.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(0.f,1.f,1.f,1.f));
+	renderComp->material.setShininess(32.f);
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(0.1f, 1.f, 5.f));
+	transformation->setPosition(glm::vec3(-5.f,1.f,0.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,1.f,0.f,1.f));
+	renderComp->material.setShininess(64.f);
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(0.1f, 1.f, 5.f));
+	transformation->setPosition(glm::vec3(5.f,1.f,0.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
+	renderComp->material.setShininess(128.f);
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(5.1f, 0.1f, 5.f));
+	//transformation->setPosition(glm::vec3(0.f,0.f,0.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(0.5f,0.5f,0.5f,1.f));
+	renderComp->material.setShininess(128.f);
 }
 
 void 
@@ -224,6 +291,41 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 	else if(keyCode == G2::KC_A) 
 	{ 
 		mMoveLeft = false; 
+	}
+	else if(keyCode == G2::KC_U) 
+	{ 
+		
+		auto* light = mLight->getComponent<G2::LightComponent>();
+		mLightType = light->getType()+1;
+
+		mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
+		
+		if(mLightType > G2::LightType::DIRECTIONAL)
+		{
+			mLightType = G2::LightType::POSITIONAL;
+		}
+		if(mLightType == G2::LightType::POSITIONAL)
+		{
+			light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
+		}
+		else if(mLightType == G2::LightType::SPOT)
+		{
+			light = mLight->addComponent<G2::LightComponent>(G2::LightType::SPOT);
+			light->cutOffDegrees = 40.f;
+		}
+		else if(mLightType == G2::LightType::DIRECTIONAL)
+		{
+			light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
+		}
+		light->diffuse = glm::vec4(0.3,0.6,0.f,1.f);
+		light->specular = glm::vec4(1.f,1.f,1.f,1.f);
+		light->linearAttenuation = 1.f;
+	
+		auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+		lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
+		lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	}
 	else if(keyCode == G2::KC_D) 
 	{ 
@@ -268,6 +370,26 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 	else if(keyCode == G2::KC_D)
 	{ 
 		mMoveRight = true; 
+	}
+	else if(keyCode == G2::KC_UP)
+	{ 
+		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		trans->translate(glm::vec3(0.f,0.f,-0.1f));
+	}
+	else if(keyCode == G2::KC_DOWN) 
+	{ 
+		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		trans->translate(glm::vec3(0.f,0.f,0.1f));
+	}
+	else if(keyCode == G2::KC_LEFT) 
+	{ 
+		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		trans->translate(glm::vec3(-0.1f,0.f,0.f));
+	}
+	else if(keyCode == G2::KC_RIGHT)
+	{ 
+		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		trans->translate(glm::vec3(0.1f,0.f,0.f));
 	}
 	else if(keyCode == G2::KC_M)
 	{ 
@@ -341,7 +463,7 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 
 	auto* camera = mCamera.getComponent<G2::CameraComponent>();
 
-	// make movement independent from framerate
+	// make movement independent from frame rate
 	camera->setMoveSpeed((float)frameInfo.timeSinceLastFrame);
 
 	if(mMoveForward) 
@@ -364,7 +486,10 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 	for (int i = 0; i < mFbxMeshes.size() ; ++i) 
 	{
 		auto* tcomp = mFbxMeshes[i].get()->getComponent<G2::TransformComponent>();
-		tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
+		if(tcomp != nullptr)
+		{
+			tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
+		}
 	}
 	if(mSampleMesh.get()) 
 	{
