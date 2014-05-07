@@ -4,12 +4,12 @@
 #include "AbstractShaderPart.h"
 #include "SettingsBlockParser.h"
 #include "PassesBlockParser.h"
+#include "Effect.h"
 
 #include <unordered_map>
 
 namespace G2 
 {
-	class UberShader;
 	class FileResource;
 
 	enum ShaderBlockState {
@@ -29,7 +29,7 @@ namespace G2
 		public:
 			/** This constructs a new ShaderBlockParser.
 			 */
-			ShaderBlockParser(UberShader* uberShader, FileResource* file);
+			ShaderBlockParser(Effect::Builder* builder, FileResource* file);
 			void parse();
 			
 			/** This function will return the parsed VertexShaderParts. 
@@ -52,14 +52,19 @@ namespace G2
 			/// @param name The name of the Setting object to get the Settings for.
 			/// @return The Setting object registered under the given name or a default settings object
 			/// if no Setting object is registered.
-			Setting getSetting(std::string const& name) 
+			Setting getSetting(std::string const& name) const
 			{
-				mSettingsBlockParser.getSetting(name);
+				return mSettingsBlockParser.getSetting(name);
 			}
 
 			PassesBlockParser const& getPassesBlockParser() const
 			{
 				return mPassesBlockParser;
+			}
+
+			SettingsBlockParser const& getSettingsBlockParser() const
+			{
+				return mSettingsBlockParser;
 			}
 		protected:
 		private:
@@ -78,12 +83,12 @@ namespace G2
 
 			static std::unordered_map<std::string,std::shared_ptr<AbstractShaderPart>> initDefaultIncludes();
 
-			UberShader*		mUberShader;
-			FileResource*	mFile;
-			unsigned int	mCurrentState;
-			SettingsBlockParser mSettingsBlockParser;
-			PassesBlockParser mPassesBlockParser;
-			std::shared_ptr<AbstractShaderPart>	mCurrentShaderPart;
+			Effect::Builder*									mBuilder;
+			FileResource*										mFile;
+			unsigned int										mCurrentState;
+			SettingsBlockParser									mSettingsBlockParser;
+			PassesBlockParser									mPassesBlockParser;
+			std::shared_ptr<AbstractShaderPart>					mCurrentShaderPart;
 
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mVertexShaderParts;		// The available parts of vertex shader code
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mFragmentShaderParts;	// The available parts of fragment shader code

@@ -1,12 +1,11 @@
 #include "SettingsBlockParser.h"
 #include "Logger.h"
-#include "UberShader.h"
 #include "FileResource.h"
 
 using namespace G2;
 
-SettingsBlockParser::SettingsBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
+SettingsBlockParser::SettingsBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
 	mFile(file)
 {
 }
@@ -15,10 +14,10 @@ void
 SettingsBlockParser::parse() 
 {
 
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{
 		
-		logger << "[SettingsBlockParser] -> Error 1001: given filehandle or UberShader is 0\n";
+		logger << "[SettingsBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
 	logger << "[SettingsBlockParser] -> start parsing Settings block\n";
@@ -65,7 +64,7 @@ SettingsBlockParser::parse()
 }
 
 G2::Setting
-SettingsBlockParser::getSetting(std::string const& name) 
+SettingsBlockParser::getSetting(std::string const& name) const
 {
 	return mSettings[name];
 }

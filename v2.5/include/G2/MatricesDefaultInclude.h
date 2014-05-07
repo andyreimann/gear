@@ -2,7 +2,7 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "SimpleShaderPart.h"
-#include "UberShader.h"
+#include "Effect.h"
 
 #include <string>
 

@@ -16,10 +16,11 @@ enum ParserState {
 };
 
 
-UberShader
+
+std::shared_ptr<Effect::Builder>
 UberShaderParser::parse(std::string const& fileName) 
 {
-	UberShader uberShader;
+	std::shared_ptr<Effect::Builder> builder = std::shared_ptr<Effect::Builder>(new Effect::Builder);
 
 	ParserState currentState = AWAIT_BLOCK;
 
@@ -34,7 +35,7 @@ UberShaderParser::parse(std::string const& fileName)
 
 		log << "[UberShaderParser] -> could not open file '" << fileName << "'" << std::endl;
 		//qDebug(log.str().c_str());
-		return uberShader;
+		return builder;
 	}
 
 	int curvedBracketsOpened = 0;
@@ -64,7 +65,7 @@ UberShaderParser::parse(std::string const& fileName)
 				std::cout << "[UberShaderParser] -> parse '" << blockName << "' block with name '" << uberShaderName << "'" << std::endl;
 				//qDebug(log.str().c_str());
 				currentState = READ_BLOCK_CONTENT;
-				UberShaderBlockParser blockParser(&uberShader, &file);
+				UberShaderBlockParser blockParser(builder.get(), &file);
 				blockParser.parse();
 				break;
 			}
@@ -75,6 +76,6 @@ UberShaderParser::parse(std::string const& fileName)
 	std::cout << "[UberShaderParser] -> done parsing" << std::endl;
 	//qDebug("[UberShaderParser] -> done parsing");
 
-
-	return uberShader.buildAndCompile();
+	builder->buildAndCompile();
+	return builder;
 }

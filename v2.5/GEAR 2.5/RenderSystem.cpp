@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Effect.h"
+#include "Shader.h"
 
 #include <iostream>
 

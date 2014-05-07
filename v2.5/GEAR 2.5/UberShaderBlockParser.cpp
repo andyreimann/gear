@@ -5,24 +5,23 @@
 #include "PropertiesBlockParser.h"
 #include "ShaderBlockParser.h"
 #include "Logger.h"
-#include "UberShader.h"
 #include "FileResource.h"
 
 #include <sstream>
 
 using namespace G2;
 
-UberShaderBlockParser::UberShaderBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
+UberShaderBlockParser::UberShaderBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
 	mFile(file)
 { }
 
 void
 UberShaderBlockParser::parse() 
 {
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{
-		logger << "[UberShaderBlockParser] -> Error 1001: given filehandle or UberShader is 0\n";
+		logger << "[UberShaderBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
 	
@@ -49,12 +48,12 @@ UberShaderBlockParser::parse()
 
 			if(blockName == "LocationBindings") 
 			{
-				LocationBindingsBlockParser blockParser(mUberShader, mFile);
+				LocationBindingsBlockParser blockParser(mBuilder, mFile);
 				blockParser.parse();
 			}
 			else if(blockName == "Properties")
 			{
-				PropertiesBlockParser blockParser(mUberShader, mFile);
+				PropertiesBlockParser blockParser(mBuilder, mFile);
 				blockParser.parse();
 			}
 			else if(blockName == "Shader") 
@@ -67,21 +66,24 @@ UberShaderBlockParser::parse()
 				{
 					shadingLanguage = line.substr(startPos+1, endPos-startPos-1);
 				}
-				mUberShader->setShadingLanguage(shadingLanguage);
-				ShaderBlockParser blockParser(mUberShader, mFile);
+				mBuilder->setShadingLanguage(shadingLanguage);
+				ShaderBlockParser blockParser(mBuilder, mFile);
 				blockParser.parse();
 
 				// transport shader parts to UberShader
-				auto& vertexShaderParts = blockParser.getVertexShaderParts();
-				for(auto it = vertexShaderParts.begin(); it != vertexShaderParts.end(); ++it)
+				mBuilder->addVertexShaderParts(blockParser.getVertexShaderParts());
+				mBuilder->addFragmentShaderParts(blockParser.getFragmentShaderParts());
+
+				std::vector<PassBlockParser> passes = blockParser.getPassesBlockParser().getParsedPasses();
+				for(auto it = passes.begin(); it != passes.end(); ++it)
 				{
-					mUberShader->addVertexShaderPart(*it);
-				}
-				// transport shader parts to UberShader
-				auto& fragmentShaderParts = blockParser.getFragmentShaderParts();
-				for(auto it = fragmentShaderParts.begin(); it != fragmentShaderParts.end(); ++it)
-				{
-					mUberShader->addFragmentShaderPart(*it);
+					// Gather all informations for this pass
+					// IMPORTANT: LocationBindings and Properties are shared within all passes!
+					std::shared_ptr<ShaderBlockParser> passBlockParser = it->getShaderBlockParser();
+					Setting passName = passBlockParser->getSetting("Name");
+					Setting renderTarget = passBlockParser->getSetting("RenderTarget");
+					//Pass pass(..., mUberShader->getProperties(), passBlockParser->getSettingsBlockParser().getSettings())
+					// TODO create pass object
 				}
 				logger << "[UberShaderBlockParser] -> Shader block provides " << blockParser.getPassesBlockParser().getParsedPasses().size() << " passes\n";
 			}

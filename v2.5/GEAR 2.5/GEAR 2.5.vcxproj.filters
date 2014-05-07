@@ -10,13 +10,10 @@
       <Filter>Event</Filter>
     </ClInclude>
     <ClInclude Include="MacroResource.h">
-      <Filter>UberShader</Filter>
+      <Filter>Importer\Effect\UberShader</Filter>
     </ClInclude>
     <ClInclude Include="ShaderMetaData.h">
-      <Filter>UberShader</Filter>
-    </ClInclude>
-    <ClInclude Include="UberShader.h">
-      <Filter>UberShader</Filter>
+      <Filter>Importer\Effect\UberShader</Filter>
     </ClInclude>
     <ClInclude Include="AbstractWindow.h">
       <Filter>Window</Filter>
@@ -64,46 +61,46 @@
       <Filter>Texture\2D</Filter>
     </ClInclude>
     <ClInclude Include="CgShader.h">
-      <Filter>UberShader\Shader\Cg</Filter>
+      <Filter>Importer\Effect\UberShader\Shader\Cg</Filter>
     </ClInclude>
     <ClInclude Include="GlslShader.h">
-      <Filter>UberShader\Shader\Glsl</Filter>
+      <Filter>Importer\Effect\UberShader\Shader\Glsl</Filter>
     </ClInclude>
     <ClInclude Include="IfElseMacro.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="AbstractShaderPart.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="LightDefaultInclude.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="MaterialDefaultInclude.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="MatricesDefaultInclude.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="MacroCondition.h">
-      <Filter>UberShader\Macro</Filter>
+      <Filter>Importer\Effect\UberShader\Macro</Filter>
     </ClInclude>
     <ClInclude Include="SimpleShaderPart.h">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
     <ClInclude Include="UberShaderParser.h">
-      <Filter>UberShader\BlockParser</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser</Filter>
     </ClInclude>
     <ClInclude Include="Property.h">
-      <Filter>UberShader\Property</Filter>
+      <Filter>Importer\Effect\UberShader\Property</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>UberShader\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\Shader</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCache.h">
-      <Filter>UberShader\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\Shader</Filter>
     </ClInclude>
     <ClInclude Include="LocationBinding.h">
-      <Filter>UberShader\LocationBinding</Filter>
+      <Filter>Importer\Effect\UberShader\LocationBinding</Filter>
     </ClInclude>
     <ClInclude Include="Sampler.h">
       <Filter>Texture\Sampler</Filter>
@@ -135,9 +132,6 @@
     <ClInclude Include="FrameInfo.h">
       <Filter>Frame</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Light</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Material</Filter>
     </ClInclude>
@@ -145,7 +139,7 @@
       <Filter>Ray</Filter>
     </ClInclude>
     <ClInclude Include="UniformBlock.h">
-      <Filter>UberShader\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\Shader</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
       <Filter>AABB</Filter>
@@ -239,25 +233,25 @@
     </ClInclude>
     <ClInclude Include="MatrixMultiplicator.h" />
     <ClInclude Include="UberShaderBlockParser.h">
-      <Filter>UberShader\BlockParser\UberShader</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\UberShader</Filter>
     </ClInclude>
     <ClInclude Include="ShaderBlockParser.h">
-      <Filter>UberShader\BlockParser\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Shader</Filter>
     </ClInclude>
     <ClInclude Include="PropertiesBlockParser.h">
-      <Filter>UberShader\BlockParser\Properties</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Properties</Filter>
     </ClInclude>
     <ClInclude Include="PassesBlockParser.h">
-      <Filter>UberShader\BlockParser\Passes</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Passes</Filter>
     </ClInclude>
     <ClInclude Include="LocationBindingsBlockParser.h">
-      <Filter>UberShader\BlockParser\LocationBinding</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\LocationBinding</Filter>
     </ClInclude>
     <ClInclude Include="PassBlockParser.h">
-      <Filter>UberShader\BlockParser\Pass</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Pass</Filter>
     </ClInclude>
     <ClInclude Include="SettingsBlockParser.h">
-      <Filter>UberShader\BlockParser\Settings</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Settings</Filter>
     </ClInclude>
     <ClInclude Include="EffectImporter.h">
       <Filter>Importer\Effect</Filter>
@@ -271,6 +265,9 @@
     <ClInclude Include="LightSystem.h">
       <Filter>ECS\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Pass.h">
+      <Filter>Importer\Effect\UberShader\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventDistributer.cpp">
@@ -280,13 +277,10 @@
       <Filter>Event</Filter>
     </ClCompile>
     <ClCompile Include="MacroResource.cpp">
-      <Filter>UberShader</Filter>
+      <Filter>Importer\Effect\UberShader</Filter>
     </ClCompile>
     <ClCompile Include="ShaderMetaData.cpp">
-      <Filter>UberShader</Filter>
-    </ClCompile>
-    <ClCompile Include="UberShader.cpp">
-      <Filter>UberShader</Filter>
+      <Filter>Importer\Effect\UberShader</Filter>
     </ClCompile>
     <ClCompile Include="AbstractWindow.cpp">
       <Filter>Window</Filter>
@@ -332,43 +326,43 @@
       <Filter>Texture\2D</Filter>
     </ClCompile>
     <ClCompile Include="CgShader.cpp">
-      <Filter>UberShader\Shader\Cg</Filter>
+      <Filter>Importer\Effect\UberShader\Shader\Cg</Filter>
     </ClCompile>
     <ClCompile Include="GlslShader.cpp">
-      <Filter>UberShader\Shader\Glsl</Filter>
+      <Filter>Importer\Effect\UberShader\Shader\Glsl</Filter>
     </ClCompile>
     <ClCompile Include="IfElseMacro.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="AbstractShaderPart.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="LightDefaultInclude.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="MaterialDefaultInclude.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="MatricesDefaultInclude.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="MacroCondition.cpp">
-      <Filter>UberShader\Macro</Filter>
+      <Filter>Importer\Effect\UberShader\Macro</Filter>
     </ClCompile>
     <ClCompile Include="SimpleShaderPart.cpp">
-      <Filter>UberShader\ShaderParts</Filter>
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
     <ClCompile Include="UberShaderParser.cpp">
-      <Filter>UberShader\BlockParser</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser</Filter>
     </ClCompile>
     <ClCompile Include="Property.cpp">
-      <Filter>UberShader\Property</Filter>
+      <Filter>Importer\Effect\UberShader\Property</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>UberShader\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\Shader</Filter>
     </ClCompile>
     <ClCompile Include="LocationBinding.cpp">
-      <Filter>UberShader\LocationBinding</Filter>
+      <Filter>Importer\Effect\UberShader\LocationBinding</Filter>
     </ClCompile>
     <ClCompile Include="Sampler.cpp">
       <Filter>Texture\Sampler</Filter>
@@ -385,9 +379,6 @@
     <ClCompile Include="StringTools.cpp">
       <Filter>Tools\String</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Light</Filter>
-    </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Material</Filter>
     </ClCompile>
@@ -395,7 +386,7 @@
       <Filter>Ray</Filter>
     </ClCompile>
     <ClCompile Include="UniformBlock.cpp">
-      <Filter>UberShader\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\Shader</Filter>
     </ClCompile>
     <ClCompile Include="AABB.cpp">
       <Filter>AABB</Filter>
@@ -480,25 +471,25 @@
       <Filter>ECS\Transformation</Filter>
     </ClCompile>
     <ClCompile Include="UberShaderBlockParser.cpp">
-      <Filter>UberShader\BlockParser\UberShader</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\UberShader</Filter>
     </ClCompile>
     <ClCompile Include="ShaderBlockParser.cpp">
-      <Filter>UberShader\BlockParser\Shader</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Shader</Filter>
     </ClCompile>
     <ClCompile Include="PropertiesBlockParser.cpp">
-      <Filter>UberShader\BlockParser\Properties</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Properties</Filter>
     </ClCompile>
     <ClCompile Include="PassesBlockParser.cpp">
-      <Filter>UberShader\BlockParser\Passes</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Passes</Filter>
     </ClCompile>
     <ClCompile Include="LocationBindingsBlockParser.cpp">
-      <Filter>UberShader\BlockParser\LocationBinding</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\LocationBinding</Filter>
     </ClCompile>
     <ClCompile Include="PassBlockParser.cpp">
-      <Filter>UberShader\BlockParser\Pass</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Pass</Filter>
     </ClCompile>
     <ClCompile Include="SettingsBlockParser.cpp">
-      <Filter>UberShader\BlockParser\Settings</Filter>
+      <Filter>Importer\Effect\UberShader\BlockParser\Settings</Filter>
     </ClCompile>
     <ClCompile Include="EffectImporter.cpp">
       <Filter>Importer\Effect</Filter>
@@ -512,13 +503,13 @@
     <ClCompile Include="LightComponent.cpp">
       <Filter>ECS\Light</Filter>
     </ClCompile>
+    <ClCompile Include="Pass.cpp">
+      <Filter>Importer\Effect\UberShader\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
       <UniqueIdentifier>{2cf91c7f-b6f0-435b-b7f9-55b4f47ec9d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader">
-      <UniqueIdentifier>{26213427-df99-4ed3-9ca4-4847e058cbe2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Event">
       <UniqueIdentifier>{2a3ccfa0-9913-407c-bcd7-44147b10a18b}</UniqueIdentifier>
@@ -550,33 +541,6 @@
     <Filter Include="Texture\3D">
       <UniqueIdentifier>{649b9fa4-e4f7-4c87-92ec-c8f35cb17c13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UberShader\Parser">
-      <UniqueIdentifier>{be1f22ab-f00e-4db7-b83e-c6b97ee7ca13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\Shader">
-      <UniqueIdentifier>{3bd8be38-63ba-4441-9b6d-60572c894cf2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\Shader\Glsl">
-      <UniqueIdentifier>{55d74d12-afc1-456f-bf6d-5905a4d0a8f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\Shader\Cg">
-      <UniqueIdentifier>{a6493d53-4c90-425f-bd56-8456a2408ef2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\ShaderParts">
-      <UniqueIdentifier>{5dc11829-45a9-42fe-b070-557f46bcf50f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\Macro">
-      <UniqueIdentifier>{9c4e24af-70ce-4b5a-b3cd-e7e3178cb522}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser">
-      <UniqueIdentifier>{7def881b-943f-4d06-975b-5c86d7e03465}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\Property">
-      <UniqueIdentifier>{fc421995-4621-4a0e-adb6-904a7107f5c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\LocationBinding">
-      <UniqueIdentifier>{f418be23-0d1d-43f7-a7d7-84e606222c86}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Texture\Sampler">
       <UniqueIdentifier>{fd36b8dc-7604-480f-836a-3a37990df31d}</UniqueIdentifier>
     </Filter>
@@ -606,9 +570,6 @@
     </Filter>
     <Filter Include="Material">
       <UniqueIdentifier>{3f40c20e-ca91-4bb8-a319-f3a043169110}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light">
-      <UniqueIdentifier>{f0a084a7-03b9-4ef4-9095-3e2f5f7a8df1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Ray">
       <UniqueIdentifier>{3cd7a78d-2a98-4191-ac92-96600d65a196}</UniqueIdentifier>
@@ -667,32 +628,65 @@
     <Filter Include="CL">
       <UniqueIdentifier>{53fc11f3-4ce7-4ad8-a28a-f70290705743}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UberShader\BlockParser\LocationBinding">
-      <UniqueIdentifier>{9b277388-bc56-4fc1-877b-15cfee1bdb73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\Passes">
-      <UniqueIdentifier>{badb197c-3c98-49d2-b237-9ae735e8e80f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\Pass">
-      <UniqueIdentifier>{707e57ce-8b66-4de2-8c0a-e78fc62b50e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\Properties">
-      <UniqueIdentifier>{1891037c-a024-48b6-83af-542da5b499d7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\Shader">
-      <UniqueIdentifier>{6917531e-a8fe-4589-82fc-0eb00797b9d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\UberShader">
-      <UniqueIdentifier>{e44e123c-a940-4f8d-b38b-df7d85358fd5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UberShader\BlockParser\Settings">
-      <UniqueIdentifier>{154e77d4-016b-4b17-a98c-98cf845d1498}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Importer\Effect">
       <UniqueIdentifier>{e94a45ba-53c2-4744-9f68-4864ed34d434}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS\Light">
       <UniqueIdentifier>{d56ffde7-42ba-40c9-8ff0-c8fee66e402f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader">
+      <UniqueIdentifier>{26213427-df99-4ed3-9ca4-4847e058cbe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Parser">
+      <UniqueIdentifier>{be1f22ab-f00e-4db7-b83e-c6b97ee7ca13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Shader">
+      <UniqueIdentifier>{3bd8be38-63ba-4441-9b6d-60572c894cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Shader\Glsl">
+      <UniqueIdentifier>{55d74d12-afc1-456f-bf6d-5905a4d0a8f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Shader\Cg">
+      <UniqueIdentifier>{a6493d53-4c90-425f-bd56-8456a2408ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\ShaderParts">
+      <UniqueIdentifier>{5dc11829-45a9-42fe-b070-557f46bcf50f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Macro">
+      <UniqueIdentifier>{9c4e24af-70ce-4b5a-b3cd-e7e3178cb522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser">
+      <UniqueIdentifier>{7def881b-943f-4d06-975b-5c86d7e03465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\LocationBinding">
+      <UniqueIdentifier>{9b277388-bc56-4fc1-877b-15cfee1bdb73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\Passes">
+      <UniqueIdentifier>{badb197c-3c98-49d2-b237-9ae735e8e80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\Pass">
+      <UniqueIdentifier>{707e57ce-8b66-4de2-8c0a-e78fc62b50e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\Properties">
+      <UniqueIdentifier>{1891037c-a024-48b6-83af-542da5b499d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\Shader">
+      <UniqueIdentifier>{6917531e-a8fe-4589-82fc-0eb00797b9d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\UberShader">
+      <UniqueIdentifier>{e44e123c-a940-4f8d-b38b-df7d85358fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\BlockParser\Settings">
+      <UniqueIdentifier>{154e77d4-016b-4b17-a98c-98cf845d1498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Property">
+      <UniqueIdentifier>{fc421995-4621-4a0e-adb6-904a7107f5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\LocationBinding">
+      <UniqueIdentifier>{f418be23-0d1d-43f7-a7d7-84e606222c86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\UberShader\Pass">
+      <UniqueIdentifier>{b77c4e0a-46d0-46e7-b77b-6d16052d7fe3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

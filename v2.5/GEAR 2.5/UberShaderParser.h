@@ -2,9 +2,10 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "NonInstanceable.h"
-#include "UberShader.h"
+#include "Effect.h"
 
 #include <string>
+#include <memory>
 
 namespace G2 
 {
@@ -19,7 +20,7 @@ namespace G2
 			 * @param fileName The name of the file to parse an UberShader from.
 			 * @return The parsed UberShader.
 			 */
-			static UberShader parse(std::string const& fileName);
+			static std::shared_ptr<Effect::Builder> parse(std::string const& fileName);
 		private:
 
 

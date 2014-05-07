@@ -1,8 +1,10 @@
 #pragma once
+#include <memory>
+#include "Effect.h"
 
 namespace G2 
 {
-	class UberShader;
+	class ShaderBlockParser;
 	class FileResource;
 	/// This class takes care of parsing a Pass block from an UberShader file.
 	/// @created:	2014/03/10
@@ -11,12 +13,15 @@ namespace G2
 	{
 		public:
 			/// This constructs a new PassBlockParser.
-			PassBlockParser(UberShader* uberShader, FileResource* file);
+			PassBlockParser(Effect::Builder* builder, FileResource* file);
 
 			void parse();
 
+			std::shared_ptr<ShaderBlockParser> getShaderBlockParser() const { return mShaderBlockParser; }
+
 		private:
-			UberShader*		mUberShader;
-			FileResource*	mFile;
+			Effect::Builder*					mBuilder;
+			FileResource*						mFile;
+			std::shared_ptr<ShaderBlockParser>	mShaderBlockParser;
 	};
 };

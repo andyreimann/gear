@@ -7,7 +7,6 @@
 #include "LightDefaultInclude.h"
 #include "IfElseMacro.h"
 #include "Logger.h"
-#include "UberShader.h"
 #include "FileResource.h"
 
 #include <sstream>
@@ -16,11 +15,11 @@
 
 using namespace G2;
 
-ShaderBlockParser::ShaderBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
+ShaderBlockParser::ShaderBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
 	mFile(file),
-	mSettingsBlockParser(uberShader,file),
-	mPassesBlockParser(uberShader,file)
+	mSettingsBlockParser(builder,file),
+	mPassesBlockParser(builder,file)
 {
 }
 
@@ -29,10 +28,10 @@ ShaderBlockParser::parse()
 {
 	mCurrentState = WAITING_FOR_SHADER_CODE;
 
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{
 		
-		logger << "[ShaderBlockParser] -> Error 1001: given filehandle or UberShader is 0\n";
+		logger << "[ShaderBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
 	logger << "[ShaderBlockParser] -> start parsing Shader block\n";
@@ -201,11 +200,11 @@ ShaderBlockParser::getInclude(std::string const& resource) const
 	if(!name.compare(0,defaultResourcePrexif.size(), defaultResourcePrexif)) 
 	{
 		// append shading language shortcut to include name
-		if(mUberShader->getShadingLanguage() == ShadingLanguage::GLSL)
+		if(mBuilder->shadingLanguage== ShadingLanguage::GLSL)
 		{
 			name.append(".GLSL");
 		}
-		if(mUberShader->getShadingLanguage() == ShadingLanguage::CG)
+		if(mBuilder->shadingLanguage == ShadingLanguage::CG)
 		{
 			name.append(".CG");
 		}

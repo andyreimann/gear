@@ -83,11 +83,24 @@ namespace G2 {
 			 * @param part The shader code to add.
 			 */
 			void addVertexShaderPart(std::shared_ptr<AbstractShaderPart> const& part);
+			/** This function will add a list of new shader part to the list of shader parts for 
+			 * the vertex shader.
+			 * @param parts The shader code parts to add.
+			 */
+			void addVertexShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
+
+			
+
 			/** This function will add a new shader part to the list of shader parts for 
 			 * the fragment shader.
 			 * @param part The shader code to add.
 			 */
 			void addFragmentShaderPart(std::shared_ptr<AbstractShaderPart> const& part);
+			/** This function will add a list of new shader part to the list of shader parts for 
+			 * the fragment shader.
+			 * @param parts The shader code parts to add.
+			 */
+			void addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
 			/** This function will build and compile all shader permutations, which 
 			 * are created from all collected shader parts.
 			 * @return The UberShader itself.

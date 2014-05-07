@@ -1,5 +1,9 @@
 #include "Effect.h"
 #include "Shader.h"
+#include "GlslShader.h"
+#include "CgShader.h"
+#include "Logger.h"
+#include "Shader.h"
 
 using namespace G2;
 
@@ -69,7 +73,195 @@ Effect::Builder::buildResource()
 	// create new Effect
 	std::shared_ptr<Effect> effect = std::shared_ptr<Effect>(new Effect());
 
-	effect->mShaderPermutations = uberShader.getAllShaders();
+	effect->mShaderPermutations = shaderPermutations;
 
 	return effect;
+}
+
+
+
+Effect::Builder::Builder() 
+	: shadingLanguage(ShadingLanguage::UNKNOWN) {
+}
+
+void
+Effect::Builder::setShadingLanguage(std::string const& shadingLanguage) 
+{
+	if(shadingLanguage == "GLSL") 
+	{
+		this->shadingLanguage = ShadingLanguage::GLSL;
+		logger << "[Effect::Builder] -> Use Shading Language GLSL" << endl;
+	}
+	else if(shadingLanguage == "CG")
+	{
+		this->shadingLanguage = ShadingLanguage::CG;
+		logger << "[Effect::Builder] -> Use Shading Language CG" << endl;
+	}
+	else {
+		logger << "[Effect::Builder] -> Error: Unknown Shading Language '" << shadingLanguage << "' given in Shader block!" << endl;
+	}
+}
+
+void
+Effect::Builder::addVertexShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
+{
+	for(auto it = parts.begin(); it != parts.end(); ++it)
+	{
+		vertexShaderParts.push_back(*it);
+	}
+}
+
+void
+Effect::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
+{
+	for(auto it = parts.begin(); it != parts.end(); ++it)
+	{
+		fragmentShaderParts.push_back(*it);
+	}
+}
+
+Effect::Builder&
+Effect::Builder::buildAndCompile() 
+{
+	if(shadingLanguage == ShadingLanguage::UNKNOWN)
+	{
+		return *this;
+	}
+
+	// build shader headers
+	std::string vertexShaderHeader = "", fragmentShaderHeader = "";
+
+	
+	if(shadingLanguage == ShadingLanguage::GLSL) 
+	{
+		vertexShaderHeader = fragmentShaderHeader = "#version 330\n\n";
+	}
+
+	// create code for location bindings in vertex shader
+	for (int i = 0; i < locationBindings.size() ; ++i) 
+	{
+		vertexShaderHeader.append(locationBindings[i].getShaderCode());
+		vertexShaderHeader.append("\n");
+	}
+	vertexShaderHeader.append("\n");
+	
+	// create code for properties/uniforms in vertex shader
+	for (int i = 0; i < properties.size() ; ++i) 
+	{
+		vertexShaderHeader.append(properties[i].getShaderCode());
+		vertexShaderHeader.append("\n");
+		fragmentShaderHeader.append(properties[i].getShaderCode());
+		fragmentShaderHeader.append("\n");
+	}
+	vertexShaderHeader.append("\n");
+	fragmentShaderHeader.append("\n");
+
+	// calculate the number of permutations to create
+	int numPermutations = 1;
+	for (int i = 0; i < vertexShaderParts.size() ; ++i) 
+	{
+		numPermutations *= vertexShaderParts[i]->getNumPermutations();
+	}
+	for (int i = 0; i < fragmentShaderParts.size() ; ++i) 
+	{
+		numPermutations *= fragmentShaderParts[i]->getNumPermutations();
+	}
+	logger << "[Effect::Builder] -> Build and compile " << numPermutations << " Shader" << endl;
+	
+	// create permutations
+	int numVSParts = (int)vertexShaderParts.size();
+	int numFSParts = (int)fragmentShaderParts.size();
+	std::vector<int> permutationIndexAtPosition(numVSParts+numFSParts);
+	bool increasedThisRound = false;
+
+	for (int i = 0; i < numPermutations ; ++i) 
+	{
+		std::vector<MacroCondition> shaderConditions;
+		increasedThisRound = false;
+		
+		std::string vertexShaderCode = vertexShaderHeader, fragmentShaderCode = fragmentShaderHeader;
+
+		for (int k = 0; k < numVSParts; ++k) 
+		{
+			int numPermutationsOfPart = vertexShaderParts[k]->getNumPermutations();
+			if(!increasedThisRound && i > 0 && numPermutationsOfPart > 1) 
+			{
+				// try to increase permutation index of part
+				// which provides multiple permutations
+				if(permutationIndexAtPosition[k] < numPermutationsOfPart-1)
+				{
+					++permutationIndexAtPosition[k];
+					increasedThisRound = true;
+				}
+				else 
+				{
+					// reset permutation index
+					permutationIndexAtPosition[k] = 0; 
+				}
+			}
+			vertexShaderCode.append(vertexShaderParts[k]->getPermutedShaderPart(permutationIndexAtPosition[k]));
+			vertexShaderCode.append("\n");
+			// collect all conditions
+			std::vector<MacroCondition> partConditions = vertexShaderParts[k]->getMacroConditions(permutationIndexAtPosition[k]);
+			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
+		}
+		for (int k = 0; k < numFSParts; ++k) 
+		{
+			int numPermutationsOfPart = fragmentShaderParts[k]->getNumPermutations();
+			if(!increasedThisRound && i > 0 && numPermutationsOfPart > 1) 
+			{
+				// try to increase permutation index of part
+				// which provides multiple permutations
+				if(permutationIndexAtPosition[numVSParts+k] < numPermutationsOfPart-1)
+				{
+					++permutationIndexAtPosition[numVSParts+k];
+					increasedThisRound = true;
+				}
+				else 
+				{
+					// reset permutation index
+					permutationIndexAtPosition[numVSParts+k] = 0; 
+				}
+			}
+			fragmentShaderCode.append(fragmentShaderParts[k]->getPermutedShaderPart(permutationIndexAtPosition[numVSParts+k]));
+			fragmentShaderCode.append("\n");
+			// collect all conditions
+			std::vector<MacroCondition> partConditions = fragmentShaderParts[k]->getMacroConditions(permutationIndexAtPosition[numVSParts+k]);
+			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
+		}
+		
+		logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
+		logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
+		
+		if(shadingLanguage == ShadingLanguage::GLSL) {
+		
+			auto shader = std::shared_ptr<Shader>(new GlslShader());
+			if(shader->compile(vertexShaderCode,fragmentShaderCode))
+			{
+				// preset samplers and uniforms
+				shader->initWithMetaData(metaData);
+
+				// attach a list of conditions
+				// to the shader, which are used for the decision making process
+				shader->setConditions(shaderConditions);
+				shaderPermutations.push_back(shader);
+			}
+		}
+		else if(shadingLanguage == ShadingLanguage::CG) {
+		
+			auto shader = std::shared_ptr<Shader>(new CgShader());
+			if(shader->compile(vertexShaderCode,fragmentShaderCode))
+			{
+				// preset samplers and uniforms
+				shader->initWithMetaData(metaData);
+
+				// attach a list of conditions
+				// to the shader, which are used for the decision making process
+				shader->setConditions(shaderConditions);
+				shaderPermutations.push_back(shader);
+			}
+		}
+	}
+	logger << "[Effect::Builder] -> Compiled " << shaderPermutations.size() << " Shader" << endl;
+	return *this;
 }

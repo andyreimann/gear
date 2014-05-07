@@ -4,6 +4,7 @@
 #include "Property.h"
 #include "MacroCondition.h"
 #include "ShaderMetaData.h"
+#include "Effect.h"
 
 #include <vector>
 
@@ -11,6 +12,7 @@
 
 namespace G2 
 {
+	class Effect;
 	/** This class defines a generic Shader, written in any supported shading language.
 	 * It is designed to hold as few informations as possible to be really lightweight.
 	 * @created:	2014/02/10
@@ -18,7 +20,7 @@ namespace G2
 	 */
 	class Shader 
 	{
-		friend class UberShader; // only the UberShader is able to set and compile Shaders
+		friend struct Effect::Builder; // only the UberShader is able to set and compile Shaders
 
 		public:
 			/** This constructs a new Shader.

@@ -6,6 +6,7 @@
 #include <G2/Logger.h>
 #include <G2/TimeTracker.h>
 #include <G2/Effect.h>
+#include <G2Physics/PhysicsComponent.h>
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -108,6 +109,8 @@ TestScene::TestScene()
 	light->specular = glm::vec4(1.f,1.f,1.f,1.f);
 	light->linearAttenuation = 1.f;
 	light->cutOffDegrees = 40.f;
+	
+	//auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));

@@ -1,12 +1,11 @@
 #include "PassesBlockParser.h"
 #include "FileResource.h"
-#include "UberShader.h"
 #include "Logger.h"
 
 using namespace G2;
 
-PassesBlockParser::PassesBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
+PassesBlockParser::PassesBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
 	mFile(file)
 {
 }
@@ -14,10 +13,10 @@ PassesBlockParser::PassesBlockParser(UberShader* uberShader, FileResource* file)
 void
 PassesBlockParser::parse() 
 {
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{
 		
-		logger << "[PassesBlockParser] -> Error 1001: given filehandle or UberShader is 0";
+		logger << "[PassesBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0";
 		return;
 	}
 	logger << "[PassesBlockParser] -> start parsing Passes block\n";
@@ -35,7 +34,7 @@ PassesBlockParser::parse()
 			lineStr >> prefix;
 			if(prefix == "Pass") 
 			{
-				mPassBlockParser.push_back(PassBlockParser(mUberShader,mFile));
+				mPassBlockParser.push_back(PassBlockParser(mBuilder,mFile));
 				mPassBlockParser.back().parse();
 			}
 			else if(prefix == "}") 

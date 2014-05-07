@@ -85,10 +85,13 @@ Ubershader "GEAR/Default" {
          
                 if (intensity > 0.0) 
                 {
+                    float att = 1.0 / (light[i].attenuation.x +
+                            light[i].attenuation.y * dist +
+                            light[i].attenuation.z * dist * dist);
                     vec3 eye = normalize(dataIn.eye);
                     vec3 h = normalize(l + eye);
                     float intSpec = max(dot(h,n), 0.0);
-                    spec = light[i].specular * material.specular * pow(intSpec, material.shininess);
+                    spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
                 }
               }
               outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);

@@ -5,7 +5,6 @@
 #include "RenderSystem.h"
 #include "VertexArrayObject.h"
 #include "Material.h"
-#include "UberShader.h"
 #include "ShaderCache.h"
 
 #include <vector>

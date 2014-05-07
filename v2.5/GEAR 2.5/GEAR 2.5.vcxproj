@@ -272,7 +272,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="InputEventListener.h" />
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="KeyCodes.h" />
-    <ClInclude Include="Light.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="LightDefaultInclude.h" />
     <ClInclude Include="LightSystem.h" />
@@ -293,6 +292,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="NameSystem.h" />
     <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="NonInstanceable.h" />
+    <ClInclude Include="Pass.h" />
     <ClInclude Include="PassBlockParser.h" />
     <ClInclude Include="PassesBlockParser.h" />
     <ClInclude Include="PropertiesBlockParser.h" />
@@ -321,7 +321,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="timevalue_win.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformSystem.h" />
-    <ClInclude Include="UberShader.h" />
     <ClInclude Include="UberShaderBlockParser.h" />
     <ClInclude Include="UberShaderParser.h" />
     <ClInclude Include="UniformBlock.h" />
@@ -362,7 +361,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="IfElseMacro.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="InputEventListener.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="LightDefaultInclude.cpp" />
     <ClCompile Include="LightSystem.cpp" />
@@ -380,6 +378,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="MD5Importer.cpp" />
     <ClCompile Include="MD5Mesh.cpp" />
     <ClCompile Include="NameSystem.cpp" />
+    <ClCompile Include="Pass.cpp" />
     <ClCompile Include="PassBlockParser.cpp" />
     <ClCompile Include="PassesBlockParser.cpp" />
     <ClCompile Include="PropertiesBlockParser.cpp" />
@@ -405,7 +404,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="timevalue_win.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformSystem.cpp" />
-    <ClCompile Include="UberShader.cpp" />
     <ClCompile Include="UberShaderBlockParser.cpp" />
     <ClCompile Include="UberShaderParser.cpp" />
     <ClCompile Include="UniformBlock.cpp" />

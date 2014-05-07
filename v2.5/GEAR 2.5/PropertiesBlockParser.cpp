@@ -4,7 +4,6 @@
 #include "Property.h"
 #include "StringTools.h"
 #include "Logger.h"
-#include "UberShader.h"
 #include "FileResource.h"
 
 #include <sstream>
@@ -13,8 +12,8 @@
 
 using namespace G2;
 
-PropertiesBlockParser::PropertiesBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
+PropertiesBlockParser::PropertiesBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
 	mFile(file)
 {
 }
@@ -23,9 +22,9 @@ void
 PropertiesBlockParser::parse() 
 {
 
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{		
-		logger << "[PropertiesBlockParser] -> Error 1001: given filehandle or UberShader is 0\n";
+		logger << "[PropertiesBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
 
@@ -94,16 +93,16 @@ PropertiesBlockParser::checkAndCreateMetaData(std::string const& name,
 		Sampler::Name sampler = Sampler::getSampler(defaultValue);
 		if(sampler != Sampler::SAMPLER_INVALID)
 		{
-			G2::ShaderMetaData& metaData = mUberShader->getMetaDataReference();
+			G2::ShaderMetaData& metaData = mBuilder->metaData;
 			metaData.samplers[sampler].name = name;
 			metaData.samplers[sampler].samplerSlot = sampler;
-			// omit default value for samplers, because they are not compilant!
-			mUberShader->add(Property(name, niceName, dataType, ""));
+			// omit default value for samplers, because they are not compliant!
+			mBuilder->properties.push_back(Property(name, niceName, dataType, ""));
 			return;
 		}
 		logger << "[PropertiesBlockParser] -> Warning: Sampler-Property '" << name << "' has no valid sampler value given! Valid values are: DIFFUSE,NORMAL,ALPHA,SHADOW,SPECULAR,SAMPLER_6-SAMPLER_16.";
 		return;
 	}
 	// just add a new property
-	mUberShader->add(Property(name, niceName, dataType, defaultValue));
+	mBuilder->properties.push_back(Property(name, niceName, dataType, defaultValue));
 }

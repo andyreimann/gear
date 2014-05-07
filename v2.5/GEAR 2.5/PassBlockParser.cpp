@@ -1,28 +1,28 @@
 #include "PassBlockParser.h"
 #include "FileResource.h"
-#include "UberShader.h"
 #include "ShaderBlockParser.h"
 #include "Logger.h"
+#include "ShaderBlockParser.h"
 
 using namespace G2;
 
-PassBlockParser::PassBlockParser(UberShader* uberShader, FileResource* file) 
-	: mUberShader(uberShader),
-	mFile(file)
+PassBlockParser::PassBlockParser(Effect::Builder* builder, FileResource* file) 
+	: mBuilder(builder),
+	mFile(file),
+	mShaderBlockParser(new ShaderBlockParser(builder, file))
 {
 }
 
 void
 PassBlockParser::parse() 
 {
-	if(mFile == nullptr || mUberShader == nullptr)
+	if(mFile == nullptr || mBuilder == nullptr)
 	{
-		logger << "[PassBlockParser] -> Error 1001: given filehandle or UberShader is 0";
+		logger << "[PassBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0";
 		return;
 	}
 	logger << "[PassBlockParser] -> start parsing Pass block\n";
-	ShaderBlockParser shaderBlockParser(mUberShader, mFile);
-	shaderBlockParser.parse();
+	mShaderBlockParser->parse();
 	logger << "[PassBlockParser] -> done parsing Pass block\n";
 
 

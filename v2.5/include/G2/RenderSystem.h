@@ -2,7 +2,7 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "BaseSystem.h"
-#include "UberShader.h"
+
 
 #include <memory>
 #include <vector>
@@ -15,6 +15,7 @@ namespace G2
 	class TransformComponent;
 	class LightComponent;
 	class Material;
+	class Shader;
 	/** This class defines the whole render pipeline of the GEAR engine.
 	 * It render all registered RenderComponents with their settings.
 	 * The rendering takes place in the 'render' phase.

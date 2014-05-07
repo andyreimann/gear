@@ -18,9 +18,7 @@ EffectImporter::importResource(std::string const& fileName)
 	logger << "[EffectImporter] Import Effect file " << fileName << endl;
 	
 	// Step 1: create builder and fill
-	std::shared_ptr<Effect::Builder> builder = std::shared_ptr<Effect::Builder>(new Effect::Builder);
-
-	builder->uberShader = UberShaderParser::parse(fileName);
+	std::shared_ptr<Effect::Builder> builder = UberShaderParser::parse(fileName);
 
 	// (Step 2: cache builder)
 	mCache[fileName] = builder;
