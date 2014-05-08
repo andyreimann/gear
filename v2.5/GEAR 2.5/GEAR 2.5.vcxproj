@@ -264,6 +264,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="FBXMesh.h" />
     <ClInclude Include="FBXVBOMesh.h" />
     <ClInclude Include="FileResource.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FrameInfo.h" />
     <ClInclude Include="GEAR.h" />
     <ClInclude Include="GlslShader.h" />
@@ -301,9 +302,11 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="RefCounter.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceBuilder.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="Setting.h" />
     <ClInclude Include="SettingsBlockParser.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderBlockParser.h" />
@@ -356,6 +359,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="FBXMesh.cpp" />
     <ClCompile Include="FBXVBOMesh.cpp" />
     <ClCompile Include="FileResource.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GEAR.cpp" />
     <ClCompile Include="GlslShader.cpp" />
     <ClCompile Include="IfElseMacro.cpp" />
@@ -385,9 +389,11 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceBuilder.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SDLWindow.cpp" />
+    <ClCompile Include="Setting.cpp" />
     <ClCompile Include="SettingsBlockParser.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderBlockParser.cpp" />

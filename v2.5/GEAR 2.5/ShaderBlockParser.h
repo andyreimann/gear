@@ -5,16 +5,21 @@
 #include "SettingsBlockParser.h"
 #include "PassesBlockParser.h"
 #include "Effect.h"
+#include "LocationBindingsBlockParser.h"
+#include "PropertiesBlockParser.h"
 
 #include <unordered_map>
 
 namespace G2 
 {
 	class FileResource;
+	struct ShaderMetaData;
 
 	enum ShaderBlockState {
 		WAITING_FOR_SHADER_CODE = 1,
 		READING_SETTINGS_BLOCK,
+		READING_PROPERTIES_BLOCK,
+		READING_LOCATIONBINDINGS_BLOCK,
 		READING_PASSES_BLOCK,
 		READING_VERTEX_SHADER,
 		READING_FRAGMENT_SHADER,
@@ -30,7 +35,7 @@ namespace G2
 			/** This constructs a new ShaderBlockParser.
 			 */
 			ShaderBlockParser(Effect::Builder* builder, FileResource* file);
-			void parse();
+			void parse(ShaderMetaData* shaderMetaData);
 			
 			/** This function will return the parsed VertexShaderParts. 
 			* @return The current VertexShaderParts.
@@ -66,6 +71,14 @@ namespace G2
 			{
 				return mSettingsBlockParser;
 			}
+			/** This function will return the LocationBindingBlockParser. 
+			* @return The current LocationBindingBlockParser.
+			*/
+			G2::LocationBindingsBlockParser const& getLocationBindingBlockParser() const { return mLocationBindingBlockParser; }
+			/** This function will return the PropertiesBlockParser. 
+			* @return The current PropertiesBlockParser.
+			*/
+			G2::PropertiesBlockParser const& getPropertiesBlockParser() const { return mPropertiesBlockParser; }
 		protected:
 		private:
 
@@ -86,8 +99,11 @@ namespace G2
 			Effect::Builder*									mBuilder;
 			FileResource*										mFile;
 			unsigned int										mCurrentState;
+			
 			SettingsBlockParser									mSettingsBlockParser;
 			PassesBlockParser									mPassesBlockParser;
+			LocationBindingsBlockParser							mLocationBindingBlockParser;
+			PropertiesBlockParser								mPropertiesBlockParser;
 			std::shared_ptr<AbstractShaderPart>					mCurrentShaderPart;
 
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mVertexShaderParts;		// The available parts of vertex shader code

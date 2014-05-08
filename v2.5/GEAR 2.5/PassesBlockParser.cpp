@@ -32,6 +32,10 @@ PassesBlockParser::parse()
 
 			std::string prefix;
 			lineStr >> prefix;
+			if(prefix.substr(0,2) == "//")
+			{
+				continue;
+			}
 			if(prefix == "Pass") 
 			{
 				mPassBlockParser.push_back(PassBlockParser(mBuilder,mFile));

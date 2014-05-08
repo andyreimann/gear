@@ -2,6 +2,8 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "Effect.h"
+#include "LocationBindingsBlockParser.h"
+#include "PropertiesBlockParser.h"
 
 namespace G2 
 {
@@ -21,7 +23,9 @@ namespace G2
 			void parse();
 		private:
 
-			Effect::Builder*	mBuilder;
-			FileResource*		mFile;
+			Effect::Builder*			mBuilder;
+			FileResource*				mFile;
+			LocationBindingsBlockParser mLocationBindingBlockParser;
+			PropertiesBlockParser		mPropertiesBlockParser;
 	};
 };

@@ -13,9 +13,8 @@
 
 using namespace G2;
 
-LocationBindingsBlockParser::LocationBindingsBlockParser(Effect::Builder* builder, FileResource* file) 
-    : mBuilder(builder),
-    mFile(file)
+LocationBindingsBlockParser::LocationBindingsBlockParser(FileResource* file) 
+    : mFile(file)
 {
 }
 
@@ -24,12 +23,13 @@ LocationBindingsBlockParser::parse()
 {
     std::stringstream log;
 
-    if(mFile == nullptr || mBuilder == nullptr)
+    if(mFile == nullptr)
     {
         
-        logger << "[LocationBindingsBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
+        logger << "[LocationBindingsBlockParser] -> Error 1001: given filehandle is 0\n";
         return;
     }
+    logger << "[LocationBindingsBlockParser] -> start parsing LocationBindings block\n";
 
     
     int curvedBracketsOpened = 0;
@@ -48,6 +48,7 @@ LocationBindingsBlockParser::parse()
             if(curvedBracketsOpened <= -1) 
             {
                 // block content parsed
+                logger << "[LocationBindingsBlockParser] -> done parsing LocationBindings block\n";
                 return;
             }
 
@@ -57,6 +58,10 @@ LocationBindingsBlockParser::parse()
             std::string name, niceName, datatype;
             std::string semantic;
             lineStr >> name;
+            if(name.substr(0,2) == "//")
+            {
+                continue;
+            }
             
             // parse nice name 
             size_t startPos = line.find_first_of("\"");
@@ -91,7 +96,8 @@ LocationBindingsBlockParser::parse()
 
             logger << "[LocationBindingsBlockParser] -> Add LocationBinding[semantic=" << semantic << ";name=" << name << ";nname=" << niceName << ";dt=" << datatype << "]\n";
 
-            mBuilder->locationBindings.push_back(LocationBinding(parsedSemantic, name, niceName, datatype));
+            mLocationBindings.push_back(LocationBinding(parsedSemantic, name, niceName, datatype));
         }
     }
+    logger << "[LocationBindingsBlockParser] -> done parsing LocationBindings block\n";
 }

@@ -15,6 +15,7 @@
 #include "Texture.h"
 #include "Effect.h"
 #include "Shader.h"
+#include "Logger.h"
 
 #include <iostream>
 
@@ -27,7 +28,6 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
 	if(name == "render") 
 	{
-
 		// update camera movement 
 		CameraComponent* camera = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>()->getRenderCamera();
 		
@@ -36,6 +36,37 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		for (int i = 0; i < components.size() ; ++i) 
 		{
 			RenderComponent& comp = components[i];
+
+			// check if this component has a pass attached
+			if(comp.effect.get() != nullptr && comp.effect->getPasses().size() > 0) 
+			{
+				for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
+				{
+					it->getRenderTarget().bind();
+					// TODO get right Camera object and update it
+					//bool cameraUpdated = camera->updateModelView();
+					for (int k = 0; k < components.size() ; ++k) 
+					{
+						RenderComponent& innerComp = components[k];
+			
+						if(innerComp.vaos.size() == 0)
+						{
+							// no VAO attached
+							continue;
+						}
+						
+						std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
+						// bind shader before cann render()
+						passShader->bind();
+						// pass rendering
+						render(camera, &innerComp, passShader);
+					}
+					//logger << "Rendered " << components.size() << " components to rendertarget" << endl;
+					it->getRenderTarget().unbind();
+					// bind result of pass
+					it->getRenderTarget().getRenderTexture().bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
+				}
+			}
 			
 			if(comp.vaos.size() == 0)
 			{
@@ -46,50 +77,58 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			// calc which shader to use for rendering
 			std::shared_ptr<Shader> shader = getRenderShader(&comp);
 
-			// bind shader, since also in case of a default shader, this could be a permuted shader!
+			// bind shader before cann render()
 			shader->bind();
-
-			// Upload Matrices
-			auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(comp.getEntityId());
-			uploadMatrices(shader, transformation, camera);
-
-			// Upload Lights
-			LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
-			int maxLights = std::min(8,(int)lightSystem->components.size());
-			int numActive = 0;
-			for(int l = 0; l < maxLights; ++l)
-			{
-				auto& lightComponent = lightSystem->components[l];
-				if(!lightComponent.isEnabled())
-				{
-					continue;
-				}
-				uploadLight(shader, &lightComponent, camera, numActive++);
-			}
-			shader->setProperty(Property("G2ActiveLights"), numActive);
-
-			// Bind Textures
-			auto const& textures = comp.material.getTextures();
-			for(auto it = textures.begin(); it != textures.end(); ++it)
-			{
-				if(it->second.get() != nullptr)
-				{
-					// tex slots are continuous numbers and samplers start at 0 -> simple calculation
-					it->second->bind(TEX_SLOT1+(int)it->first);
-				}
-			}
-
-			// Upload Material
-			uploadMaterial(shader, &comp.material);
-
-			// Draw all attached VAO
-			for (int k = 0; k < comp.vaos.size() ; ++k) 
-			{
-				comp.vaos[k].draw(comp.drawMode);
-			}
+			// regular rendering
+			render(camera, &comp, shader);
 		}
 	}
 }
+
+void
+RenderSystem::render(CameraComponent* camera, RenderComponent* component, std::shared_ptr<Shader>& boundShader)
+{
+	// Upload Matrices
+	auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(component->getEntityId());
+	uploadMatrices(boundShader, transformation, camera);
+
+	// Upload Lights
+	LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
+	int maxLights = std::min(8,(int)lightSystem->components.size());
+	int numActive = 0;
+	for(int l = 0; l < maxLights; ++l)
+	{
+		auto& lightComponent = lightSystem->components[l];
+		if(!lightComponent.isEnabled())
+		{
+			continue;
+		}
+		uploadLight(boundShader, &lightComponent, camera, numActive++);
+	}
+	boundShader->setProperty(Property("G2ActiveLights"), numActive);
+
+	// Bind Textures
+	auto const& textures = component->material.getTextures();
+	for(auto it = textures.begin(); it != textures.end(); ++it)
+	{
+		if(it->second.get() != nullptr)
+		{
+			// tex slots are continuous numbers and samplers start at 0 -> simple calculation
+			it->second->bind(TEX_SLOT1+(int)it->first);
+		}
+	}
+
+	// Upload Material
+	uploadMaterial(boundShader, &component->material);
+
+	// Draw all attached VAO
+	for (int k = 0; k < component->vaos.size() ; ++k) 
+	{
+		component->vaos[k].draw(component->drawMode);
+	}
+}
+
+
 
 void
 RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera) 
@@ -182,7 +221,7 @@ RenderSystem::getRenderShader(RenderComponent* component)
 	{
 		shader = component->shaderCache.getShader();
 	}
-	else if(component->effect.get() != NULL && component->effect->hasCompiledShaders()) 
+	else if(component->effect.get() != nullptr && component->effect->hasCompiledShaders()) 
 	{
 		shader = component->effect->getShader(component->material,component->vaos[0]);
 		// update shader cache
@@ -195,4 +234,11 @@ RenderSystem::getRenderShader(RenderComponent* component)
 		component->shaderCache.setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
 	}
 	return shader;
+}
+
+std::shared_ptr<Shader>
+RenderSystem::getPassRenderShader(RenderComponent* component, Pass const* pass) const
+{
+	// TODO add caching for pass shader as well
+	return pass->getShader(component->material,component->vaos[0]);;
 }

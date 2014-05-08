@@ -16,22 +16,22 @@ using namespace G2;
  * and quits the application */
 void sdldie(const char *msg)
 {
-    std::cout << msg << SDL_GetError() << std::endl;
-    SDL_Quit();
-    exit(1);
+	std::cout << msg << SDL_GetError() << std::endl;
+	SDL_Quit();
+	exit(1);
 }
 
 void checkSDLError(int line = -1)
 {
 #ifndef NDEBUG
-    const char *error = SDL_GetError();
-    if (*error != '\0')
-    {
-        printf("SDL Error: %s\n", error);
-        if (line != -1)
-            printf(" + line: %i\n", line);
-        SDL_ClearError();
-    }
+	const char *error = SDL_GetError();
+	if (*error != '\0')
+	{
+		printf("SDL Error: %s\n", error);
+		if (line != -1)
+			printf(" + line: %i\n", line);
+		SDL_ClearError();
+	}
 #endif
 }
 
@@ -43,46 +43,46 @@ SDLWindow::SDLWindow(unsigned int width, unsigned int height, std::string const&
 	mNsightActive(false)
 {
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) 
 	{/* Initialize SDL's Video subsystem */
 		system("PAUSE");
-        sdldie("Unable to initialize SDL"); /* Or die on error */
+		sdldie("Unable to initialize SDL"); /* Or die on error */
 	}
-    /* Request opengl 3.2 context.
-     * SDL doesn't have the ability to choose which profile at this time of writing,
-     * but it should default to the core profile */
-    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	/* Request opengl 3.2 context.
+	 * SDL doesn't have the ability to choose which profile at this time of writing,
+	 * but it should default to the core profile */
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    /* Turn on double buffering with a 24bit Z buffer.
-     * You may need to change this to 16 or 32 for your system */
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	/* Turn on double buffering with a 24bit Z buffer.
+	 * You may need to change this to 16 or 32 for your system */
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	// enable multisampling support on SQL 2
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-    /* Create our window centered at 512x512 resolution */
-    mSDLWindow = SDL_CreateWindow(mTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	/* Create our window centered at 512x512 resolution */
+	mSDLWindow = SDL_CreateWindow(mTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+								  mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	SDL_SetWindowTitle(mSDLWindow, mTitle.c_str());
 
-    if (!mSDLWindow) 
+	if (!mSDLWindow) 
 	{/* Die if creation failed */
 		system("PAUSE");
-        sdldie("Unable to create window");
+		sdldie("Unable to create window");
 	}
-    checkSDLError(__LINE__);
+	checkSDLError(__LINE__);
 
-    /* Create our opengl context and attach it to our window */
-    mMainContext = SDL_GL_CreateContext(mSDLWindow);
-    checkSDLError(__LINE__);
+	/* Create our opengl context and attach it to our window */
+	mMainContext = SDL_GL_CreateContext(mSDLWindow);
+	checkSDLError(__LINE__);
 
-    /* enable v-sync */
-    SDL_GL_SetSwapInterval(1);
+	/* enable v-sync */
+	SDL_GL_SetSwapInterval(1);
 
 	// set mouse motion capturing to relative mode.
 	// driver will hide mouse and report continuous relative movement only
@@ -97,9 +97,9 @@ SDLWindow::SDLWindow(unsigned int width, unsigned int height, std::string const&
 
 SDLWindow::~SDLWindow() 
 {
-    SDL_GL_DeleteContext(mMainContext);
-    SDL_DestroyWindow(mSDLWindow);
-    SDL_Quit();
+	SDL_GL_DeleteContext(mMainContext);
+	SDL_DestroyWindow(mSDLWindow);
+	SDL_Quit();
 }
 
 bool
@@ -214,12 +214,11 @@ SDLWindow::renderSingleFrame()
 	ECSManager::getShared().runPhaseOnSystems("update", mFrameInfo);
 	ECSManager::getShared().runPhaseOnSystems("postUpdate", mFrameInfo);
 	ECSManager::getShared().runPhaseOnSystems("render", mFrameInfo);
-
 	
 	EventDistributer::onRenderFrame(mFrameInfo);
 
 	SDL_GL_SwapWindow(mSDLWindow);
-    mFrameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
+	mFrameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
 	return !mFrameInfo.stopRenderingAfterThisFrame;
 }
 

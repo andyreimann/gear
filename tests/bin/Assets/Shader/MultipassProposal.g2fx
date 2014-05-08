@@ -9,6 +9,13 @@ Ubershader "GEAR/Multipass" {
    Shader "GLSL" {
      Passes {
         Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+             inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+           }
+           Properties {
+               _diffuseTex ("The diffuse texture", sampler2D) = { NORMAL } // define a uniform sampler on the diffuse channel
+           }
            Settings {
               Name "TestPass"
               // this will end in a FBO-RBO created for the texture assigned to the sampler DIFFUSE
@@ -46,6 +53,13 @@ Ubershader "GEAR/Multipass" {
               }
         }
         Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+             inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+           }
+           Properties {
+               _diffuseTex ("The diffuse texture", sampler2D) = { NORMAL } // define a uniform sampler on the diffuse channel
+           }
            Settings {
               Name "TestPass2"
               // this will end in a FBO-RBO created for the texture assigned to the sampler DIFFUSE

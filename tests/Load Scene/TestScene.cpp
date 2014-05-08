@@ -89,7 +89,7 @@ TestScene::TestScene()
 	G2::EventDistributer::onKeyDown.hook(this, &TestScene::onKeyDown);
 	G2::EventDistributer::onMouseMove.hook(this, &TestScene::onMouseMove);
 	
-	//createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
+	createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
 	
 	//createPlane(glm::vec4(1.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, true));
 	
@@ -177,7 +177,7 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 	auto* plane = mPlanes.back().addComponent<G2::RenderComponent>();
 	plane->drawMode = GL_TRIANGLES;
 	// import and assign a texture
-	plane->material.setTexture(G2::Sampler::DIFFUSE, diffuseTex);
+	plane->material.setTexture(G2::Sampler::NORMAL, diffuseTex); // only rendered/used in passes
 
 	// prepare vao
 	G2::VertexArrayObject vao;
@@ -253,14 +253,14 @@ TestScene::createWalls()
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
 	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.1f, 0.1f, 5.f));
-	//transformation->setPosition(glm::vec3(0.f,0.f,0.f));
+	//mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	//transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	//transformation->setScale(glm::vec3(5.1f, 0.1f, 5.f));
+	////transformation->setPosition(glm::vec3(0.f,0.f,0.f));
 
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(0.5f,0.5f,0.5f,1.f));
-	renderComp->material.setShininess(128.f);
+	//renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	//renderComp->material.setSpecular(glm::vec4(0.5f,0.5f,0.5f,1.f));
+	//renderComp->material.setShininess(128.f);
 }
 
 void 

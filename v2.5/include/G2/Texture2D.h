@@ -16,6 +16,7 @@ namespace G2
 	 */
 	class Texture2D : public Texture
 	{
+		friend class RenderTarget;
 		public:
 
 			struct Builder : public ResourceBuilder<Builder,Texture2D>
@@ -35,10 +36,15 @@ namespace G2
 					  unsigned int height,
 					  unsigned int format,
 					  bool compress,
-					  unsigned char * data);
+					  unsigned char * data = nullptr);
+			/// Move ctor.
+			Texture2D(Texture2D && rhs);
+			/// Move ctor.
+			Texture2D& operator=(Texture2D && rhs);
 			
 			static void		init();
 		private:
+			Texture2D() {}
 			
 			static bool		gInitialized;
 

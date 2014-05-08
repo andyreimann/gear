@@ -1,5 +1,6 @@
 #pragma once
 #include "Effect.h"
+#include "Setting.h"
 
 #include <string>
 #include <unordered_map>
@@ -7,20 +8,6 @@
 namespace G2 
 {
 	class FileResource;
-
-	struct Setting
-	{
-		Setting(std::string const& key = "", std::string const& value = "")
-		 : key(key), value(value) {}
-		
-		int toInt() { return std::stoi(value); }
-		long toLong() { return std::stol(value); }
-		double toDouble() { return std::stod(value); }
-		float toFloat() { return std::stof(value); }
-		
-		std::string key;
-		std::string value;
-	};
 
 	/// This class takes care of loading the content of a generic Settings block
 	/// @created:	2014/03/10

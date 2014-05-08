@@ -21,8 +21,9 @@ PassBlockParser::parse()
 		logger << "[PassBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0";
 		return;
 	}
+	mBuilder->passes.push_back(Pass::Builder());
 	logger << "[PassBlockParser] -> start parsing Pass block\n";
-	mShaderBlockParser->parse();
+	mShaderBlockParser->parse(&mBuilder->passes.back().metaData);
 	logger << "[PassBlockParser] -> done parsing Pass block\n";
 
 

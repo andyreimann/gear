@@ -11,8 +11,8 @@
 using namespace G2;
 
 enum ParserState {
-	AWAIT_BLOCK = 1,
-	READ_BLOCK_CONTENT,
+    AWAIT_BLOCK = 1,
+    READ_BLOCK_CONTENT,
 };
 
 
@@ -20,62 +20,66 @@ enum ParserState {
 std::shared_ptr<Effect::Builder>
 UberShaderParser::parse(std::string const& fileName) 
 {
-	std::shared_ptr<Effect::Builder> builder = std::shared_ptr<Effect::Builder>(new Effect::Builder);
+    std::shared_ptr<Effect::Builder> builder = std::shared_ptr<Effect::Builder>(new Effect::Builder);
 
-	ParserState currentState = AWAIT_BLOCK;
+    ParserState currentState = AWAIT_BLOCK;
 
-	std::stringstream log;
+    std::stringstream log;
 
-	std::cout << "[UberShaderParser] -> parse file '" << fileName << "'" << std::endl;
-	//qDebug(log.str().c_str());
+    std::cout << "[UberShaderParser] -> parse file '" << fileName << "'" << std::endl;
+    //qDebug(log.str().c_str());
 
-	FileResource file(fileName);
+    FileResource file(fileName);
 
-	if(!file.isOpen()) {
+    if(!file.isOpen()) {
 
-		log << "[UberShaderParser] -> could not open file '" << fileName << "'" << std::endl;
-		//qDebug(log.str().c_str());
-		return builder;
-	}
+        log << "[UberShaderParser] -> could not open file '" << fileName << "'" << std::endl;
+        //qDebug(log.str().c_str());
+        return builder;
+    }
 
-	int curvedBracketsOpened = 0;
+    int curvedBracketsOpened = 0;
 
-	while(!file.eof()) 
-	{
-		log.str("");
-		std::string line = file.getLine();
-		std::stringstream lineStr;
-		lineStr << line;
+    while(!file.eof()) 
+    {
+        log.str("");
+        std::string line = file.getLine();
+        std::stringstream lineStr;
+        lineStr << line;
 
-		switch(currentState) 
-		{
-			case AWAIT_BLOCK:
-			{
-				std::string blockName,uberShaderName;
-				lineStr >> blockName;
+        switch(currentState) 
+        {
+            case AWAIT_BLOCK:
+            {
+                std::string blockName,uberShaderName;
+                lineStr >> blockName;
+                if(blockName.substr(0,2) == "//")
+                {
+                    continue;
+                }
 
-				// parse shader name 
-				size_t startPos = line.find_first_of("\"");
-				size_t endPos = line.find_last_of("\"");
-				if(startPos != std::string::npos && endPos != std::string::npos) 
-				{
-					uberShaderName = line.substr(startPos+1, endPos-startPos-1);
-				}
+                // parse shader name 
+                size_t startPos = line.find_first_of("\"");
+                size_t endPos = line.find_last_of("\"");
+                if(startPos != std::string::npos && endPos != std::string::npos) 
+                {
+                    uberShaderName = line.substr(startPos+1, endPos-startPos-1);
+                }
 
-				std::cout << "[UberShaderParser] -> parse '" << blockName << "' block with name '" << uberShaderName << "'" << std::endl;
-				//qDebug(log.str().c_str());
-				currentState = READ_BLOCK_CONTENT;
-				UberShaderBlockParser blockParser(builder.get(), &file);
-				blockParser.parse();
-				break;
-			}
-			default:
-				break;
-		}
-	}
-	std::cout << "[UberShaderParser] -> done parsing" << std::endl;
-	//qDebug("[UberShaderParser] -> done parsing");
+                std::cout << "[UberShaderParser] -> parse '" << blockName << "' block with name '" << uberShaderName << "'" << std::endl;
+                //qDebug(log.str().c_str());
+                currentState = READ_BLOCK_CONTENT;
+                UberShaderBlockParser blockParser(builder.get(), &file);
+                blockParser.parse();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    std::cout << "[UberShaderParser] -> done parsing" << std::endl;
+    //qDebug("[UberShaderParser] -> done parsing");
 
-	builder->buildAndCompile();
-	return builder;
+    builder->buildAndCompile();
+    return builder;
 }

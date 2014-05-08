@@ -13,6 +13,7 @@ namespace G2
 	 */
 	class Texture3D : public Texture
 	{
+		friend class RenderTarget;
 		public:
 			/** This constructs a new Texture3D.
 			 */
@@ -24,6 +25,10 @@ namespace G2
 					  unsigned int format,
 					  bool compress,
 					  unsigned char * data);
+			/// Move ctor.
+			Texture3D(Texture3D && rhs);
+			/// Move ctor.
+			Texture3D& operator=(Texture3D && rhs);
 			/** normal destructor
 			 */
 			virtual ~Texture3D();
@@ -34,10 +39,10 @@ namespace G2
 
 			unsigned int	mMinFilter;		// The type of min filter, the texture uses
 			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
-			const unsigned	mWidth;			// The height of the Texture.
-			const unsigned	mHeight;		// The width of the Texture.
-			const unsigned	mDepth;			// The depth of the Texture.
-			const unsigned	mChannels;		// The number of channels of the Texture
+			unsigned		mWidth;			// The height of the Texture.
+			unsigned		mHeight;		// The width of the Texture.
+			unsigned		mDepth;			// The depth of the Texture.
+			unsigned		mChannels;		// The number of channels of the Texture
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture
 			bool			mCompressed;	// Indicates whether the Texture is compressed or not

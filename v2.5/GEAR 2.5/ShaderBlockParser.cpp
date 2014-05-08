@@ -8,6 +8,7 @@
 #include "IfElseMacro.h"
 #include "Logger.h"
 #include "FileResource.h"
+#include "ShaderMetaData.h"
 
 #include <sstream>
 #include <algorithm>
@@ -19,12 +20,14 @@ ShaderBlockParser::ShaderBlockParser(Effect::Builder* builder, FileResource* fil
 	: mBuilder(builder),
 	mFile(file),
 	mSettingsBlockParser(builder,file),
-	mPassesBlockParser(builder,file)
+	mPassesBlockParser(builder,file),
+	mLocationBindingBlockParser(file),
+	mPropertiesBlockParser(file)
 {
 }
 
 void
-ShaderBlockParser::parse() 
+ShaderBlockParser::parse(ShaderMetaData* shaderMetaData) 
 {
 	mCurrentState = WAITING_FOR_SHADER_CODE;
 
@@ -60,6 +63,8 @@ ShaderBlockParser::parse()
 			switch(mCurrentState) 
 			{
 				case READING_SETTINGS_BLOCK:
+				case READING_PROPERTIES_BLOCK:
+				case READING_LOCATIONBINDINGS_BLOCK:
 				case READING_PASSES_BLOCK:
 				case WAITING_FOR_SHADER_CODE:
 				{
@@ -77,6 +82,20 @@ ShaderBlockParser::parse()
 						--curvedBracketsOpened;
 						mPassesBlockParser.parse();
 					}
+					else if(macro == "LocationBindings") 
+					{
+						// only valid for pass block
+						mCurrentState = READING_LOCATIONBINDINGS_BLOCK;
+						--curvedBracketsOpened;
+						mLocationBindingBlockParser.parse();
+					}
+					else if(macro == "Properties") 
+					{
+						// only valid for pass block
+						mCurrentState = READING_PROPERTIES_BLOCK;
+						--curvedBracketsOpened;
+						mPropertiesBlockParser.parse(shaderMetaData);
+					}
 					else if(macro == "#VERTEXPROGRAM") 
 					{
 						mCurrentState = READING_VERTEX_SHADER;
@@ -85,7 +104,10 @@ ShaderBlockParser::parse()
 					{
 						mCurrentState = READING_FRAGMENT_SHADER;
 					}
-					if(mCurrentState != READING_PASSES_BLOCK && mCurrentState != READING_SETTINGS_BLOCK)
+					if( mCurrentState != READING_PASSES_BLOCK && 
+						mCurrentState != READING_SETTINGS_BLOCK && 
+						mCurrentState != READING_PROPERTIES_BLOCK && 
+						mCurrentState != READING_LOCATIONBINDINGS_BLOCK)
 					{
 						flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
 					}

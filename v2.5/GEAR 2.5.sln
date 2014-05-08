@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR 2.5", "GEAR 2.5\GEAR 2.5.vcxproj", "{2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR Physics", "GEAR Physics\GEAR Physics.vcxproj", "{77066F27-4DC7-4E07-9201-835D3374CC52}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27} = {2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

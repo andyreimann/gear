@@ -268,6 +268,15 @@
     <ClInclude Include="Pass.h">
       <Filter>Importer\Effect\UberShader\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="Setting.h">
+      <Filter>Importer\Effect\UberShader\BlockParser\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>RTT</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Buffer\FrameBuffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventDistributer.cpp">
@@ -506,6 +515,15 @@
     <ClCompile Include="Pass.cpp">
       <Filter>Importer\Effect\UberShader\Pass</Filter>
     </ClCompile>
+    <ClCompile Include="Setting.cpp">
+      <Filter>Importer\Effect\UberShader\BlockParser\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>RTT</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Buffer\FrameBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -687,6 +705,15 @@
     </Filter>
     <Filter Include="Importer\Effect\UberShader\Pass">
       <UniqueIdentifier>{b77c4e0a-46d0-46e7-b77b-6d16052d7fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RTT">
+      <UniqueIdentifier>{f699394c-e08e-406e-a48a-c5fb0859250c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer">
+      <UniqueIdentifier>{d6433920-db44-469f-9308-4d85472abe55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer\FrameBuffer">
+      <UniqueIdentifier>{f4223b94-60c4-40f6-8a06-e266f2c766f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

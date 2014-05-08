@@ -1,7 +1,9 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "Effect.h"
+#include "LocationBinding.h"
+
+#include <vector>
 
 namespace G2 
 {
@@ -16,12 +18,16 @@ namespace G2
 		public:
 			/** This constructs a new LocationBindingsBlockParser.
 			 */
-			LocationBindingsBlockParser(Effect::Builder* builder, FileResource* file);
+			LocationBindingsBlockParser(FileResource* file);
 			void parse();
+			/** This function will return the LocationBindings. 
+			* @return The current LocationBindings.
+			*/
+			std::vector<LocationBinding> const& getLocationBindings() const { return mLocationBindings; }
 		protected:
 		private:
 
-			Effect::Builder*	mBuilder;
-			FileResource*		mFile;
+			FileResource*					mFile;
+			std::vector<LocationBinding>	mLocationBindings;
 	};
 };

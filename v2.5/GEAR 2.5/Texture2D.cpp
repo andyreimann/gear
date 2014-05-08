@@ -38,6 +38,27 @@ Texture2D::Texture2D(unsigned int minFilter,
 	GLDEBUG( glBindTexture(GL_TEXTURE_2D, 0) );
 }
 
+Texture2D::Texture2D(Texture2D && rhs) 
+{
+	// eliminates redundant code
+	*this = std::move(rhs); // rvalue property is kept with std::move!
+}
+
+Texture2D& Texture2D::operator=(Texture2D && rhs) 
+{
+	mMinFilter = rhs.mMinFilter;
+	mMagFilter = rhs.mMagFilter;
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mChannels = rhs.mChannels;
+	mBytes = rhs.mBytes;
+	mTextureMatrix = std::move(rhs.mTextureMatrix);
+	mCompressed = rhs.mCompressed;
+	mUseMipMaps = rhs.mUseMipMaps;
+	
+	return static_cast<Texture2D&>(Texture::operator=(std::move(rhs)));
+}
+
 bool Texture2D::gInitialized = false;
 
 void

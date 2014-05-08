@@ -4,6 +4,7 @@
 #include "LocationBinding.h"
 #include "Property.h"
 #include "ShaderMetaData.h"
+#include "Pass.h"
 
 namespace G2 
 {
@@ -25,14 +26,9 @@ namespace G2
 	class Effect 
 	{
 		public:
-
 			struct Builder : public ResourceBuilder<Builder,Effect>
 			{
-
 				std::shared_ptr<Effect> buildResource();
-
-
-				
 
 				friend class UberShaderParser;
 				friend class UberShaderBlockParser;
@@ -66,26 +62,23 @@ namespace G2
 					 * @return The UberShader itself.
 					 */
 					Effect::Builder& buildAndCompile();
+
+					static bool compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
 			
-					ShadingLanguage::Name								shadingLanguage;		// The shading language to use.
-					std::vector<LocationBinding>						locationBindings;		// The available LocationBindings used by all Shader
+					ShadingLanguage::Name								shadingLanguage;	// The shading language to use.
+					std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 					std::vector<Property>								properties;			// The available Properties used by all Shader
 			
-					std::vector<std::shared_ptr<AbstractShaderPart>>	vertexShaderParts;		// The available parts of vertex shader code
-					std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;	// The available parts of fragment shader code
+					std::vector<std::shared_ptr<AbstractShaderPart>>	vertexShaderParts;	// The available parts of vertex shader code
+					std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;// The available parts of fragment shader code
 					std::vector<std::shared_ptr<Shader>>				shaderPermutations;	// The vector containing all available Shader-Permutations
 
-
+					
 					ShaderMetaData										metaData;	
 
+					std::vector<Pass::Builder>							passes;				// The vector containing all available Shader-Permutations
 
 			};
-			/// This constructs a new Effect.
-			Effect();
-			/// Copy constructor.
-			Effect(Effect const& rhs);
-			/// Basic assignment operator.
-			Effect& operator=(Effect const& rhs);
 			/** This function returns the state of the UberShader.
 			 * @return True if the UberShader has some compiled Shader, false if not.
 			 */
@@ -97,13 +90,16 @@ namespace G2
 			 * @return The Shader which fits best or a shared pointer pointing to nullptr,
 			 * if no Shader was found.
 			 */
-			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao);
-			/// normal destructor
-			~Effect();
+			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao) const;
+			/** This function will return the Passes. 
+			* @return The current Passes.
+			*/
+			std::vector<Pass> const& getPasses() const { return mPasses; }
 		protected:
 		private:
 
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
+			std::vector<Pass>						mPasses;				// The vector of passes for this Effect
 
 	};
 };

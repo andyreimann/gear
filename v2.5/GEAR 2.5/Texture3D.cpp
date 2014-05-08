@@ -37,6 +37,28 @@ Texture3D::Texture3D(unsigned int minFilter,
 	GLDEBUG( glBindTexture(GL_TEXTURE_3D, 0) );
 }
 
+Texture3D::Texture3D(Texture3D && rhs) 
+{
+	// eliminates redundant code
+	*this = std::move(rhs); // rvalue property is kept with std::move!
+}
+
+Texture3D& Texture3D::operator=(Texture3D && rhs) 
+{
+	mMinFilter = rhs.mMinFilter;
+	mMagFilter = rhs.mMagFilter;
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mDepth = rhs.mDepth;
+	mChannels = rhs.mChannels;
+	mBytes = rhs.mBytes;
+	mTextureMatrix = std::move(rhs.mTextureMatrix);
+	mCompressed = rhs.mCompressed;
+	mUseMipMaps = rhs.mUseMipMaps;
+	
+	return static_cast<Texture3D&>(Texture::operator=(std::move(rhs)));
+}
+
 Texture3D::~Texture3D() 
 {
 }

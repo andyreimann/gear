@@ -7,28 +7,8 @@
 
 using namespace G2;
 
-Effect::Effect() 
-{
-}
-
-Effect::Effect(Effect const& rhs) 
-{
-	// do copy here
-}
-
-Effect&
-Effect::operator=(Effect const& rhs) 
-{
-	// do assignment here
-	return *this;
-}
-
-Effect::~Effect() 
-{
-}
-
 std::shared_ptr<Shader>
-Effect::getShader(Material const& material, VertexArrayObject const& vao) 
+Effect::getShader(Material const& material, VertexArrayObject const& vao) const
 {
 	#undef max
 	int bestFitFailCount = std::numeric_limits<int>::max();
@@ -75,13 +55,20 @@ Effect::Builder::buildResource()
 
 	effect->mShaderPermutations = shaderPermutations;
 
+	for(int i = 0; i < passes.size(); ++i)
+	{
+		Pass::Builder const& passBuilder = passes[i];
+		if(passBuilder.renderTargetSampler != Sampler::SAMPLER_INVALID)
+		{
+			effect->mPasses.push_back(std::move(Pass(passBuilder.shaderPermutations, passBuilder.settings, passBuilder.renderTargetSampler)));
+		}
+	}
 	return effect;
 }
 
-
-
 Effect::Builder::Builder() 
-	: shadingLanguage(ShadingLanguage::UNKNOWN) {
+	: shadingLanguage(ShadingLanguage::UNKNOWN) 
+{
 }
 
 void
@@ -120,12 +107,19 @@ Effect::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShad
 	}
 }
 
-Effect::Builder&
-Effect::Builder::buildAndCompile() 
+void _compile(
+	ShadingLanguage::Name shadingLanguage,
+	std::vector<LocationBinding> const& locationBindings,
+	std::vector<Property> const& properties,
+	std::vector<std::shared_ptr<AbstractShaderPart>> const& vertexShaderParts,
+	std::vector<std::shared_ptr<AbstractShaderPart>> const& fragmentShaderParts,
+	ShaderMetaData const& shaderMetaData,
+	std::vector<std::shared_ptr<Shader>>& target
+	)
 {
 	if(shadingLanguage == ShadingLanguage::UNKNOWN)
 	{
-		return *this;
+		return;
 	}
 
 	// build shader headers
@@ -230,38 +224,75 @@ Effect::Builder::buildAndCompile()
 			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
 		}
 		
-		logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
-		logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
+		//logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
+		//logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
 		
 		if(shadingLanguage == ShadingLanguage::GLSL) {
 		
 			auto shader = std::shared_ptr<Shader>(new GlslShader());
-			if(shader->compile(vertexShaderCode,fragmentShaderCode))
+			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode,fragmentShaderCode, shaderMetaData, shader))
 			{
-				// preset samplers and uniforms
-				shader->initWithMetaData(metaData);
-
 				// attach a list of conditions
 				// to the shader, which are used for the decision making process
 				shader->setConditions(shaderConditions);
-				shaderPermutations.push_back(shader);
+				target.push_back(shader);
 			}
 		}
 		else if(shadingLanguage == ShadingLanguage::CG) {
 		
 			auto shader = std::shared_ptr<Shader>(new CgShader());
-			if(shader->compile(vertexShaderCode,fragmentShaderCode))
+			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode,fragmentShaderCode, shaderMetaData, shader))
 			{
-				// preset samplers and uniforms
-				shader->initWithMetaData(metaData);
-
 				// attach a list of conditions
 				// to the shader, which are used for the decision making process
 				shader->setConditions(shaderConditions);
-				shaderPermutations.push_back(shader);
+				target.push_back(shader);
 			}
 		}
 	}
-	logger << "[Effect::Builder] -> Compiled " << shaderPermutations.size() << " Shader" << endl;
+}
+
+bool
+Effect::Builder::compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
+{
+	bool compiled = shader->compile(vertexShaderCode,fragmentShaderCode);
+	if(compiled)
+	{
+		// preset samplers and uniforms
+		shader->initWithMetaData(shaderMetaData);
+	}
+	return compiled;
+}
+
+Effect::Builder&
+Effect::Builder::buildAndCompile() 
+{
+	// compile main shader
+	_compile(
+		shadingLanguage, 
+		locationBindings, 
+		properties, 
+		vertexShaderParts, 
+		fragmentShaderParts, 
+		metaData, 
+		shaderPermutations
+	);
+	
+	// compile all passes
+	for (int i = 0; i < passes.size() ; ++i) 
+	{
+		logger << "[Effect::Builder] Build Pass " << (i+1) << endl;
+		Pass::Builder& passBuilder = passes[i];
+		// compile one single pass
+		_compile(
+			shadingLanguage, 
+			passBuilder.locationBindings, 
+			passBuilder.properties, 
+			passBuilder.vertexShaderParts, 
+			passBuilder.fragmentShaderParts, 
+			passBuilder.metaData, 
+			passBuilder.shaderPermutations
+		);
+	}
 	return *this;
 }

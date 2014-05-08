@@ -11,10 +11,16 @@ namespace G2
 	 */
 	class Texture 
 	{
+		friend class FrameBuffer;
+		friend class RenderTarget;
 		public:
 			/** This constructs a new Texture.
 			 */
 			Texture(int type);
+			/// Move ctor.
+			Texture(Texture && rhs);
+			/// Move ctor.
+			Texture& operator=(Texture && rhs);
 			
 			/** This function binds the Texture into a specific Texture slot.
 			 * @param textureSlot The TextureSlot to bind the Texture to. 
@@ -33,6 +39,7 @@ namespace G2
 			 */
 			virtual ~Texture() = 0;
 		protected:
+			Texture() {}
 
 			static GLuint numChannelsFromFormat( GLuint dstFormat );
 			static GLuint convertFormat( GLuint baseFormat, bool compress );

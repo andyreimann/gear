@@ -16,6 +16,7 @@ namespace G2
 	class LightComponent;
 	class Material;
 	class Shader;
+	class Pass;
 	/** This class defines the whole render pipeline of the GEAR engine.
 	 * It render all registered RenderComponents with their settings.
 	 * The rendering takes place in the 'render' phase.
@@ -36,11 +37,14 @@ namespace G2
 			void setDefaultEffect(std::shared_ptr<G2::Effect> const& value) { defaultEffect = value; }
 
 		private:
+
+			void render(CameraComponent* camera, RenderComponent* component, std::shared_ptr<Shader>& boundShader);
 			
 			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera);
 			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera, int index);
 			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
+			std::shared_ptr<Shader> getPassRenderShader(RenderComponent* component, Pass const* pass) const;
 
 			std::shared_ptr<G2::Effect>						defaultEffect;		// The default UberShader to use for rendering
 	};

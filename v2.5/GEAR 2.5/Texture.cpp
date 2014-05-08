@@ -10,6 +10,24 @@ Texture::Texture(int type)
 	mType(type)
 {}
 
+Texture::Texture(Texture && rhs) 
+{
+	// eliminates redundant code
+	*this = std::move(rhs); // rvalue property is kept with std::move!
+}
+
+Texture& Texture::operator=(Texture && rhs)
+{
+	// 1. Stage: delete maybe allocated resources on target type
+	// nothing here
+	// 2. Stage: transfer data from src to target
+	mId = rhs.mId;
+	mType = rhs.mType;
+	// 3. Stage: modify src to a well defined state
+	rhs.mId = GL_INVALID_VALUE;
+
+	return *this;
+}
 
 Texture::~Texture() 
 {
