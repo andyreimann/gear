@@ -1,10 +1,30 @@
 #pragma once
-#include "Texture2D.h"
 #include "FrameBuffer.h"
 #include "Sampler.h"
+#include "Setting.h"
+
+#include <memory>
+#include <unordered_map>
+
 
 namespace G2 
 {
+	class Texture;
+	namespace RenderTargetType
+	{
+		enum Name {
+			RT_1D,
+			RT_2D,
+			RT_CUBE,
+			RT_INVALID,
+		};
+		/** This function will parse the given string to the appropriate
+		 * RenderTargetType enum value.
+		 * @param name The name to parse.
+		 * @return The parsed RenderTargetType enum value.
+		 */
+		RenderTargetType::Name getRenderTargetType(std::string const& name);
+	};
 	/// This class holds the data used for a RenderTarget.
 	/// RenderTargets can be used for rendering to them.
 	/// @created:	2014/05/07
@@ -14,14 +34,21 @@ namespace G2
 		friend class Pass;
 		public:
 			/// This constructs a new RenderTarget with the given with and height
-			RenderTarget(Sampler::Name targetSampler, unsigned width, unsigned height);
+			RenderTarget(
+				Sampler::Name targetSampler, 
+				std::shared_ptr<Texture> const& renderTexture, 
+				RenderTargetType::Name renderTargetType, 
+				std::unordered_map<std::string,Setting>& settings = std::unordered_map<std::string,Setting>()
+			);
 			
 			/// Move ctor.
 			RenderTarget(RenderTarget && rhs);
 			/// Move ctor.
 			RenderTarget& operator=(RenderTarget && rhs);
 			/// Binds the RenderTarget to  be able to render to it.
-			void bind() const;
+			/// @param renderIterationIndex The index describing in which iteration (-1) the 
+			/// RenderTarget is currently used (e.g. cube map renderings need 6 iterations).
+			void bind(int renderIterationIndex) const;
 			/// Unbinds the RenderTarget to disable rendering to it.
 			void unbind() const;
 			/// This function will return the RenderTextureSampler. 
@@ -29,12 +56,14 @@ namespace G2
 			Sampler::Name const& getRenderTextureSampler() const { return mRenderTextureSampler; }
 			///  This function will return the RenderTexture. 
 			/// @return The current RenderTexture.
-			G2::Texture2D const& getRenderTexture() const { return mRenderTexture; }
+			std::shared_ptr<Texture> const& getRenderTexture() const { return mRenderTexture; }
 		private:
 			RenderTarget() {}
 
-			Sampler::Name mRenderTextureSampler;	// The sampler, the RenderTexture should be bound to
-			Texture2D mRenderTexture;				// The texture to render to
-			FrameBuffer mFrameBuffer;				// The framebuffer, the render texture is attached to
+			Sampler::Name				mRenderTextureSampler;	// The sampler, the RenderTexture should be bound to
+			std::shared_ptr<Texture>	mRenderTexture;			// The texture to render to
+			RenderTargetType::Name		mRenderTargetType;		// The type of render target
+			FrameBuffer					mFrameBuffer;			// The framebuffer, the render texture is attached to
+			BufferAttachment::Name		mRenderTargetAttachmentPoint; // The attachment point, the Texture is attached to the FrameBuffer
 	};
 };

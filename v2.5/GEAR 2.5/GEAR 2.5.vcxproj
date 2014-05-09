@@ -318,6 +318,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Texture3D.h" />
     <ClInclude Include="TextureCache.h" />
+    <ClInclude Include="TextureCube.h" />
     <ClInclude Include="TextureImporter.h" />
     <ClInclude Include="TimeTracker.h" />
     <ClInclude Include="timevalue_linux.h" />
@@ -404,6 +405,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="TextureCache.cpp" />
+    <ClCompile Include="TextureCube.cpp" />
     <ClCompile Include="TextureImporter.cpp" />
     <ClCompile Include="TimeTracker.cpp" />
     <ClCompile Include="timevalue_linux.cpp" />

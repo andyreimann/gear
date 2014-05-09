@@ -3,14 +3,13 @@
 #pragma once
 #include "BaseSystem.h"
 
-
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace G2 
 {
 	class RenderComponent;
-	class CameraComponent;
 	class Effect;
 	class TransformComponent;
 	class LightComponent;
@@ -38,10 +37,10 @@ namespace G2
 
 		private:
 
-			void render(CameraComponent* camera, RenderComponent* component, std::shared_ptr<Shader>& boundShader);
+			void render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, RenderComponent* component, std::shared_ptr<Shader>& boundShader);
 			
-			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera);
-			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera, int index);
+			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix);
+			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
 			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
 			std::shared_ptr<Shader> getPassRenderShader(RenderComponent* component, Pass const* pass) const;

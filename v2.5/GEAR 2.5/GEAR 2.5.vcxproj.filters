@@ -277,6 +277,9 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Buffer\FrameBuffer</Filter>
     </ClInclude>
+    <ClInclude Include="TextureCube.h">
+      <Filter>Texture\Cube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventDistributer.cpp">
@@ -524,6 +527,9 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>Buffer\FrameBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="TextureCube.cpp">
+      <Filter>Texture\Cube</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -714,6 +720,9 @@
     </Filter>
     <Filter Include="Buffer\FrameBuffer">
       <UniqueIdentifier>{f4223b94-60c4-40f6-8a06-e266f2c766f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture\Cube">
+      <UniqueIdentifier>{9e6e39b4-e37a-47f1-ad6d-da50e2f594ef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

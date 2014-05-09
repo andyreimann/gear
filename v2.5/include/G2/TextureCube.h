@@ -1,5 +1,3 @@
-// GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
-// (c) 2014 GEAR 2.5
 #pragma once
 #include "Texture.h"
 
@@ -7,28 +5,25 @@
 
 namespace G2 
 {
-	/** This class defines...
-	 * @created:	2014/02/12
-	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
-	 */
-	class Texture3D : public Texture
+	/// This class defines...
+	/// @created:	2014/05/09
+	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
+	class TextureCube : public Texture
 	{
-		friend class RenderTarget;
 		public:
-			/** This constructs a new Texture3D.
+			/** This constructs a new Texture2D from the given data.
 			 */
-			Texture3D(unsigned int minFilter, 
-					  unsigned int magFilter, 
-					  unsigned int width,
-					  unsigned int height,
-					  unsigned int depth,
-					  unsigned int format,
-					  bool compress,
-					  unsigned char * data);
+			TextureCube(unsigned int minFilter, 
+						unsigned int magFilter, 
+						unsigned int width,
+						unsigned int height,
+						unsigned int format,
+						bool compress,
+						unsigned char * data = nullptr);
 			/// Move ctor.
-			Texture3D(Texture3D && rhs);
+			TextureCube(TextureCube && rhs);
 			/// Move ctor.
-			Texture3D& operator=(Texture3D && rhs);
+			TextureCube& operator=(TextureCube && rhs);
 			/** Returns the width of the Texture
 			 * @return The width of the Texture
 			 */
@@ -40,20 +35,17 @@ namespace G2
 			/** Returns the depth of the Texture
 			 * @return The depth of the Texture
 			 */
-			virtual unsigned getDepth() { return mDepth; }
-			/** normal destructor
-			 */
-			virtual ~Texture3D();
+			virtual unsigned getDepth() { return 1; }
 		private:
-
-			static bool		gInitialized;
+			TextureCube() {}
 			static void		init();
+			
+			static bool		gInitialized;
 
 			unsigned int	mMinFilter;		// The type of min filter, the texture uses
 			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
-			unsigned		mDepth;			// The depth of the Texture.
 			unsigned		mChannels;		// The number of channels of the Texture
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture

@@ -18,10 +18,20 @@
 #include "Logger.h"
 
 #include <iostream>
+#include <glm/ext.hpp>
 
 using namespace G2;
 
 #define M_PI 3.14159265358979323846
+
+const glm::mat4 CubeMapFaceCameraRotations[6] = {
+	/* G2::CUBE_MAP_POS_X */ glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
+	/* G2::CUBE_MAP_NEG_X */ glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
+	/* G2::CUBE_MAP_POS_Y */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_NEG_Y */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_POS_Z */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_NEG_Z */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f))))
+};
 
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
@@ -42,29 +52,36 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
 				{
-					it->getRenderTarget().bind();
-					// TODO get right Camera object and update it
-					//bool cameraUpdated = camera->updateModelView();
-					for (int k = 0; k < components.size() ; ++k) 
+					// TODO get right projectionMatrix
+					glm::mat4 passProjectionMatrix = camera->getProjectionMatrix();
+
+					for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
 					{
-						RenderComponent& innerComp = components[k];
-			
-						if(innerComp.vaos.size() == 0)
+						it->getRenderTarget().bind(renderIter);
+						// TODO get right cameraSpaceMatrix for current render iteration of pass
+						glm::mat4 passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
+
+						for (int k = 0; k < components.size() ; ++k) 
 						{
-							// no VAO attached
-							continue;
-						}
+							RenderComponent& innerComp = components[k];
+			
+							if(innerComp.vaos.size() == 0)
+							{
+								// no VAO attached
+								continue;
+							}
 						
-						std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
-						// bind shader before cann render()
-						passShader->bind();
-						// pass rendering
-						render(camera, &innerComp, passShader);
+							std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
+							// bind shader before cann render()
+							passShader->bind();
+							// pass rendering
+							render(passProjectionMatrix, passCameraSpaceMatrix, &innerComp, passShader);
+						}
+						//logger << "Rendered " << components.size() << " components to rendertarget" << endl;
+						it->getRenderTarget().unbind();
 					}
-					//logger << "Rendered " << components.size() << " components to rendertarget" << endl;
-					it->getRenderTarget().unbind();
 					// bind result of pass
-					it->getRenderTarget().getRenderTexture().bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
+					it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
 				}
 			}
 			
@@ -80,17 +97,17 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			// bind shader before cann render()
 			shader->bind();
 			// regular rendering
-			render(camera, &comp, shader);
+			render(camera->getProjectionMatrix(), camera->getCameraSpaceMatrix(), &comp, shader);
 		}
 	}
 }
 
 void
-RenderSystem::render(CameraComponent* camera, RenderComponent* component, std::shared_ptr<Shader>& boundShader)
+RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, RenderComponent* component, std::shared_ptr<Shader>& boundShader)
 {
 	// Upload Matrices
 	auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(component->getEntityId());
-	uploadMatrices(boundShader, transformation, camera);
+	uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix);
 
 	// Upload Lights
 	LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
@@ -103,7 +120,7 @@ RenderSystem::render(CameraComponent* camera, RenderComponent* component, std::s
 		{
 			continue;
 		}
-		uploadLight(boundShader, &lightComponent, camera, numActive++);
+		uploadLight(boundShader, &lightComponent, cameraSpaceMatrix, numActive++);
 	}
 	boundShader->setProperty(Property("G2ActiveLights"), numActive);
 
@@ -131,17 +148,17 @@ RenderSystem::render(CameraComponent* camera, RenderComponent* component, std::s
 
 
 void
-RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, CameraComponent* camera) 
+RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix) 
 {
 
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
-	shader->setProperty(Property("matrices.projection_matrix"), camera->getProjectionMatrix());
+	shader->setProperty(Property("matrices.projection_matrix"), projectionMatrix);
 	// TEMP END
 	if(transformation != nullptr) 
 	{
-		glm::mat4 mv = camera->getCameraSpaceMatrix() * transformation->getWorldSpaceMatrix();
+		glm::mat4 mv = cameraSpaceMatrix * transformation->getWorldSpaceMatrix();
 		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
-		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
+		shader->setProperty(Property("matrices.view_matrix"), cameraSpaceMatrix);
 		shader->setProperty(Property("matrices.modelview_matrix"), mv);
 		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
 		{
@@ -156,24 +173,24 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 	else 
 	{
 		shader->setProperty(Property("matrices.model_matrix"), glm::mat4());
-		shader->setProperty(Property("matrices.view_matrix"), camera->getCameraSpaceMatrix());
-		shader->setProperty(Property("matrices.modelview_matrix"), camera->getCameraSpaceMatrix());
-		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(camera->getCameraSpaceMatrix()));
+		shader->setProperty(Property("matrices.view_matrix"), cameraSpaceMatrix);
+		shader->setProperty(Property("matrices.modelview_matrix"), cameraSpaceMatrix);
+		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(cameraSpaceMatrix));
 	}
 }
 
 void
-RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, CameraComponent* camera, int index) 
+RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index) 
 {
 	glm::vec4 lightPos;
 	glm::vec3 lightDir;
 	if(light->getType() != LightType::DIRECTIONAL)
 	{
-		lightPos = camera->getCameraSpaceMatrix() * light->getTransformedPosition();
+		lightPos = cameraSpaceMatrix * light->getTransformedPosition();
 	}
 	if(light->getType() != LightType::POSITIONAL)
 	{
-		lightDir = glm::normalize(glm::mat3(camera->getCameraSpaceMatrix()) * light->getTransformedDirection());
+		lightDir = glm::normalize(glm::mat3(cameraSpaceMatrix) * light->getTransformedDirection());
 	}
 
 	std::stringstream baseStr;

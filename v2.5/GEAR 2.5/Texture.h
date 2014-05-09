@@ -34,10 +34,24 @@ namespace G2
 			 * Valid Slots are GEAR2::TEX_SLOT1, GEAR2::TEX_SLOT2, GEAR2::TEX_SLOT3, GEAR2::TEX_SLOT4, GEAR2::TEX_SLOT5, GEAR2::TEX_SLOT6, GEAR2::TEX_SLOT7, GEAR2::TEX_SLOT8
 			 */
 			void unbind( unsigned textureSlot ) const;
+			/** Returns the width of the Texture
+			 * @return The width of the Texture
+			 */
+			virtual unsigned getWidth() = 0;
+			/** Returns the height of the Texture
+			 * @return The height of the Texture
+			 */
+			virtual unsigned getHeight() = 0;
+			/** Returns the depth of the Texture
+			 * @return The depth of the Texture
+			 */
+			virtual unsigned getDepth() = 0;
 
 			/** normal destructor
 			 */
 			virtual ~Texture() = 0;
+
+			static unsigned getFormatByString(std::string const& format);
 		protected:
 			Texture() {}
 

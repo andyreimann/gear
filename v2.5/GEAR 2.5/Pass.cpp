@@ -1,16 +1,48 @@
 #include "Pass.h"
 #include "AbstractShaderPart.h"
 #include "Shader.h"
+#include "Texture2D.h"
+#include "TextureCube.h"
 
 using namespace G2;
 
-Pass::Pass(std::vector<std::shared_ptr<Shader>> const& shaderPermutations, std::unordered_map<std::string,Setting> const& settings, Sampler::Name renderTargetSampler) 
+Pass::Pass(
+	std::vector<std::shared_ptr<Shader>> const& shaderPermutations, 
+	std::unordered_map<std::string,Setting> const& settings, 
+	Sampler::Name renderTargetSampler,
+	RenderTargetType::Name renderTargetType) 
 	: mSettings(settings),
 	mShaderPermutations(shaderPermutations),
 	mRenderTarget(renderTargetSampler,
-				  (unsigned)Pass::get("Width", mSettings, "512").toInt(),
-				  (unsigned)Pass::get("Height", mSettings, "512").toInt())
+				// TODO implement case RT_1D here as well!
+				  renderTargetType == RenderTargetType::RT_2D ?
+				  std::shared_ptr<Texture>(new Texture2D(
+						NEAREST, 
+						NEAREST, 
+						(unsigned)Setting::get("Width", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("Height", mSettings, "512").toInt(), 
+						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+						false)) : (
+				  std::shared_ptr<Texture>(new TextureCube(
+						NEAREST, 
+						NEAREST, 
+						(unsigned)Setting::get("Width", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("Height", mSettings, "512").toInt(), 
+						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+						false))
+				),
+				renderTargetType,
+				mSettings),
+	mPov(PointOfView::getPointOfView(Setting::get("PointOfView", mSettings, "MAIN_CAMERA").value))
 {
+	if(renderTargetType == RenderTargetType::RT_CUBE)
+	{
+		mNumRenderIterations = 6;
+	}
+	else
+	{
+		mNumRenderIterations = 1;
+	}
 }
 
 Pass::Pass(Pass && rhs)
@@ -27,8 +59,11 @@ Pass& Pass::operator=(Pass && rhs)
 	mSettings = std::move(rhs.mSettings);
 	mShaderPermutations = std::move(rhs.mShaderPermutations);
 	mRenderTarget = std::move(rhs.mRenderTarget);
+	mNumRenderIterations = rhs.mNumRenderIterations;
+	mPov = rhs.mPov;
 	// 3. Stage: modify src to a well defined state
-
+	rhs.mNumRenderIterations = 0;
+	rhs.mPov = PointOfView::POV_INVALID;
 	return *this;
 }
 
@@ -84,14 +119,16 @@ Pass::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShader
 	}
 }
 
-Setting const&
-Pass::get(std::string const& name, std::unordered_map<std::string,Setting>& settings, std::string const& defaultValue /*= ""*/) 
+PointOfView::Name
+PointOfView::getPointOfView(std::string const& name) 
 {
-	auto it = settings.find(name);
-	if(it != settings.end())
+	if(name == "MAIN_CAMERA") 
 	{
-		return it->second;
+		return MAIN_CAMERA;
 	}
-	settings[name] = Setting(name, defaultValue);
-	return settings[name];
+	else if(name == "LOCAL") 
+	{
+		return LOCAL;
+	}
+	return POV_INVALID;
 }

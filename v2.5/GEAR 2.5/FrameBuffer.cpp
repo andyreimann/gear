@@ -1,5 +1,6 @@
 #include "FrameBuffer.h"
 #include "Logger.h"
+#include "Texture.h"
 
 using namespace G2;
 
@@ -40,9 +41,12 @@ FrameBuffer& FrameBuffer::operator=(FrameBuffer && rhs)
 	// 2. Stage: transfer data from src to target
 	mId = std::move(rhs.mId);
 	mDepthBufferId = std::move(rhs.mDepthBufferId);
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
 	// 3. Stage: modify src to a well defined state
 	rhs.mId = GL_INVALID_VALUE;
 	rhs.mDepthBufferId = GL_INVALID_VALUE;
+	rhs.mWidth = rhs.mHeight = 0;
 	return *this;
 }
 
@@ -68,29 +72,29 @@ FrameBuffer::unbind() const
 }
 
 void
-FrameBuffer::attachTexture(Texture const& tex, BufferAttachment::Name attachment /*= BufferAttachment::COLOR_0*/, int mipLevel /*= 0 */) 
+FrameBuffer::attachTexture(std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment /*= BufferAttachment::COLOR_0*/, int texTarget, int mipLevel /*= 0 */) const
 {
 	bind();
 
-	if(tex.mType == GL_TEXTURE_1D)
+	if(tex->mType == GL_TEXTURE_1D)
 	{
-		GLDEBUG( glFramebufferTexture1D( GL_FRAMEBUFFER, attachment,  tex.mType, tex.mId, mipLevel ) );
+		GLDEBUG( glFramebufferTexture1D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel ) );
 	}
-	else if(tex.mType == GL_TEXTURE_3D)
+	else if(tex->mType == GL_TEXTURE_3D)
 	{
 		int zSlice = 0;
-		GLDEBUG( glFramebufferTexture3D( GL_FRAMEBUFFER, attachment,  tex.mType, tex.mId, mipLevel, zSlice ) );
+		GLDEBUG( glFramebufferTexture3D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel, zSlice ) );
 	}
 	else
 	{
 		// Default is GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE_ARB, or cube faces
-		GLDEBUG( glFramebufferTexture2D( GL_FRAMEBUFFER, attachment,  tex.mType, tex.mId, mipLevel ) );
+		GLDEBUG( glFramebufferTexture2D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel ) );
 	}
 	check();
 }
 
 bool
-FrameBuffer::check() 
+FrameBuffer::check() const
 {
 	GLDEBUG( unsigned status = glCheckFramebufferStatus(GL_FRAMEBUFFER) );
 	if( GL_FRAMEBUFFER_COMPLETE != status) {
@@ -131,3 +135,78 @@ FrameBuffer::check()
 	}
 	return true;
 }
+
+BufferAttachment::Name
+BufferAttachment::getByOutputFormat(std::string const& outputFormat) 
+{
+	if(outputFormat == "RGB") 
+	{
+		return COLOR_0;
+	}
+	else if(outputFormat == "RGBA") 
+	{
+		return COLOR_0;
+	}
+	else if(outputFormat == "DEPTH") 
+	{
+		return DEPTH;
+	}
+	else if(outputFormat == "STENCIL") 
+	{
+		return STENCIL;
+	}
+
+	
+	if(outputFormat == "RGB") { return COLOR_0; }
+	if(outputFormat == "RGB_UB") { return COLOR_0; }
+	if(outputFormat == "RGB_US") { return COLOR_0; }
+	if(outputFormat == "RGBA") { return COLOR_0; }
+	if(outputFormat == "RGBA_UB") { return COLOR_0; }
+	if(outputFormat == "RGBA_US") { return COLOR_0; }
+	if(outputFormat == "RGBA16_F") { return COLOR_0; }
+	if(outputFormat == "RGBA_F") { return COLOR_0; }
+	if(outputFormat == "RGBA_B") { return COLOR_0; }
+	if(outputFormat == "RGBA_S") { return COLOR_0; }
+	if(outputFormat == "RGBA_I") { return COLOR_0; }
+	if(outputFormat == "RGBA_UI") { return COLOR_0; }
+	if(outputFormat == "ALPHA_UB") { return COLOR_0; }
+	if(outputFormat == "ALPHA_US") { return COLOR_0; }
+	if(outputFormat == "ALPHA16_F") { return COLOR_0; }
+	if(outputFormat == "ALPHA_B") { return COLOR_0; }
+	if(outputFormat == "ALPHA_S") { return COLOR_0; }
+	if(outputFormat == "ALPHA_I") { return COLOR_0; }
+	if(outputFormat == "ALPHA_UI") { return COLOR_0; }
+	if(outputFormat == "DEPTH") { return DEPTH; }
+	if(outputFormat == "DEPTH16") { return DEPTH; }
+	if(outputFormat == "DEPTH24") { return DEPTH; }
+	if(outputFormat == "DEPTH32") { return DEPTH; }
+	if(outputFormat == "LUMINANCE") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_UB") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_US") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA16_F") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_F") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_B") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_S") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_I") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_ALPHA_UI") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_UB") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_US") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE16_F") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_F") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_B") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_S") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_I") { return COLOR_0; }
+	if(outputFormat == "LUMINANCE_UI") { return COLOR_0; }
+	if(outputFormat == "INTENSITY") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_UB") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_US") { return COLOR_0; }
+	if(outputFormat == "INTENSITY16_F") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_F") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_B") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_S") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_I") { return COLOR_0; }
+	if(outputFormat == "INTENSITY_UI") { return COLOR_0; }
+
+	return ATTACHMENT_INVALID;
+}
+

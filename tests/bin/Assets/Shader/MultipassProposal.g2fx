@@ -22,50 +22,12 @@ Ubershader "GEAR/Multipass" {
               // every time the pass should be rendered, a lightweight test has to be passed -> is the currently created FBO-RBO fitting 
               // the texture assigned to sampler DIFFUSE?
               RenderTarget _diffuseTex
-              // ... more Settings will follow
-           }
-
-           #VERTEXPROGRAM
-             #INCLUDE "G2.matrices"
-       
-             out Data
-             {
-                vec2 texCoord;
-             } dataOut; 
-       
-             void main(void) 
-             {
-                  dataOut.texCoord = inTexCoord;
-                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
-             }
-           #FRAGMENTPROGRAM
-
-              in Data
-              {
-                 vec2 texCoord;
-              } dataIn; // this data comes from the vertex program
-
-              out vec4 outColor; // here goes the final color
-         
-              void main() 
-              {
-                outColor = texture(_diffuseTex, dataIn.texCoord);
-              }
-        }
-        Pass {
-           LocationBindings {
-             inPosition ("Vertex Position", vec4) = { POSITION }
-             inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
-           }
-           Properties {
-               _diffuseTex ("The diffuse texture", sampler2D) = { NORMAL } // define a uniform sampler on the diffuse channel
-           }
-           Settings {
-              Name "TestPass2"
-              // this will end in a FBO-RBO created for the texture assigned to the sampler DIFFUSE
-              // every time the pass should be rendered, a lightweight test has to be passed -> is the currently created FBO-RBO fitting 
-              // the texture assigned to sampler DIFFUSE?
-              RenderTarget _diffuseTex
+              // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
+              OutputFormat DEPTH
+              // Define the point of view to use while rendering: 
+              // MAIN_CAMERA takes the cameras POV
+              // LOCAL takes the local TransformComponent/LightComponent into account
+              PointOfView LOCAL
               // ... more Settings will follow
            }
 

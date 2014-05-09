@@ -18,27 +18,27 @@
 	#define G2_PLATFORM_WIN32
 	#define G2_PLATFORM_WIN
 #elif __APPLE__
-    #include "TargetConditionals.h"
-    #if TARGET_OS_IPHONE    
-         #define G2_PLATFORM_APPLE
-         #define G2_PLATFORM_IOS
-         #define G2_PLATFORM_IOS_DEVICE
-    #elif TARGET_IPHONE_SIMULATOR
-         #define G2_PLATFORM_APPLE
-         #define G2_PLATFORM_IOS
-         #define G2_PLATFORM_IOS_SIMULATOR
-    #elif TARGET_OS_MAC
-         #define G2_PLATFORM_APPLE
-         #define G2_PLATFORM_MAC
-    #else
-         #define G2_PLATFORM_UNSUPPORTED
-    #endif
+	#include "TargetConditionals.h"
+	#if TARGET_OS_IPHONE    
+		 #define G2_PLATFORM_APPLE
+		 #define G2_PLATFORM_IOS
+		 #define G2_PLATFORM_IOS_DEVICE
+	#elif TARGET_IPHONE_SIMULATOR
+		 #define G2_PLATFORM_APPLE
+		 #define G2_PLATFORM_IOS
+		 #define G2_PLATFORM_IOS_SIMULATOR
+	#elif TARGET_OS_MAC
+		 #define G2_PLATFORM_APPLE
+		 #define G2_PLATFORM_MAC
+	#else
+		 #define G2_PLATFORM_UNSUPPORTED
+	#endif
 #elif __linux
-    #define G2_PLATFORM_UNIX
+	#define G2_PLATFORM_UNIX
 #elif __unix // all unixes not caught above
-    #define G2_PLATFORM_UNIX
+	#define G2_PLATFORM_UNIX
 #elif __posix
-    #define G2_PLATFORM_POSIX
+	#define G2_PLATFORM_POSIX
 #endif
 // PLATFORM DETECTION END ///////////////////////////////////////////////////////////
 
@@ -63,11 +63,11 @@
 #define GLDEBUG(x) \
 x; \
 { \
-    GLenum e = glGetError(); \
-    if( e != GL_NO_ERROR) \
+	GLenum e = glGetError(); \
+	if( e != GL_NO_ERROR) \
 	{ \
 		std::cout << "Error at line number " << __LINE__ << ", in file " << __FILE__ << ". glGetError() returned " << gluErrorString(e) << " for call " << #x << "\n"; \
-    } \
+	} \
 }
 
 #include <assert.h>
@@ -264,4 +264,12 @@ namespace G2
 	const int TEX_SLOT30_SAMPLER = 29; //!< This is the global sampler variable for the slot number 30. It is not secure that your machine really support as many textures as this slot stands for. Please check the maximum number of available slots using the static function getMaxSupportedTextures of the TextureManager.
 	const int TEX_SLOT31_SAMPLER = 30; //!< This is the global sampler variable for the slot number 31. It is not secure that your machine really support as many textures as this slot stands for. Please check the maximum number of available slots using the static function getMaxSupportedTextures of the TextureManager.
 	const int TEX_SLOT32_SAMPLER = 31; //!< This is the global sampler variable for the slot number 32. It is not secure that your machine really support as many textures as this slot stands for. Please check the maximum number of available slots using the static function getMaxSupportedTextures of the TextureManager.
+	
+	const int CUBE_MAP_POS_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+	const int CUBE_MAP_NEG_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+	const int CUBE_MAP_POS_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+	const int CUBE_MAP_NEG_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+	const int CUBE_MAP_POS_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+	const int CUBE_MAP_NEG_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+	
 }; 

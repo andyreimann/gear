@@ -72,6 +72,7 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == ALPHA_S || 
 		dstFormat == ALPHA_I || 
 		dstFormat == ALPHA_UI || 
+		dstFormat == LUMINANCE || 
 		dstFormat == LUMINANCE_UB || 
 		dstFormat == LUMINANCE_US || 
 		dstFormat == LUMINANCE16_F || 
@@ -80,6 +81,10 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == LUMINANCE_S || 
 		dstFormat == LUMINANCE_I || 
 		dstFormat == LUMINANCE_UI ||
+		dstFormat == DEPTH || 
+		dstFormat == DEPTH16 || 
+		dstFormat == DEPTH24 || 
+		dstFormat == DEPTH32 || 
 		dstFormat == INTENSITY_UB || 
 		dstFormat == INTENSITY_US || 
 		dstFormat == INTENSITY16_F || 
@@ -190,4 +195,63 @@ Texture::baseFormatToCompressedFormat( unsigned baseFormat, bool compress )
 			return baseFormat;
 			break;
 	}
+}
+
+unsigned
+Texture::getFormatByString(std::string const& format) 
+{
+	if(format == "RGB") { return RGB; }
+	if(format == "RGB_UB") { return RGB_UB; }
+	if(format == "RGB_US") { return RGB_US; }
+	if(format == "RGBA") { return RGBA; }
+	if(format == "RGBA_UB") { return RGBA_UB; }
+	if(format == "RGBA_US") { return RGBA_US; }
+	if(format == "RGBA16_F") { return RGBA16_F; }
+	if(format == "RGBA_F") { return RGBA_F; }
+	if(format == "RGBA_B") { return RGBA_B; }
+	if(format == "RGBA_S") { return RGBA_S; }
+	if(format == "RGBA_I") { return RGBA_I; }
+	if(format == "RGBA_UI") { return RGBA_UI; }
+	if(format == "ALPHA_UB") { return ALPHA_UB; }
+	if(format == "ALPHA_US") { return ALPHA_US; }
+	if(format == "ALPHA16_F") { return ALPHA16_F; }
+	if(format == "ALPHA_B") { return ALPHA_B; }
+	if(format == "ALPHA_S") { return ALPHA_S; }
+	if(format == "ALPHA_I") { return ALPHA_I; }
+	if(format == "ALPHA_UI") { return ALPHA_UI; }
+	if(format == "LUMINANCE") { return LUMINANCE; }
+	if(format == "DEPTH") { return DEPTH; }
+	if(format == "DEPTH16") { return DEPTH16; }
+	if(format == "DEPTH24") { return DEPTH24; }
+	if(format == "DEPTH32") { return DEPTH32; }
+	if(format == "LUMINANCE_ALPHA_UB") { return LUMINANCE_ALPHA_UB; }
+	if(format == "LUMINANCE_ALPHA_US") { return LUMINANCE_ALPHA_US; }
+	if(format == "LUMINANCE_ALPHA16_F") { return LUMINANCE_ALPHA16_F; }
+	if(format == "LUMINANCE_ALPHA_F") { return LUMINANCE_ALPHA_F; }
+	if(format == "LUMINANCE_ALPHA_B") { return LUMINANCE_ALPHA_B; }
+	if(format == "LUMINANCE_ALPHA_S") { return LUMINANCE_ALPHA_S; }
+	if(format == "LUMINANCE_ALPHA_I") { return LUMINANCE_ALPHA_I; }
+	if(format == "LUMINANCE_ALPHA_UI") { return LUMINANCE_ALPHA_UI; }
+	if(format == "LUMINANCE_UB") { return LUMINANCE_UB; }
+	if(format == "LUMINANCE_US") { return LUMINANCE_US; }
+	if(format == "LUMINANCE16_F") { return LUMINANCE16_F; }
+	if(format == "LUMINANCE_F") { return LUMINANCE_F; }
+	if(format == "LUMINANCE_B") { return LUMINANCE_B; }
+	if(format == "LUMINANCE_S") { return LUMINANCE_S; }
+	if(format == "LUMINANCE_I") { return LUMINANCE_I; }
+	if(format == "LUMINANCE_UI") { return LUMINANCE_UI; }
+	if(format == "INTENSITY") { return INTENSITY; }
+	if(format == "INTENSITY_UB") { return INTENSITY_UB; }
+	if(format == "INTENSITY_US") { return INTENSITY_US; }
+	if(format == "INTENSITY16_F") { return INTENSITY16_F; }
+	if(format == "INTENSITY_F") { return INTENSITY_F; }
+	if(format == "INTENSITY_B") { return INTENSITY_B; }
+	if(format == "INTENSITY_S") { return INTENSITY_S; }
+	if(format == "INTENSITY_I") { return INTENSITY_I; }
+	if(format == "INTENSITY_UI") { return INTENSITY_UI; }
+	if(format == "DEPTH") { return DEPTH; }
+	if(format == "DEPTH16") { return DEPTH16; }
+	if(format == "DEPTH24") { return DEPTH24; }
+	if(format == "DEPTH32") { return DEPTH32; }
+	return GL_INVALID_VALUE;
 }

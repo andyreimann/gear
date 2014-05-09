@@ -17,6 +17,22 @@ namespace G2
 {
 	class Shader;
 	class AbstractShaderPart;
+
+	
+	namespace PointOfView
+	{
+		enum Name {
+			MAIN_CAMERA, // Default value
+			LOCAL,
+			POV_INVALID,
+		};
+		/** This function will parse the given string to the appropriate
+		 * PointOfView enum value.
+		 * @param name The name to parse.
+		 * @return The parsed PointOfView enum value.
+		 */
+		PointOfView::Name getPointOfView(std::string const& name);
+	};
 	/// This class defines...
 	/// @created:	2014/05/07
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -36,7 +52,8 @@ namespace G2
 				 */
 				void addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
 					
-				Sampler::Name renderTargetSampler;
+				Sampler::Name										renderTargetSampler;
+				RenderTargetType::Name								renderTargetType;
 				std::unordered_map<std::string,Setting>				settings;
 				std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 				std::vector<Property>								properties;	
@@ -44,15 +61,17 @@ namespace G2
 				std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;	// The available parts of fragment shader code
 				std::vector<std::shared_ptr<Shader>>				shaderPermutations;		// The vector containing all available Shader-Permutations
 				
-				ShaderMetaData										metaData;	
+				ShaderMetaData										metaData;
 			};
 			/// This constructs a new Pass.
 			/// @param shaderPermutations The valid compiled Shader permutations of this Pass
 			/// @param settings All parsed settings for this Pass
 			/// @param renderTargetProperty The property containing the informations about the RenderTarget.
+			/// @param
 			Pass(std::vector<std::shared_ptr<Shader>> const& shaderPermutations, 
 				 std::unordered_map<std::string,Setting> const& settings, 
-				 Sampler::Name renderTargetSampler);
+				 Sampler::Name renderTargetSampler, 
+				 RenderTargetType::Name renderTargetType);
 			
 			/// Move ctor.
 			Pass(Pass && rhs);
@@ -70,12 +89,19 @@ namespace G2
 			 * @return The RenderTarget of the Pass.
 			 */
 			G2::RenderTarget const& getRenderTarget() const { return mRenderTarget; }
+			/** This function will return the number of iterations, the Pass requests to be complete. 
+			* @return The number of iterations, the Pass requests to be complete.
+			*/
+			int const& getNumRenderIterations() const { return mNumRenderIterations; }
+			/** This function will return the point of view to use while rendering. 
+			* @return The the point of view to use while rendering.
+			*/
+			PointOfView::Name const& getPov() const { return mPov; }
 		protected:
-
-			static Setting const& get(std::string const& name, std::unordered_map<std::string,Setting>& settings, std::string const& defaultValue = "");
-
 			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
 			RenderTarget							mRenderTarget;			// The render target of the Pass
+			PointOfView::Name						mPov;					// The point of view of the pass
+			int										mNumRenderIterations;	// The number of iterations the pass needs to be completed
 	};
 };

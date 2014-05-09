@@ -58,9 +58,10 @@ Effect::Builder::buildResource()
 	for(int i = 0; i < passes.size(); ++i)
 	{
 		Pass::Builder const& passBuilder = passes[i];
-		if(passBuilder.renderTargetSampler != Sampler::SAMPLER_INVALID)
+		if(passBuilder.renderTargetSampler != Sampler::SAMPLER_INVALID &&
+		   passBuilder.renderTargetType != RenderTargetType::RT_INVALID)
 		{
-			effect->mPasses.push_back(std::move(Pass(passBuilder.shaderPermutations, passBuilder.settings, passBuilder.renderTargetSampler)));
+			effect->mPasses.push_back(std::move(Pass(passBuilder.shaderPermutations, passBuilder.settings, passBuilder.renderTargetSampler, passBuilder.renderTargetType)));
 		}
 	}
 	return effect;

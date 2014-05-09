@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 
 namespace G2 
 {
@@ -18,5 +19,8 @@ namespace G2
 		
 		std::string key;
 		std::string value;
+
+		static Setting const& get(std::string const& name, std::unordered_map<std::string,Setting>& settings, std::string const& defaultValue = "");
+
 	};
 };

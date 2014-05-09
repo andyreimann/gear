@@ -91,20 +91,34 @@ UberShaderBlockParser::parse()
 
 					Pass::Builder& pass = mBuilder->passes[i];
 					pass.renderTargetSampler = Sampler::SAMPLER_INVALID;
+					pass.renderTargetType = RenderTargetType::RT_INVALID;
 
 					for(auto it = mBuilder->metaData.samplers.begin(); it != mBuilder->metaData.samplers.end(); ++it)
 					{
 						// resolve the render target to a sampler to bind the final result texture to.
-						logger << "[UberShaderBlockParser] Check Property '"+it->name+"' against rendertarget name of '"+renderTarget.value+"'" << endl;
 						if(it->name == renderTarget.value)
 						{
 							pass.renderTargetSampler = it->samplerSlot;
+							//pass.renderTargetType = RenderTargetType::getRenderTargetType(it->)
+						}
+					}
+					for(auto it = mBuilder->properties.begin(); it != mBuilder->properties.end(); ++it)
+					{
+						// resolve the render target to a sampler to bind the final result texture to.
+						if(it->getName() == renderTarget.value)
+						{
+							pass.renderTargetType = RenderTargetType::getRenderTargetType(it->getDataType());
 						}
 					}
 
 					if(pass.renderTargetSampler == Sampler::SAMPLER_INVALID)
 					{
-						logger << "[UberShaderBlockParser] Did not find Property with name '"+renderTarget.value+"' in Properties of main shader!" << endl;
+						logger << "[UberShaderBlockParser] Did not find sampler with name '"+renderTarget.value+"' in ShaderMetaData of main shader!" << endl;
+					}
+
+					if(pass.renderTargetType == RenderTargetType::RT_INVALID)
+					{
+						logger << "[UberShaderBlockParser] Did not find property with name '"+renderTarget.value+"' in properties of main shader!" << endl;
 					}
 
 					// gather all parsed data from the block parsers

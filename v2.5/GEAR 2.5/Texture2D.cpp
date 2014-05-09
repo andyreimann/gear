@@ -25,17 +25,16 @@ Texture2D::Texture2D(unsigned int minFilter,
 {
 	init();
 	checkFilter(mMinFilter, mMagFilter);
-	
 	GLDEBUG( glGenTextures(1, &mId) );
-	GLDEBUG( glBindTexture(GL_TEXTURE_2D, mId) );
-	GLDEBUG( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mMinFilter) );
-	GLDEBUG( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mMagFilter) );
-	GLDEBUG( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) );
-	GLDEBUG( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) );
-	GLDEBUG( glTexImage2D(GL_TEXTURE_2D, 0, baseFormatToCompressedFormat(format, mCompressed), mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data) );
+	GLDEBUG( glBindTexture(mType, mId) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, mMinFilter) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, mMagFilter) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) );
+	GLDEBUG( glTexImage2D(mType, 0, baseFormatToCompressedFormat(format, mCompressed), mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data) );
 	GLint compFlag;
-	GLDEBUG( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
-	GLDEBUG( glBindTexture(GL_TEXTURE_2D, 0) );
+	GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
+	GLDEBUG( glBindTexture(mType, 0) );
 }
 
 Texture2D::Texture2D(Texture2D && rhs) 

@@ -41,6 +41,18 @@ namespace G2
 			Texture2D(Texture2D && rhs);
 			/// Move ctor.
 			Texture2D& operator=(Texture2D && rhs);
+			/** Returns the width of the Texture
+			 * @return The width of the Texture
+			 */
+			virtual unsigned getWidth() { return mWidth; }
+			/** Returns the height of the Texture
+			 * @return The height of the Texture
+			 */
+			virtual unsigned getHeight() { return mHeight; }
+			/** Returns the depth of the Texture
+			 * @return The depth of the Texture
+			 */
+			virtual unsigned getDepth() { return 1; }
 			
 			static void		init();
 		private:
