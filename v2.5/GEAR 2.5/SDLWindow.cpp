@@ -210,12 +210,12 @@ SDLWindow::renderSingleFrame()
 
 	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 	
+	EventDistributer::onRenderFrame(mFrameInfo);
+	
 	ECSManager::getShared().runPhaseOnSystems("preUpdate", mFrameInfo);
 	ECSManager::getShared().runPhaseOnSystems("update", mFrameInfo);
 	ECSManager::getShared().runPhaseOnSystems("postUpdate", mFrameInfo);
 	ECSManager::getShared().runPhaseOnSystems("render", mFrameInfo);
-	
-	EventDistributer::onRenderFrame(mFrameInfo);
 
 	SDL_GL_SwapWindow(mSDLWindow);
 	mFrameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();

@@ -9,14 +9,16 @@ using namespace G2;
 CameraComponent::CameraComponent(std::string const& name) :
 	mMoveSpeed(0.02f),
 	mRotationSpeed(0.2f),
-	mTranslation(0.f,0.5f,0.f),
+	mTranslation(0.f,0.0f,0.f),
 	mUpVector(0.f,1.f,0.f),
 	mViewVector(0.f,0.f,-1.f),
 	mStrafeVector(1.f,0.f,0.f),
-	mChanged(true) 
+	mChanged(true),
+	mViewportWidth(0),
+	mViewportHeight(1)
 {
 		// initial rotation
-		rotate(15.f, 135.f);
+		//rotate(15.f, 135.f);
 }
 
 void 
@@ -88,7 +90,13 @@ CameraComponent::setAsRenderCamera()
 }
 
 void
-CameraComponent::setProjectionMatrix(glm::mat4 const& value) 
+CameraComponent::setProjectionMatrix(glm::mat4 const& value, int width, int height) 
 {
 	mProjectionMatrix = value;
+	mViewportWidth = width;
+	mViewportHeight = height;
+	if(mViewportHeight == 0)
+	{
+		mViewportHeight = 1;
+	}
 }

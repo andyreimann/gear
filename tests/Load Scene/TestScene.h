@@ -68,5 +68,9 @@ class TestScene
 		std::shared_ptr<G2::FBXMesh> mSampleMesh3;
 		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
 		std::vector<std::shared_ptr<G2::FBXMesh>> mFbxMeshes;
+
+		
+		float polygonoffsetA;
+		float polygonoffsetB;
 };
 

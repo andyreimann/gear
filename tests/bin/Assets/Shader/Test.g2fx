@@ -75,7 +75,7 @@ Ubershader "GEAR/Default" {
                 float intSpec = max(dot(h,n), 0.0);
                 spec = light[i].specular * material.specular * pow(intSpec,material.shininess);
               }
-              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
             }
             else if(light[i].cosCutoff < 1.0)
             {
@@ -106,7 +106,7 @@ Ubershader "GEAR/Default" {
                     spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
                 }
               }
-              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
               //outColor = vec4(1.f,0.f,0.f,1.f);
             }
             else
@@ -116,38 +116,37 @@ Ubershader "GEAR/Default" {
 
               // Compute the ligt direction
               vec3 l = vec3(light[i].position)+dataIn.eye;
-              vec3 ShadowCoord = vec3(light[i].position)-dataIn.eye;
+              vec3 l2 = vec3(light[i].position)-dataIn.eye;
               float dist = length(l);
 
               // near clip plane, far clip plane
-              float texDepth = toTexDepth(l, 0.01, 50.0);
+              float texDepth = toTexDepth(l2, 0.01, 10.0);
               l = normalize(l);
-              ShadowCoord = normalize(ShadowCoord);
-              float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
+              l2 = normalize(l2);
+              float shadowDepth = texture(_shadowTex, -l2).r; // pass l normalized for lookup
 
-              if( texDepth >= shadowDepth && texDepth < 1.0 )
+
+
+              vec3 n = normalize(dataIn.normal);
+              vec3 e = normalize(dataIn.eye);
+
+              float intensity = max(dot(n,l), 0.0);
+              if (intensity > 0.0) 
               {
-                // texel in shadow
-                outColor += light[i].ambient; // only ambient light component influences
+                float att = 1.0 / (light[i].attenuation.x +
+                        light[i].attenuation.y * dist +
+                        light[i].attenuation.z * dist * dist);
+                vec3 h = normalize(l + e);
+                float intSpec = max(dot(h,n), 0.0);
+                spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
               }
-              else
-              {
-                vec3 n = normalize(dataIn.normal);
-                vec3 e = normalize(dataIn.eye);
+              outColor += texture(_shadowTex, l) * max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient + material.ambient);
 
-                float intensity = max(dot(n,l), 0.0);
-                if (intensity > 0.0) 
-                {
-                  float att = 1.0 / (light[i].attenuation.x +
-                          light[i].attenuation.y * dist +
-                          light[i].attenuation.z * dist * dist);
-                  vec3 h = normalize(l + e);
-                  float intSpec = max(dot(h,n), 0.0);
-                  spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
-                }
-                outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
-              }
 
+              //if( texDepth >= shadowDepth && texDepth < 1.0 )
+              //{
+              //  outColor = vec4(1.0,0.0,0.0,1.0); // DEBUG
+              //}
             }
           }
         }

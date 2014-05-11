@@ -39,8 +39,8 @@ TextureCube::TextureCube(unsigned int minFilter,
 	{
 		GLDEBUG( glTexImage2D(CubeMapDefines[i], 0, baseFormatToCompressedFormat(format, mCompressed), mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data) );
 	}
-	GLint compFlag;
-	GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
+	//GLint compFlag;
+	//GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
 	GLDEBUG( glBindTexture(mType, 0) );
 }
 

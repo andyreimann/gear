@@ -17,7 +17,9 @@ TestScene::TestScene()
 	mMoveRight(false),
 	mMx(0),
 	mMy(0),
-	mExitRendering(false)
+	mExitRendering(false),
+	polygonoffsetA(1.f),
+	polygonoffsetB(0.f)
 {
 	srand(2006);
 
@@ -61,6 +63,7 @@ TestScene::TestScene()
 	cameraComponent->setAsRenderCamera();
 	cameraComponent->setMoveSpeed(1.0f);
 	cameraComponent->stepBackward();
+	cameraComponent->stepLeft();
 	cameraComponent->setMoveSpeed(0.02f);
 	
 	// load default shader for the engine
@@ -80,7 +83,7 @@ TestScene::TestScene()
 	float s = 0.5f;
 	mCube = G2::AABB(glm::vec3(-s,-s,-s), glm::vec3(s,s,s));
 	mCube.enableRendering();
-	onViewportResize(512,512);
+	onViewportResize(1024,768);
 
 
 	G2::EventDistributer::onRenderFrame.hook(this, &TestScene::onRenderFrame);
@@ -89,7 +92,7 @@ TestScene::TestScene()
 	G2::EventDistributer::onKeyDown.hook(this, &TestScene::onKeyDown);
 	G2::EventDistributer::onMouseMove.hook(this, &TestScene::onMouseMove);
 	
-	createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
+	//createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
 	
 	//createPlane(glm::vec4(1.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, true));
 	
@@ -114,7 +117,7 @@ TestScene::TestScene()
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
-	lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
+	//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	//lightTransformation->setRotation(glm::angleAxis(30.0f, glm::vec3(1.f,0.f,0.f)));
 
 	std::vector<std::string> animFiles;
@@ -208,7 +211,7 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 	plane->vaos.push_back(std::move(vao));
 
 	// load and assign texturing shader
-	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/MultipassProposal.g2fx"));
+	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Test.g2fx"));
 	
 	auto* transformation = mPlanes.back().addComponent<G2::TransformComponent>();
 	transformation->setRotation(rot);
@@ -219,39 +222,58 @@ TestScene::createWalls()
 {
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 1.f, 0.1f));
+	transformation->setScale(glm::vec3(5.f, 1.f, 1.f));
 	transformation->setPosition(glm::vec3(0.f,1.f,5.f));
 
 	auto* renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
 	renderComp->material.setShininess(16.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
+
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(5.f, 0.3f, 0.3f));
+	transformation->setPosition(glm::vec3(0.f,1.5f,-3.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,0.f,1.f,1.f));
+	renderComp->material.setShininess(16.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(0.5,0.5f,1.f,1.f));
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 1.f, 0.1f));
+	transformation->setScale(glm::vec3(5.f, 4.f, 1.f));
 	transformation->setPosition(glm::vec3(0.f,1.f,-5.f));
 
 	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(0.f,1.f,1.f,1.f));
-	renderComp->material.setShininess(32.f);
+	renderComp->material.setShininess(8.f);
+	renderComp->material.setAmbient(glm::vec4(0.f,0.f,0.0f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(0.f,0.f,1.f,1.f));
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(0.1f, 1.f, 5.f));
+	transformation->setScale(glm::vec3(1.f, 8.f, 5.f));
 	transformation->setPosition(glm::vec3(-5.f,1.f,0.f));
 
 	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,1.f,0.f,1.f));
 	renderComp->material.setShininess(64.f);
+	renderComp->material.setAmbient(glm::vec4(0.f,0.5f,0.f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(0.f,1.f,0.f,1.f));
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(0.1f, 1.f, 5.f));
+	transformation->setScale(glm::vec3(1.f, 5.f, 5.f));
 	transformation->setPosition(glm::vec3(5.f,1.f,0.f));
 
 	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(1.f,0.f,0.f,1.f));
 	
 	//mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	//transformation = mWalls.back()->addComponent<G2::TransformComponent>();
@@ -261,6 +283,28 @@ TestScene::createWalls()
 	//renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	//renderComp->material.setSpecular(glm::vec4(0.5f,0.5f,0.5f,1.f));
 	//renderComp->material.setShininess(128.f);
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(5.f, 1.f, 5.f));
+	transformation->setPosition(glm::vec3(0.f,-5.f,0.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
+	renderComp->material.setShininess(128.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.5f,0.5f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
+	
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
+	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	transformation->setPosition(glm::vec3(-2.f,0.f,-2.f));
+
+	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,0.f,1.f,1.f));
+	renderComp->material.setShininess(128.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,2.f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(1.f,0.7f,0.f,1.f));
 }
 
 void 
@@ -269,6 +313,28 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 	
 	std::cout << "KEY: " << keyCode << std::endl;
 	
+
+	/*
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	if (keyCode == G2::KC_7) {
+		polygonoffsetA -= 1;
+		std::cout << "polygonoffsetA: " << polygonoffsetB << std::endl;
+	}
+	if (keyCode == G2::KC_8) {
+		polygonoffsetA += 0.1;
+		std::cout << "polygonoffsetA: " << polygonoffsetB << std::endl;
+	}
+	if (keyCode == G2::KC_9) {
+		polygonoffsetB -= 0.1;
+		std::cout << "polygonoffsetB: " << polygonoffsetB << std::endl;
+	}
+	if (keyCode == G2::KC_0) {
+		polygonoffsetB += 5;
+		std::cout << "polygonoffsetB: " << polygonoffsetB << std::endl;
+	}
+	glPolygonOffset( polygonoffsetA, polygonoffsetB );
+	*/
+
 	if(keyCode == G2::KC_Y)
 	{
 		
@@ -310,6 +376,9 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		if(mLightType == G2::LightType::POSITIONAL)
 		{
 			light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
+			mLight->addComponent<G2::RenderComponent>()->setEffect(
+				mEffectImporter.import(ASSET_PATH + "Shader/PointLightShadowMapping.g2fx")
+			);
 		}
 		else if(mLightType == G2::LightType::SPOT)
 		{
@@ -322,13 +391,13 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
-		light->diffuse = glm::vec4(0.3,0.6,0.f,1.f);
+		light->diffuse = glm::vec4(0.5,0.6,0.4f,1.f);
 		light->specular = glm::vec4(1.f,1.f,1.f,1.f);
-		light->linearAttenuation = 1.f;
+		//light->linearAttenuation = 1.f;
 	
 		auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
-		lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
-		lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
+		//lightTransformation->setPosition(glm::vec3(0.f,1.5f,0.f));
+		//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	}
 	else if(keyCode == G2::KC_D) 
 	{ 
@@ -441,7 +510,7 @@ TestScene::onViewportResize(int width, int height)
 		height = 1; 
 	}
 	auto* camera = mCamera.getComponent<G2::CameraComponent>();
-	camera->setProjectionMatrix(glm::perspective(80.0f, width / (float)height, 0.001f, 10.0f));
+	camera->setProjectionMatrix(glm::perspective(80.0f, width / (float)height, 0.01f, 50.0f), width, height);
 }
 
 void 

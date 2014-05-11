@@ -25,12 +25,18 @@ using namespace G2;
 #define M_PI 3.14159265358979323846
 
 const glm::mat4 CubeMapFaceCameraRotations[6] = {
-	/* G2::CUBE_MAP_POS_X */ glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
-	/* G2::CUBE_MAP_NEG_X */ glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
-	/* G2::CUBE_MAP_POS_Y */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_NEG_Y */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_POS_Z */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_NEG_Z */ glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f))))
+	/* G2::CUBE_MAP_POS_X */ //glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
+	/* G2::CUBE_MAP_NEG_X */ //glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
+	/* G2::CUBE_MAP_POS_Y */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_NEG_Y */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_POS_Z */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(1.f,0.f,0.f)))),
+	/* G2::CUBE_MAP_NEG_Z */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f))))
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(1,0,0),glm::vec3(0, -1,0)),
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(-1,0,0),glm::vec3(0,-1,0)),
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,-1,0),glm::vec3(0,0,-1)),
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,1,0),glm::vec3(0,0, 1)),
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,0,1),glm::vec3(0,-1,0)),
+	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,0,-1),glm::vec3(0,-1,0)),
 };
 
 void
@@ -40,18 +46,19 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 	{
 		// update camera movement 
 		CameraComponent* camera = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>()->getRenderCamera();
-		
+		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 		bool cameraUpdated = camera->updateModelView();
 
+		// render all passes
 		for (int i = 0; i < components.size() ; ++i) 
 		{
-			RenderComponent& comp = components[i];
-
-			// check if this component has a pass attached
+			RenderComponent& comp = components[i];// check if this component has a pass attached
 			if(comp.effect.get() != nullptr && comp.effect->getPasses().size() > 0) 
 			{
 				for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
 				{
+					GLDEBUG( glEnable(GL_POLYGON_OFFSET_FILL) );
+					GLDEBUG( glPolygonOffset( 1.f, 100.f ) );
 					// TODO get right projectionMatrix
 					glm::mat4 passProjectionMatrix = camera->getProjectionMatrix();
 
@@ -59,18 +66,66 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 					{
 						it->getRenderTarget().bind(renderIter);
 						// TODO get right cameraSpaceMatrix for current render iteration of pass
-						glm::mat4 passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
+						glm::mat4 passCameraSpaceMatrix;
+						if(it->getPov() == PointOfView::MAIN_CAMERA)
+						{
+							passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
+						}
+						else
+						{
+							// try to get the local transformation component
+							auto* transformation = transformSystem->get(comp.getEntityId());
+							if(transformation != nullptr)
+							{
+								passCameraSpaceMatrix = transformation->getWorldSpaceMatrix();
+							}
+						}
+
+						if(it->getNumRenderIterations() == 6)
+						{
+							GLDEBUG( glViewport(0,0,512,512));
+#ifdef GLM_FORCE_RADIANS
+							passProjectionMatrix = glm::perspective(90.0f * (float)M_PI / 180.f, 512.f / 512.f, 0.01f, 50.0f);
+#else
+							passProjectionMatrix = glm::perspective(90.0f, 512.f / 512.f, 0.01f, 50.0f);
+#endif
+							// cube map rendering -> adjust camera space matrix to current face
+							glm::mat4 const& faceRotation = CubeMapFaceCameraRotations[renderIter];
+
+							glm::vec4 cameraPosition = camera->getCameraSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f);
+							// passCameraSpaceMatrix.translation * faceRotation
+							//passCameraSpaceMatrix = glm::inverse(passCameraSpaceMatrix * glm::inverse(camera->getCameraSpaceMatrix()) * glm::translate(passCameraPosition.x, passCameraPosition.y, passCameraPosition.z) * faceRotation);
+							passCameraSpaceMatrix = glm::inverse(
+								glm::inverse(camera->mRotation) * // cam translation
+							//	//passCameraSpaceMatrix * // lightTrans
+							//	//glm::inverse(camera->getCameraSpaceMatrix()) * // inv cam
+							//	//passCameraSpaceMatrix * 
+							//	//glm::inverse(camera->getCameraSpaceMatrix()) * 
+								faceRotation
+							);
+							passCameraSpaceMatrix = glm::inverse(
+								glm::inverse(camera->getCameraSpaceMatrix()) * // cam translation
+								glm::translate(cameraPosition.x, cameraPosition.y, cameraPosition.z) *
+								//passCameraSpaceMatrix * // lightTrans
+								//glm::inverse(camera->getCameraSpaceMatrix()) * // inv cam
+								//passCameraSpaceMatrix * 
+								//glm::inverse(camera->getCameraSpaceMatrix()) * 
+								faceRotation
+							);
+							;
+						}
+						//if(renderIter == 1)
+						//logger << "[Pass#" << renderIter << "] Cam-Space-Mat:\n" << passCameraSpaceMatrix << endl;
 
 						for (int k = 0; k < components.size() ; ++k) 
 						{
 							RenderComponent& innerComp = components[k];
 			
-							if(innerComp.vaos.size() == 0)
+							if(innerComp.vaos.size() == 0 || i == k)
 							{
-								// no VAO attached
+								// no VAO attached or pass component is this component
 								continue;
 							}
-						
 							std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
 							// bind shader before cann render()
 							passShader->bind();
@@ -82,8 +137,15 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 					}
 					// bind result of pass
 					it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
+					GLDEBUG( glDisable(GL_POLYGON_OFFSET_FILL) );
 				}
 			}
+		}
+
+		// do normal rendering
+		for (int i = 0; i < components.size() ; ++i) 
+		{
+			RenderComponent& comp = components[i];
 			
 			if(comp.vaos.size() == 0)
 			{
@@ -97,6 +159,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			// bind shader before cann render()
 			shader->bind();
 			// regular rendering
+			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
 			render(camera->getProjectionMatrix(), camera->getCameraSpaceMatrix(), &comp, shader);
 		}
 	}

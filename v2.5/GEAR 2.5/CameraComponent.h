@@ -15,7 +15,7 @@ namespace G2
 	 */
 	class CameraComponent : public BaseComponent<CameraSystem> 
 	{
-
+		friend class RenderSystem;
 		public:
 			/** This will create a new EditorCamera.
 			 * @note Don't forget to provide a valid projection matrix with the 
@@ -37,8 +37,18 @@ namespace G2
 			glm::mat4 const& getProjectionMatrix() const { return mProjectionMatrix; }
 			/** This function will set the projection matrix to the given value.
 			* @param value The projection matrix.
+			* @param width The width of the viewport
+			* @param height The height of the viewport
 			*/
-			void setProjectionMatrix(glm::mat4 const& value);
+			void setProjectionMatrix(glm::mat4 const& value, int width, int height);
+			/** This function will return the ViewportWidth. 
+			* @return The ViewportWidth.
+			*/
+			int const& getViewportWidth() const { return mViewportWidth; }
+			/** This function will return the ViewportHeight. 
+			* @return The ViewportHeight.
+			*/
+			int const& getViewportHeight() const { return mViewportHeight; }
 			/** This function will perform one step into the view vector direction
 			 * of the Camera.
 			 * @note The step size is calculated with the current movement speed.
@@ -116,7 +126,9 @@ namespace G2
 			glm::mat4 mRotation;			// The current rotation matrix of the camera
 
 			glm::mat4 mProjectionMatrix;	// The current camera projection matrix
-			glm::mat4 mCameraSpaceMatrix;		// The current camera modelview matrix
+			int		  mViewportWidth;		// The width of the Viewport
+			int		  mViewportHeight;		// The height of the Viewport
+			glm::mat4 mCameraSpaceMatrix;	// The current camera modelview matrix
 
 			/** TODO: This normal matrix isn't the one, we need for normal transformation
 			 * Normal matrix calculation: (modelview^-1)^T, actually: (view^-1)^T
