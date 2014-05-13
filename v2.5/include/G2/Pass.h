@@ -77,31 +77,73 @@ namespace G2
 			Pass(Pass && rhs);
 			/// Move ctor.
 			Pass& operator=(Pass && rhs);
-			/** This function will return the Shader, which passes the most MacroConditions
-			 * This is the one, which fits best.
-			 * @param material The Material, which should be used for decision making.
-			 * @param vao The VertexArrayObject, which should be used for decision making.
-			 * @return The Shader which fits best or a shared pointer pointing to nullptr,
-			 * if no Shader was found.
-			 */
+			///  This function will return the Shader, which passes the most MacroConditions
+			/// This is the one, which fits best.
+			/// @param material The Material, which should be used for decision making.
+			/// @param vao The VertexArrayObject, which should be used for decision making.
+			/// @return The Shader which fits best or a shared pointer pointing to nullptr,
+			/// if no Shader was found.
 			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao) const;
-			/** This function will return the RenderTarget. 
-			 * @return The RenderTarget of the Pass.
-			 */
+			///  This function will return the RenderTarget. 
+			/// @return The RenderTarget of the Pass.
 			G2::RenderTarget const& getRenderTarget() const { return mRenderTarget; }
-			/** This function will return the number of iterations, the Pass requests to be complete. 
-			* @return The number of iterations, the Pass requests to be complete.
-			*/
+			/// This function will return the number of iterations, the Pass requests to be complete. 
+			/// @return The number of iterations, the Pass requests to be complete.
+			/// 
 			int const& getNumRenderIterations() const { return mNumRenderIterations; }
-			/** This function will return the point of view to use while rendering. 
-			* @return The the point of view to use while rendering.
-			*/
+			/// This function will return the point of view to use while rendering. 
+			/// @return The the point of view to use while rendering.
+			///
 			PointOfView::Name const& getPov() const { return mPov; }
+			/// This function will return the near clip plane of the Pass.
+			/// @return The near clip plane to use while rendering the pass.
+			float const& getZNear() const { return mZNear; }
+			/// This function will set the near clip plane of the Pass to the given value.
+			/// @param value The near clip plane to use while rendering the pass.
+			void setZNear(float const& value) { mZNear = value; }
+			/// This function will return the ZFar. 
+			/// @return The ZFar.
+			float const& getZFar() const { return mZFar; }
+			/// This function will set the far clip plane of the Pass to the given value.
+			/// @param value The far clip plane to use while rendering the pass.
+			void setZFar(float const& value) { mZFar = value; }
+			/// This function will return the field of view in Y direction to use while rendering the Pass. 
+			/// @return The field of view in Y direction to use while rendering the Pass. 
+			float const& getFovY() const { return mFovY; }
+			/// This function will set the field of view in Y direction to use while rendering the Pass. 
+			/// @param value The field of view in Y direction to use while rendering the Pass. 
+			void setFovY(float const& value) { mFovY = value; }			
+			/// This function will return the polygon offset factor to use while rendering.
+			/// @return The polygon offset factor.
+			/// The default value is 1
+			float const& getPolygonOffsetFactor() const { return mPolygonOffsetFactor; }
+			/// This function will set the polygon offset factor to the given value.
+			/// @param value The polygon offset factor.
+			/// The default value is 1
+			void setPolygonOffsetFactor(float const& value) { mPolygonOffsetFactor = value; }
+			/// This function will return the polygon offset units to use while rendering.
+			/// @return The polygon offset units.
+			/// The default value is 100
+			float const& getPolygonOffsetUnits() const { return mPolygonOffsetUnits; }
+			/// This function will set the polygon offset units to the given value.
+			/// @param value The polygon offset units.
+			/// The default value is 100
+			void setPolygonOffsetUnits(float const& value) { mPolygonOffsetUnits = value; }
+			// This function will perform all steps needed right before the Pass will be rendered.
+			void preRender() const;
+			// This function will perform all steps needed right after the Pass was rendered.
+			void postRender() const;
 		protected:
 			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
 			RenderTarget							mRenderTarget;			// The render target of the Pass
-			PointOfView::Name						mPov;					// The point of view of the pass
+			PointOfView::Name						mPov;					// The point of view of the Pass
 			int										mNumRenderIterations;	// The number of iterations the pass needs to be completed
+			float									mZNear;					// The near clip plane of the Pass
+			float									mZFar;					// The far clip plane of the Pass
+			float									mFovY;					// The field of view of the Pass
+			float									mPolygonOffsetFactor;	// The polygon offset factor to use while rendering the Pass
+			float									mPolygonOffsetUnits;	// The polygon offset units to use while rendering the Pass
+
 	};
 };

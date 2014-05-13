@@ -57,6 +57,9 @@ namespace G2
 			///  This function will return the RenderTexture. 
 			/// @return The current RenderTexture.
 			std::shared_ptr<Texture> const& getRenderTexture() const { return mRenderTexture; }
+			/// This function will return the RenderTargetType. 
+			/// @return The CURRENT RenderTargetType.
+			RenderTargetType::Name const& getRenderTargetType() const { return mRenderTargetType; }
 		private:
 			RenderTarget() {}
 

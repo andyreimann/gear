@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 
 namespace G2 
 {
@@ -16,6 +17,18 @@ namespace G2
 		long toLong() const { return std::stol(value); }
 		double toDouble() const { return std::stod(value); }
 		float toFloat() const { return std::stof(value); }
+		bool toBool() const { 
+			std::string tmp = value;
+			std::transform(tmp.begin(), tmp.end(),tmp.begin(), ::toupper);
+			if(tmp == "ON" ||
+			   tmp == "TRUE" ||
+			   tmp == "ENABLED" ||
+			   tmp == "1")
+			{
+				return true;
+			}
+			return false;
+		}
 		
 		std::string key;
 		std::string value;

@@ -48,7 +48,7 @@ namespace G2
 			float		attenuation;			// The constant attenuation of the Light. Default: 1.0
 			float		linearAttenuation;		// The linear attenuation of the Light. Default: 0.0
 			float		exponentialAttenuation; // The exponential attenuation of the Light. Default: 0.0
-
+			
 		private:
 			void _updateTransformedPosition(glm::vec4 const& pos);
 			void _updateTransformedDirection(glm::vec3 const& pos);

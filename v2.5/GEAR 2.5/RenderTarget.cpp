@@ -87,15 +87,15 @@ RenderTarget::unbind() const
 RenderTargetType::Name
 RenderTargetType::getRenderTargetType(std::string const& name) 
 {
-	if(name == "sampler1D") 
+	if(name == "TEXTURE_1D") 
 	{
 		return RT_1D;
 	}
-	else if(name == "sampler2D") 
+	else if(name == "TEXTURE_2D" || name == "TEXTURE") 
 	{
 		return RT_2D;
 	}
-	else if(name == "samplerCube") 
+	else if(name == "TEXTURE_CUBE" || name == "CUBEMAP") 
 	{
 		return RT_CUBE;
 	}

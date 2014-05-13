@@ -21,7 +21,8 @@ Ubershader "GEAR/Multipass" {
               // this will end in a FBO-RBO created for the texture assigned to the sampler DIFFUSE
               // every time the pass should be rendered, a lightweight test has to be passed -> is the currently created FBO-RBO fitting 
               // the texture assigned to sampler DIFFUSE?
-              RenderTarget _diffuseTex
+              RenderTarget DIFFUSE
+              RenderType TEXTURE
               // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
               OutputFormat RGB
               // Define the point of view to use while rendering: 

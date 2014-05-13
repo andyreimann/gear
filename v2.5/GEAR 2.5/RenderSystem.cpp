@@ -49,7 +49,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 		bool cameraUpdated = camera->updateModelView();
 
-		// render all passes
+		// render all passes -> components with passes should be cached in system!
 		for (int i = 0; i < components.size() ; ++i) 
 		{
 			RenderComponent& comp = components[i];// check if this component has a pass attached
@@ -57,15 +57,27 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
 				{
-					GLDEBUG( glEnable(GL_POLYGON_OFFSET_FILL) );
-					GLDEBUG( glPolygonOffset( 1.f, 100.f ) );
-					// TODO get right projectionMatrix
+					it->preRender();
 					glm::mat4 passProjectionMatrix = camera->getProjectionMatrix();
+					glm::mat4 invCameraRot; // only needed in cube map rendering so far!
+					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
+					{
+						// TODO: Should be calculated only once per frame => cached on CameraComponent?
+						invCameraRot = glm::inverse(camera->mRotation); // calc once per cube map
+#ifdef GLM_FORCE_RADIANS
+						passProjectionMatrix = glm::perspective(it->getFovY() * (float)M_PI / 180.f, it->getRenderTarget().getRenderTexture()->getWidth() / it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
+#else
+						passProjectionMatrix = glm::perspective(it->getFovY(), it->getRenderTarget().getRenderTexture()->getWidth() / (float)it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
+#endif
+					}
 
 					for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
 					{
+						/*if(renderIter != 0)
+						{
+							continue;
+						}*/
 						it->getRenderTarget().bind(renderIter);
-						// TODO get right cameraSpaceMatrix for current render iteration of pass
 						glm::mat4 passCameraSpaceMatrix;
 						if(it->getPov() == PointOfView::MAIN_CAMERA)
 						{
@@ -80,83 +92,48 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 								passCameraSpaceMatrix = transformation->getWorldSpaceMatrix();
 							}
 						}
-
-						if(it->getNumRenderIterations() == 6)
+						if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
 						{
-							GLDEBUG( glViewport(0,0,512,512));
-#ifdef GLM_FORCE_RADIANS
-							passProjectionMatrix = glm::perspective(90.0f * (float)M_PI / 180.f, 512.f / 512.f, 0.01f, 50.0f);
-#else
-							passProjectionMatrix = glm::perspective(90.0f, 512.f / 512.f, 0.01f, 50.0f);
-#endif
-							// cube map rendering -> adjust camera space matrix to current face
-							glm::mat4 const& faceRotation = CubeMapFaceCameraRotations[renderIter];
-
-							glm::vec4 cameraPosition = camera->getCameraSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f);
-							// passCameraSpaceMatrix.translation * faceRotation
-							//passCameraSpaceMatrix = glm::inverse(passCameraSpaceMatrix * glm::inverse(camera->getCameraSpaceMatrix()) * glm::translate(passCameraPosition.x, passCameraPosition.y, passCameraPosition.z) * faceRotation);
-							passCameraSpaceMatrix = glm::inverse(
-								glm::inverse(camera->mRotation) * // cam translation
-							//	//passCameraSpaceMatrix * // lightTrans
-							//	//glm::inverse(camera->getCameraSpaceMatrix()) * // inv cam
-							//	//passCameraSpaceMatrix * 
-							//	//glm::inverse(camera->getCameraSpaceMatrix()) * 
-								faceRotation
+							passCameraSpaceMatrix = glm::inverse( // adjust cam space mat to current cube map face
+								passCameraSpaceMatrix * // lightTrans
+								invCameraRot * // cam translation
+								CubeMapFaceCameraRotations[renderIter] // face rotation
 							);
-							passCameraSpaceMatrix = glm::inverse(
-								glm::inverse(camera->getCameraSpaceMatrix()) * // cam translation
-								glm::translate(cameraPosition.x, cameraPosition.y, cameraPosition.z) *
-								//passCameraSpaceMatrix * // lightTrans
-								//glm::inverse(camera->getCameraSpaceMatrix()) * // inv cam
-								//passCameraSpaceMatrix * 
-								//glm::inverse(camera->getCameraSpaceMatrix()) * 
-								faceRotation
-							);
-							;
 						}
-						//if(renderIter == 1)
-						//logger << "[Pass#" << renderIter << "] Cam-Space-Mat:\n" << passCameraSpaceMatrix << endl;
-
 						for (int k = 0; k < components.size() ; ++k) 
 						{
 							RenderComponent& innerComp = components[k];
-			
 							if(innerComp.vaos.size() == 0 || i == k)
 							{
 								// no VAO attached or pass component is this component
 								continue;
 							}
 							std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
-							// bind shader before cann render()
+							// bind shader before call render()
 							passShader->bind();
 							// pass rendering
 							render(passProjectionMatrix, passCameraSpaceMatrix, &innerComp, passShader);
 						}
-						//logger << "Rendered " << components.size() << " components to rendertarget" << endl;
 						it->getRenderTarget().unbind();
 					}
 					// bind result of pass
 					it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
-					GLDEBUG( glDisable(GL_POLYGON_OFFSET_FILL) );
+					it->postRender();
 				}
 			}
 		}
-
 		// do normal rendering
 		for (int i = 0; i < components.size() ; ++i) 
 		{
 			RenderComponent& comp = components[i];
-			
 			if(comp.vaos.size() == 0)
 			{
 				// no VAO attached
 				continue;
 			}
-			
 			// calc which shader to use for rendering
 			std::shared_ptr<Shader> shader = getRenderShader(&comp);
-
-			// bind shader before cann render()
+			// bind shader before call render()
 			shader->bind();
 			// regular rendering
 			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));

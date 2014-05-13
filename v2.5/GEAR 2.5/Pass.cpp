@@ -19,21 +19,26 @@ Pass::Pass(
 				  std::shared_ptr<Texture>(new Texture2D(
 						NEAREST, 
 						NEAREST, 
-						(unsigned)Setting::get("Width", mSettings, "512").toInt(), 
-						(unsigned)Setting::get("Height", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
 						false)) : (
 				  std::shared_ptr<Texture>(new TextureCube(
 						NEAREST, 
 						NEAREST, 
-						(unsigned)Setting::get("Width", mSettings, "512").toInt(), 
-						(unsigned)Setting::get("Height", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
+						(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
 						false))
 				),
 				renderTargetType,
 				mSettings),
-	mPov(PointOfView::getPointOfView(Setting::get("PointOfView", mSettings, "MAIN_CAMERA").value))
+	mPov(PointOfView::getPointOfView(Setting::get("PointOfView", mSettings, "MAIN_CAMERA").value)),
+	mZNear(Setting::get("ZNear", mSettings, "0.01").toFloat()),
+	mZFar(Setting::get("ZFar", mSettings, "100.0").toFloat()),
+	mPolygonOffsetFactor(Setting::get("PolygonOffsetFactor", mSettings, "1.0").toFloat()),
+	mPolygonOffsetUnits(Setting::get("PolygonOffsetUnits", mSettings, "100.0").toFloat()),
+	mFovY(Setting::get("FovY", mSettings, "90.0").toFloat())
 {
 	if(renderTargetType == RenderTargetType::RT_CUBE)
 	{
@@ -61,6 +66,11 @@ Pass& Pass::operator=(Pass && rhs)
 	mRenderTarget = std::move(rhs.mRenderTarget);
 	mNumRenderIterations = rhs.mNumRenderIterations;
 	mPov = rhs.mPov;
+	mZNear = rhs.mZNear;
+	mZFar = rhs.mZFar;
+	mFovY = rhs.mFovY;
+	mPolygonOffsetFactor = rhs.mPolygonOffsetFactor;
+	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
 	// 3. Stage: modify src to a well defined state
 	rhs.mNumRenderIterations = 0;
 	rhs.mPov = PointOfView::POV_INVALID;
@@ -99,6 +109,21 @@ Pass::getShader(Material const& material, VertexArrayObject const& vao) const
 		}
 	}
 	return std::shared_ptr<Shader>();
+}
+
+void 
+Pass::preRender() const
+{
+	// called from RenderSystem when rendering the pass 
+	GLDEBUG( glEnable(GL_POLYGON_OFFSET_FILL) );
+	GLDEBUG( glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits ) );
+	GLDEBUG( glViewport(0,0,mRenderTarget.getRenderTexture()->getWidth(),mRenderTarget.getRenderTexture()->getHeight()));
+}
+
+void 
+Pass::postRender() const
+{
+	GLDEBUG( glDisable(GL_POLYGON_OFFSET_FILL) );
 }
 
 void

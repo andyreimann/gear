@@ -1,47 +1,39 @@
 Ubershader "GEAR/Multipass" {
    LocationBindings {
      inPosition ("Vertex Position", vec4) = { POSITION }
-     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
-   }
-   Properties {
-       _shadowTex ("The shadow texture of a pointlight", samplerCube) = { SHADOW }
    }
    Shader "GLSL" {
      Passes {
         Pass {
            LocationBindings {
              inPosition ("Vertex Position", vec4) = { POSITION }
-             inColor ("Vertex Color", vec4) = { COLOR_0 }
            }
            Settings {
               Name "ShadowPass"
-              RenderTarget _shadowTex
+              RenderTarget SHADOW
+              RenderType CUBEMAP
+              RenderTargetWidth 512
+              RenderTargetHeight 512
               // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
-              OutputFormat DEPTH
+              OutputFormat RGB
               PointOfView LOCAL
+              ZNear 0.01
+              ZFar 50.0
+              FovY 90.0
+              PolygonOffsetFactor 1.0
+              PolygonOffsetUnits 100.0
            }
 
            #VERTEXPROGRAM
              #INCLUDE "G2.matrices" 
-       
-             out Data
-             {
-                vec4 color;
-             } dataOut; 
 
              void main(void) 
              {
                   gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
-                  dataOut.color = inColor;
              }
            #FRAGMENTPROGRAM
-           #INCLUDE "G2.material"
+              #INCLUDE "G2.material" // include GEAR default stuff
            
-              in Data
-              {
-                 vec4 color;
-              } dataIn; // this data comes from the vertex program
-
               out vec4 outColor; // here goes the final color
               void main() 
               {
@@ -52,28 +44,17 @@ Ubershader "GEAR/Multipass" {
      #VERTEXPROGRAM
        #INCLUDE "G2.matrices"
  
-       out Data
-       {
-          vec2 texCoord;
-       } dataOut; 
- 
        void main(void) 
        {
-            dataOut.texCoord = inTexCoord;
            	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
-
-        in Data
-        {
-           vec2 texCoord;
-        } dataIn; // this data comes from the vertex program
 
         out vec4 outColor; // here goes the final color
    
         void main() 
         {
-          outColor = texture(_shadowTex, vec3(0.5,0.5,0.5));
+          outColor = vec4(1,1,0.5,1);
         }
    }
  }

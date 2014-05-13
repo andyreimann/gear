@@ -87,42 +87,23 @@ UberShaderBlockParser::parse()
 					std::shared_ptr<ShaderBlockParser> shaderBlockParser = passBlockParser.getShaderBlockParser();
 					
 					Setting passName = shaderBlockParser->getSetting("Name");
-					Setting renderTarget = shaderBlockParser->getSetting("RenderTarget");
 
 					Pass::Builder& pass = mBuilder->passes[i];
-					pass.renderTargetSampler = Sampler::SAMPLER_INVALID;
-					pass.renderTargetType = RenderTargetType::RT_INVALID;
-
-					for(auto it = mBuilder->metaData.samplers.begin(); it != mBuilder->metaData.samplers.end(); ++it)
-					{
-						// resolve the render target to a sampler to bind the final result texture to.
-						if(it->name == renderTarget.value)
-						{
-							pass.renderTargetSampler = it->samplerSlot;
-							//pass.renderTargetType = RenderTargetType::getRenderTargetType(it->)
-						}
-					}
-					for(auto it = mBuilder->properties.begin(); it != mBuilder->properties.end(); ++it)
-					{
-						// resolve the render target to a sampler to bind the final result texture to.
-						if(it->getName() == renderTarget.value)
-						{
-							pass.renderTargetType = RenderTargetType::getRenderTargetType(it->getDataType());
-						}
-					}
+					pass.settings = shaderBlockParser->getSettingsBlockParser().getSettings();
+					pass.renderTargetSampler = Sampler::getSampler(Setting::get("RenderTarget", pass.settings, "DIFFUSE").value);
+					pass.renderTargetType = RenderTargetType::getRenderTargetType(Setting::get("RenderType", pass.settings, "TEXTURE_2D").value);
 
 					if(pass.renderTargetSampler == Sampler::SAMPLER_INVALID)
 					{
-						logger << "[UberShaderBlockParser] Did not find sampler with name '"+renderTarget.value+"' in ShaderMetaData of main shader!" << endl;
+						logger << "[UberShaderBlockParser] Could not determine RenderTarget!" << endl;
 					}
 
 					if(pass.renderTargetType == RenderTargetType::RT_INVALID)
 					{
-						logger << "[UberShaderBlockParser] Did not find property with name '"+renderTarget.value+"' in properties of main shader!" << endl;
+						logger << "[UberShaderBlockParser] Could not determine RenderType!" << endl;
 					}
 
 					// gather all parsed data from the block parsers
-					pass.settings = shaderBlockParser->getSettingsBlockParser().getSettings();
 					pass.locationBindings = shaderBlockParser->getLocationBindingBlockParser().getLocationBindings();
 					pass.properties = shaderBlockParser->getPropertiesBlockParser().getProperties();
 					pass.addVertexShaderParts(shaderBlockParser->getVertexShaderParts());
