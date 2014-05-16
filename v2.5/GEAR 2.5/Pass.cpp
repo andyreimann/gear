@@ -38,7 +38,8 @@ Pass::Pass(
 	mZFar(Setting::get("ZFar", mSettings, "100.0").toFloat()),
 	mPolygonOffsetFactor(Setting::get("PolygonOffsetFactor", mSettings, "1.0").toFloat()),
 	mPolygonOffsetUnits(Setting::get("PolygonOffsetUnits", mSettings, "100.0").toFloat()),
-	mFovY(Setting::get("FovY", mSettings, "90.0").toFloat())
+	mFovY(Setting::get("FovY", mSettings, "90.0").toFloat()),
+	mFlipYLevel(Setting::get("FlipYLevel", mSettings, "0.0").toFloat())
 {
 	if(renderTargetType == RenderTargetType::RT_CUBE)
 	{
@@ -71,6 +72,7 @@ Pass& Pass::operator=(Pass && rhs)
 	mFovY = rhs.mFovY;
 	mPolygonOffsetFactor = rhs.mPolygonOffsetFactor;
 	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
+	mFlipYLevel = rhs.mFlipYLevel;
 	// 3. Stage: modify src to a well defined state
 	rhs.mNumRenderIterations = 0;
 	rhs.mPov = PointOfView::POV_INVALID;
@@ -150,6 +152,10 @@ PointOfView::getPointOfView(std::string const& name)
 	if(name == "MAIN_CAMERA") 
 	{
 		return MAIN_CAMERA;
+	}
+	if(name == "MAIN_CAMERA_FLIP_Y") 
+	{
+		return MAIN_CAMERA_FLIP_Y;
 	}
 	else if(name == "LOCAL") 
 	{

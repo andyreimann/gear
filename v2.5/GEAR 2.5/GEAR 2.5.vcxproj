@@ -168,6 +168,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <Lib>
       <OutputFile>$(OutDir)g2.lib</OutputFile>
       <AdditionalLibraryDirectories>../lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GEARCore.lib</AdditionalDependencies>
     </Lib>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -239,8 +240,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="AbstractShaderPart.h" />
     <ClInclude Include="AbstractWindow.h" />
-    <ClInclude Include="BaseComponent.h" />
-    <ClInclude Include="BaseSystem.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CgShader.h" />
@@ -248,12 +247,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="clock_win.h" />
     <ClInclude Include="Comparator.h" />
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="ECSManager.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectImporter.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Event.h" />
-    <ClInclude Include="EventDistributer.h" />
     <ClInclude Include="FBXAnimationComponent.h" />
     <ClInclude Include="FBXAnimationData.h" />
     <ClInclude Include="FBXAnimationState.h" />
@@ -265,14 +260,12 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="FBXVBOMesh.h" />
     <ClInclude Include="FileResource.h" />
     <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="FrameInfo.h" />
     <ClInclude Include="GEAR.h" />
     <ClInclude Include="GlslShader.h" />
     <ClInclude Include="IfElseMacro.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="InputEventListener.h" />
     <ClInclude Include="Intersection.h" />
-    <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="LightDefaultInclude.h" />
     <ClInclude Include="LightSystem.h" />
@@ -291,7 +284,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="MD5Mesh.h" />
     <ClInclude Include="NameComponent.h" />
     <ClInclude Include="NameSystem.h" />
-    <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="NonInstanceable.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PassBlockParser.h" />
@@ -336,20 +328,14 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="AbstractShaderPart.cpp" />
     <ClCompile Include="AbstractWindow.cpp" />
-    <ClCompile Include="BaseComponent.cpp" />
-    <ClCompile Include="BaseSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CgShader.cpp" />
     <ClCompile Include="clock_linux.cpp" />
     <ClCompile Include="clock_win.cpp" />
     <ClCompile Include="Comparator.cpp" />
-    <ClCompile Include="ECSManager.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectImporter.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Event.cpp" />
-    <ClCompile Include="EventDistributer.cpp" />
     <ClCompile Include="FBXAnimationComponent.cpp" />
     <ClCompile Include="FBXAnimationData.cpp" />
     <ClCompile Include="FBXAnimationState.cpp" />

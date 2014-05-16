@@ -12,7 +12,16 @@ G2::TransformComponent::TransformComponent() :
 	mParentEntityId(0),
 	mIsDirty(false),
 	mPosition(0.f,0.f,0.f),
-	mScale(1.f,1.f,1.f)
+	mScale(1.f,1.f,1.f),
+	mMode(TransformMode::SRT)
+{ }
+
+G2::TransformComponent::TransformComponent(TransformMode::Name mode) : 
+	mParentEntityId(0),
+	mIsDirty(false),
+	mPosition(0.f,0.f,0.f),
+	mScale(1.f,1.f,1.f),
+	mMode(mode)
 { }
 
 TransformComponent::TransformComponent(TransformComponent && rhs) 
@@ -31,6 +40,7 @@ TransformComponent& TransformComponent::operator=(TransformComponent && rhs)
 	mLocalSpace = std::move(rhs.mLocalSpace);
 	mWorldSpace = std::move(rhs.mWorldSpace);
 	mChildEntityIds = std::move(rhs.mChildEntityIds);
+	mMode = rhs.mMode;
 	
 	return static_cast<TransformComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
@@ -166,8 +176,18 @@ TransformComponent::updateWorldSpaceMatrix()
 
 	if(_isDirty())
 	{
-		mWorldSpaceOrthogonal = glm::translate(mPosition) * glm::toMat4(mRotation);
-		mLocalSpace = mWorldSpace = mWorldSpaceOrthogonal * glm::scale(mScale);
+		// SRT
+		if(mMode == TransformMode::SRT)
+		{
+			mWorldSpaceOrthogonal = glm::translate(mPosition) * glm::toMat4(mRotation);
+			mLocalSpace = mWorldSpace = mWorldSpaceOrthogonal * glm::scale(mScale);
+		}
+		else
+		{
+			mWorldSpaceOrthogonal = glm::toMat4(mRotation) * glm::translate(mPosition);
+			mLocalSpace = mWorldSpace = glm::scale(mScale) * mWorldSpaceOrthogonal;
+		}
+		
 		auto* parentTransformComponent = system->get(mParentEntityId);
 		if(parentTransformComponent != nullptr)
 		{

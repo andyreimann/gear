@@ -15,7 +15,7 @@ Ubershader "GEAR/Multipass" {
               RenderTargetWidth 512
               RenderTargetHeight 512
               // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
-              OutputFormat RGB
+              OutputFormat DEPTH
               PointOfView LOCAL
               ZNear 0.01
               ZFar 50.0

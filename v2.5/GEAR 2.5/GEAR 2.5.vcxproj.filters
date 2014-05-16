@@ -3,12 +3,6 @@
   <ItemGroup>
     <ClInclude Include="Defines.h" />
     <ClInclude Include="GEAR.h" />
-    <ClInclude Include="Event.h">
-      <Filter>Event</Filter>
-    </ClInclude>
-    <ClInclude Include="EventDistributer.h">
-      <Filter>Event</Filter>
-    </ClInclude>
     <ClInclude Include="MacroResource.h">
       <Filter>Importer\Effect\UberShader</Filter>
     </ClInclude>
@@ -20,9 +14,6 @@
     </ClInclude>
     <ClInclude Include="SDLWindow.h">
       <Filter>Window\SDL</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyCodes.h">
-      <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Logging</Filter>
@@ -114,9 +105,6 @@
     <ClInclude Include="FileResource.h">
       <Filter>File</Filter>
     </ClInclude>
-    <ClInclude Include="NonCopyable.h">
-      <Filter>HelperClasses\Constraints</Filter>
-    </ClInclude>
     <ClInclude Include="NonInstanceable.h">
       <Filter>HelperClasses\Constraints</Filter>
     </ClInclude>
@@ -128,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="Intersection.h">
       <Filter>Intersection</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameInfo.h">
-      <Filter>Frame</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Material</Filter>
@@ -213,18 +198,6 @@
     <ClInclude Include="FBXAnimationSystem.h">
       <Filter>ECS\FBX</Filter>
     </ClInclude>
-    <ClInclude Include="BaseComponent.h">
-      <Filter>ECS\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseSystem.h">
-      <Filter>ECS\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="ECSManager.h">
-      <Filter>ECS\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>ECS\Base</Filter>
-    </ClInclude>
     <ClInclude Include="FBXAnimationState.h">
       <Filter>ECS\FBX</Filter>
     </ClInclude>
@@ -282,12 +255,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EventDistributer.cpp">
-      <Filter>Event</Filter>
-    </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Event</Filter>
-    </ClCompile>
     <ClCompile Include="MacroResource.cpp">
       <Filter>Importer\Effect\UberShader</Filter>
     </ClCompile>
@@ -460,18 +427,6 @@
     <ClCompile Include="FBXAnimationSystem.cpp">
       <Filter>ECS\FBX</Filter>
     </ClCompile>
-    <ClCompile Include="BaseComponent.cpp">
-      <Filter>ECS\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseSystem.cpp">
-      <Filter>ECS\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="ECSManager.cpp">
-      <Filter>ECS\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>ECS\Base</Filter>
-    </ClCompile>
     <ClCompile Include="FBXAnimationState.cpp">
       <Filter>ECS\FBX</Filter>
     </ClCompile>
@@ -535,9 +490,6 @@
     <Filter Include="ECS">
       <UniqueIdentifier>{2cf91c7f-b6f0-435b-b7f9-55b4f47ec9d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Event">
-      <UniqueIdentifier>{2a3ccfa0-9913-407c-bcd7-44147b10a18b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Window">
       <UniqueIdentifier>{bf3fede8-d07b-4d72-ac2e-28c8f0cb5a94}</UniqueIdentifier>
     </Filter>
@@ -588,9 +540,6 @@
     </Filter>
     <Filter Include="Intersection">
       <UniqueIdentifier>{ad42d004-7767-44f9-9cd6-b04013497d4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Frame">
-      <UniqueIdentifier>{4692e9ae-b527-483b-a31c-fa4090683e51}</UniqueIdentifier>
     </Filter>
     <Filter Include="Material">
       <UniqueIdentifier>{3f40c20e-ca91-4bb8-a319-f3a043169110}</UniqueIdentifier>
@@ -645,9 +594,6 @@
     </Filter>
     <Filter Include="ECS\FBX">
       <UniqueIdentifier>{989ef003-986f-4aa4-9894-811365740f6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\Base">
-      <UniqueIdentifier>{7a678b0c-bfde-4409-bd55-8524fa15f16e}</UniqueIdentifier>
     </Filter>
     <Filter Include="CL">
       <UniqueIdentifier>{53fc11f3-4ce7-4ad8-a28a-f70290705743}</UniqueIdentifier>

@@ -5,12 +5,12 @@
 
 #include "Intersection.h"
 #include "UberShaderParser.h"
-#include "EventDistributer.h"
+#include <G2Core/EventDistributer.h>
 #include "AABB.h"
 
 // ECS INCLUDES
-#include "Entity.h"
-#include "ECSManager.h"
+#include <G2Core/Entity.h>
+#include <G2Core/ECSManager.h>
 #include "RenderSystem.h"
 #include "RenderComponent.h"
 #include "CameraComponent.h"
@@ -21,7 +21,8 @@
 #include "MD5Importer.h"
 #include "FBXImporter.h"
 #include "EffectImporter.h"
-#include "FrameInfo.h"
+
+#include <G2Core/FrameInfo.h>
 
 // TEXTURING
 #include "Texture3D.h"

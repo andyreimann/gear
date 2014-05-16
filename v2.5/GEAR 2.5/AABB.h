@@ -2,8 +2,9 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "Ray.h"
-#include "Entity.h"
 #include <glm/glm.hpp>
+
+#include <G2Core/Entity.h>
 
 namespace G2 
 {

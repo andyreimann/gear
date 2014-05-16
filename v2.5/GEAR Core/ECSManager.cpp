@@ -27,3 +27,18 @@ ECSManager::~ECSManager()
 		delete mRegisteredSystems[i];
 	}
 }
+
+void
+G2::ECSManager::runPhaseOnSystems(std::string const& name, FrameInfo const& frameInfo) 
+{
+	mPhaseUpdateEvent(name, frameInfo);
+}
+
+void
+G2::ECSManager::deleteComponentsForEntity(unsigned int entityId) 
+{
+	for(size_t i = 0; i < mRegisteredSystems.size(); ++i) 
+	{
+		mRegisteredSystems[i]->deleteComponentsForEntity(entityId);
+	}
+}

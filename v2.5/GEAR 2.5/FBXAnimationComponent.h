@@ -1,11 +1,12 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "BaseComponent.h"
 #include "FBXAnimationSystem.h"
 #include "FBXMesh.h"
 #include "FBXAnimationData.h"
 #include "FBXAnimationState.h"
+
+#include <G2Core/BaseComponent.h>
 
 #define USE_META_DATA 1
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Defines.h"
 
-#include <G2/BaseSystem.h>
+#include <G2Core/BaseSystem.h>
 
 
 namespace G2 

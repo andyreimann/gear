@@ -1,7 +1,9 @@
 #pragma once
 #include "GameObject.h"
+#include "EditorCamera.h"
 
 #include <G2/GEAR.h>
+#include <G2Cameras/EditorCamera.h>
 #include <vector>
 
 class TestScene
@@ -35,7 +37,15 @@ class TestScene
 		
 		void createWalls();
 
+		void createWaterSurface();
+
+		G2Cameras::EditorCamera mEditorCamera;
+
 		GameObject	mCamera;
+		glm::vec3 upVector;
+		glm::mat4 mRotation;
+		float mRotY, mRotX;
+
 		
 		G2::AABB	mCube;
 
@@ -43,16 +53,20 @@ class TestScene
 
 		std::vector<std::shared_ptr<G2::FBXMesh>> mWalls;
 
+		std::shared_ptr<G2::FBXMesh> mReflecting;
 		
 		bool		mMoveForward;
 		bool		mMoveBackward;
 		bool		mMoveLeft;
 		bool		mMoveRight;
 
+
 		int			mMx;		
 		int			mMy;
 
 		bool		mExitRendering;
+		
+		GameObject mWaterSurface;
 			
 		G2::TextureImporter mTexImporter;
 		G2::MD5Importer		mMeshImporter;

@@ -2,6 +2,7 @@
 // (c) 2014 GEAR 2.5
 #include "MD5Importer.h"
 #include "Logger.h"
+#include "Defines.h"
 
 #ifdef _MSC_VER
 	#pragma warning(disable: 4996) // _CRT_SECURE_NO_WARNINGS

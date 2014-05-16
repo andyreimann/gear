@@ -21,17 +21,17 @@ namespace G2
 	{
 		public:
 
-			Entity();
+			COREDLL_API Entity();
 			/** Move ctor.
 			 */
-			Entity(Entity && rhs);
+			COREDLL_API Entity(Entity && rhs);
 			/** Move ctor.
 			 */
-			Entity& operator=(Entity && rhs);
+			COREDLL_API Entity& operator=(Entity && rhs);
 			/** This function will return the unique ID of the Entity. 
 			* @return The unique ID of the Entity.
 			*/
-			unsigned int getId() const { return mId; }
+			unsigned int getId() const;
 
 			/* This function will return a pointer to the requested Component or nullptr
 			 * if no such Component is attached.
@@ -103,14 +103,11 @@ namespace G2
 				T::remove<T>(mId);
 			}
 
-			~Entity() 
-			{
-				ECSManager::getShared().deleteComponentsForEntity(mId);
-			}
+			COREDLL_API ~Entity();
 
 		private:
 
-			Entity& operator=(Entity const& rhs);
+			COREDLL_API Entity& operator=(Entity const& rhs);
 
 			unsigned int	mId; // The unique ID of the entity
 			

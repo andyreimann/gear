@@ -1,6 +1,8 @@
 #pragma once
-#include "BaseComponent.h"
 #include "LightSystem.h"
+
+#include <G2Core/BaseComponent.h>
+
 #include <glm/glm.hpp>
 
 namespace G2 

@@ -10,12 +10,13 @@
 #include "TransformComponent.h"
 #include "NameComponent.h"
 #include "NameSystem.h"
-#include "ECSManager.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Effect.h"
 #include "Shader.h"
 #include "Logger.h"
+
+#include <G2Core/ECSManager.h>
 
 #include <iostream>
 #include <glm/ext.hpp>
@@ -25,12 +26,6 @@ using namespace G2;
 #define M_PI 3.14159265358979323846
 
 const glm::mat4 CubeMapFaceCameraRotations[6] = {
-	/* G2::CUBE_MAP_POS_X */ //glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
-	/* G2::CUBE_MAP_NEG_X */ //glm::toMat4(glm::cross(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(0.f,1.f,0.f))), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f)))),
-	/* G2::CUBE_MAP_POS_Y */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis( 90.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_NEG_Y */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(-90.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_POS_Z */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(1.f,0.f,0.f)))),
-	/* G2::CUBE_MAP_NEG_Z */ //glm::toMat4(glm::cross(glm::quat(), glm::angleAxis(180.f, glm::vec3(0.f,0.f,1.f))))
 	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(1,0,0),glm::vec3(0, -1,0)),
 	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(-1,0,0),glm::vec3(0,-1,0)),
 	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,-1,0),glm::vec3(0,0,-1)),
@@ -47,7 +42,13 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		// update camera movement 
 		CameraComponent* camera = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>()->getRenderCamera();
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
-		bool cameraUpdated = camera->updateModelView();
+		glm::mat4 cameraSpaceMatrix;
+		auto* cameraTransformation = transformSystem->get(camera->getEntityId());
+		if(cameraTransformation != nullptr)
+		{
+			cameraSpaceMatrix = cameraTransformation->getWorldSpaceMatrix();
+		}
+		//bool cameraUpdated = camera->updateModelView();
 
 		// render all passes -> components with passes should be cached in system!
 		for (int i = 0; i < components.size() ; ++i) 
@@ -63,7 +64,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
 					{
 						// TODO: Should be calculated only once per frame => cached on CameraComponent?
-						invCameraRot = glm::inverse(camera->mRotation); // calc once per cube map
+						invCameraRot = glm::toMat4(glm::inverse(cameraTransformation->getRotation())); // calc once per cube map
 #ifdef GLM_FORCE_RADIANS
 						passProjectionMatrix = glm::perspective(it->getFovY() * (float)M_PI / 180.f, it->getRenderTarget().getRenderTexture()->getWidth() / it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
 #else
@@ -81,7 +82,27 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 						glm::mat4 passCameraSpaceMatrix;
 						if(it->getPov() == PointOfView::MAIN_CAMERA)
 						{
-							passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
+							if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
+							{ // only use cameras position
+								passCameraSpaceMatrix = glm::translate(glm::vec3(cameraSpaceMatrix * glm::vec4(0.f,0.f,0.f,1.f)));
+							}
+							else
+							{
+								passCameraSpaceMatrix = cameraSpaceMatrix;
+							}
+						}
+						if(it->getPov() == PointOfView::MAIN_CAMERA_FLIP_Y)
+						{
+							glm::vec3 camPos = -cameraTransformation->getPosition();
+							glm::vec3 viewVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,0.f,-1.f,0.f)));
+							glm::vec3 upVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,1.f,0.f,0.f)));
+							upVec.x = -upVec.x;
+							upVec.z = -upVec.z;
+							viewVec.y = -viewVec.y; //
+							camPos.y = camPos.y - (2.f * (camPos.y - (-it->getFlipYLevel())));
+							//logger << "POS " << camPos << " DIR " << viewVec << endl;
+							passCameraSpaceMatrix = glm::inverse(glm::lookAt(glm::vec3(camPos),glm::vec3(camPos)+viewVec,upVec));
+							//passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
 						}
 						else
 						{
@@ -89,7 +110,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 							auto* transformation = transformSystem->get(comp.getEntityId());
 							if(transformation != nullptr)
 							{
-								passCameraSpaceMatrix = transformation->getWorldSpaceMatrix();
+								passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
 							}
 						}
 						if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
@@ -137,7 +158,8 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			shader->bind();
 			// regular rendering
 			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-			render(camera->getProjectionMatrix(), camera->getCameraSpaceMatrix(), &comp, shader);
+
+			render(camera->getProjectionMatrix(), cameraSpaceMatrix, &comp, shader);
 		}
 	}
 }

@@ -2,8 +2,9 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "ResourceBuilder.h"
-#include "Entity.h"
 #include "MD5AnimationComponent.h"
+
+#include <G2Core/Entity.h>
 
 #include <vector>
 

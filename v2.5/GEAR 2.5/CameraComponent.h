@@ -1,13 +1,16 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "BaseComponent.h"
 #include "CameraSystem.h"
+
+#include <G2Core/BaseComponent.h>
 
 #include <glm/glm.hpp>
 
+
 namespace G2 
 {
+	
 	/** This class encapsulates and handles the movement of a camera inside the Editor s
 	 * render window for the current EditableScene.
 	 * @created:	2014/01/19

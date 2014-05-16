@@ -1,7 +1,7 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "KeyCodes.h"
+#include <G2Core/KeyCodes.h>
 
 #include <GL/glew.h>
 #include <sstream>
@@ -77,13 +77,6 @@ x; \
 
 namespace G2 
 {
-
-	typedef int MouseButton;
-	
-	const MouseButton MOUSE_LEFT = 1;
-	const MouseButton MOUSE_MIDDLE = 2;
-	const MouseButton MOUSE_RIGHT = 3;
-
 	const float EPSILON = FLT_MIN;
 	const float MAX_FLOAT = FLT_MAX;
 	const float MAX_NEG_FLOAT = -FLT_MAX;
@@ -102,8 +95,6 @@ namespace G2
 #else 
 	#define G2_DEPRECATED 
 #endif
-
-#define ECS_USE_VECTOR 1
 
 	// fundamental type definitions
 	typedef unsigned char		Byte;

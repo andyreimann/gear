@@ -1,0 +1,123 @@
+Ubershader "GEAR/Multipass" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inColor ("Vertex Color", vec4) = { COLOR_0 }
+     inNormal ("Vertex Normal", vec3) = { NORMAL }
+   }
+   Properties {
+       _reflectionMap ("The reflection map", samplerCube) = { DIFFUSE }
+   }
+   Shader "GLSL" {
+     Passes {
+        Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+           }
+           Settings {
+              Name "ShadowPass"
+              RenderTarget DIFFUSE
+              RenderType CUBEMAP
+              RenderTargetWidth 512
+              RenderTargetHeight 512
+              // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
+              OutputFormat RGB
+              PointOfView LOCAL
+              ZNear 0.01
+              ZFar 50.0
+              FovY 90.0
+              PolygonOffsetFactor 0.0
+              PolygonOffsetUnits 0.0
+           }
+
+           #VERTEXPROGRAM
+             #INCLUDE "G2.matrices" 
+
+             void main(void) 
+             {
+                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+             }
+           #FRAGMENTPROGRAM
+              #INCLUDE "G2.material" // include GEAR default stuff
+           
+              out vec4 outColor; // here goes the final color
+              void main() 
+              {
+                outColor = material.ambient + material.diffuse;
+              }
+        }
+     }
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec3 normal;
+          vec3 eye;
+          vec4 color;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.normal = matrices.normal_matrix * inNormal;
+            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
+            gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+            dataOut.color = inColor;
+       }
+     #FRAGMENTPROGRAM
+       #INCLUDE "G2.material" // include GEAR default stuff
+       #INCLUDE "G2.light" // include GEAR default stuff
+
+        out vec4 outColor; // here goes the final color
+
+
+        float toTexDepth( vec3 d, float near, float far) 
+        {      
+          float dist = max(max(abs(d.x),abs(d.y)),abs(d.z)); 
+          float fmn = far - near;   
+          dist = ((far+near)/(fmn)) + (1.0/dist)*((-2.0*far*near)/(fmn));   
+          return (dist+1.0)/2.0;   
+        }
+           
+        in Data
+        {
+           vec3 normal;
+           vec3 eye;
+           vec4 color;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+
+          // normalize both input vectors
+          vec3 n = normalize(dataIn.normal);
+          vec3 e = normalize(dataIn.eye);
+
+          // set color to ambient material term
+          outColor = material.ambient * texture(_reflectionMap, n);
+
+          for(int i = 0; i < G2ActiveLights; ++i)
+          {
+            // Compute the ligt direction
+            vec3 l = vec3(light[i].position)+dataIn.eye;
+            float dist = length(l);
+            l = normalize(l);
+            // point light
+            vec4 spec = vec4(0.0);
+            vec3 n = normalize(dataIn.normal);
+            vec3 e = normalize(dataIn.eye);
+
+            float intensity = max(dot(n,l), 0.0);
+            if (intensity > 0.0) 
+            {
+              float att = 1.0 / (light[i].attenuation.x +
+                      light[i].attenuation.y * dist +
+                      light[i].attenuation.z * dist * dist);
+              vec3 h = normalize(l + e);
+              float intSpec = max(dot(h,n), 0.0);
+              spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+            }
+            outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+          }
+        }
+   }
+ }

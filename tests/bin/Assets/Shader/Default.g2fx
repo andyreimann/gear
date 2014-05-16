@@ -113,16 +113,12 @@ Ubershader "GEAR/Default" {
             {
               // point light
               vec4 spec = vec4(0.0);
-
               // Compute the ligt direction
               vec3 l = vec3(light[i].position)+dataIn.eye;
-              vec3 ShadowCoord = vec3(light[i].position)-dataIn.eye;
               float dist = length(l);
-
-              // near clip plane, far clip plane
+              // near clip plane, far clip plane used while calculating shadow
               float texDepth = toTexDepth(l, 0.01, 50.0);
               l = normalize(l);
-              ShadowCoord = normalize(ShadowCoord);
               float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
 
               if( texDepth >= shadowDepth && texDepth < 1.0 )

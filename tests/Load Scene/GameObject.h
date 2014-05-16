@@ -1,5 +1,5 @@
 #pragma once
-#include <G2/Entity.h>
+#include <G2Core/Entity.h>
 
 class GameObject : public G2::Entity
 {
@@ -16,7 +16,6 @@ class GameObject : public G2::Entity
 		{
 			return static_cast<GameObject&>(G2::Entity::operator=(std::move(rhs)));
 		}
-
 
 };
 

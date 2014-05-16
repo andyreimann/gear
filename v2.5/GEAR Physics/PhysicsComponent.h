@@ -1,5 +1,5 @@
 #pragma once
-#include <G2/BaseComponent.h>
+#include <G2Core/BaseComponent.h>
 #include "PhysicsSystem.h"
 #include "Defines.h"
 

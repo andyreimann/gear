@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseSystem.h"
+#include <G2Core/BaseSystem.h>
 
 namespace G2 
 {

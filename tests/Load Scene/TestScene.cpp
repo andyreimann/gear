@@ -19,7 +19,9 @@ TestScene::TestScene()
 	mMy(0),
 	mExitRendering(false),
 	polygonoffsetA(1.f),
-	polygonoffsetB(0.f)
+	polygonoffsetB(0.f),
+	mRotY(0),
+	mRotX(0)
 {
 	srand(2006);
 
@@ -59,12 +61,15 @@ TestScene::TestScene()
 	*/
 
 	// create and activate the camera
-	auto* cameraComponent = mCamera.addComponent<G2::CameraComponent>("Render Camera");
-	cameraComponent->setAsRenderCamera();
-	cameraComponent->setMoveSpeed(1.0f);
-	cameraComponent->stepBackward();
-	cameraComponent->stepLeft();
-	cameraComponent->setMoveSpeed(0.02f);
+	//auto* cameraComponent = mCamera.addComponent<G2::CameraComponent>("Render Camera");
+	//cameraComponent->setAsRenderCamera();
+	//cameraComponent->setMoveSpeed(1.0f);
+	//cameraComponent->stepBackward();
+	//cameraComponent->stepLeft();
+	//cameraComponent->setMoveSpeed(0.02f);
+	//upVector = cameraComponent->getUpVector();
+	//mCamera.addComponent<G2::TransformComponent>(G2::TransformMode::TRS);
+
 	
 	// load default shader for the engine
 	/*G2::ECSManager::getShared()
@@ -85,7 +90,6 @@ TestScene::TestScene()
 	mCube.enableRendering();
 	onViewportResize(1024,768);
 
-
 	G2::EventDistributer::onRenderFrame.hook(this, &TestScene::onRenderFrame);
 	G2::EventDistributer::onViewportResize.hook(this, &TestScene::onViewportResize);
 	G2::EventDistributer::onKeyUp.hook(this, &TestScene::onKeyUp);
@@ -101,15 +105,15 @@ TestScene::TestScene()
 	//createPlane(glm::vec4(3.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::LINEAR, false));
 	
 	//createPlane(glm::vec4(4.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::NEAREST, false));
-
+	
 	createWalls();
 
 	mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::SPOT);
 	mLightType = G2::LightType::SPOT;
-	light->diffuse = glm::vec4(0.3,0.6,0.f,1.f);
-	light->specular = glm::vec4(1.f,1.f,1.f,1.f);
+	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
+	light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
 	light->cutOffDegrees = 40.f;
 	
@@ -162,10 +166,14 @@ TestScene::TestScene()
 		auto* animComponent = mSampleMesh3->getComponent<G2::FBXAnimationComponent>();
 		animComponent->tempSetPoseIndex(0);
 	}
+
+
+	createWaterSurface();
 }
 
 TestScene::~TestScene()
 {
+	mEditorCamera.~EditorCamera();
 	G2::EventDistributer::onRenderFrame.unHook(this, &TestScene::onRenderFrame);
 	G2::EventDistributer::onViewportResize.unHook(this, &TestScene::onViewportResize);
 	G2::EventDistributer::onKeyUp.unHook(this, &TestScene::onKeyUp);
@@ -305,6 +313,17 @@ TestScene::createWalls()
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,2.f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,0.7f,0.f,1.f));
+	/*
+	mReflecting = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
+	transformation = mReflecting->addComponent<G2::TransformComponent>();
+	transformation->setPosition(glm::vec3(2.f,0.f,2.f));
+
+	renderComp = mReflecting->addComponent<G2::RenderComponent>();
+	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
+	renderComp->material.setShininess(128.f);
+	renderComp->material.setAmbient(glm::vec4(0.5f,0.5f,0.5f,1.f));
+	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
+	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/CubeReflection.g2fx"));*/
 }
 
 void 
@@ -391,8 +410,8 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
-		light->diffuse = glm::vec4(0.5,0.6,0.4f,1.f);
-		light->specular = glm::vec4(1.f,1.f,1.f,1.f);
+		light->diffuse = glm::vec4(0.5,0.6,0.4f,0.f);
+		light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 		//light->linearAttenuation = 1.f;
 	
 		auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
@@ -505,26 +524,56 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 void
 TestScene::onViewportResize(int width, int height) 
 {
-	if(height == 0)
-	{ 
-		height = 1; 
-	}
-	auto* camera = mCamera.getComponent<G2::CameraComponent>();
-	camera->setProjectionMatrix(glm::perspective(80.0f, width / (float)height, 0.01f, 50.0f), width, height);
+	//if(height == 0)
+	//{ 
+	//	height = 1; 
+	//}
+	//auto* camera = mCamera.getComponent<G2::CameraComponent>();
+	//camera->setProjectionMatrix(glm::perspective(80.0f, width / (float)height, 0.01f, 50.0f), width, height);
+	mEditorCamera.setViewport(width, height);
 }
 
 void 
 TestScene::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 {
-		int dx = mouseCoords.x - mMx;
-		int dy = mouseCoords.y - mMy;
+	//int dx = mouseCoords.x - mMx;
+	//int dy = mouseCoords.y - mMy;
+	//	
+	//mRotX += dy*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed();
+	//mRotY += dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed();
 
-		mMx = mouseCoords.x;
-		mMy = mouseCoords.y;
+	//mMx = mouseCoords.x;
+	//mMy = mouseCoords.y;
 
-		auto* camera = mCamera.getComponent<G2::CameraComponent>();
-		camera->rotate(dy*camera->getRotationSpeed(), 
-							 dx*camera->getRotationSpeed());
+	//auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
+
+	//glm::mat4 orientation;
+	//orientation = glm::rotate(orientation, mRotX, glm::vec3(1,0,0));
+	//orientation = glm::rotate(orientation, mRotY, glm::vec3(0,1,0));
+
+	//camTransform->setRotation(orientation);
+
+
+
+
+		
+		//glm::mat4 rotX = glm::rotate(degreesX, glm::vec3(1,0,0));
+		//// accumulate the real Y-Axis to rotate around
+
+		//upVector = glm::rotateX(upVector, (degreesX));
+		//upVector = glm::normalize(upVector);
+	
+		//glm::mat4 rotY = glm::rotate(degreesY, upVector);
+
+		//mRotation = rotY * rotX * mRotation;
+		//camTransform->setRotation(mRotation);
+
+
+
+		//camTransform->rotateAxis(dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), upVector);
+		//camTransform->rotateEulerAnglesYXZ(	dy*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), 
+		//									dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), 
+		//									0.f);
 }
 
 void
@@ -533,27 +582,37 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 	// set exit state - the only mutable property!
 	frameInfo.stopRenderingAfterThisFrame = mExitRendering;
 
-	auto* camera = mCamera.getComponent<G2::CameraComponent>();
+	//auto* camera = mCamera.getComponent<G2::CameraComponent>();
 
-	// make movement independent from frame rate
-	camera->setMoveSpeed((float)frameInfo.timeSinceLastFrame);
+	//// make movement independent from frame rate
+	//camera->setMoveSpeed((float)frameInfo.timeSinceLastFrame);
 
-	if(mMoveForward) 
-	{ 
-		camera->stepForward(); 
-	}
-	if(mMoveBackward) 
-	{ 
-		camera->stepBackward(); 
-	}
-	if(mMoveLeft) 
-	{ 
-		camera->stepLeft(); 
-	}
-	if(mMoveRight) 
-	{ 
-		camera->stepRight();
-	}
+	//if(mMoveForward) 
+	//{ 
+	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
+	//	camTransform->translate(glm::vec3(0,0,1) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
+	//}
+	//if(mMoveBackward) 
+	//{ 
+	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
+	//	camTransform->translate(glm::vec3(0,0,-1) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
+	//}
+	//if(mMoveLeft) 
+	//{ 
+	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
+	//	camTransform->translate(glm::vec3(1,0,0) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
+	//}
+	//if(mMoveRight) 
+	//{ 
+	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
+	//	camTransform->translate(glm::vec3(-1,0,0) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
+	//}
+	/*
+	auto* tcomp = mReflecting->getComponent<G2::TransformComponent>();
+	if(tcomp != nullptr)
+	{
+		tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
+	}*/
 
 	for (int i = 0; i < mFbxMeshes.size() ; ++i) 
 	{
@@ -572,4 +631,62 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 		transformComponent->setRotation(rot);
 		//transformComponent->setPosition(glm::vec3(0,1,0));
 	}
+}
+
+void
+TestScene::createWaterSurface() 
+{
+	auto* water = mWaterSurface.addComponent<G2::RenderComponent>();
+	water->drawMode = GL_TRIANGLES;
+
+	// prepare vao
+	G2::VertexArrayObject vao;
+
+	vao.resize(4);
+
+	glm::vec4 planeGeometry[4];
+	planeGeometry[0] = glm::vec4(-5.f,0.f,-5.f,1.f);
+	planeGeometry[1] = glm::vec4(5.f,0.f,-5.f,1.f);
+	planeGeometry[2] = glm::vec4(5.f,0.f,5.f,1.f);
+	planeGeometry[3] = glm::vec4(-5.f,0.f,5.f,1.f);
+
+	vao.writeData(G2::Semantics::POSITION, planeGeometry);
+
+	// build tex coordinates
+	glm::vec2 tex[4];
+	tex[0] = glm::vec2(0.f,0.f);
+	tex[1] = glm::vec2(0.f,1.f);
+	tex[2] = glm::vec2(1.f,1.f);
+	tex[3] = glm::vec2(1.f,0.f);
+	vao.writeData(G2::Semantics::TEXCOORD_0, tex);
+
+	// build tex coordinates
+	glm::vec3 normal[4];
+	normal[0] = glm::vec3(0.f,1.f,0.f);
+	normal[1] = glm::vec3(0.f,1.f,0.f);
+	normal[2] = glm::vec3(0.f,1.f,0.f);
+	normal[3] = glm::vec3(0.f,1.f,0.f);
+	vao.writeData(G2::Semantics::NORMAL, normal);
+
+	// build indices - planes were rendered using indices as soon as we add some to the vao
+	unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
+	vao.writeIndices(&indices[0], 6);
+
+	// assign vao to RenderComponent using move semantic
+	water->vaos.push_back(std::move(vao));
+
+	// load and assign shader
+	water->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Water.g2fx"));
+
+	water->material
+		.setAmbient(glm::vec4(0.2,0.2,0.2,0.2))
+		.setDiffuse(glm::vec4(0.2,0.3,0.4,0.3))
+		.setSpecular(glm::vec4(0.2,0.3,0.4,0.2))
+		.setShininess(128.f);
+
+	glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	auto* transformation = mWaterSurface.addComponent<G2::TransformComponent>();
+	transformation->translate(glm::vec3(0.f,-3.5f,0.f));
 }

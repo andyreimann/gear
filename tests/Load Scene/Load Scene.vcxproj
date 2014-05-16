@@ -101,7 +101,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>g2.lib;GEARPhysics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>g2.lib;GEARCore.lib;GEARPhysics.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PreBuildEvent>
@@ -141,11 +141,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="TestScene.h" />
   </ItemGroup>

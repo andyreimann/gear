@@ -32,3 +32,15 @@ Entity& Entity::operator=(Entity && rhs)
 
 	return *this;
 }
+
+unsigned int
+G2::Entity::getId() const 
+{
+	return mId;
+}
+
+
+G2::Entity::~Entity() 
+{
+	ECSManager::getShared().deleteComponentsForEntity(mId);
+}

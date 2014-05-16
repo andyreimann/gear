@@ -2,10 +2,11 @@
 // (c) 2014 GEAR 2.5
 #include "SDLWindow.h"
 #include "Defines.h"
-#include "ECSManager.h"
 #include "AABB.h"
-#include "EventDistributer.h"
 #include "Logger.h"
+
+#include <G2Core/ECSManager.h>
+#include <G2Core/EventDistributer.h>
 
 #include <iostream>
 #include <unordered_map>
@@ -115,10 +116,10 @@ SDLWindow::renderSingleFrame()
 			return false;
 		}
 		else if (e.type == SDL_MOUSEBUTTONDOWN) {
-			EventDistributer::onMouseDown(SDL_BUTTON_LEFT, glm::detail::tvec2<int>(e.button.x,e.button.y));
+			EventDistributer::onMouseDown(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP) {
-			EventDistributer::onMouseUp(SDL_BUTTON_LEFT, glm::detail::tvec2<int>(e.button.x,e.button.y));
+			EventDistributer::onMouseUp(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
 		}
 		else if (e.type == SDL_MOUSEMOTION) {
 			if(!SDL_GetRelativeMouseMode() || mNsightActive) continue;
@@ -126,6 +127,9 @@ SDLWindow::renderSingleFrame()
 			mMousePosition.x += e.motion.xrel;
 			mMousePosition.y += e.motion.yrel;
 			EventDistributer::onMouseMove(mMousePosition);
+		}
+		else if (e.type == SDL_MOUSEWHEEL) {
+			EventDistributer::onMouseWheel(e.wheel.y);
 		}
 		else if (e.type == SDL_KEYDOWN) {
 			EventDistributer::onKeyDown(static_cast<G2::KeyCode>(e.key.keysym.sym));

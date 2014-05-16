@@ -1,13 +1,22 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "BaseComponent.h"
 #include "TransformSystem.h"
+
+#include <G2Core/BaseComponent.h>
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
 namespace G2 
 {
+	namespace TransformMode
+	{
+		enum Name {
+			SRT = 0, // default
+			TRS = 1,
+		};
+	};
 	/** A TransformComponent describes the transformation in 3D-Space.
 	 * This transformation is split up in a rotation, translation and a scaling.
 	 * It combines the transformation into a final local and world space matrix
@@ -25,6 +34,9 @@ namespace G2
 			/** Constructs a new TransformComponent.
 			 */
 			TransformComponent();
+			/** Constructs a new TransformComponent.
+			 */
+			TransformComponent(TransformMode::Name transformMode);
 			/** Move constructor to move a TransformComponent.
 			 */
 			TransformComponent(TransformComponent && rhs);
@@ -170,6 +182,7 @@ namespace G2
 			void _setDirty();
 			bool _hasCircularDependency(unsigned int initialParentEntityId) const;
 
+			TransformMode::Name mMode;			// Default is SRT
 			unsigned int	mParentEntityId;	// The Entity id of the parent TransformComponent
 			bool			mIsDirty;			// Indicates whether something has changed since last recalculation of the local space matrix
 			glm::vec3		mPosition;			// The position

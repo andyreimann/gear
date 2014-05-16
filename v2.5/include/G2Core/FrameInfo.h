@@ -1,6 +1,7 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
+#include "Defines.h"
 
 namespace G2 
 {
@@ -10,7 +11,7 @@ namespace G2
 	 */
 	struct FrameInfo 
 	{
-		FrameInfo()
+		COREDLL_API FrameInfo()
 			: frame(0),
 			timeSinceRenderStart(0.0),
 			timeSinceLastFrame(0.0),

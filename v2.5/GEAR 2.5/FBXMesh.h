@@ -2,12 +2,13 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "ResourceBuilder.h"
-#include "Entity.h"
 
 // FBX Helper Classes
 #include "FBXMaterialCache.h"
 #include "FBXVBOMesh.h"
 #include "FBXLightCache.h"
+
+#include <G2Core/Entity.h>
 
 #include <fbxsdk.h>
 #include <glm/glm.hpp>

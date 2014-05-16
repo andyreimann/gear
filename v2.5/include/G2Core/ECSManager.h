@@ -40,34 +40,25 @@ namespace G2
 			 * @param name The name of the phase to run.
 			 * 
 			 */
-			void runPhaseOnSystems(std::string const& name, FrameInfo const& frameInfo) 
-			{
-				mPhaseUpdateEvent(name, frameInfo);
-			}
+			COREDLL_API void runPhaseOnSystems(std::string const& name, FrameInfo const& frameInfo);
 
-			void deleteComponentsForEntity(unsigned int entityId) 
-			{
-				for(size_t i = 0; i < mRegisteredSystems.size(); ++i) 
-				{
-					mRegisteredSystems[i]->deleteComponentsForEntity(entityId);
-				}
-			}
+			COREDLL_API void deleteComponentsForEntity(unsigned int entityId);
 			/** Get a reference to one single instance.
 			 * @return A reference of one single instance.
 			 */
-			static ECSManager& getShared();
+			COREDLL_API static ECSManager& getShared();
 			/** Destroys the one single instance.
 			 */
-			static void destroy();
+			COREDLL_API static void destroy();
 
 		private:
 			// don't allow instances
-			ECSManager() {}
-			ECSManager(ECSManager const&) {}
-			ECSManager& operator=(ECSManager const&) { return *this; }
-			~ECSManager();
+			COREDLL_API ECSManager() {}
+			COREDLL_API ECSManager(ECSManager const&) {}
+			COREDLL_API ECSManager& operator=(ECSManager const&) { return *this; }
+			COREDLL_API ~ECSManager();
 
-			static ECSManager*				mInstance_;			// The one single instance
+			COREDLL_API static ECSManager*				mInstance_;			// The one single instance
 			std::vector<BaseSystemWrapper*>	mRegisteredSystems; // The registered Systems
 			Event<std::string const&,FrameInfo const&>		mPhaseUpdateEvent;	// The event used for the updates for all managed Systems
 	};

@@ -5,9 +5,9 @@
 #include "ShaderMetaData.h"
 #include "Property.h"
 #include "RenderTarget.h"
-#include "NonCopyable.h"
 #include "Material.h"
 
+#include <G2Core/NonCopyable.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -23,6 +23,7 @@ namespace G2
 	{
 		enum Name {
 			MAIN_CAMERA, // Default value
+			MAIN_CAMERA_FLIP_Y, // Default value
 			LOCAL,
 			POV_INVALID,
 		};
@@ -132,7 +133,12 @@ namespace G2
 			// This function will perform all steps needed right before the Pass will be rendered.
 			void preRender() const;
 			// This function will perform all steps needed right after the Pass was rendered.
-			void postRender() const;
+			void postRender() const;			/// This function will return the FlipYLevel. 
+			/// @return The FlipYLevel.
+			float const& getFlipYLevel() const { return mFlipYLevel; }
+			/// This function will set the FlipYLevel to the given value.
+			/// @param value The FlipYLevel.
+			void setFlipYLevel(float const& value) { mFlipYLevel = value; }
 		protected:
 			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
@@ -144,6 +150,6 @@ namespace G2
 			float									mFovY;					// The field of view of the Pass
 			float									mPolygonOffsetFactor;	// The polygon offset factor to use while rendering the Pass
 			float									mPolygonOffsetUnits;	// The polygon offset units to use while rendering the Pass
-
+			float									mFlipYLevel;			// The flip y level used when rendering with PointOfView mode MAIN_CAMERA_FLIP_Y
 	};
 };

@@ -2,8 +2,9 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "AbstractWindow.h"
-#include "KeyCodes.h"
-#include "FrameInfo.h"
+
+#include <G2Core/KeyCodes.h>
+#include <G2Core/FrameInfo.h>
 
 #include <glm/glm.hpp>
 #include <SDL/SDL.h>
