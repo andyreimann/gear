@@ -14,11 +14,11 @@
 int main(int argc, char *argv[])
 {
 	
-	G2::SDLWindow window(1024,768,"Engine Test");
+	G2::SDLWindow window("Engine Test",1600,768,false);
 	
 	G2_init();
 
-	TestScene testScene;
+	TestScene testScene(window);
 
 	G2_loop(window);
 

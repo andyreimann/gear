@@ -4,10 +4,10 @@
 
 using namespace G2;
 
-AbstractWindow::AbstractWindow(unsigned int width, unsigned int height, std::string const& title)
+AbstractWindow::AbstractWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse)
 	: mWidth(width),
 	mHeight(height),
-	mTitle(title)
+	mTitle(title),
+	mHideMouse(hideMouse)
 {
-
 }

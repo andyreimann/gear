@@ -6,19 +6,14 @@
 #include "CameraComponent.h"
 #include "LightSystem.h"
 #include "LightComponent.h"
-#include "TransformSystem.h"
 #include "TransformComponent.h"
-#include "NameComponent.h"
-#include "NameSystem.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Effect.h"
-#include "Shader.h"
 #include "Logger.h"
 
 #include <G2Core/ECSManager.h>
 
-#include <iostream>
 #include <glm/ext.hpp>
 
 using namespace G2;
@@ -39,110 +34,34 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
 	if(name == "render") 
 	{
-		// update camera movement 
-		CameraComponent* camera = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>()->getRenderCamera();
+		// get pointer to all needed systems once per frame -> less dynamic casts!
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
+		auto* cameraSystem = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>();
+		auto* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
+
+		CameraComponent* camera = cameraSystem->getRenderCamera();
+		assert(camera != nullptr);
+		
 		glm::mat4 cameraSpaceMatrix;
 		auto* cameraTransformation = transformSystem->get(camera->getEntityId());
+		glm::mat4 inverseCameraRotation;
+		glm::vec3 cameraPosition;
 		if(cameraTransformation != nullptr)
 		{
 			cameraSpaceMatrix = cameraTransformation->getWorldSpaceMatrix();
+			inverseCameraRotation = camera->getInverseCameraRotation();
+			cameraPosition = cameraTransformation->getPosition();
 		}
-		//bool cameraUpdated = camera->updateModelView();
 
-		// render all passes -> components with passes should be cached in system!
-		for (int i = 0; i < components.size() ; ++i) 
-		{
-			RenderComponent& comp = components[i];// check if this component has a pass attached
-			if(comp.effect.get() != nullptr && comp.effect->getPasses().size() > 0) 
-			{
-				for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
-				{
-					it->preRender();
-					glm::mat4 passProjectionMatrix = camera->getProjectionMatrix();
-					glm::mat4 invCameraRot; // only needed in cube map rendering so far!
-					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
-					{
-						// TODO: Should be calculated only once per frame => cached on CameraComponent?
-						invCameraRot = glm::toMat4(glm::inverse(cameraTransformation->getRotation())); // calc once per cube map
-#ifdef GLM_FORCE_RADIANS
-						passProjectionMatrix = glm::perspective(it->getFovY() * (float)M_PI / 180.f, it->getRenderTarget().getRenderTexture()->getWidth() / it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
-#else
-						passProjectionMatrix = glm::perspective(it->getFovY(), it->getRenderTarget().getRenderTexture()->getWidth() / (float)it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
-#endif
-					}
+		renderPasses(
+			camera->getProjectionMatrix(),
+			cameraPosition,
+			cameraSpaceMatrix, 
+			inverseCameraRotation, 
+			transformSystem,
+			lightSystem
+		);
 
-					for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
-					{
-						/*if(renderIter != 0)
-						{
-							continue;
-						}*/
-						it->getRenderTarget().bind(renderIter);
-						glm::mat4 passCameraSpaceMatrix;
-						if(it->getPov() == PointOfView::MAIN_CAMERA)
-						{
-							if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
-							{ // only use cameras position
-								passCameraSpaceMatrix = glm::translate(glm::vec3(cameraSpaceMatrix * glm::vec4(0.f,0.f,0.f,1.f)));
-							}
-							else
-							{
-								passCameraSpaceMatrix = cameraSpaceMatrix;
-							}
-						}
-						if(it->getPov() == PointOfView::MAIN_CAMERA_FLIP_Y)
-						{
-							glm::vec3 camPos = -cameraTransformation->getPosition();
-							glm::vec3 viewVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,0.f,-1.f,0.f)));
-							glm::vec3 upVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,1.f,0.f,0.f)));
-							upVec.x = -upVec.x;
-							upVec.z = -upVec.z;
-							viewVec.y = -viewVec.y; //
-							camPos.y = camPos.y - (2.f * (camPos.y - (-it->getFlipYLevel())));
-							//logger << "POS " << camPos << " DIR " << viewVec << endl;
-							passCameraSpaceMatrix = glm::inverse(glm::lookAt(glm::vec3(camPos),glm::vec3(camPos)+viewVec,upVec));
-							//passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
-						}
-						else
-						{
-							// try to get the local transformation component
-							auto* transformation = transformSystem->get(comp.getEntityId());
-							if(transformation != nullptr)
-							{
-								passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
-							}
-						}
-						if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
-						{
-							passCameraSpaceMatrix = glm::inverse( // adjust cam space mat to current cube map face
-								passCameraSpaceMatrix * // lightTrans
-								invCameraRot * // cam translation
-								CubeMapFaceCameraRotations[renderIter] // face rotation
-							);
-						}
-						for (int k = 0; k < components.size() ; ++k) 
-						{
-							RenderComponent& innerComp = components[k];
-							if(innerComp.vaos.size() == 0 || i == k)
-							{
-								// no VAO attached or pass component is this component
-								continue;
-							}
-							std::shared_ptr<Shader> passShader = getPassRenderShader(&innerComp, &(*it));
-							// bind shader before call render()
-							passShader->bind();
-							// pass rendering
-							render(passProjectionMatrix, passCameraSpaceMatrix, &innerComp, passShader);
-						}
-						it->getRenderTarget().unbind();
-					}
-					// bind result of pass
-					it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
-					it->postRender();
-				}
-			}
-		}
 		// do normal rendering
 		for (int i = 0; i < components.size() ; ++i) 
 		{
@@ -158,21 +77,117 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			shader->bind();
 			// regular rendering
 			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-
-			render(camera->getProjectionMatrix(), cameraSpaceMatrix, &comp, shader);
+			render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
 		}
 	}
 }
 
 void
-RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, RenderComponent* component, std::shared_ptr<Shader>& boundShader)
+RenderSystem::renderPasses(
+					glm::mat4 const& cameraProjectionMatrix, 
+					glm::vec3 const& cameraPosition,
+					glm::mat4 const& cameraSpaceMatrix, 
+					glm::mat4 const& inverseCameraRotation, 
+					TransformSystem* transformSystem,
+					LightSystem* lightSystem) 
+{
+	// render all passes -> components with passes should be cached in system!
+	for (int i = 0; i < components.size() ; ++i) 
+	{
+		auto& comp = components[i];// check if this component has a pass attached
+		if(comp.effect.get() != nullptr && comp.effect->getPasses().size() > 0) 
+		{
+			for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
+			{
+				it->preRender();
+				glm::mat4 passProjectionMatrix = cameraProjectionMatrix;
+					
+				if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
+				{
+#ifdef GLM_FORCE_RADIANS
+					passProjectionMatrix = glm::perspective(it->getFovY() * (float)M_PI / 180.f, it->getRenderTarget().getRenderTexture()->getWidth() / it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
+#else
+					passProjectionMatrix = glm::perspective(it->getFovY(), it->getRenderTarget().getRenderTexture()->getWidth() / (float)it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
+#endif
+				}
+
+				for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
+				{
+					it->getRenderTarget().bind(renderIter);
+					glm::mat4 passCameraSpaceMatrix;
+					if(it->getPov() == PointOfView::MAIN_CAMERA)
+					{
+						if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
+						{ // only use cameras position
+							passCameraSpaceMatrix = glm::translate(glm::vec3(cameraSpaceMatrix * glm::vec4(0.f,0.f,0.f,1.f)));
+						}
+						else
+						{
+							passCameraSpaceMatrix = cameraSpaceMatrix;
+						}
+					}
+					if(it->getPov() == PointOfView::MAIN_CAMERA_FLIP_Y)
+					{
+						glm::vec3 camPos = -cameraPosition;
+						glm::vec3 viewVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,0.f,-1.f,0.f)));
+						glm::vec3 upVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,1.f,0.f,0.f)));
+						upVec.x = -upVec.x;
+						upVec.z = -upVec.z;
+						viewVec.y = -viewVec.y; //
+						camPos.y = camPos.y - (2.f * (camPos.y - (-it->getFlipYLevel())));
+						//logger << "POS " << camPos << " DIR " << viewVec << endl;
+						passCameraSpaceMatrix = glm::inverse(glm::lookAt(glm::vec3(camPos),glm::vec3(camPos)+viewVec,upVec));
+						//passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
+					}
+					else
+					{
+						// try to get the local transformation component
+						auto* transformation = transformSystem->get(comp.getEntityId());
+						if(transformation != nullptr)
+						{
+							passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+						}
+					}
+					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
+					{
+						passCameraSpaceMatrix = glm::inverse( // adjust cam space mat to current cube map face
+							passCameraSpaceMatrix * // lightTrans
+							inverseCameraRotation * // inverse render camera rotation
+							CubeMapFaceCameraRotations[renderIter] // face rotation
+						);
+					}
+					for (int k = 0; k < components.size() ; ++k) 
+					{
+						auto& innerComp = components[k];
+						if(innerComp.vaos.size() == 0 || i == k)
+						{
+							// no VAO attached or pass component is this component
+							continue;
+						}
+						auto passShader = getPassRenderShader(&innerComp, &(*it));
+						// bind shader before call render()
+						passShader->bind();
+						// pass rendering
+						render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem);
+					}
+					it->getRenderTarget().unbind();
+				}
+				// bind result of pass
+				it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
+				it->postRender();
+			}
+		}
+	}
+}
+
+void
+RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem)
 {
 	// Upload Matrices
-	auto* transformation = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>()->get(component->getEntityId());
-	uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix);
+	auto* transformation = transformSystem->get(component->getEntityId());
+	uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
 
 	// Upload Lights
-	LightSystem* lightSystem = ECSManager::getShared().getSystem<LightSystem,LightComponent>();
 	int maxLights = std::min(8,(int)lightSystem->components.size());
 	int numActive = 0;
 	for(int l = 0; l < maxLights; ++l)
@@ -207,10 +222,8 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 	}
 }
 
-
-
 void
-RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix) 
+RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, bool billboarding) 
 {
 
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
@@ -218,18 +231,29 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 	// TEMP END
 	if(transformation != nullptr) 
 	{
-		glm::mat4 mv = cameraSpaceMatrix * transformation->getWorldSpaceMatrix();
-		shader->setProperty(Property("matrices.model_matrix"), transformation->getWorldSpaceMatrix());
+		glm::mat4 modelMatrix;
+		glm::mat4 modelViewMatrix;
+		if(!billboarding)
+		{
+			modelMatrix = transformation->getWorldSpaceMatrix();
+			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
+		}
+		else
+		{
+			modelMatrix = transformation->getWorldSpaceMatrix() * inverseCameraRotation;
+			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
+		}
+		shader->setProperty(Property("matrices.model_matrix"), modelMatrix);
 		shader->setProperty(Property("matrices.view_matrix"), cameraSpaceMatrix);
-		shader->setProperty(Property("matrices.modelview_matrix"), mv);
+		shader->setProperty(Property("matrices.modelview_matrix"), modelViewMatrix);
 		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
 		{
-			shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(mv));
+			shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(modelViewMatrix));
 		}
 		else
 		{
 			// non-uniform scaling
-			shader->setProperty(Property("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(mv)));
+			shader->setProperty(Property("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
 		}
 	}
 	else 

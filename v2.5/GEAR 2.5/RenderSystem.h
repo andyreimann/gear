@@ -4,7 +4,6 @@
 #include <G2Core/BaseSystem.h>
 
 #include <memory>
-#include <vector>
 #include <glm/glm.hpp>
 
 namespace G2 
@@ -12,7 +11,9 @@ namespace G2
 	class RenderComponent;
 	class Effect;
 	class TransformComponent;
+	class TransformSystem;
 	class LightComponent;
+	class LightSystem;
 	class Material;
 	class Shader;
 	class Pass;
@@ -37,9 +38,33 @@ namespace G2
 
 		private:
 
-			void render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, RenderComponent* component, std::shared_ptr<Shader>& boundShader);
+			void renderPasses(
+				glm::mat4 const& cameraProjectionMatrix, 
+				glm::vec3 const& cameraPosition,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+			);
+
+			void render(
+				glm::mat4 const& projectionMatrix, 
+				glm::mat4 const& cameraSpaceMatrix, 
+				glm::mat4 const& inverseCameraRotation,
+				RenderComponent* component, 
+				std::shared_ptr<Shader>& boundShader,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+			);
 			
-			void uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix);
+			void uploadMatrices(
+				std::shared_ptr<Shader>& shader, 
+				TransformComponent* transformation, 
+				glm::mat4 const& projectionMatrix, 
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				bool billboarding
+			);
 			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
 			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);

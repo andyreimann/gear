@@ -18,23 +18,19 @@ namespace G2
 	 */
 	class CameraComponent : public BaseComponent<CameraSystem> 
 	{
-		friend class RenderSystem;
+		friend class CameraSystem;
 		public:
 			/** This will create a new EditorCamera.
 			 * @note Don't forget to provide a valid projection matrix with the 
 			 * setProjectionMatrix function!
 			 */
 			CameraComponent(std::string const& name);
-			/** This function will return the current camera space matrix (or view/eye space matrix).
+			/** Move constructor to move a CameraComponent.
 			 */
-			glm::mat4 const& getCameraSpaceMatrix() const { return mCameraSpaceMatrix; }
-			/** This function will return the current normal matrix. 
-			* @return The current normal matrix (inverse transpose modelview matrix).
-			* @warning: This function is currently not used. Make sure to always use 
-			* uniform scaling to calculate normal vector correctly in eye-space!
-			*/
-			glm::mat3 const& getNormalMatrix() const { return mNormalMatrix; }
-
+			CameraComponent(CameraComponent && rhs);
+			/** Move assignment operator to move a CameraComponent.
+			 */
+			CameraComponent& operator=(CameraComponent && rhs);
 			/** This function will return the current projection matrix.
 			 */
 			glm::mat4 const& getProjectionMatrix() const { return mProjectionMatrix; }
@@ -52,43 +48,6 @@ namespace G2
 			* @return The ViewportHeight.
 			*/
 			int const& getViewportHeight() const { return mViewportHeight; }
-			/** This function will perform one step into the view vector direction
-			 * of the Camera.
-			 * @note The step size is calculated with the current movement speed.
-			 */
-			void stepForward();
-			/** This function will perform one step into the negative view vector direction
-			 * of the Camera.
-			 * @note The step size is calculated with the current movement speed.
-			 */
-			void stepBackward();
-			/** This function will perform one strafe step into the negative strafe vector direction
-			 * of the Camera.
-			 * @note The step size is calculated with the current movement speed.
-			 */
-			void stepLeft();
-			/** This function will perform one strafe step into the strafe vector direction
-			 * of the Camera.
-			 * @note The step size is calculated with the current movement speed.
-			 */
-			void stepRight();
-			/** This function will update the rotation of the camera.
-			 * @param degreesX The degrees to rotate around the X-Axis.
-			 * @param degreesY The degrees to rotate around the Y-Axis.
-			 */
-			void rotate(float degreesX, float degreesY);
-			/** This function will return the camera view vector. 
-			* @return The current camera view vector.
-			*/
-			glm::vec3 const& getViewVector() const { return mViewVector; }
-			/** This function will return the camera up vector. 
-			* @return The current camera up vector.
-			*/
-			glm::vec3 const& getUpVector() const { return mUpVector; }
-			/** This function will return the camera strafe vector. 
-			* @return The current camera strafe vector.
-			*/
-			glm::vec3 const& getStrafeVector() const { return mStrafeVector; }
 			/** This function will return the rotation speed. 
 			* @return The current rotation speed.
 			*/
@@ -108,37 +67,22 @@ namespace G2
 			/** This function will make this CameraComponent the one to use for rendering.
 			 */
 			void setAsRenderCamera();
-			/** This function will update the current modelview matrix
-			 * of the EditorCamera. It is only called internally when
-			 * the transformation was updated.
-			 * @return True if the modelview matrix has changed.
-			 */
-			bool updateModelView();
+			/// This function will return the inverse camera rotation. 
+			/// @return The inverse camera rotation.
+			glm::mat4 const& getInverseCameraRotation() const { return mInverseCameraRotation; }
 		private:
-
+			/// This function will set the InverseCameraRotation to the given value.
+			/// @param value The InverseCameraRotation.
+			void _setInverseCameraRotation(glm::mat4 const& value) { mInverseCameraRotation = value; }
 			
-			float	  mMoveSpeed;			// The speed of the camera movement
-			float	  mRotationSpeed;		// The speed of the rotation
+			std::string mName;					// The name of the Camera
+			float	  mMoveSpeed;				// The speed of the camera movement
+			float	  mRotationSpeed;			// The speed of the rotation
 			
-			glm::vec3 mTranslation;			// The translation of the camera relative to [0,0,0] as a vector
-			
-			glm::vec3 mUpVector;			// The current camera up vector
-			glm::vec3 mViewVector;			// The current camera view vector
-			glm::vec3 mStrafeVector;		// The current camera strafe vector
-
-			glm::mat4 mRotation;			// The current rotation matrix of the camera
-
-			glm::mat4 mProjectionMatrix;	// The current camera projection matrix
-			int		  mViewportWidth;		// The width of the Viewport
-			int		  mViewportHeight;		// The height of the Viewport
-			glm::mat4 mCameraSpaceMatrix;	// The current camera modelview matrix
-
-			/** TODO: This normal matrix isn't the one, we need for normal transformation
-			 * Normal matrix calculation: (modelview^-1)^T, actually: (view^-1)^T
-			 */
-
-			glm::mat3 mNormalMatrix;		// The current camera normal matrix
-			bool	  mChanged;				// Indicates whether sth. has changed since the last updateModelView call
+			glm::mat4 mProjectionMatrix;		// The current camera projection matrix
+			glm::mat4 mInverseCameraRotation;	// The inverse camera rotation matrix needed for several effects
+			int		  mViewportWidth;			// The width of the Viewport
+			int		  mViewportHeight;			// The height of the Viewport
 	};
 
 };

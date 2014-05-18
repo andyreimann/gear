@@ -1,15 +1,15 @@
 #pragma once
 #include "GameObject.h"
-#include "EditorCamera.h"
 
 #include <G2/GEAR.h>
 #include <G2Cameras/EditorCamera.h>
+#include <G2/SDLWindow.h>
 #include <vector>
 
 class TestScene
 {
 	public:
-		TestScene();
+		TestScene(G2::SDLWindow& window);
 		~TestScene();
 
 
@@ -39,13 +39,8 @@ class TestScene
 
 		void createWaterSurface();
 
+		G2::SDLWindow&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
-
-		GameObject	mCamera;
-		glm::vec3 upVector;
-		glm::mat4 mRotation;
-		float mRotY, mRotX;
-
 		
 		G2::AABB	mCube;
 
@@ -54,15 +49,6 @@ class TestScene
 		std::vector<std::shared_ptr<G2::FBXMesh>> mWalls;
 
 		std::shared_ptr<G2::FBXMesh> mReflecting;
-		
-		bool		mMoveForward;
-		bool		mMoveBackward;
-		bool		mMoveLeft;
-		bool		mMoveRight;
-
-
-		int			mMx;		
-		int			mMy;
 
 		bool		mExitRendering;
 		
@@ -82,9 +68,5 @@ class TestScene
 		std::shared_ptr<G2::FBXMesh> mSampleMesh3;
 		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
 		std::vector<std::shared_ptr<G2::FBXMesh>> mFbxMeshes;
-
-		
-		float polygonoffsetA;
-		float polygonoffsetB;
 };
 

@@ -97,7 +97,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>g2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEAR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)\lib\$(Platform)\$(Configuration)\GEARPhysics$(TargetExt)</OutputFile>

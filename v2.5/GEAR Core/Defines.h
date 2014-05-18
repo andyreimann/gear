@@ -3,5 +3,3 @@
 #else
 #define COREDLL_API __declspec(dllimport) 
 #endif
-
-#define ECS_USE_VECTOR

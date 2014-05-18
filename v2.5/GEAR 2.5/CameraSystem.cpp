@@ -2,30 +2,38 @@
 // (c) 2014 GEAR 2.5
 #include "CameraSystem.h"
 #include "CameraComponent.h"
+#include "TransformComponent.h"
+#include "Logger.h"
 
-#include <iostream>
+#include <G2Core/ECSManager.h>
 
 using namespace G2;
 
 void
 CameraSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
-	// nothing
 	if(name == "postUpdate") 
 	{
-		// we only support first camera up to now
-		/*
-		
-		if(camera->updateModelView()) {
-			// transformations have changed this frame -> upload matrices to default shader
+		// calculate inverse camera rotation matrix for every camera once per frame
+		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
+		for(auto i = 0; i < components.size(); ++i) 
+		{
+			auto& comp = components[i];// check if this component has a pass attached
 			
-			defaultShader->setUniformMatrix("matrices.modelViewMatrix", camera->getModelviewMatrix());
-			defaultShader->setUniformMatrix("matrices.normalMatrix", camera->getNormalMatrix());
+			auto* cameraTransformation = transformSystem->get(comp.getEntityId());
+			if(cameraTransformation != nullptr)
+			{
+				if(cameraTransformation->updated())
+				{
+					// TransformSystem calculated new matrices which frame due to some changes
+					comp._setInverseCameraRotation(glm::toMat4(glm::inverse(cameraTransformation->getRotation())));
+				}
+			}
+			else
+			{
+				comp._setInverseCameraRotation(glm::mat4());
+			}
 		}
-		*/
-		//for(auto i = 0; i < components.size(); ++i) {
-			// do sth.
-		//}
 	}
 }
 

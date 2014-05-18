@@ -36,8 +36,8 @@ void checkSDLError(int line = -1)
 #endif
 }
 
-SDLWindow::SDLWindow(unsigned int width, unsigned int height, std::string const& title)
-	: AbstractWindow(width,height,title),
+SDLWindow::SDLWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse)
+	: AbstractWindow(title,width,height,hideMouse),
 	mMousePosition(0,0),
 	mZDown(false),
 	mCtrlDown(false),
@@ -85,13 +85,7 @@ SDLWindow::SDLWindow(unsigned int width, unsigned int height, std::string const&
 	/* enable v-sync */
 	SDL_GL_SetSwapInterval(1);
 
-	// set mouse motion capturing to relative mode.
-	// driver will hide mouse and report continuous relative movement only
-	// without actually changing the absolute mouse position.
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-
-	// get initial last recorded mouse position
-	//SDL_GetRelativeMouseState(&mMousePosition.x, &mMousePosition.y);
+	initHideMouseState();
 
 	GLDEBUG( glViewport(0, 0, mWidth, mHeight) );
 }
@@ -106,6 +100,10 @@ SDLWindow::~SDLWindow()
 bool
 SDLWindow::renderSingleFrame() 
 {
+	if(mFrameInfo.frame == 0)
+	{
+		EventDistributer::onViewportResize(getWidth(),getHeight());
+	}
 	++mFrameInfo.frame;
 	mFrameTimer.start(true);
 	SDL_Event e;
@@ -122,7 +120,13 @@ SDLWindow::renderSingleFrame()
 			EventDistributer::onMouseUp(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
 		}
 		else if (e.type == SDL_MOUSEMOTION) {
-			if(!SDL_GetRelativeMouseMode() || mNsightActive) continue;
+			if(mHideMouse)
+			{
+				if(!SDL_GetRelativeMouseMode() || mNsightActive) 
+				{
+						continue;
+				}
+			}
 			// track relative motion to absolute motion
 			mMousePosition.x += e.motion.xrel;
 			mMousePosition.y += e.motion.yrel;
@@ -183,7 +187,7 @@ SDLWindow::renderSingleFrame()
 					printf("[SDLWindow] : Window %d gained keyboard focus\n",
 							e.window.windowID);
 					// enable relative mouse mode
-					if(!mNsightActive)
+					if(mHideMouse && !mNsightActive)
 					{
 						SDL_SetRelativeMouseMode(SDL_TRUE);
 					}
@@ -191,8 +195,11 @@ SDLWindow::renderSingleFrame()
 				case SDL_WINDOWEVENT_FOCUS_LOST:
 					printf("[SDLWindow] : Window %d lost keyboard focus\n",
 							e.window.windowID);
-					// leave relative mouse mode
-					SDL_SetRelativeMouseMode(SDL_FALSE);
+					if(mHideMouse)
+					{
+						// leave relative mouse mode
+						SDL_SetRelativeMouseMode(SDL_FALSE);
+					}
 					break;
 				case SDL_WINDOWEVENT_CLOSE:
 					printf("[SDLWindow] : Window %d closed\n", e.window.windowID);
@@ -202,10 +209,6 @@ SDLWindow::renderSingleFrame()
 							e.window.windowID, e.window.event);
 					break;
 
-
-				/*case SDL_WINDOWEVENT_SIZE_CHANGED:
-				case SDL_WINDOWEVENT_RESIZED:
-					EventDistributer::onViewportResize(e.window.data1,e.window.data2);*/
 				break;
 			}
 			
@@ -229,55 +232,85 @@ SDLWindow::renderSingleFrame()
 void
 SDLWindow::onKeyUp(G2::KeyCode keyCode) 
 {
-	if(keyCode == KC_Z)
+	if(mHideMouse)
 	{
-		mZDown = !mZDown;
-	}
-	else if(keyCode == KC_LCTRL)
-	{
-		mCtrlDown = !mCtrlDown;
+		if(keyCode == KC_Z)
+		{
+			mZDown = !mZDown;
+		}
+		else if(keyCode == KC_LCTRL)
+		{
+			mCtrlDown = !mCtrlDown;
+		}
 	}
 }
 
 void
 SDLWindow::onKeyDown(G2::KeyCode keyCode) 
 {
-	if(keyCode == KC_Z)
+	if(mHideMouse)
 	{
-		mZDown = !mZDown;
-		if((mCtrlDown && mZDown) || (!mCtrlDown && !mZDown))
+		if(keyCode == KC_Z)
 		{
-			// activate
-			mNsightActive = !mNsightActive;
-			if(mNsightActive)
+			mZDown = !mZDown;
+			if((mCtrlDown && mZDown) || (!mCtrlDown && !mZDown))
 			{
-				logger << "Activate NSight mode" << endl;
-				SDL_SetRelativeMouseMode(SDL_FALSE);
+				// activate
+				mNsightActive = !mNsightActive;
+				if(mNsightActive)
+				{
+					logger << "Activate NSight mode" << endl;
+					SDL_SetRelativeMouseMode(SDL_FALSE);
+				}
+				else
+				{
+					logger << "Deactivate NSight mode" << endl;
+					SDL_SetRelativeMouseMode(SDL_TRUE);
+				}
 			}
-			else
+		}
+		else if(keyCode == KC_LCTRL)
+		{
+			mCtrlDown = !mCtrlDown;
+			if((mCtrlDown && mZDown) || (!mCtrlDown && !mZDown))
 			{
-				logger << "Deactivate NSight mode" << endl;
-				SDL_SetRelativeMouseMode(SDL_TRUE);
+				// activate
+				mNsightActive = !mNsightActive;
+				if(mNsightActive)
+				{
+					logger << "Activate NSight mode" << endl;
+					SDL_SetRelativeMouseMode(SDL_FALSE);
+				}
+				else
+				{
+					logger << "Deactivate NSight mode" << endl;
+					SDL_SetRelativeMouseMode(SDL_TRUE);
+				}
 			}
 		}
 	}
-	else if(keyCode == KC_LCTRL)
+}
+
+void
+SDLWindow::initHideMouseState() 
+{
+	if(mHideMouse)
 	{
-		mCtrlDown = !mCtrlDown;
-		if((mCtrlDown && mZDown) || (!mCtrlDown && !mZDown))
-		{
-			// activate
-			mNsightActive = !mNsightActive;
-			if(mNsightActive)
-			{
-				logger << "Activate NSight mode" << endl;
-				SDL_SetRelativeMouseMode(SDL_FALSE);
-			}
-			else
-			{
-				logger << "Deactivate NSight mode" << endl;
-				SDL_SetRelativeMouseMode(SDL_TRUE);
-			}
-		}
+		// set mouse motion capturing to relative mode.
+		// driver will hide mouse and report continuous relative movement only
+		// without actually changing the absolute mouse position.
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
+	else
+	{
+		mNsightActive = false;
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+}
+
+void
+SDLWindow::setHideMouseMode(bool mode) 
+{
+	mHideMouse = mode;
+	initHideMouseState();
 }

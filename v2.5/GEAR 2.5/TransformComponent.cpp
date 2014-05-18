@@ -10,18 +10,22 @@ using namespace G2;
 
 G2::TransformComponent::TransformComponent() : 
 	mParentEntityId(0),
-	mIsDirty(false),
+	mIsDirty(true),
 	mPosition(0.f,0.f,0.f),
 	mScale(1.f,1.f,1.f),
-	mMode(TransformMode::SRT)
+	mMode(TransformMode::SRT),
+	mLastUpdateId(-1),
+	mUpdated(false)
 { }
 
 G2::TransformComponent::TransformComponent(TransformMode::Name mode) : 
 	mParentEntityId(0),
-	mIsDirty(false),
+	mIsDirty(true),
 	mPosition(0.f,0.f,0.f),
 	mScale(1.f,1.f,1.f),
-	mMode(mode)
+	mMode(mode),
+	mLastUpdateId(-1),
+	mUpdated(false)
 { }
 
 TransformComponent::TransformComponent(TransformComponent && rhs) 
@@ -41,6 +45,8 @@ TransformComponent& TransformComponent::operator=(TransformComponent && rhs)
 	mWorldSpace = std::move(rhs.mWorldSpace);
 	mChildEntityIds = std::move(rhs.mChildEntityIds);
 	mMode = rhs.mMode;
+	mLastUpdateId = rhs.mLastUpdateId;
+	mUpdated = rhs.mUpdated;
 	
 	return static_cast<TransformComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
@@ -170,11 +176,20 @@ TransformComponent::getScale() const
 }
 
 void
-TransformComponent::updateWorldSpaceMatrix() 
+TransformComponent::_updateWorldSpaceMatrix(long updateId) 
 {
+	if(mLastUpdateId == updateId)
+	{
+		return; // already called this frame
+	}
+
 	auto* parentTransformComponent = system->get(mParentEntityId);
 
-	if(_isDirty())
+	if(!_isDirty())
+	{
+		mUpdated = false;
+	}
+	else
 	{
 		// SRT
 		if(mMode == TransformMode::SRT)
@@ -192,11 +207,13 @@ TransformComponent::updateWorldSpaceMatrix()
 		if(parentTransformComponent != nullptr)
 		{
 			// TODO: implement component sorting in TransformSystem to not update parents here!
-			parentTransformComponent->updateWorldSpaceMatrix();
+			parentTransformComponent->_updateWorldSpaceMatrix(updateId);
 			mWorldSpace = parentTransformComponent->getWorldSpaceMatrix() * mLocalSpace;
 		}
 		mIsDirty = false;
+		mUpdated = true;
 	}
+	mLastUpdateId = updateId;
 }
 
 glm::mat4 const&

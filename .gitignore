@@ -29,3 +29,8 @@ tests/bin/x64/Debug/GEARPhysics.dll
 *.ilk
 v2.5/lib/x64/Debug/GEARPhysics.dll
 v2.5/lib/x64/Debug/GEARPhysics.lib
+v2.5/lib/x64/Debug/GEAR.lib
+v2.5/lib/x64/Debug/GEARCameras.dll
+v2.5/lib/x64/Debug/GEARCameras.lib
+v2.5/lib/x64/Debug/GEARCore.dll
+v2.5/lib/x64/Debug/GEARCore.lib

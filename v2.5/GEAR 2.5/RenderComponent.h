@@ -23,9 +23,9 @@ namespace G2
 
 		public:
 
-			RenderComponent() {}
+			RenderComponent() : billboarding(false) {}
 
-			RenderComponent(unsigned int numVertexArrayObjects)
+			RenderComponent(unsigned int numVertexArrayObjects) : billboarding(false)
 			{
 				vaos.resize(numVertexArrayObjects);
 			}
@@ -33,7 +33,7 @@ namespace G2
 			Material						material;		// The Material of the RenderComponent
 			std::vector<VertexArrayObject>	vaos;			// The vertex array objects of the RenderComponent
 			unsigned int					drawMode;		// The OpenGL draw mode to use when rendering
-
+			bool							billboarding;	// The billboarding mode to use when rendering
 			/** This function will return the UberShader. 
 			* @return The current UberShader.
 			*/

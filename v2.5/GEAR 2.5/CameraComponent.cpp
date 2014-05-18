@@ -7,80 +7,31 @@
 using namespace G2;
 
 CameraComponent::CameraComponent(std::string const& name) :
+	mName(name),
 	mMoveSpeed(0.02f),
 	mRotationSpeed(0.2f),
-	mTranslation(0.f,0.0f,0.f),
-	mUpVector(0.f,1.f,0.f),
-	mViewVector(0.f,0.f,-1.f),
-	mStrafeVector(1.f,0.f,0.f),
-	mChanged(true),
 	mViewportWidth(0),
 	mViewportHeight(1)
 {
-		// initial rotation
-		//rotate(15.f, 135.f);
 }
 
-void 
-CameraComponent::stepForward() 
+CameraComponent::CameraComponent(CameraComponent && rhs) 
 {
-	mTranslation += mViewVector * mMoveSpeed;
-	mChanged = true;
+	// eliminates redundant code
+	*this = std::move(rhs); // rvalue property is kept with std::move!
 }
 
-void 
-CameraComponent::stepBackward() 
+CameraComponent& CameraComponent::operator=(CameraComponent && rhs) 
 {
-	mTranslation -= mViewVector * mMoveSpeed;
-	mChanged = true;
-}
-
-void 
-CameraComponent::stepLeft() 
-{
-	mTranslation -= mStrafeVector * mMoveSpeed;
-	mChanged = true;
-}
-
-void 
-CameraComponent::stepRight() 
-{	
-	mTranslation += mStrafeVector * mMoveSpeed;
-	mChanged = true;
-}
-
-void 
-CameraComponent::rotate(float degreesX, float degreesY) 
-{
-	glm::mat4 rotX = glm::rotate(degreesX, glm::vec3(1,0,0));
-	// accumulate the real Y-Axis to rotate around
-
-	mUpVector = glm::rotateX(mUpVector, (degreesX));
-	mUpVector = glm::normalize(mUpVector);
+	mName = std::move(rhs.mName);
+	mMoveSpeed = rhs.mMoveSpeed;
+	mRotationSpeed = rhs.mRotationSpeed;
+	mProjectionMatrix = std::move(rhs.mProjectionMatrix);
+	mInverseCameraRotation = std::move(rhs.mInverseCameraRotation);
+	mViewportWidth = rhs.mViewportWidth;
+	mViewportHeight = rhs.mViewportHeight;
 	
-	glm::mat4 rotY = glm::rotate(degreesY, mUpVector);
-
-	mRotation = rotY * rotX * mRotation;
-
-	glm::mat4 infRot = glm::inverse(mRotation);
-	
-	mViewVector = glm::normalize(glm::vec3(infRot * glm::vec4(0.f,0.f,-1.f,0.f)));
-	mStrafeVector = glm::normalize(glm::vec3(infRot * glm::vec4(1.f,0.f,0.f,0.f)));
-	
-	mChanged = true;
-}
-
-bool 
-CameraComponent::updateModelView() 
-{
-	if(mChanged) 
-	{
-		mCameraSpaceMatrix = mRotation * glm::translate(-mTranslation);
-		mNormalMatrix = glm::mat3(glm::inverseTranspose(mRotation));
-		mChanged = false;
-		return true;
-	}
-	return false;
+	return static_cast<CameraComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
 
 void

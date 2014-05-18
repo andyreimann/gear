@@ -29,7 +29,7 @@ namespace G2
 	 */
 	class TransformComponent : public BaseComponent<TransformSystem> 
 	{
-		
+		friend class TransformSystem;
 		public:
 			/** Constructs a new TransformComponent.
 			 */
@@ -149,12 +149,6 @@ namespace G2
 			 * @return The orthogonal world space matrix of this TransformComponent (parent world space matrices are composed).
 			 */
 			glm::mat4 const& getOrthogonalWorldSpaceMatrix() const;
-			/** This function will update the world and local space matrix of the TransformComponent.
-			 * Normally the world space matrices of all TransformComponent objects are updated
-			 * each frame from the TransformSystem in the 'postUpdate' phase.
-			 * The calculation is cached, which means it is internally only updated
-			 */
-			void updateWorldSpaceMatrix();
 			/** This function will connect this TransformComponent to the given one.
 			 * This will change the calculation of the world space matrix for the 
 			 * TransformComponent to WS = PLS * LS;
@@ -170,6 +164,10 @@ namespace G2
 			 * if some is attached, 0 otherwise.
 			 */
 			unsigned int getParentEntityId() const;
+			/// Returns the bool indicating whether the last call to updateWorldSpaceMatrix has updated 
+			/// the TransformComponent or not.
+			/// @return The updated flag.
+			bool updated() const { return mUpdated; }
 		private:
 
 			TransformComponent(TransformComponent const& rhs) {}
@@ -181,6 +179,13 @@ namespace G2
 			bool _isDirty() const;
 			void _setDirty();
 			bool _hasCircularDependency(unsigned int initialParentEntityId) const;
+			/** This function will update the world and local space matrix of the TransformComponent.
+			 * Normally the world space matrices of all TransformComponent objects are updated
+			 * each frame from the TransformSystem in the 'postUpdate' phase.
+			 * The calculation is cached, which means it is internally only updated
+			 * @param updateId An id which is unique within one frame.
+			 */
+			void _updateWorldSpaceMatrix(long updateId);
 
 			TransformMode::Name mMode;			// Default is SRT
 			unsigned int	mParentEntityId;	// The Entity id of the parent TransformComponent
@@ -192,5 +197,7 @@ namespace G2
 			glm::mat4		mWorldSpace;		// The composed world space matrix
 			glm::mat4		mWorldSpaceOrthogonal;	// The composed world space matrix without the scaling
 			std::vector<unsigned int> mChildEntityIds; // The Entity-IDs of the TransformComponents, on which this TC is the parent
+			long			mLastUpdateId;		// The unique frame id the updateWorldSpaceMatrix was called last.
+			bool			mUpdated;			// Flag indicating whether the last call to updateWorldSpaceMatrix updated the TransformComponent
 	};
 };

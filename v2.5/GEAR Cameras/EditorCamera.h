@@ -6,6 +6,10 @@
 #include <G2Core/KeyCodes.h>
 #include <glm/glm.hpp>
 
+namespace G2
+{
+	class AbstractWindow;
+}
 namespace G2Cameras
 {
 	enum TranslationMode
@@ -26,7 +30,7 @@ namespace G2Cameras
 	{
 		public:
 			/// This constructs a new EditorCamera.
-			CAMERADLL_API EditorCamera();
+			CAMERADLL_API EditorCamera(G2::AbstractWindow* window);
 			/// Basic move constructor.
 			CAMERADLL_API EditorCamera(EditorCamera && rhs);
 			/// Basic move operator.
@@ -44,6 +48,7 @@ namespace G2Cameras
 			CAMERADLL_API void onKeyUp(G2::KeyCode keyCode);
 			CAMERADLL_API void onKeyDown(G2::KeyCode keyCode);
 
+			G2::AbstractWindow*			mWindow;
 			glm::vec4				mView;
 			glm::vec4				mUp;
 			glm::vec4				mStrafe;

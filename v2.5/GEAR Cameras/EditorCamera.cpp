@@ -1,12 +1,13 @@
 #include "EditorCamera.h"
 
+#include <G2/AbstractWindow.h>
 #include <G2/CameraComponent.h>
 #include <G2/TransformComponent.h>
 #include <G2Core/EventDistributer.h>
 
 using namespace G2Cameras;
 
-EditorCamera::EditorCamera() 
+EditorCamera::EditorCamera(G2::AbstractWindow* window) 
 	: mView(0.f,0.f,-1.f,0.f),
 	mUp(0.f,1.f,0.f,0.f),
 	mStrafe(1.f,0.f,0.f,0.f),
@@ -17,13 +18,12 @@ EditorCamera::EditorCamera()
 	mRotationMode(NO_ROTATION),
 	mSpeedBoost(10.f),
 	mViewPlaneTranslationSpeed(0.05f),
-	mRotationSpeed(0.05f)
+	mRotationSpeed(0.05f),
+	mWindow(window)
 {
 	auto* cameraComponent = addComponent<G2::CameraComponent>("Editor Camera");
 	cameraComponent->setAsRenderCamera();
 	cameraComponent->setMoveSpeed(1.0f);
-	cameraComponent->stepBackward();
-	cameraComponent->stepLeft();
 	cameraComponent->setMoveSpeed(0.02f);
 
 	addComponent<G2::TransformComponent>(G2::TransformMode::TRS);
@@ -36,9 +36,9 @@ EditorCamera::EditorCamera()
 	G2::EventDistributer::onKeyDown.hook(this, &EditorCamera::onKeyDown);
 }
 
-EditorCamera::EditorCamera(EditorCamera && rhs) 
+EditorCamera::EditorCamera(EditorCamera && rhs) :
+	mWindow(rhs.mWindow)
 {
-	
 	G2::EventDistributer::onMouseMove.hook(this, &EditorCamera::onMouseMove);
 	G2::EventDistributer::onMouseUp.hook(this, &EditorCamera::onMouseUp);
 	G2::EventDistributer::onMouseDown.hook(this, &EditorCamera::onMouseDown);
@@ -53,6 +53,7 @@ EditorCamera::EditorCamera(EditorCamera && rhs)
 EditorCamera&
 EditorCamera::operator=(EditorCamera && rhs) 
 {
+	mWindow = rhs.mWindow;
 	mView = rhs.mView;
 	mUp = rhs.mUp;
 	mStrafe = rhs.mStrafe;
@@ -112,12 +113,18 @@ EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 void
 EditorCamera::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
-	if(button == G2::MOUSE_RIGHT)
+	if(button == G2::MOUSE_LEFT)
 	{
+		mWindow->setHideMouseMode(true);
+	}
+	else if(button == G2::MOUSE_RIGHT)
+	{
+		mWindow->setHideMouseMode(true);
 		mRotationMode = AROUND_LOCATION;
 	}
 	else if(button == G2::MOUSE_MIDDLE)
 	{
+		mWindow->setHideMouseMode(true);
 		mTranslationMode = VIEW_PLANE;
 	}
 }
@@ -125,12 +132,18 @@ EditorCamera::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const&
 void
 EditorCamera::onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
-	if(button == G2::MOUSE_RIGHT)
+	if(button == G2::MOUSE_LEFT)
 	{
+		mWindow->setHideMouseMode(false);
+	}
+	else if(button == G2::MOUSE_RIGHT)
+	{
+		mWindow->setHideMouseMode(false);
 		mRotationMode = NO_ROTATION;
 	}
 	else if(button == G2::MOUSE_MIDDLE)
 	{
+		mWindow->setHideMouseMode(false);
 		mTranslationMode = NO_TRANSLATION;
 	}
 }

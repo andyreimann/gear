@@ -106,6 +106,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\lib\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>GEAR</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'">
     <TargetExt>.lib</TargetExt>
@@ -113,6 +114,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\lib\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>GEAR</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -166,7 +168,7 @@
 XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     </PostBuildEvent>
     <Lib>
-      <OutputFile>$(OutDir)g2.lib</OutputFile>
+      <OutputFile>$(OutDir)GEAR.lib</OutputFile>
       <AdditionalLibraryDirectories>../lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>GEARCore.lib</AdditionalDependencies>
     </Lib>
@@ -230,7 +232,9 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <OutputFile>$(OutDir)g2.lib</OutputFile>
+      <OutputFile>$(OutDir)GEAR.lib</OutputFile>
+      <AdditionalDependencies>GEARCore.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
       <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y</Command>

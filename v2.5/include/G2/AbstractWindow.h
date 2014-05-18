@@ -22,33 +22,32 @@ namespace G2
 	class AbstractWindow : public NonCopyable
 	{
 		public:
-			/** This constructs a new AbstractWindow with the given parameters.
-			 * @param width the width of the window
-			 * @param height The height of the window
-			 * @param title The title of the window
-			 */
-			AbstractWindow(unsigned int width, unsigned int height, std::string const& title);
-			/** This function will return the Width. 
-			* @return The current Width.
-			*/
+			/// This constructs a new AbstractWindow with the given parameters.
+			/// @param title The title of the window
+			/// @param width the width of the window
+			/// @param height The height of the window
+			/// @param hideMouse the Flag for hiding the mouse
+			AbstractWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse);
+			/// This function will return the Width. 
+			/// @return The current Width.
 			unsigned int const& getWidth() const { return mWidth; }
-			/** This function will return the Height. 
-			* @return The current Height.
-			*/
+			/// This function will return the Height. 
+			/// @return The current Height.
 			unsigned int const& getHeight() const { return mHeight; }
-			/** This function will return the Title. 
-			* @return The current Title.
-			*/
+			/// This function will return the Title. 
+			/// @return The current Title.
 			std::string const& getTitle() const { return mTitle; }
-			/** This function triggers the rendering of one single frame.
-			 * @return False if the rendering should be stopped, true if not.
-			 */
+			/// This function triggers the rendering of one single frame.
+			/// @return False if the rendering should be stopped, true if not.
 			virtual bool renderSingleFrame() = 0;
-		protected:
 
+			virtual void setHideMouseMode(bool mode) = 0;
+		protected:
+			
 			unsigned int		mWidth;
 			unsigned int		mHeight;
 			std::string			mTitle;
+			bool				mHideMouse;
 
 			TimeTracker			mFrameTimer;
 			TimeTracker			mRenderTimer;

@@ -18,17 +18,24 @@ namespace G2
 	class SDLWindow : public AbstractWindow
 	{
 		public:
-			/** This constructs a new SDLWindow.
-			 */
-			SDLWindow(unsigned int width, unsigned int height, std::string const& title);
+			/// This constructs a new SDLWindow.
+			/// @param title The title of the SDLWindow
+			/// @param width The width of the SDLWindow
+			/// @param heightThe width of the SDLWindow
+			/// @param hideMouse the Flag for hiding the mouse
+			SDLWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse);
 			/** This function triggers the rendering of one single frame.
 			 * @return False if the rendering should be stopped, true if not.
 			 */
 			virtual bool renderSingleFrame() override;
+
+			virtual void setHideMouseMode(bool mode) override;
 			/** normal destructor
 			 */
 			~SDLWindow();
 		private:
+			/// this function should be called whenever the hide mouse state is changed.
+			void initHideMouseState();
 
 			/** This function receives callbacks from the EventDistributer::onKeyUp Event
 			 * @note It only receives callbacks if the EditableScene is prepared for editing.

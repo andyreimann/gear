@@ -10,71 +10,12 @@
 
 static std::string ASSET_PATH = "../../Assets/";
 
-TestScene::TestScene()
-	: mMoveForward(false),
-	mMoveBackward(false),
-	mMoveLeft(false),
-	mMoveRight(false),
-	mMx(0),
-	mMy(0),
-	mExitRendering(false),
-	polygonoffsetA(1.f),
-	polygonoffsetB(0.f),
-	mRotY(0),
-	mRotX(0)
+TestScene::TestScene(G2::SDLWindow& window)
+	: mExitRendering(false),
+	mWindow(window),
+	mEditorCamera(&window)
 {
 	srand(2006);
-
-	//multMatrices();
-	/*
-	G2::MatrixMultiplicator mult;
-	
-	
-	{
-		G2::logger << "Multiply 10000 matrices with CL" << G2::endl;
-		std::vector<glm::mat4> results;
-		results.resize(10000);
-		G2::TimeTracker timeTracker;
-		for (int i = 0; i < 10000 ; ++i) 
-		{
-			glm::mat4 m1, m2, target;
-			m1 = glm::translate(glm::vec3(i,3,i));
-			m2 = glm::rotate(43.2f, glm::vec3(5,i,7));
-			mult.mult(m1, m2, results[i]);
-		}
-		G2::logger << "Done in " << timeTracker.getMilliSeconds() <<"ms " << results.size() << "\n" << G2::endl;
-	}
-	{
-		G2::logger << "Multiply 10000 matrices with CPU" << G2::endl;
-		std::vector<glm::mat4> results;
-		results.resize(10000);
-		G2::TimeTracker timeTracker;
-		for (int i = 0; i < 10000 ; ++i) 
-		{
-			glm::mat4 m1, m2, target;
-			m1 = glm::translate(glm::vec3(i,3,i));
-			m2 = glm::rotate(43.2f, glm::vec3(5,i,7));
-			results[i] = m1 * m2;
-		}
-		G2::logger << "Done in " << timeTracker.getMilliSeconds() <<"ms " << results.size() << "\n" << G2::endl;
-	}
-	*/
-
-	// create and activate the camera
-	//auto* cameraComponent = mCamera.addComponent<G2::CameraComponent>("Render Camera");
-	//cameraComponent->setAsRenderCamera();
-	//cameraComponent->setMoveSpeed(1.0f);
-	//cameraComponent->stepBackward();
-	//cameraComponent->stepLeft();
-	//cameraComponent->setMoveSpeed(0.02f);
-	//upVector = cameraComponent->getUpVector();
-	//mCamera.addComponent<G2::TransformComponent>(G2::TransformMode::TRS);
-
-	
-	// load default shader for the engine
-	/*G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem,G2::RenderComponent>()
-			->setDefaultShader(G2::UberShaderParser::parse("../../../Shader/Default.g2fx"));*/
 
 	// new way of loading shader
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
@@ -82,13 +23,11 @@ TestScene::TestScene()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setDefaultEffect(effect);
 
-
 	auto* renderComponent = mCube.addComponent<G2::RenderComponent>();
 
 	float s = 0.5f;
 	mCube = G2::AABB(glm::vec3(-s,-s,-s), glm::vec3(s,s,s));
 	mCube.enableRendering();
-	onViewportResize(1024,768);
 
 	G2::EventDistributer::onRenderFrame.hook(this, &TestScene::onRenderFrame);
 	G2::EventDistributer::onViewportResize.hook(this, &TestScene::onViewportResize);
@@ -97,13 +36,9 @@ TestScene::TestScene()
 	G2::EventDistributer::onMouseMove.hook(this, &TestScene::onMouseMove);
 	
 	//createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
-	
 	//createPlane(glm::vec4(1.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, true));
-	
 	//createPlane(glm::vec4(2.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::LINEAR, false));
-	
 	//createPlane(glm::vec4(3.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::LINEAR, false));
-	
 	//createPlane(glm::vec4(4.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::LINEAR, G2::NEAREST, false));
 	
 	createWalls();
@@ -313,6 +248,7 @@ TestScene::createWalls()
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,2.f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,0.7f,0.f,1.f));
+	renderComp->billboarding = true;
 	/*
 	mReflecting = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 	transformation = mReflecting->addComponent<G2::TransformComponent>();
@@ -331,28 +267,6 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 {
 	
 	std::cout << "KEY: " << keyCode << std::endl;
-	
-
-	/*
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	if (keyCode == G2::KC_7) {
-		polygonoffsetA -= 1;
-		std::cout << "polygonoffsetA: " << polygonoffsetB << std::endl;
-	}
-	if (keyCode == G2::KC_8) {
-		polygonoffsetA += 0.1;
-		std::cout << "polygonoffsetA: " << polygonoffsetB << std::endl;
-	}
-	if (keyCode == G2::KC_9) {
-		polygonoffsetB -= 0.1;
-		std::cout << "polygonoffsetB: " << polygonoffsetB << std::endl;
-	}
-	if (keyCode == G2::KC_0) {
-		polygonoffsetB += 5;
-		std::cout << "polygonoffsetB: " << polygonoffsetB << std::endl;
-	}
-	glPolygonOffset( polygonoffsetA, polygonoffsetB );
-	*/
 
 	if(keyCode == G2::KC_Y)
 	{
@@ -362,23 +276,6 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* tc = mPlanes[0].getComponent<G2::TransformComponent>();
 			tc->translate(glm::vec3(0.1,0.0,0.1));
 		}
-	}
-
-	if(keyCode == G2::KC_W) 
-	{ 
-		mMoveForward = false;
-	}
-	else if(keyCode == G2::KC_W) 
-	{ 
-		mMoveForward = false;
-	}
-	else if(keyCode == G2::KC_S) 
-	{
-		mMoveBackward = false;
-	}
-	else if(keyCode == G2::KC_A) 
-	{ 
-		mMoveLeft = false; 
 	}
 	else if(keyCode == G2::KC_U) 
 	{ 
@@ -418,10 +315,6 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		//lightTransformation->setPosition(glm::vec3(0.f,1.5f,0.f));
 		//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	}
-	else if(keyCode == G2::KC_D) 
-	{ 
-		mMoveRight = false; 
-	}
 	else if(keyCode == G2::KC_N)
 	{ 
 		if(mFbxMeshes.size() > 0)
@@ -445,22 +338,6 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 	if(keyCode == G2::KC_ESCAPE)
 	{ 
 		mExitRendering = true; 
-	}
-	else if(keyCode == G2::KC_W)
-	{ 
-		mMoveForward = true; 
-	}
-	else if(keyCode == G2::KC_S) 
-	{ 
-		mMoveBackward = true; 
-	}
-	else if(keyCode == G2::KC_A) 
-	{ 
-		mMoveLeft = true; 
-	}
-	else if(keyCode == G2::KC_D)
-	{ 
-		mMoveRight = true; 
 	}
 	else if(keyCode == G2::KC_UP)
 	{ 
@@ -524,56 +401,13 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 void
 TestScene::onViewportResize(int width, int height) 
 {
-	//if(height == 0)
-	//{ 
-	//	height = 1; 
-	//}
-	//auto* camera = mCamera.getComponent<G2::CameraComponent>();
-	//camera->setProjectionMatrix(glm::perspective(80.0f, width / (float)height, 0.01f, 50.0f), width, height);
 	mEditorCamera.setViewport(width, height);
 }
 
 void 
 TestScene::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 {
-	//int dx = mouseCoords.x - mMx;
-	//int dy = mouseCoords.y - mMy;
-	//	
-	//mRotX += dy*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed();
-	//mRotY += dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed();
 
-	//mMx = mouseCoords.x;
-	//mMy = mouseCoords.y;
-
-	//auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
-
-	//glm::mat4 orientation;
-	//orientation = glm::rotate(orientation, mRotX, glm::vec3(1,0,0));
-	//orientation = glm::rotate(orientation, mRotY, glm::vec3(0,1,0));
-
-	//camTransform->setRotation(orientation);
-
-
-
-
-		
-		//glm::mat4 rotX = glm::rotate(degreesX, glm::vec3(1,0,0));
-		//// accumulate the real Y-Axis to rotate around
-
-		//upVector = glm::rotateX(upVector, (degreesX));
-		//upVector = glm::normalize(upVector);
-	
-		//glm::mat4 rotY = glm::rotate(degreesY, upVector);
-
-		//mRotation = rotY * rotX * mRotation;
-		//camTransform->setRotation(mRotation);
-
-
-
-		//camTransform->rotateAxis(dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), upVector);
-		//camTransform->rotateEulerAnglesYXZ(	dy*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), 
-		//									dx*mCamera.getComponent<G2::CameraComponent>()->getRotationSpeed(), 
-		//									0.f);
 }
 
 void
@@ -581,38 +415,6 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 {
 	// set exit state - the only mutable property!
 	frameInfo.stopRenderingAfterThisFrame = mExitRendering;
-
-	//auto* camera = mCamera.getComponent<G2::CameraComponent>();
-
-	//// make movement independent from frame rate
-	//camera->setMoveSpeed((float)frameInfo.timeSinceLastFrame);
-
-	//if(mMoveForward) 
-	//{ 
-	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
-	//	camTransform->translate(glm::vec3(0,0,1) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
-	//}
-	//if(mMoveBackward) 
-	//{ 
-	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
-	//	camTransform->translate(glm::vec3(0,0,-1) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
-	//}
-	//if(mMoveLeft) 
-	//{ 
-	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
-	//	camTransform->translate(glm::vec3(1,0,0) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
-	//}
-	//if(mMoveRight) 
-	//{ 
-	//	auto* camTransform = mCamera.getComponent<G2::TransformComponent>();
-	//	camTransform->translate(glm::vec3(-1,0,0) * mCamera.getComponent<G2::CameraComponent>()->getMoveSpeed());
-	//}
-	/*
-	auto* tcomp = mReflecting->getComponent<G2::TransformComponent>();
-	if(tcomp != nullptr)
-	{
-		tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
-	}*/
 
 	for (int i = 0; i < mFbxMeshes.size() ; ++i) 
 	{
@@ -638,7 +440,6 @@ TestScene::createWaterSurface()
 {
 	auto* water = mWaterSurface.addComponent<G2::RenderComponent>();
 	water->drawMode = GL_TRIANGLES;
-
 	// prepare vao
 	G2::VertexArrayObject vao;
 
@@ -684,8 +485,9 @@ TestScene::createWaterSurface()
 		.setSpecular(glm::vec4(0.2,0.3,0.4,0.2))
 		.setShininess(128.f);
 
+	// TODO Check if engine renders transparency without this!
 	glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	auto* transformation = mWaterSurface.addComponent<G2::TransformComponent>();
 	transformation->translate(glm::vec3(0.f,-3.5f,0.f));

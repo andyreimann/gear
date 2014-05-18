@@ -13,8 +13,8 @@ TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 	{
 		for(auto i = 0; i < components.size(); ++i) 
 		{
-			// recalculate the local space matrix if needed
-			components[i].updateWorldSpaceMatrix();
+			// recalculate the local space matrix if not already done this frame
+			components[i]._updateWorldSpaceMatrix(frameInfo.frame);
 		}
 	}
 }

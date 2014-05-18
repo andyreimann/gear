@@ -1,8 +1,6 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
-#include "Event.h"
-#include "Defines.h"
 #include "FrameInfo.h"
 
 #include <vector>
@@ -46,13 +44,8 @@ namespace G2
 			{
 				COMPONENT component(args ...);
 				component.mEntityId = entityId;
-				
-#ifndef ECS_USE_VECTOR
-				components.insert(std::make_pair<unsigned int,COMPONENT>(entityId,component));
-#else
 				components.push_back(std::move(component)); // use move semantic with fallback to copy semantic
 				entityIdToVectorIndex.insert(std::make_pair(entityId,(unsigned int)components.size()-1));
-#endif
 				return get(entityId);
 			}
 			/** This generic function will return a pointer to the Component
@@ -62,21 +55,12 @@ namespace G2
 			 */
 			COMPONENT* get(unsigned int entityId) 
 			{
-
-#ifndef ECS_USE_VECTOR
-				auto it = components.find(entityId);
-				if(it != components.end()) 
-				{
-					return &(it->second);
-				}
-#else
 				// nearly same work, but components are now linear in memory!
 				auto it = entityIdToVectorIndex.find(entityId);
 				if(it != entityIdToVectorIndex.end()) 
 				{
 					return &components[it->second];
 				}
-#endif
 				return nullptr;
 			}
 			/** This function removes any registered component for the given entityId.
@@ -93,9 +77,6 @@ namespace G2
 			 */
 			void remove(unsigned int entityId) 
 			{
-#ifndef ECS_USE_VECTOR
-				components.erase(entityId);
-#else
 				auto it = entityIdToVectorIndex.find(entityId);
 				if(it != entityIdToVectorIndex.end()) 
 				{
@@ -109,7 +90,6 @@ namespace G2
 					// drop linkage for component
 					entityIdToVectorIndex.erase(entityId);
 				}
-#endif
 			}
 			/** This function allows you to reserve size for components managed 
 			 * by the derived system you call the function on.
@@ -124,14 +104,8 @@ namespace G2
 					components.resize(size);
 				}
 			}
-
 		protected:
-
-#ifndef ECS_USE_VECTOR
-			std::unordered_map<unsigned int,COMPONENT>		components; 
-#else
 			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;
 			std::vector<COMPONENT>							components; // components are sequentially in memory
-#endif
 	};
 };
