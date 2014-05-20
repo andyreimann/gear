@@ -485,6 +485,9 @@
     <ClCompile Include="TextureCube.cpp">
       <Filter>Texture\Cube</Filter>
     </ClCompile>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>ECS\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">

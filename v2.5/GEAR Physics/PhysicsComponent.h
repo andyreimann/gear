@@ -1,7 +1,6 @@
 #pragma once
 #include <G2Core/BaseComponent.h>
 #include "PhysicsSystem.h"
-#include "Defines.h"
 
 namespace G2 
 {
@@ -14,7 +13,7 @@ namespace G2
 		{
 			public:
 				/// This constructs a new PhysicsComponent.
-				PHYSICSDLL_API PhysicsComponent();
+				PhysicsComponent();
 
 			protected:
 			private:

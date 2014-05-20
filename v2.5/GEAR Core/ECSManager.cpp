@@ -29,9 +29,15 @@ ECSManager::~ECSManager()
 }
 
 void
-G2::ECSManager::runPhaseOnSystems(std::string const& name, FrameInfo const& frameInfo) 
+G2::ECSManager::runOnMainThread(std::string const& name, FrameInfo const& frameInfo) 
 {
-	mPhaseUpdateEvent(name, frameInfo);
+	mMainThreadUpdateEvent(name, frameInfo);
+}
+
+void
+G2::ECSManager::runOnSideThread(std::string const& name, FrameInfo const& frameInfo) 
+{
+	mSideThreadUpdateEvent(name, frameInfo);
 }
 
 void

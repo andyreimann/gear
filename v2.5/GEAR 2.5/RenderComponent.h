@@ -23,32 +23,32 @@ namespace G2
 
 		public:
 
-			RenderComponent() : billboarding(false) {}
+			RenderComponent();
 
-			RenderComponent(unsigned int numVertexArrayObjects) : billboarding(false)
-			{
-				vaos.resize(numVertexArrayObjects);
-			}
+			RenderComponent(unsigned int numVertexArrayObjects);
+			/** Move constructor to move a RenderComponent.
+			 */
+			RenderComponent(RenderComponent && rhs);
+			/** Move assignment operator to move a RenderComponent.
+			 */
+			RenderComponent& operator=(RenderComponent && rhs);
+			/** This function will return the UberShader. 
+			* @return The current UberShader.
+			*/
+			std::shared_ptr<G2::Effect> const& getEffect() const { return mEffect; }
+			/** This function will set the UberShader to the given value.
+			* @param value The current UberShader.
+			*/
+			void setEffect(std::shared_ptr<G2::Effect> const& value);
 
 			Material						material;		// The Material of the RenderComponent
 			std::vector<VertexArrayObject>	vaos;			// The vertex array objects of the RenderComponent
 			unsigned int					drawMode;		// The OpenGL draw mode to use when rendering
 			bool							billboarding;	// The billboarding mode to use when rendering
-			/** This function will return the UberShader. 
-			* @return The current UberShader.
-			*/
-			std::shared_ptr<G2::Effect> const& getEffect() const { return effect; }
-			/** This function will set the UberShader to the given value.
-			* @param value The current UberShader.
-			*/
-			void setEffect(std::shared_ptr<G2::Effect> const& value) 
-			{ 
-				effect = value; 
-				shaderCache = ShaderCache(); // invalidate
-			}
-			
 		private:
-			std::shared_ptr<G2::Effect>		effect;		// The UberShader of the RenderComponent (default is an empty UberShader!)
-			ShaderCache						shaderCache;	// The cache used for the Shader
+			ShaderCache& _getShaderCache() { return mShaderCache; }
+
+			std::shared_ptr<G2::Effect>		mEffect;		// The UberShader of the RenderComponent (default is an empty UberShader!)
+			ShaderCache						mShaderCache;	// The cache used for the Shader
 	};
 };

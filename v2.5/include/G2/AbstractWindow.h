@@ -5,6 +5,7 @@
 
 #include <G2Core/Event.h>
 #include <G2Core/NonCopyable.h>
+#include <G2Core/FrameInfo.h>
 
 #include <string>
 
@@ -38,8 +39,9 @@ namespace G2
 			/// @return The current Title.
 			std::string const& getTitle() const { return mTitle; }
 			/// This function triggers the rendering of one single frame.
-			/// @return False if the rendering should be stopped, true if not.
-			virtual bool renderSingleFrame() = 0;
+			virtual void renderSingleFrame(FrameInfo& frameInfo) = 0;
+
+			virtual void swapBuffer(FrameInfo& frameInfo) = 0;
 
 			virtual void setHideMouseMode(bool mode) = 0;
 		protected:

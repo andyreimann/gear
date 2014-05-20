@@ -32,7 +32,15 @@ namespace G2
 				}
 				// register new
 				SYSTEM* system = new SYSTEM();
-				mPhaseUpdateEvent.hook(static_cast<BaseSystem<SYSTEM,COMPONENT>*>(system),&BaseSystem<SYSTEM,COMPONENT>::run);
+				if(system->runsOnMainThread())
+				{
+					mMainThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM,COMPONENT>*>(system),&BaseSystem<SYSTEM,COMPONENT>::run);
+				}
+				else
+				{
+					mSideThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM,COMPONENT>*>(system),&BaseSystem<SYSTEM,COMPONENT>::run);
+				}
+				
 				mRegisteredSystems.push_back(system);
 				return system;
 			}
@@ -40,7 +48,12 @@ namespace G2
 			 * @param name The name of the phase to run.
 			 * 
 			 */
-			COREDLL_API void runPhaseOnSystems(std::string const& name, FrameInfo const& frameInfo);
+			COREDLL_API void runOnMainThread(std::string const& name, FrameInfo const& frameInfo);
+			/** This function will start a run of a given phase for all managed systems.
+			 * @param name The name of the phase to run.
+			 * 
+			 */
+			COREDLL_API void runOnSideThread(std::string const& name, FrameInfo const& frameInfo);
 
 			COREDLL_API void deleteComponentsForEntity(unsigned int entityId);
 			/** Get a reference to one single instance.
@@ -58,8 +71,9 @@ namespace G2
 			COREDLL_API ECSManager& operator=(ECSManager const&) { return *this; }
 			COREDLL_API ~ECSManager();
 
-			COREDLL_API static ECSManager*				mInstance_;			// The one single instance
-			std::vector<BaseSystemWrapper*>	mRegisteredSystems; // The registered Systems
-			Event<std::string const&,FrameInfo const&>		mPhaseUpdateEvent;	// The event used for the updates for all managed Systems
+			COREDLL_API static ECSManager*				mInstance_;				// The one single instance
+			std::vector<BaseSystemWrapper*>				mRegisteredSystems;		// The registered Systems
+			Event<std::string const&,FrameInfo const&>		mMainThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the main thread
+			Event<std::string const&,FrameInfo const&>		mSideThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the side thread
 	};
 };

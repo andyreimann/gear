@@ -52,7 +52,7 @@ TestScene::TestScene(G2::SDLWindow& window)
 	light->linearAttenuation = 1.f;
 	light->cutOffDegrees = 40.f;
 	
-	//auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
+	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
@@ -307,6 +307,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
+		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
 		light->diffuse = glm::vec4(0.5,0.6,0.4f,0.f);
 		light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 		//light->linearAttenuation = 1.f;

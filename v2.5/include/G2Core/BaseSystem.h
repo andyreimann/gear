@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <string>
+#include <mutex>
 
 namespace G2 
 {
@@ -29,19 +30,23 @@ namespace G2
 			 * 
 			 * @note The derived system has to provide a non-virtual function called 
 			 * runPhase(std::string const& name), which is called by this function.
+			 * @note This operation will block access to the components from other threads.
 			 */
 			void run(std::string const& name, FrameInfo const& frameInfo) 
 			{
+				std::lock_guard<std::mutex> lock(componentsMutex);
 				((DERIVED_SYSTEM*)this)->runPhase(name, frameInfo);
 			}
 			/** This generic function will create a Component
 			 * with the given Entity-ID.
 			 * @param entityId The id of the Entity.
 			 * @return The created Component.
+			 * @note This operation will block access to the components from other threads.
 			 */
 			template<typename ... ARGS>
 			COMPONENT* create(unsigned int entityId, ARGS ... args)
 			{
+				std::lock_guard<std::mutex> lock(componentsMutex);
 				COMPONENT component(args ...);
 				component.mEntityId = entityId;
 				components.push_back(std::move(component)); // use move semantic with fallback to copy semantic
@@ -65,6 +70,7 @@ namespace G2
 			}
 			/** This function removes any registered component for the given entityId.
 			 * It is automatically called 
+			 * @note This operation will block access to the components from other threads.
 			 */
 			virtual void deleteComponentsForEntity(unsigned int entityId) override sealed 
 			{
@@ -74,9 +80,11 @@ namespace G2
 			/** This generic function will remove the Component
 			 * with the given Entity-ID.
 			 * @param entityId The id of the Entity.
+			 * @note This operation will block access to the components from other threads.
 			 */
 			void remove(unsigned int entityId) 
 			{
+				std::lock_guard<std::mutex> lock(componentsMutex);
 				auto it = entityIdToVectorIndex.find(entityId);
 				if(it != entityIdToVectorIndex.end()) 
 				{
@@ -95,16 +103,23 @@ namespace G2
 			 * by the derived system you call the function on.
 			 * This prevents costly reallocations at runtime.
 			 * @param size The amount of components you want to reserve memory for.
+			 * @note This operation will block access to the components from other threads.
 			 */
 			void reserveSize(unsigned int size)
 			{
+				std::lock_guard<std::mutex> lock(componentsMutex);
 				if(size > components.size())
 				{
 					// only allow upscale
 					components.resize(size);
 				}
 			}
+			/// Returns true if the system runs in the main thread or false
+			/// if it runs in the side thread.
+			// @note A system can only run in one thread
+			virtual bool runsOnMainThread() { return true; }
 		protected:
+			std::mutex										componentsMutex;
 			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;
 			std::vector<COMPONENT>							components; // components are sequentially in memory
 	};

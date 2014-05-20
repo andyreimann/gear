@@ -97,21 +97,21 @@ SDLWindow::~SDLWindow()
 	SDL_Quit();
 }
 
-bool
-SDLWindow::renderSingleFrame() 
+void
+SDLWindow::renderSingleFrame(FrameInfo& frameInfo) 
 {
-	if(mFrameInfo.frame == 0)
+	if(frameInfo.frame == 0)
 	{
 		EventDistributer::onViewportResize(getWidth(),getHeight());
 	}
-	++mFrameInfo.frame;
+	++frameInfo.frame;
 	mFrameTimer.start(true);
 	SDL_Event e;
 	while ( SDL_PollEvent(&e) ) 
 	{
 		if (e.type == SDL_QUIT)
 		{
-			return false;
+			return;
 		}
 		else if (e.type == SDL_MOUSEBUTTONDOWN) {
 			EventDistributer::onMouseDown(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
@@ -214,19 +214,15 @@ SDLWindow::renderSingleFrame()
 			
 		}
 	}
+	return;
+}
 
-	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-	
-	EventDistributer::onRenderFrame(mFrameInfo);
-	
-	ECSManager::getShared().runPhaseOnSystems("preUpdate", mFrameInfo);
-	ECSManager::getShared().runPhaseOnSystems("update", mFrameInfo);
-	ECSManager::getShared().runPhaseOnSystems("postUpdate", mFrameInfo);
-	ECSManager::getShared().runPhaseOnSystems("render", mFrameInfo);
-
+void
+SDLWindow::swapBuffer(FrameInfo& frameInfo) 
+{
 	SDL_GL_SwapWindow(mSDLWindow);
-	mFrameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
-	return !mFrameInfo.stopRenderingAfterThisFrame;
+
+	frameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
 }
 
 void

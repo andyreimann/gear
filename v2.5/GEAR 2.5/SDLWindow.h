@@ -4,7 +4,6 @@
 #include "AbstractWindow.h"
 
 #include <G2Core/KeyCodes.h>
-#include <G2Core/FrameInfo.h>
 
 #include <glm/glm.hpp>
 #include <SDL/SDL.h>
@@ -27,7 +26,9 @@ namespace G2
 			/** This function triggers the rendering of one single frame.
 			 * @return False if the rendering should be stopped, true if not.
 			 */
-			virtual bool renderSingleFrame() override;
+			virtual void renderSingleFrame(FrameInfo& frameInfo) override;
+
+			virtual void swapBuffer(FrameInfo& frameInfo) override;
 
 			virtual void setHideMouseMode(bool mode) override;
 			/** normal destructor
@@ -48,7 +49,6 @@ namespace G2
 
 			SDL_Window* mSDLWindow;
 			SDL_GLContext mMainContext;
-			FrameInfo	mFrameInfo;
 
 			glm::detail::tvec2<int>	mMousePosition;
 

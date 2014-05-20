@@ -95,9 +95,9 @@ RenderSystem::renderPasses(
 	for (int i = 0; i < components.size() ; ++i) 
 	{
 		auto& comp = components[i];// check if this component has a pass attached
-		if(comp.effect.get() != nullptr && comp.effect->getPasses().size() > 0) 
+		if(comp.getEffect().get() != nullptr && comp.getEffect()->getPasses().size() > 0) 
 		{
-			for(auto it = comp.effect->getPasses().begin(); it < comp.effect->getPasses().end(); ++it)
+			for(auto it = comp.getEffect()->getPasses().begin(); it < comp.getEffect()->getPasses().end(); ++it)
 			{
 				it->preRender();
 				glm::mat4 passProjectionMatrix = cameraProjectionMatrix;
@@ -320,21 +320,21 @@ RenderSystem::getRenderShader(RenderComponent* component)
 	 * When changing something on the UberShader assigned to	*
 	 * the RenderComponent, the cache is also invalidated!		*
 	 ************************************************************/
-	if(component->shaderCache.isCacheValid(component->material.getVersion(), component->vaos[0].getVersion()))
+	if(component->_getShaderCache().isCacheValid(component->material.getVersion(), component->vaos[0].getVersion()))
 	{
-		shader = component->shaderCache.getShader();
+		shader = component->_getShaderCache().getShader();
 	}
-	else if(component->effect.get() != nullptr && component->effect->hasCompiledShaders()) 
+	else if(component->mEffect.get() != nullptr && component->mEffect->hasCompiledShaders()) 
 	{
-		shader = component->effect->getShader(component->material,component->vaos[0]);
+		shader = component->getEffect()->getShader(component->material,component->vaos[0]);
 		// update shader cache
-		component->shaderCache.setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
 	}
 	else
 	{
 		shader = defaultEffect->getShader(component->material,component->vaos[0]);
 		// update shader cache
-		component->shaderCache.setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
 	}
 	return shader;
 }

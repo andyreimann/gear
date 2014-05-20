@@ -1,0 +1,1 @@
+2.82 modified for vs2012 x64 MDd
