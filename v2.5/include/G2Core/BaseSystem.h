@@ -118,7 +118,17 @@ namespace G2
 			/// if it runs in the side thread.
 			// @note A system can only run in one thread
 			virtual bool runsOnMainThread() { return true; }
+			
+			void lock()
+			{
+				componentsMutex.lock();
+			}
+			void unlock()
+			{
+				componentsMutex.unlock();
+			}
 		protected:
+
 			std::mutex										componentsMutex;
 			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;
 			std::vector<COMPONENT>							components; // components are sequentially in memory

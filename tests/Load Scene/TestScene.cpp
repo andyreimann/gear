@@ -52,7 +52,7 @@ TestScene::TestScene(G2::SDLWindow& window)
 	light->linearAttenuation = 1.f;
 	light->cutOffDegrees = 40.f;
 	
-	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
+	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(1.f);
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
@@ -81,7 +81,6 @@ TestScene::TestScene(G2::SDLWindow& window)
 	{
 		for (int i = 0; i < 1; ++i) 
 		{
-		
 			mFbxMeshes.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/humanoid.fbx"));
 			if(mFbxMeshes.back().get()) 
 			{
@@ -240,6 +239,7 @@ TestScene::createWalls()
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	auto* phys = mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(glm::vec3(0.f,1.f,0.f), 1.f);
 	transformation->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
 	transformation->setPosition(glm::vec3(-2.f,0.f,-2.f));
 
@@ -307,7 +307,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
-		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
+		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(1.f);
 		light->diffuse = glm::vec4(0.5,0.6,0.4f,0.f);
 		light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 		//light->linearAttenuation = 1.f;
