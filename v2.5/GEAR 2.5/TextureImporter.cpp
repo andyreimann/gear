@@ -17,7 +17,13 @@ TextureImporter::importResource(std::string const& fileName, unsigned minFilter,
 		// cache hit
 		return it->second->build(minFilter, magFilter, compress);
 	}
+	// should never occur
+	return std::shared_ptr<Texture2D>();
+}
 
+std::pair<std::string,std::shared_ptr<Texture2D::Builder>> 
+TextureImporter::produceResourceBuilder(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress) 
+{
 	logger << "[TextureImporter] Import image file " << fileName << endl;
 
 	Texture2D::init();
@@ -26,18 +32,14 @@ TextureImporter::importResource(std::string const& fileName, unsigned minFilter,
 	ilGenImages(1,&imageID);	// generate IL-ID for texture
 	ilBindImage(imageID);		// bind ID as current Texture
 	ILboolean ret = ilLoadImage ( fileName.c_str() );
-	if( !ret ) 
+	if(!ret ) 
 	{
 		ilDeleteImages(1,&imageID);
-		return std::shared_ptr<Texture2D>();
 	}
 	
 	// Step 1: create builder and fill
 	std::shared_ptr<Texture2D::Builder> builder = std::shared_ptr<Texture2D::Builder>(new Texture2D::Builder);
 	builder->id = imageID;
 	ilBindImage(0);
-	// (Step 2: cache builder)
-	mCache[fileName] = builder;
-	// Step 3: build and return resource
-	return builder->build(minFilter, magFilter, compress);
+	return std::make_pair(fileName, builder);
 }

@@ -11,17 +11,28 @@
 using namespace G2;
 
 std::shared_ptr<MD5Mesh>
-MD5Importer::importResource(std::string const& meshFileName,
+MD5Importer::importResource(std::string const& fileName,
 							std::vector<std::string> const& animationFiles) 
 {
 	
-	auto it = mCache.find(meshFileName);
+	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
 		return it->second->build();
 	}
+	// should never occur
+	return std::shared_ptr<MD5Mesh>();
+}
 
+std::pair<std::string,std::shared_ptr<MD5Mesh::Builder>> 
+MD5Importer::produceResourceBuilder(std::string const& meshFileName,
+							std::vector<std::string> const& animationFiles) 
+{
+	if(isCached(meshFileName))
+	{
+		return std::make_pair(meshFileName,std::shared_ptr<MD5Mesh::Builder>());
+	}
 	logger << "[MD5Importer] Import MD5 file " << meshFileName << endl;
 
 	// Step 1: create builder and fill
@@ -35,7 +46,7 @@ MD5Importer::importResource(std::string const& meshFileName,
 	if(!fp) 
 	{
 		logger << "[MD5Importer] Error: MD5-Mesh file '" << meshFileName << "' not found!" << endl;
-		return std::shared_ptr<MD5Mesh>();
+		return std::make_pair(meshFileName, std::shared_ptr<MD5Mesh::Builder>());
 	}
 	/*if(!fp2) 
 	{
@@ -46,7 +57,7 @@ MD5Importer::importResource(std::string const& meshFileName,
 	{
 		// some error occurred
 		close(fp);
-		return std::shared_ptr<MD5Mesh>();
+		return std::make_pair(meshFileName, std::shared_ptr<MD5Mesh::Builder>());
 	}
 	close(fp);
 
@@ -65,11 +76,7 @@ MD5Importer::importResource(std::string const& meshFileName,
 		close(fp2);
 	}
 
-	//close(fp2);
-	// (Step 2: cache builder)
-	mCache[meshFileName] = builder;
-	// Step 3: build and return resource
-	return builder->build();
+	return std::make_pair(meshFileName, builder);
 }
 
 bool
@@ -168,7 +175,7 @@ MD5Importer::_importMesh(std::shared_ptr<MD5Mesh::Builder> builder, FILE* file)
 				{
 					int quote = 0, j = 0;
 
-					/* Copy the shader name whithout the quote marks */
+					/* Copy the shader name without the quote marks */
 					/*
 					for (i = 0; i < sizeof (buff) && (quote < 2); ++i) 
 					{

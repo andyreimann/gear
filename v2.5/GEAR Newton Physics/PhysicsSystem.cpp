@@ -131,7 +131,7 @@ PhysicsSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 		glLoadIdentity();
 	}
 #ifdef GEAR_SINGLE_THREADED
-	else if(name == "update") 
+	else if(name == "preUpdate") 
 #else
 	else if(name == "updateSideThread") 
 #endif
@@ -183,8 +183,10 @@ void PhysicsSystem::setTransformCallback (const NewtonBody* body, const float* m
 	if(transformComponent == nullptr)
 	{
 		entity->transformSystem->unlock();
-		transformComponent = G2::BaseComponent<G2::TransformSystem>::create<G2::TransformComponent>(entity->entityId);
+		G2::BaseComponent<G2::TransformSystem>::create<G2::TransformComponent>(entity->entityId);
 		entity->transformSystem->lock();
+		// get transform component in a thread safe context again!
+		transformComponent = entity->transformSystem->get(entity->entityId);
 	}
 	transformComponent->setPosition(
 		position
@@ -266,8 +268,8 @@ void
 PhysicsSystem::_onRemovePhysicsComponent(unsigned int entityId) 
 {
 	std::lock_guard<std::mutex> lock(mCollisionMutex);
-	mPendingCollisions.erase(mPendingCollisions.find(entityId));
-	mCollisionCallbacks.erase(mCollisionCallbacks.find(entityId));
+	mPendingCollisions.erase(entityId);
+	mCollisionCallbacks.erase(entityId);
 }
 void
 PhysicsSystem::_onEmitCollision(G2::FrameInfo const&) 

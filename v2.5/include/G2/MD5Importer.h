@@ -42,6 +42,8 @@ struct AnimationBaseFrameJoint {
 			 */
 			std::shared_ptr<MD5Mesh> importResource(std::string const& meshFileName, 
 													std::vector<std::string> const& animationFiles = std::vector<std::string>());
+			std::pair<std::string,std::shared_ptr<MD5Mesh::Builder>> produceResourceBuilder(std::string const& fileName,
+													std::vector<std::string> const& animationFiles = std::vector<std::string>());
 
 		private:
 			/** This function imports a MD5-Mesh file and writes the data into the given Builder.

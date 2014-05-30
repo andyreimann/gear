@@ -249,9 +249,5 @@ Texture::getFormatByString(std::string const& format)
 	if(format == "INTENSITY_S") { return INTENSITY_S; }
 	if(format == "INTENSITY_I") { return INTENSITY_I; }
 	if(format == "INTENSITY_UI") { return INTENSITY_UI; }
-	if(format == "DEPTH") { return DEPTH; }
-	if(format == "DEPTH16") { return DEPTH16; }
-	if(format == "DEPTH24") { return DEPTH24; }
-	if(format == "DEPTH32") { return DEPTH32; }
 	return GL_INVALID_VALUE;
 }

@@ -7,13 +7,25 @@
 using namespace G2;
 
 std::shared_ptr<FBXMesh>
-FBXImporter::importResource(std::string const& meshFileName) 
+FBXImporter::importResource(std::string const& fileName) 
 {
-	auto it = mCache.find(meshFileName);
+	
+	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
 		return it->second->build();
+	}
+	// should never occur
+	return std::shared_ptr<FBXMesh>();
+}
+
+std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> 
+FBXImporter::produceResourceBuilder(std::string const& meshFileName) 
+{
+	if(isCached(meshFileName))
+	{
+		return std::make_pair(meshFileName,std::shared_ptr<FBXMesh::Builder>());
 	}
 	logger << "[FBXImporter] Import FBX file " << meshFileName << endl;
 
@@ -27,7 +39,7 @@ FBXImporter::importResource(std::string const& meshFileName)
     {
 		logger << "[FBXImporter] Error: Unable to create FBX scene!" << endl;
         FBXSDK_printf("Error: Unable to create FBX scene!\n");
-        return std::shared_ptr<FBXMesh>();
+        return std::make_pair(meshFileName, std::shared_ptr<FBXMesh::Builder>());
     }
 	// Create the importer.
     int fileFormat = -1;
@@ -43,7 +55,7 @@ FBXImporter::importResource(std::string const& meshFileName)
 	if(!builder->fbxImporter->Initialize(meshFileName.c_str(), fileFormat) == true)
 	{
 		logger << "[FBXImporter] Error: Unable to open file '" << meshFileName << "'! " << builder->fbxImporter->GetStatus().GetErrorString() << endl;
-		return std::shared_ptr<FBXMesh>();
+        return std::make_pair(meshFileName, std::shared_ptr<FBXMesh::Builder>());
 	}
 
 	if (builder->fbxImporter->Import(builder->fbxScene) == true)
@@ -122,7 +134,7 @@ FBXImporter::importResource(std::string const& meshFileName)
 			{
 				// this is a problem. The anim stack should be found in the scene!
 				logger << "[FBXImporter] Error: No AnimationStack found in FBX-Scene from file '" << meshFileName << "'! " << endl;
-				return std::shared_ptr<FBXMesh>();
+				return std::make_pair(meshFileName, std::shared_ptr<FBXMesh::Builder>());
 			}
 
 			// we assume that the first animation layer connected to the animation stack is the base layer
@@ -157,19 +169,13 @@ FBXImporter::importResource(std::string const& meshFileName)
 			if(builder->cacheStop  > builder->stop)  
 				builder->stop  = builder->cacheStop;
 		}
-
-
-		// cache the builder
-		mCache[meshFileName] = builder;
     }
 
     // Destroy the importer to release the file.
     builder->fbxImporter->Destroy();
     builder->fbxImporter = NULL;
 
-
-
-	return builder->build();
+	return std::make_pair(meshFileName, builder);
 }
 
 void

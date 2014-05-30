@@ -11,7 +11,7 @@ namespace G2
 	class EffectImporter : public Importer<EffectImporter,Effect, Effect::Builder>
 	{
 		public:
-
 			std::shared_ptr<Effect> importResource(std::string const& fileName);
+			std::pair<std::string,std::shared_ptr<Effect::Builder>> produceResourceBuilder(std::string const& fileName);
 	};
 };

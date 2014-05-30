@@ -14,14 +14,21 @@ EffectImporter::importResource(std::string const& fileName)
 		// cache hit
 		return it->second->build();
 	}
+	// should never occur
+	return std::shared_ptr<Effect>();
+}
 
+std::pair<std::string,std::shared_ptr<Effect::Builder>> 
+EffectImporter::produceResourceBuilder(std::string const& fileName) 
+{
+	if(isCached(fileName))
+	{
+		return std::make_pair(fileName,std::shared_ptr<Effect::Builder>());
+	}
 	logger << "[EffectImporter] Import Effect file " << fileName << endl;
-	
-	// Step 1: create builder and fill
+
+	// create builder and fill
 	std::shared_ptr<Effect::Builder> builder = UberShaderParser::parse(fileName);
 
-	// (Step 2: cache builder)
-	mCache[fileName] = builder;
-	// Step 3: build and return resource
-	return builder->build();
+	return std::make_pair(fileName, builder);
 }

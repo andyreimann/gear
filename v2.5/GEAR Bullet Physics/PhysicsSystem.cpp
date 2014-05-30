@@ -133,7 +133,7 @@ PhysicsSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 
 	}
 #ifdef GEAR_SINGLE_THREADED
-	else if(name == "update") 
+	else if(name == "preUpdate") 
 #else
 	else if(name == "updateSideThread") 
 #endif

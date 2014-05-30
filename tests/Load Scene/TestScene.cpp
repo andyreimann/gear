@@ -77,7 +77,7 @@ TestScene::TestScene(G2::SDLWindow& window)
 	std::vector<std::string> animFiles;
 	animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
-	//mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
+	mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
 	
 	if(mSampleMesh.get()) 
 	{

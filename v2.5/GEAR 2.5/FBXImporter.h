@@ -21,7 +21,8 @@ namespace G2
 			 * @return a shared pointer pointing to the MD5Mesh or nullptr, if some error occurred.
 			 * @note Requesting one mesh multiple times will result in cache hits.
 			 */
-			std::shared_ptr<FBXMesh> importResource(std::string const& meshFileName);
+			std::shared_ptr<FBXMesh> importResource(std::string const& fileName);
+			std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> produceResourceBuilder(std::string const& fileName);
 
 			~FBXImporter();
 

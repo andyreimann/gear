@@ -398,7 +398,9 @@ RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transf
 				}
 				vao.returnDataPointer(Semantics::POSITION);
 			}
+			transformSystem->lock();
 			auto* transformComponent = transformSystem->get(component->getEntityId());
+			
 			if(transformComponent != nullptr)
 			{
 				component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
@@ -407,6 +409,7 @@ RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transf
 			{
 				component->worldSpaceAABBs[i] = aabb;
 			}
+			transformSystem->unlock();
 		}
 
 	}

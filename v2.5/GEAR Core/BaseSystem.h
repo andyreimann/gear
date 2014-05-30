@@ -118,6 +118,19 @@ namespace G2
 			virtual bool runsOnMainThread() { return true; }
 			/// Returns true if the system runs in the side thread.
 			virtual bool runsOnSideThread() { return false; }
+			/** This function requests the system to extend it's component 
+			 * container to a capacity to be at least enough to contain num elements.
+			 * If num is smaller than the current capacity, the call has no effect.
+			 * @param num The number of components to reserve memory for.
+			 * @note Thread safe
+			 * @note Make sure to reserve enough space to reduce reallocations during lifetime.
+			 * Increasing the capacity of a system can reduce micro pauses during rendering caused by reallocations.
+			 */
+			void reserve(int num)
+			{
+				std::lock_guard<std::mutex> lock(componentsMutex);
+				components.reserve(num);
+			}
 			
 			void lock()
 			{
