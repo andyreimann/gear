@@ -44,6 +44,63 @@ namespace G2
 				mRegisteredSystems.push_back(system);
 				return system;
 			}
+			
+			/** This function ensures that the given systems
+			 * are invoked in a phase in the order they are given in the templates.
+			 * @return True if the ordering was changed, false if not.
+			 */
+			template<class SYSTEM1,class COMPONENT1,class SYSTEM2,class COMPONENT2>
+			bool updateInvokeOrder()
+			{
+				size_t idx1 = 0;
+				size_t idx2 = 0;
+				SYSTEM1* system1 = nullptr;
+				SYSTEM2* system2 = nullptr; 
+				for(size_t i = 0; i < mRegisteredSystems.size(); ++i) 
+				{
+					if(system1 == nullptr && dynamic_cast<SYSTEM1*>(mRegisteredSystems[i]))
+					{
+						idx1 = i;
+						system1 = dynamic_cast<SYSTEM1*>(mRegisteredSystems[i]);
+					}
+					else if(system2 == nullptr && dynamic_cast<SYSTEM2*>(mRegisteredSystems[i]))
+					{
+						idx2 = i;
+						system2 = dynamic_cast<SYSTEM2*>(mRegisteredSystems[i]);
+					}
+				}
+				if(system1 != nullptr && system2 != nullptr)
+				{
+					if(idx1 > idx2)
+					{
+						bool changed = false;
+						std::swap(mRegisteredSystems[idx1],mRegisteredSystems[idx2]);
+						if(system1->runsOnMainThread() && system2->runsOnMainThread())
+						{
+							// unhook both
+							mMainThreadUpdateEvent.unHookAll(static_cast<BaseSystem<SYSTEM1,COMPONENT1>*>(system1));
+							mMainThreadUpdateEvent.unHookAll(static_cast<BaseSystem<SYSTEM2,COMPONENT2>*>(system2));
+							// hook in right order
+							mMainThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM1,COMPONENT1>*>(system1),&BaseSystem<SYSTEM1,COMPONENT1>::run);
+							mMainThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM2,COMPONENT2>*>(system2),&BaseSystem<SYSTEM2,COMPONENT2>::run);
+							changed = true;
+						}
+						//if(system1->runsOnSideThread() && system2->runsOnSideThread())
+						//{
+						//	// unhook both
+						//	mSideThreadUpdateEvent.unHook(static_cast<BaseSystem<SYSTEM1,COMPONENT1>*>(system1),&BaseSystem<SYSTEM1,COMPONENT1>::run);
+						//	mSideThreadUpdateEvent.unHook(static_cast<BaseSystem<SYSTEM2,COMPONENT2>*>(system2),&BaseSystem<SYSTEM2,COMPONENT2>::run);
+						//	// hook in right order
+						//	mSideThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM1,COMPONENT1>*>(system1),&BaseSystem<SYSTEM1,COMPONENT1>::run);
+						//	mSideThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM2,COMPONENT2>*>(system2),&BaseSystem<SYSTEM2,COMPONENT2>::run);
+						//	changed = true;
+						//}
+						return changed;
+					}
+				}
+				return false;
+			}
+
 			/** This function will start a run of a given phase for all managed systems.
 			 * @param name The name of the phase to run.
 			 * 

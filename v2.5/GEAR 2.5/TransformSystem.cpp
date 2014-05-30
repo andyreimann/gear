@@ -3,6 +3,7 @@
 #include "TransformSystem.h"
 #include "TransformComponent.h"
 #include "RenderComponent.h"
+#include "Logger.h"
 
 using namespace G2;
 
@@ -10,6 +11,10 @@ void
 TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
 	// nothing
+	//if(name == "render") 
+	//{
+	//	G2::logger << "T in " << frameInfo.frame << G2::endl;
+	//}
 	if(name == "update") 
 	{
 		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();

@@ -29,6 +29,7 @@ namespace G2
 	public:
 		virtual void Process(param1 parameter1, param2 parameter2) = 0;
 		virtual bool operator==(HandlerBase<param1,param2>& rhs) = 0;
+		virtual bool isSameObject(HandlerBase<param1,param2>& rhs) = 0;
 	};
 	
 	template <typename param1>
@@ -60,7 +61,8 @@ namespace G2
 			virtual bool operator==(HandlerBase<param1,param2,param3,param4>& rhs)
 			{
 				Handler<TargetT,param1,param2,param3,param4>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3,param4>*>(&rhs);
-				return mObject == handler->mObject && mMethod == handler->mMethod;
+				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
+				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
 			}
 	};
 
@@ -85,7 +87,8 @@ namespace G2
 			virtual bool operator==(HandlerBase<param1,param2,param3>& rhs) 
 			{
 				Handler<TargetT,param1,param2,param3>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3>*>(&rhs);
-				return mObject == handler->mObject && mMethod == handler->mMethod;
+				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
+				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
 			}
 	};
 
@@ -107,10 +110,18 @@ namespace G2
 				(mObject->*mMethod)(parameter1, parameter2);
 			}
 
+			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
+			{
+				Handler<TargetT,param1,param2>* handler = dynamic_cast<Handler<TargetT,param1,param2>*>(&rhs);
+
+				return handler != nullptr && mObject == handler->mObject;
+			}
+
 			virtual bool operator==(HandlerBase<param1,param2>& rhs)
 			{
 				Handler<TargetT,param1,param2>* handler = dynamic_cast<Handler<TargetT,param1,param2>*>(&rhs);
-				return mObject == handler->mObject && mMethod == handler->mMethod;
+				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
+				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
 			}
 	};
 
@@ -135,7 +146,8 @@ namespace G2
 			virtual bool operator==(HandlerBase<param1>& rhs)
 			{
 				Handler<TargetT,param1>* handler = dynamic_cast<Handler<TargetT,param1>*>(&rhs);
-				return mObject == handler->mObject && mMethod == handler->mMethod;
+				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
+				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
 			}
 	};
 	
@@ -267,6 +279,21 @@ namespace G2
 					++it;
 				}
 			}
+			
+			template<typename TargetT>
+			void unHookAll(TargetT* t)
+			{
+				typename std::vector<HandlerBase<param1,param2>*>::iterator it = mEventListeners_.begin();
+				while(it != mEventListeners_.end())
+				{
+					Handler<TargetT, param1, param2> handler(t, nullptr);
+					if((**it).isSameObject(handler)) 
+					{
+						it = mEventListeners_.erase(it);
+					}
+					++it;
+				}
+			}
 
 		private:
 			std::vector<HandlerBase<param1,param2>*> mEventListeners_;
@@ -299,11 +326,10 @@ namespace G2
 				typename std::vector<HandlerBase<param1>*>::iterator it = mEventListeners_.begin();
 				while(it != mEventListeners_.end())
 				{
-					Handler<TargetT, param1> handler(t, method);
+					Handler<TargetT, param1> handler(t, nullptr);
 					if((**it) == handler) 
 					{
 						it = mEventListeners_.erase(it);
-						return;
 					}
 					++it;
 				}

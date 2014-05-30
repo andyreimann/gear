@@ -35,6 +35,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
 	if(name == "render") 
 	{
+		//G2::logger << "R in " << frameInfo.frame << G2::endl;
 		// get pointer to all needed systems once per frame -> less dynamic casts!
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 		auto* cameraSystem = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>();

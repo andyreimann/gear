@@ -101,6 +101,15 @@ PhyTestNewton::PhyTestNewton(G2::SDLWindow& window)
 	}
 
 	createWalls();
+
+	bool changed = G2::ECSManager::getShared().updateInvokeOrder<G2::TransformSystem,G2::TransformComponent,G2::RenderSystem,G2::RenderComponent>();
+	G2::logger << "Changed 1: " << changed << G2::endl;
+	changed = G2::ECSManager::getShared().updateInvokeOrder<G2::RenderSystem,G2::RenderComponent,G2::TransformSystem,G2::TransformComponent>();
+	G2::logger << "Changed 2: " << changed << G2::endl;
+	changed = G2::ECSManager::getShared().updateInvokeOrder<G2::RenderSystem,G2::RenderComponent,G2::TransformSystem,G2::TransformComponent>();
+	G2::logger << "Changed 3 (should not): " << changed << G2::endl;
+	//changed = G2::ECSManager::getShared().updateInvokeOrder<G2::TransformSystem,G2::TransformComponent,G2::RenderSystem,G2::RenderComponent>();
+	//G2::logger << "Changed 4 (should): " << changed << G2::endl;
 }
 
 void

@@ -15,6 +15,10 @@ namespace G2
 	{
 		public:
 			virtual void deleteComponentsForEntity(unsigned int entityId) = 0;
+			/// Returns true if the system runs in the main thread.
+			virtual bool runsOnMainThread() = 0;
+			/// Returns true if the system runs in the side thread.
+			virtual bool runsOnSideThread() = 0;
 			virtual ~BaseSystemWrapper() {}
 	};
 	/** This class defines...
