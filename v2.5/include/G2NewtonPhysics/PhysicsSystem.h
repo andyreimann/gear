@@ -45,7 +45,9 @@ namespace G2
 				/// Creates a new Material, which can be used for creating rigid bodies in PhysicsComponent objects.
 				/// @return The newly created PhysicsMaterial.
 				PhysicsMaterial createMaterial();
-
+				/// Enables or disables the debug draw mode for rigid bodies
+				/// @param enabled True if debug drawing should be enabled, false otherwise.
+				void setDebugDrawMode(bool enabled) { mDebugDrawEnabled = enabled; }
 
 				~PhysicsSystem();
 
@@ -69,6 +71,7 @@ namespace G2
 				std::unordered_map<unsigned int,std::list<Collision>>				mPendingCollisions;
 				std::unordered_map<unsigned int,G2::Event<Collision const&>>		mCollisionCallbacks;
 				std::mutex															mCollisionMutex;
+				bool																mDebugDrawEnabled;
 			
 				
 				double minStepWidth;						

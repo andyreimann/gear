@@ -48,7 +48,6 @@ namespace G2
 				/// @note The index can be used to retrieve and change informations 
 				/// from the newly created rigid body such as material settings.
 				int add(CollisionShapeDescriptor const& collisionShapeDescriptor, RigidBodyDescriptor const& rigidBodyDescriptor, glm::vec3 const& position = glm::vec3(), glm::quat const& orientation = glm::quat());
-				
 				/// Adds a listener method to listen for collisions
 				/// @note Thread safe
 				template<typename TargetT>
@@ -65,7 +64,6 @@ namespace G2
 					std::lock_guard<std::mutex> lock(ECSManager::getShared().getSystem<PhysicsSystem,PhysicsComponent>()->mCollisionMutex);
 					ECSManager::getShared().getSystem<PhysicsSystem,PhysicsComponent>()->mCollisionCallbacks[getEntityId()].unHook(t, method);
 				}
-
 				/// Returns the rigid body in the given index.
 				/// @param index The index of the Rigid body.
 				/// @return The rigid body at the given index. 

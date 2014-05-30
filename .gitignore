@@ -52,3 +52,5 @@ v2.5/lib/x64/Release/GEARCameras.lib
 v2.5/lib/x64/Release/GEARCore.dll
 v2.5/lib/x64/Release/GEARCore.lib
 v2.5/lib/x64/Release/GEARPhysics.lib
+v2.5/lib/x64/Debug/GEARBulletPhysics.lib
+v2.5/lib/x64/Debug/GEARNewtonPhysics.lib

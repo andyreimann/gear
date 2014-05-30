@@ -8,13 +8,18 @@ namespace G2
 {
 	namespace Physics
 	{
-		/// This struct 
+		/// This struct holds all informations describing a collision event.
 		/// @created:	2014/05/30
 		/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 		class Collision : NonCopyable
 		{
 			public:
 				/// This constructs a new Collision.
+				/// @param entityIdA The first entity ID of the colliding pair of entities
+				/// @param entityIdB The second entity ID of the colliding pair of entities
+				/// @param position The position of the collision.
+				/// @param normal The normal vector of the collision.
+				/// @param normalSpeed The speed into the direction of the normal vector of the collision.
 				Collision(int entityIdA, int entityIdB, glm::vec3 const& position, glm::vec3 const& normal, float normalSpeed)
 					: entityIdA(entityIdA),
 					entityIdB(entityIdB),
@@ -43,11 +48,11 @@ namespace G2
 					return *this;
 				}
 				
-				int entityIdA;
-				int entityIdB;
-				glm::vec3 position;
-				glm::vec3 normal;
-				float normalSpeed;
+				int entityIdA;		// The first entity ID of the colliding pair of entities
+				int entityIdB;		// The second entity ID of the colliding pair of entities
+				glm::vec3 position;	// The position of the collision.
+				glm::vec3 normal;	// The normal vector of the collision.
+				float normalSpeed;	// The speed into the direction of the normal vector of the collision.
 		};
 	};
 };

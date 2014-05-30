@@ -31,8 +31,8 @@ namespace G2
 					softness(0.5f)
 				{}
 
-				PhysicsMaterial materialA;	
-				PhysicsMaterial materialB;
+				PhysicsMaterial materialA;	// The first material
+				PhysicsMaterial materialB;	// The second material
 				float staticFriction;		// The static friction of the material pair. Default: 0.5
 				float kineticFriction;		// The kinetic friction of the material pair. Default: 0.3
 				float restitution;			// The restitution of the material pair. Default: 0.0
