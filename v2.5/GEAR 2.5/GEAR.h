@@ -55,4 +55,7 @@ extern "C" {
 	 * @param window The AbstractWindow to manage the render loop for.
 	 */
 	void G2_loop(G2::AbstractWindow& window);
+	/** This functionreleases all engine related resources.
+	 */
+	void G2_shutdown();
 }

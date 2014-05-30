@@ -25,6 +25,7 @@ ECSManager::~ECSManager()
 	for(int i = 0; i < mRegisteredSystems.size(); ++i) 
 	{
 		delete mRegisteredSystems[i];
+		mRegisteredSystems[i] = nullptr;
 	}
 }
 

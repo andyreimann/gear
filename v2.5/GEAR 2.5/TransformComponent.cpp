@@ -176,7 +176,7 @@ TransformComponent::getScale() const
 }
 
 void
-TransformComponent::_updateWorldSpaceMatrix(long updateId) 
+TransformComponent::updateWorldSpaceMatrix(long updateId) 
 {
 	if(mLastUpdateId == updateId)
 	{
@@ -207,7 +207,7 @@ TransformComponent::_updateWorldSpaceMatrix(long updateId)
 		if(parentTransformComponent != nullptr)
 		{
 			// TODO: implement component sorting in TransformSystem to not update parents here!
-			parentTransformComponent->_updateWorldSpaceMatrix(updateId);
+			parentTransformComponent->updateWorldSpaceMatrix(updateId);
 			mWorldSpace = parentTransformComponent->getWorldSpaceMatrix() * mLocalSpace;
 		}
 		mIsDirty = false;

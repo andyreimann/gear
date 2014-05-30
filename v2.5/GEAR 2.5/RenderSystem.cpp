@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "Effect.h"
 #include "Logger.h"
+#include "Frustum.h"
 
 #include <G2Core/ECSManager.h>
 
@@ -52,7 +53,8 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			inverseCameraRotation = camera->getInverseCameraRotation();
 			cameraPosition = cameraTransformation->getPosition();
 		}
-
+		
+		//logger << "[RenderSystem] Pass rendering in frame " << frameInfo.frame << endl;
 		renderPasses(
 			camera->getProjectionMatrix(),
 			cameraPosition,
@@ -63,6 +65,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		);
 
 		// do normal rendering
+		//logger << "[RenderSystem] Normal rendering in frame " << frameInfo.frame << endl;
 		for (int i = 0; i < components.size() ; ++i) 
 		{
 			RenderComponent& comp = components[i];
@@ -77,7 +80,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			shader->bind();
 			// regular rendering
 			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-			render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
+			render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
 		}
 	}
 }
@@ -95,6 +98,10 @@ RenderSystem::renderPasses(
 	for (int i = 0; i < components.size() ; ++i) 
 	{
 		auto& comp = components[i];// check if this component has a pass attached
+
+		// lazy init aabb if needed
+		initializeAABB(&comp, transformSystem);
+
 		if(comp.getEffect().get() != nullptr && comp.getEffect()->getPasses().size() > 0) 
 		{
 			for(auto it = comp.getEffect()->getPasses().begin(); it < comp.getEffect()->getPasses().end(); ++it)
@@ -159,6 +166,10 @@ RenderSystem::renderPasses(
 					for (int k = 0; k < components.size() ; ++k) 
 					{
 						auto& innerComp = components[k];
+						
+						// lazy init aabb if needed
+						initializeAABB(&innerComp, transformSystem);
+
 						if(innerComp.vaos.size() == 0 || i == k)
 						{
 							// no VAO attached or pass component is this component
@@ -167,8 +178,10 @@ RenderSystem::renderPasses(
 						auto passShader = getPassRenderShader(&innerComp, &(*it));
 						// bind shader before call render()
 						passShader->bind();
+						Frustum frustum;
+						frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
 						// pass rendering
-						render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem);
+						render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem, &frustum);
 					}
 					it->getRenderTarget().unbind();
 				}
@@ -181,8 +194,9 @@ RenderSystem::renderPasses(
 }
 
 void
-RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem)
+RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem, Frustum const* frustum)
 {
+
 	// Upload Matrices
 	auto* transformation = transformSystem->get(component->getEntityId());
 	uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
@@ -218,7 +232,14 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 	// Draw all attached VAO
 	for (int k = 0; k < component->vaos.size() ; ++k) 
 	{
-		component->vaos[k].draw(component->drawMode);
+		if(frustum->inside(component->worldSpaceAABBs[k]))
+		{
+			component->vaos[k].draw(component->drawMode);
+		}
+		//else
+		//{
+		//	logger << "[RenderSystem] Culled vao " << k << " in RenderComponent " << component->getEntityId() << endl;
+		//}
 	}
 }
 
@@ -344,4 +365,49 @@ RenderSystem::getPassRenderShader(RenderComponent* component, Pass const* pass) 
 {
 	// TODO add caching for pass shader as well
 	return pass->getShader(component->material,component->vaos[0]);;
+}
+
+void
+RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transformSystem) 
+{
+	if(component->objectSpaceAABBs.size() != component->vaos.size())
+	{
+		component->objectSpaceAABBs.resize(component->vaos.size());
+		component->worldSpaceAABBs.resize(component->vaos.size());
+		//logger << "[RenderSystem] Lazy initialize object space AABBs for component " << component->getEntityId() << endl;
+		for(int i = 0; i < component->vaos.size(); ++i)
+		{
+			VertexArrayObject& vao = component->vaos[i];
+			AABB& aabb = component->objectSpaceAABBs[i];
+			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+			if(componentsPerPosition == 3)
+			{
+				glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+				{
+					aabb.merge(vertices[v]);
+				}
+				vao.returnDataPointer(Semantics::POSITION);
+			}
+			else if(componentsPerPosition == 4)
+			{
+				glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+				{
+					aabb.merge(glm::vec3(vertices[v]));
+				}
+				vao.returnDataPointer(Semantics::POSITION);
+			}
+			auto* transformComponent = transformSystem->get(component->getEntityId());
+			if(transformComponent != nullptr)
+			{
+				component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
+			}
+			else
+			{
+				component->worldSpaceAABBs[i] = aabb;
+			}
+		}
+
+	}
 }

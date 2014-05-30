@@ -253,6 +253,8 @@
     <ClInclude Include="TextureCube.h">
       <Filter>Texture\Cube</Filter>
     </ClInclude>
+    <ClInclude Include="VertexStream.h" />
+    <ClInclude Include="Frustum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -488,6 +490,8 @@
     <ClCompile Include="RenderComponent.cpp">
       <Filter>ECS\Render</Filter>
     </ClCompile>
+    <ClCompile Include="VertexStream.cpp" />
+    <ClCompile Include="Frustum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -672,6 +676,9 @@
     </Filter>
     <Filter Include="Texture\Cube">
       <UniqueIdentifier>{9e6e39b4-e37a-47f1-ad6d-da50e2f594ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VertexStream">
+      <UniqueIdentifier>{de5f6648-5f4f-40d5-a79e-30f198fe7b92}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

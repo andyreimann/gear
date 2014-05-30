@@ -30,6 +30,7 @@ CameraComponent& CameraComponent::operator=(CameraComponent && rhs)
 	mInverseCameraRotation = std::move(rhs.mInverseCameraRotation);
 	mViewportWidth = rhs.mViewportWidth;
 	mViewportHeight = rhs.mViewportHeight;
+	mFrustum = std::move(rhs.mFrustum);
 	
 	return static_cast<CameraComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
@@ -50,4 +51,10 @@ CameraComponent::setProjectionMatrix(glm::mat4 const& value, int width, int heig
 	{
 		mViewportHeight = 1;
 	}
+}
+
+void
+CameraComponent::_updateFrustum(glm::mat4 const& modelViewMatrix) 
+{
+	mFrustum.setup(mProjectionMatrix * modelViewMatrix);
 }

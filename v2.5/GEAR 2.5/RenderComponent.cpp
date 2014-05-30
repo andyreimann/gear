@@ -4,13 +4,15 @@ using namespace G2;
 
 RenderComponent::RenderComponent() 
 	: billboarding(false),
-	drawMode(GL_TRIANGLES)
+	drawMode(GL_TRIANGLES),
+	aabbAnimationRecalc(false)
 {
 }
 
 RenderComponent::RenderComponent(unsigned int numVertexArrayObjects) 
 	: billboarding(false),
-	drawMode(GL_TRIANGLES)
+	drawMode(GL_TRIANGLES),
+	aabbAnimationRecalc(false)
 {
 	vaos.resize(numVertexArrayObjects);
 }
@@ -28,10 +30,13 @@ RenderComponent::operator=(RenderComponent && rhs)
 	vaos = std::move(rhs.vaos);
 	drawMode = rhs.drawMode;
 	billboarding = rhs.billboarding;
+	objectSpaceAABBs = std::move(rhs.objectSpaceAABBs);
+	aabbAnimationRecalc = rhs.aabbAnimationRecalc;
 	mEffect = std::move(rhs.mEffect);
 	mShaderCache = std::move(rhs.mShaderCache);
 
 	rhs.vaos.clear();
+	rhs.objectSpaceAABBs.clear();
 	rhs.drawMode = GL_INVALID_VALUE;
 	
 	return static_cast<RenderComponent&>(BaseComponent::operator=(std::move(rhs)));

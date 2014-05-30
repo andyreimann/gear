@@ -79,6 +79,41 @@ EditorCamera::~EditorCamera()
 	G2::EventDistributer::onKeyDown.unHook(this, &EditorCamera::onKeyDown);
 }
 
+EditorCamera&  
+EditorCamera::rotate(float xDegrees, float yDegrees)
+{
+	mRotX += xDegrees;
+	mRotY += yDegrees;
+
+	// calculate orientation
+	glm::mat4 orientation;
+	orientation = glm::rotate(orientation, mRotX, glm::vec3(1,0,0));
+	orientation = glm::rotate(orientation, mRotY, glm::vec3(0,1,0));
+	// update camera vectors
+	glm::mat4 invOrientation = glm::inverse(orientation);
+	mView	= glm::normalize(invOrientation * glm::vec4(0.f,0.f,-1.f,0.f));
+	mUp		= glm::normalize(invOrientation * glm::vec4(0.f,1.f, 0.f,0.f));
+	mStrafe	= glm::normalize(invOrientation * glm::vec4(1.f,0.f, 0.f,0.f));
+		
+	getComponent<G2::TransformComponent>()->setRotation(orientation);
+	return *this;
+}
+
+EditorCamera& 
+EditorCamera::pan(float strafe, float up)
+{
+	getComponent<G2::TransformComponent>()->translate(glm::vec3(mStrafe) * strafe);
+	getComponent<G2::TransformComponent>()->translate(glm::vec3(mUp) * up);
+	return *this;
+}
+
+EditorCamera& 
+EditorCamera::moveView(float units)
+{
+	getComponent<G2::TransformComponent>()->translate(glm::vec3(mView) * -units);
+	return *this;
+}
+
 void
 EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords) 
 {
@@ -89,24 +124,17 @@ EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 
 	if(mRotationMode == AROUND_LOCATION)
 	{
-		mRotX += dy*getComponent<G2::CameraComponent>()->getRotationSpeed() * mSpeedBoost * mRotationSpeed;
-		mRotY += dx*getComponent<G2::CameraComponent>()->getRotationSpeed() * mSpeedBoost * mRotationSpeed;
-		// calculate orientation
-		glm::mat4 orientation;
-		orientation = glm::rotate(orientation, mRotX, glm::vec3(1,0,0));
-		orientation = glm::rotate(orientation, mRotY, glm::vec3(0,1,0));
-		// update camera vectors
-		glm::mat4 invOrientation = glm::inverse(orientation);
-		mView	= glm::normalize(invOrientation * glm::vec4(0.f,0.f,-1.f,0.f));
-		mUp		= glm::normalize(invOrientation * glm::vec4(0.f,1.f, 0.f,0.f));
-		mStrafe	= glm::normalize(invOrientation * glm::vec4(1.f,0.f, 0.f,0.f));
-		
-		getComponent<G2::TransformComponent>()->setRotation(orientation);
+		rotate(
+			dy*getComponent<G2::CameraComponent>()->getRotationSpeed() * mSpeedBoost * mRotationSpeed,
+			dx*getComponent<G2::CameraComponent>()->getRotationSpeed() * mSpeedBoost * mRotationSpeed
+		);
 	}
 	else if(mTranslationMode == VIEW_PLANE)
 	{
-		getComponent<G2::TransformComponent>()->translate(glm::vec3(mStrafe) * (getComponent<G2::CameraComponent>()->getMoveSpeed() * -dx * mSpeedBoost * mViewPlaneTranslationSpeed));
-		getComponent<G2::TransformComponent>()->translate(glm::vec3(mUp) * (getComponent<G2::CameraComponent>()->getMoveSpeed() * dy * mSpeedBoost * mViewPlaneTranslationSpeed));
+		pan(
+			getComponent<G2::CameraComponent>()->getMoveSpeed() * -dx * mSpeedBoost * mViewPlaneTranslationSpeed,
+			getComponent<G2::CameraComponent>()->getMoveSpeed() * dy * mSpeedBoost * mViewPlaneTranslationSpeed
+		);
 	}
 }
 
@@ -153,7 +181,7 @@ EditorCamera::onMouseWheel(int y)
 {
 	if(mTranslationMode != VIEW_PLANE)
 	{
-		getComponent<G2::TransformComponent>()->translate(glm::vec3(mView) * (getComponent<G2::CameraComponent>()->getMoveSpeed() * -y * mSpeedBoost));
+		moveView(getComponent<G2::CameraComponent>()->getMoveSpeed() * y * mSpeedBoost);
 	}
 }
 

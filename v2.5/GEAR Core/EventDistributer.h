@@ -38,6 +38,7 @@ namespace G2
 			COREDLL_API static Event<std::string const&>							terraFormingModuleChanged;		//!< The Event emittd when a new terra forming module was selected
 			
 			COREDLL_API static Event<FrameInfo const&>								onRenderFrame;
+			COREDLL_API static Event<FrameInfo const&>								onFrameRendered;
 		private:
 
 			

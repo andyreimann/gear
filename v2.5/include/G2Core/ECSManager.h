@@ -36,7 +36,7 @@ namespace G2
 				{
 					mMainThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM,COMPONENT>*>(system),&BaseSystem<SYSTEM,COMPONENT>::run);
 				}
-				else
+				if(system->runsOnSideThread())
 				{
 					mSideThreadUpdateEvent.hook(static_cast<BaseSystem<SYSTEM,COMPONENT>*>(system),&BaseSystem<SYSTEM,COMPONENT>::run);
 				}

@@ -46,10 +46,13 @@ G2_loopSideThread()
 {
 	TimeTracker	frameTimer;
 	FrameInfo frameInfo;
+
+
+	frameTimer.start(true);
 	do 
 	{
 		frameTimer.start(true);
-		ECSManager::getShared().runOnSideThread("update", frameInfo);
+		ECSManager::getShared().runOnSideThread("updateSideThread", frameInfo);
 		++frameInfo.frame;
 		frameInfo.timeSinceLastFrame = frameTimer.getSeconds();
 		frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
@@ -65,7 +68,6 @@ G2_loop(AbstractWindow& window)
 
 	FrameInfo frameInfo;
 	do {
-		G2::logger << "Render frame in thread " << std::this_thread::get_id() << G2::endl;
 		window.renderSingleFrame(frameInfo);
 		
 		GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
@@ -76,12 +78,22 @@ G2_loop(AbstractWindow& window)
 		ECSManager::getShared().runOnMainThread("update", frameInfo);
 		ECSManager::getShared().runOnMainThread("postUpdate", frameInfo);
 		ECSManager::getShared().runOnMainThread("render", frameInfo);
+		
+		EventDistributer::onFrameRendered(frameInfo);
 
 		window.swapBuffer(frameInfo);
+		if(frameInfo.frame%100 == 0)
+		{
+			G2::logger << "fps=" << (1.f / frameInfo.timeSinceLastFrame) << G2::endl;
+		}
 	} while(!frameInfo.stopRenderingAfterThisFrame);
 
 	mainThreadRunning = false;
 	sideThread.join();
+}
 
+void
+G2_shutdown() 
+{
 	ECSManager::destroy();
 }

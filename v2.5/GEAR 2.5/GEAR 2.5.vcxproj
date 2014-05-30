@@ -264,6 +264,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="FBXVBOMesh.h" />
     <ClInclude Include="FileResource.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="GEAR.h" />
     <ClInclude Include="GlslShader.h" />
     <ClInclude Include="IfElseMacro.h" />
@@ -327,6 +328,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="VersionTracker.h" />
     <ClInclude Include="VertexArrayObject.h" />
     <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="VertexStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
@@ -351,6 +353,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="FBXVBOMesh.cpp" />
     <ClCompile Include="FileResource.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GEAR.cpp" />
     <ClCompile Include="GlslShader.cpp" />
     <ClCompile Include="IfElseMacro.cpp" />
@@ -408,6 +411,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="UniformBlock.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexStream.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

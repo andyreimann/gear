@@ -4,8 +4,6 @@
 #include "Ray.h"
 #include <glm/glm.hpp>
 
-#include <G2Core/Entity.h>
-
 namespace G2 
 {
 	/** This class defines the data structure for a simple Axis-Aligned Bounding Box.
@@ -13,7 +11,7 @@ namespace G2
 	 * @brief Defines a Data structure for a Axis-Aligned Bounding Box
 	 * @author Andy Reimann
 	 */
-	class AABB : public Entity 
+	class AABB
 	{
 
 		public:
@@ -32,11 +30,20 @@ namespace G2
 			 * @note The AABB will not check if the given coordinates are already the min and max values!
 			 */
 			AABB( glm::vec3 const& Min, glm::vec3 const& Max);
+			/// Transforms the AABB and creates a new one by merging it from all corners of this one.
+			/// @param m The matrix to transform all corners of this AABB with.
+			/// @return A transformed AABB.
+			AABB transform(glm::mat4 const& m);
 			/** This function will add a Point to the AABBox and will change internal parameters if needed.
 			 * @param pt The Point to add.
 			 * This have to be done, because adding a Point to the AABBox will only change the min and max members of the AABBox.
 			 */
 			AABB& merge( glm::vec3 const& pt );
+			/** This function will add a Point to the AABBox and will change internal parameters if needed.
+			 * @param pt The Point to add.
+			 * This have to be done, because adding a Point to the AABBox will only change the min and max members of the AABBox.
+			 */
+			AABB& merge( glm::vec4 const& pt ) { return merge(glm::vec3(pt)); }
 			/** This function will add all corner points from the given AABB
 			 * to the AABB.
 			 * @param aabb The AABB to add.
@@ -83,7 +90,7 @@ namespace G2
 			void translate(glm::vec3 const& translation);
 		
 			/** This function calculates the maximum extend of the AABB.
- 			 * @return The axis with the maximum extend.
+			 * @return The axis with the maximum extend.
 			 * @note This function can be used to better compute the split axis for acceleration structures like a kd-tree.
 			 */
 			unsigned int maxExtend() const;
@@ -127,11 +134,11 @@ namespace G2
 			glm::vec3 getMax() const;
 
 		private:
-			/** Updates a maybe attached TransformComponent with the current
-			 * center point.
-			 * If no TransformComponent is attached, the call is silently ignored.
-			 */
-			void syncTransformComponent();
+			///** Updates a maybe attached TransformComponent with the current
+			// * center point.
+			// * If no TransformComponent is attached, the call is silently ignored.
+			// */
+			//void syncTransformComponent();
 
 			glm::vec3	mCenter;			//!< The center point of the AABB
 			glm::vec3	mHalfExtends;		//!< The half extends in each axis of the AABB

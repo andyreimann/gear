@@ -2,6 +2,7 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "CameraSystem.h"
+#include "Frustum.h"
 
 #include <G2Core/BaseComponent.h>
 
@@ -70,11 +71,16 @@ namespace G2
 			/// This function will return the inverse camera rotation. 
 			/// @return The inverse camera rotation.
 			glm::mat4 const& getInverseCameraRotation() const { return mInverseCameraRotation; }
+			/// This function will return the Frustum. 
+			/// @return The Frustum of the CameraComponent.
+			G2::Frustum const& getFrustum() const { return mFrustum; }
 		private:
 			/// This function will set the InverseCameraRotation to the given value.
 			/// @param value The InverseCameraRotation.
 			void _setInverseCameraRotation(glm::mat4 const& value) { mInverseCameraRotation = value; }
-			
+			/// Updates the Frustum with the given model view matrix.
+			/// @param modelViewMatrix The model view matrix to update the frustum with.
+			void _updateFrustum(glm::mat4 const& modelViewMatrix);
 			std::string mName;					// The name of the Camera
 			float	  mMoveSpeed;				// The speed of the camera movement
 			float	  mRotationSpeed;			// The speed of the rotation
@@ -83,6 +89,7 @@ namespace G2
 			glm::mat4 mInverseCameraRotation;	// The inverse camera rotation matrix needed for several effects
 			int		  mViewportWidth;			// The width of the Viewport
 			int		  mViewportHeight;			// The height of the Viewport
+			Frustum   mFrustum;					// The Frustum of the Camera.
 	};
 
 };

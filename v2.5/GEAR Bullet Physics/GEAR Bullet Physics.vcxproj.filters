@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DebugDrawer">
+      <UniqueIdentifier>{72bcfbd7-6e2c-49f2-aa0c-5d66ba45ba29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysicsSystem">
+      <UniqueIdentifier>{d43876ec-30fa-4f65-afbe-a9a8cb03ed2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysicsComponent">
+      <UniqueIdentifier>{e33a34c5-93b4-43ec-bd31-ffda4edcf10f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CollisionShapeDescriptor">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CollisionShapeDescriptor.h">
+      <Filter>CollisionShapeDescriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsDebugDrawer.h">
+      <Filter>DebugDrawer</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
+      <Filter>PhysicsSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>PhysicsComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="RigidBodyDescriptor.h">
+      <Filter>CollisionShapeDescriptor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PhysicsDebugDrawer.cpp">
+      <Filter>DebugDrawer</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
+      <Filter>PhysicsSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>PhysicsComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionShapeDescriptor.cpp">
+      <Filter>CollisionShapeDescriptor</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

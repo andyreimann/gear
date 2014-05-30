@@ -1,6 +1,7 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
+
 #include <G2Core/BaseSystem.h>
 
 #include <memory>
@@ -17,6 +18,7 @@ namespace G2
 	class Material;
 	class Shader;
 	class Pass;
+	class Frustum;
 	/** This class defines the whole render pipeline of the GEAR engine.
 	 * It render all registered RenderComponents with their settings.
 	 * The rendering takes place in the 'render' phase.
@@ -35,7 +37,6 @@ namespace G2
 			* @param value The current DefaultShader.
 			*/
 			void setDefaultEffect(std::shared_ptr<G2::Effect> const& value) { defaultEffect = value; }
-
 		private:
 
 			void renderPasses(
@@ -54,7 +55,8 @@ namespace G2
 				RenderComponent* component, 
 				std::shared_ptr<Shader>& boundShader,
 				TransformSystem* transformSystem,
-				LightSystem* lightSystem
+				LightSystem* lightSystem,
+				Frustum const* frustum
 			);
 			
 			void uploadMatrices(
@@ -67,6 +69,9 @@ namespace G2
 			);
 			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
 			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
+			
+			void initializeAABB(RenderComponent* component, TransformSystem* transformSystem);
+			
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
 			std::shared_ptr<Shader> getPassRenderShader(RenderComponent* component, Pass const* pass) const;
 

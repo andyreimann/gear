@@ -113,12 +113,6 @@ namespace G2
 	const Bool G2_TRUE	= 1;
 	const Bool G2_FALSE	= 0;
 
-	namespace BufferAccessMode {
-		const UInt32 READ_ONLY = GL_READ_ONLY;
-		const UInt32 WRITE_ONLY = GL_WRITE_ONLY;
-		const UInt32 READ_WRITE = GL_READ_WRITE;
-	};
-
 	const unsigned RGB          = GL_RGB;								//!< Format description: channels: 3, datatype: float, bytes per channel: 4
 	const unsigned RGB_UB       = GL_RGB8;								//!< Format description: channels: 3, datatype: ubyte, bytes per channel: 1
 	const unsigned RGB_US       = GL_RGB16;								//!< Format description: channels: 3, datatype: ushort, bytes per channel: 2

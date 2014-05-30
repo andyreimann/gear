@@ -6,7 +6,7 @@
 #include <G2/Logger.h>
 #include <G2/TimeTracker.h>
 #include <G2/Effect.h>
-#include <G2Physics/PhysicsComponent.h>
+#include <G2BulletPhysics/PhysicsComponent.h>
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -17,23 +17,29 @@ TestScene::TestScene(G2::SDLWindow& window)
 {
 	srand(2006);
 
+	mEditorCamera
+		.pan(0.f,10.f)
+		.rotate(25.f, 0.f)
+		.moveView(-15.f);
+
 	// new way of loading shader
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
 	G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setDefaultEffect(effect);
 
-	auto* renderComponent = mCube.addComponent<G2::RenderComponent>();
+	/*auto* renderComponent = mCube.addComponent<G2::RenderComponent>();
 
 	float s = 0.5f;
 	mCube = G2::AABB(glm::vec3(-s,-s,-s), glm::vec3(s,s,s));
 	mCube.enableRendering();
-
+	*/
 	G2::EventDistributer::onRenderFrame.hook(this, &TestScene::onRenderFrame);
 	G2::EventDistributer::onViewportResize.hook(this, &TestScene::onViewportResize);
 	G2::EventDistributer::onKeyUp.hook(this, &TestScene::onKeyUp);
 	G2::EventDistributer::onKeyDown.hook(this, &TestScene::onKeyDown);
 	G2::EventDistributer::onMouseMove.hook(this, &TestScene::onMouseMove);
+	G2::EventDistributer::onMouseDown.hook(this, &TestScene::onMouseDown);
 	
 	//createPlane(glm::vec4(0.f,0.f,0.f,0.0), mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, false));
 	//createPlane(glm::vec4(1.0,0.0,0.0,0.0), mTexImporter.import(RESOURCE_PATH + "Resources/launch-button.jpg", G2::NEAREST, G2::NEAREST, true));
@@ -45,17 +51,26 @@ TestScene::TestScene(G2::SDLWindow& window)
 
 	mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::SPOT);
-	mLightType = G2::LightType::SPOT;
+	
+	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
+	mLight->addComponent<G2::RenderComponent>();
+	//	->setEffect(
+	//	mEffectImporter.import(ASSET_PATH + "Shader/PointLightShadowMapping.g2fx")
+	//);
+	mLightType = light->getType();
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
 	light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
-	light->cutOffDegrees = 40.f;
 	
-	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(1.f);
+	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(
+		G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
+		G2::Physics::RigidBodyDescriptor().setMass(10.f)
+						.setFriction(0.75f)
+						.setRestitution(0.5f)
+	);
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
-	lightTransformation->setPosition(glm::vec3(0.f,0.7f,0.f));
+	lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 	//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	//lightTransformation->setRotation(glm::angleAxis(30.0f, glm::vec3(1.f,0.f,0.f)));
 
@@ -101,8 +116,38 @@ TestScene::TestScene(G2::SDLWindow& window)
 		animComponent->tempSetPoseIndex(0);
 	}
 
+	for(int i = 0; i < 1; ++i)
+	{
+		
+		for(int x = 0; x < 10; ++x)
+		{
+		
+			for(int y = 0; y < 10; ++y)
+			{
+				
+				mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
+				auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
+				mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+					G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
+					G2::Physics::RigidBodyDescriptor()
+						.setMass(0.1f)
+						.setFriction(0.75f)
+						.setRestitution(0.5f),
+					glm::vec3(-4.0 + (x * 0.8f), 100 + i, -4.0 + (y * 0.8f))
+				);//->trackAABBCollisions(true);
+				renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
+				renderComp->material.setShininess(16.f);
+				renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
+				renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
+			}
+	
+		}
+	
+	}
+	
 
-	createWaterSurface();
+
+	//createWaterSurface();
 }
 
 TestScene::~TestScene()
@@ -113,6 +158,7 @@ TestScene::~TestScene()
 	G2::EventDistributer::onKeyUp.unHook(this, &TestScene::onKeyUp);
 	G2::EventDistributer::onKeyDown.unHook(this, &TestScene::onKeyDown);
 	G2::EventDistributer::onMouseMove.unHook(this, &TestScene::onMouseMove);
+	G2::EventDistributer::onMouseDown.unHook(this, &TestScene::onMouseDown);
 }
 
 void
@@ -161,94 +207,28 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 
 void 
 TestScene::createWalls()
-{
+{	
+	float rot = 5.f;
+
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 1.f, 1.f));
-	transformation->setPosition(glm::vec3(0.f,1.f,5.f));
-
+	transformation->setScale(glm::vec3(5.f, 0.5f, 5.f));
+	transformation->setPosition(glm::vec3(0.f, -20.f, 0.f));
+	//transformation->rotateX(45.f);
+	transformation->updateWorldSpaceMatrix(0);
 	auto* renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
-	renderComp->material.setShininess(16.f);
-	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
-
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 0.3f, 0.3f));
-	transformation->setPosition(glm::vec3(0.f,1.5f,-3.f));
-
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(1.f,0.f,1.f,1.f));
-	renderComp->material.setShininess(16.f);
-	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(0.5,0.5f,1.f,1.f));
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 4.f, 1.f));
-	transformation->setPosition(glm::vec3(0.f,1.f,-5.f));
-
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(0.f,1.f,1.f,1.f));
-	renderComp->material.setShininess(8.f);
-	renderComp->material.setAmbient(glm::vec4(0.f,0.f,0.0f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(0.f,0.f,1.f,1.f));
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 8.f, 5.f));
-	transformation->setPosition(glm::vec3(-5.f,1.f,0.f));
-
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(1.f,1.f,0.f,1.f));
-	renderComp->material.setShininess(64.f);
-	renderComp->material.setAmbient(glm::vec4(0.f,0.5f,0.f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(0.f,1.f,0.f,1.f));
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 5.f, 5.f));
-	transformation->setPosition(glm::vec3(5.f,1.f,0.f));
-
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(1.f,0.f,0.f,1.f));
-	
-	//mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	//transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	//transformation->setScale(glm::vec3(5.1f, 0.1f, 5.f));
-	////transformation->setPosition(glm::vec3(0.f,0.f,0.f));
-
-	//renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	//renderComp->material.setSpecular(glm::vec4(0.5f,0.5f,0.5f,1.f));
-	//renderComp->material.setShininess(128.f);
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(5.f, 1.f, 5.f));
-	transformation->setPosition(glm::vec3(0.f,-5.f,0.f));
-
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
-	renderComp->material.setShininess(128.f);
-	renderComp->material.setAmbient(glm::vec4(0.5f,0.5f,0.5f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	auto* phys = mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(glm::vec3(0.f,1.f,0.f), 1.f);
-	transformation->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	transformation->setPosition(glm::vec3(-2.f,0.f,-2.f));
+	mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+		G2::Physics::CollisionShapeDescriptor::box(glm::vec3(5.f, 0.5f, 5.f)),
+		G2::Physics::RigidBodyDescriptor().setMass(0.f).setFriction(0.5f).setRestitution(0.7f),
+		glm::vec3(0.f, -20.f, 0.f)
+	);
 
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(1.f,0.f,1.f,1.f));
-	renderComp->material.setShininess(128.f);
-	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,2.f,1.f));
-	renderComp->material.setDiffuse(glm::vec4(1.f,0.7f,0.f,1.f));
-	renderComp->billboarding = true;
+	
+
 	/*
 	mReflecting = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 	transformation = mReflecting->addComponent<G2::TransformComponent>();
@@ -307,12 +287,23 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
-		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(1.f);
+
+		
+	
+	
+		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(
+			G2::Physics::CollisionShapeDescriptor::box(glm::vec3(0.1f,0.1f,0.1f)), 
+			G2::Physics::RigidBodyDescriptor().setMass(10.f)
+		);
+
+
+
 		light->diffuse = glm::vec4(0.5,0.6,0.4f,0.f);
 		light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 		//light->linearAttenuation = 1.f;
 	
 		auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+		lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 		//lightTransformation->setPosition(glm::vec3(0.f,1.5f,0.f));
 		//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	}
@@ -330,6 +321,26 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			mMd5Meshes.pop_back();
 		}
 	}
+	else if(keyCode == G2::KC_Q)
+	{ 
+		for(int i = 0; i < 1; ++i)
+		{
+			mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
+			auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
+			auto* physics = mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+				G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
+				G2::Physics::RigidBodyDescriptor().setMass(0.1f).setFriction(0.75f).setRestitution(0.5f),
+				glm::vec3((rand() % 1000) / 1000.0f*(0.1f),3+(i*2),(rand() % 1000) / 1000.0f*(0.1f))
+			);
+			renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
+			renderComp->material.setShininess(16.f);
+			renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
+			renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
+		}
+	}
+
+	
+
 	//std::cout << "Key: " << (int)keyCode << std::endl;
 }
 
@@ -492,4 +503,30 @@ TestScene::createWaterSurface()
 	
 	auto* transformation = mWaterSurface.addComponent<G2::TransformComponent>();
 	transformation->translate(glm::vec3(0.f,-3.5f,0.f));
+}
+
+void
+TestScene::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
+{
+	if(button == G2::MOUSE_LEFT)
+	{
+		auto* transformComp = mEditorCamera.getComponent<G2::TransformComponent>();
+		glm::vec4 pos = glm::inverse(transformComp->getWorldSpaceMatrix()) * glm::vec4(0.f,0.f,0.f,1.f);
+		
+		mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
+		auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
+		mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+			G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
+			G2::Physics::RigidBodyDescriptor()
+				.setMass(0.1f)
+				.setFriction(0.75f)
+				.setRestitution(0.5f)
+				.setLinearVelocity(glm::vec3(mEditorCamera.getViewVec()) * 10.f),
+			glm::vec3(pos)
+		);//->trackAABBCollisions(true);
+		renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
+		renderComp->material.setShininess(16.f);
+		renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
+		renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
+	}
 }

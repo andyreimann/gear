@@ -15,5 +15,6 @@ Event<int>											EventDistributer::onMouseWheel;
 			// RENDER CONTEXT EVENTS
 Event<int,int>										EventDistributer::onViewportResize;
 Event<FrameInfo const&>								EventDistributer::onRenderFrame;
+Event<FrameInfo const&>								EventDistributer::onFrameRendered;
 
 Event<std::string const&>							EventDistributer::terraFormingModuleChanged;

@@ -39,6 +39,16 @@ namespace G2Cameras
 			CAMERADLL_API ~EditorCamera();
 
 			CAMERADLL_API void setViewport(int width, int height);
+			/// This function will return the camera view vector. 
+			/// @return The camera view vector.
+			CAMERADLL_API glm::vec4 const& getViewVec() const { return mView; }
+
+			CAMERADLL_API EditorCamera& rotate(float xDegrees, float yDegrees);
+			CAMERADLL_API EditorCamera& pan(float strafe, float up);
+			CAMERADLL_API EditorCamera& moveView(float units);
+
+
+
 		private:
 		
 			CAMERADLL_API void onMouseMove(glm::detail::tvec2<int> const& mouseCoords);

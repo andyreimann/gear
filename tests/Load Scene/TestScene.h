@@ -30,6 +30,7 @@ class TestScene
 		 * @note It only receives callbacks if the EditableScene is prepared for editing.
 		 */
 		void onMouseMove(glm::detail::tvec2<int> const& mouseCoords);
+		void onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords);
 
 		void onRenderFrame(G2::FrameInfo const&);
 
@@ -42,7 +43,7 @@ class TestScene
 		G2::SDLWindow&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 		
-		G2::AABB	mCube;
+		//G2::AABB	mCube;
 
 		std::vector<GameObject> mPlanes;
 
@@ -61,6 +62,9 @@ class TestScene
 
 		int							 mLightType;
 		std::shared_ptr<G2::FBXMesh> mLight;
+
+		
+		std::vector<std::shared_ptr<G2::FBXMesh>> mBalls;
 
 
 		std::shared_ptr<G2::MD5Mesh> mSampleMesh;

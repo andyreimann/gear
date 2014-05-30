@@ -238,11 +238,11 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
 }
 
 float*
-VertexArrayObject::getDataPointer(Semantics::Name semantic) 
+VertexArrayObject::getDataPointer(Semantics::Name semantic, G2::BufferAccessMode::Name mode) 
 {
 	unsigned int& bufferId = mBufferIds[semantic];
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-	GLDEBUG( float* destination = (float*)glMapBuffer( GL_ARRAY_BUFFER, G2::BufferAccessMode::WRITE_ONLY ) );
+	GLDEBUG( float* destination = (float*)glMapBuffer( GL_ARRAY_BUFFER, mode ) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return destination;
 }
@@ -254,6 +254,23 @@ VertexArrayObject::returnDataPointer(Semantics::Name semantic)
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
 	GLDEBUG( glUnmapBuffer( GL_ARRAY_BUFFER ) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
+}
+
+unsigned int*
+VertexArrayObject::getIndexPointer(G2::BufferAccessMode::Name mode) 
+{
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferId) );
+	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, mode ) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+	return destination;
+}
+
+void
+VertexArrayObject::returnIndexPointer() 
+{
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferId) );
+	GLDEBUG( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
 }
 
 VertexArrayObject&
@@ -357,6 +374,12 @@ VertexArrayObject::deleteBuffers()
 		GLDEBUG( glDeleteVertexArrays(1, &mVertexArrayId) );
 		mVertexArrayId = GL_INVALID_VALUE;
 	}
+}
+
+unsigned int
+VertexArrayObject::getNumBytesBySemantic(Semantics::Name semantic) const 
+{
+	return mBytesPerSemantic[semantic];
 }
 
 Semantics::Name

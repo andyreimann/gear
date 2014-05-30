@@ -5,6 +5,7 @@
 #include "VertexArrayObject.h"
 #include "Material.h"
 #include "ShaderCache.h"
+#include "AABB.h"
 
 #include <G2Core/BaseComponent.h>
 
@@ -45,6 +46,9 @@ namespace G2
 			std::vector<VertexArrayObject>	vaos;			// The vertex array objects of the RenderComponent
 			unsigned int					drawMode;		// The OpenGL draw mode to use when rendering
 			bool							billboarding;	// The billboarding mode to use when rendering
+			std::vector<AABB>				objectSpaceAABBs;// The object space axis aligned bounding box
+			std::vector<AABB>				worldSpaceAABBs;// The world space axis aligned bounding box (object space aabb transformed)
+			bool							aabbAnimationRecalc; // Flag indicating if the aabb should be recalculated with the animation
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }
 

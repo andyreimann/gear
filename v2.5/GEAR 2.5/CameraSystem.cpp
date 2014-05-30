@@ -27,11 +27,14 @@ CameraSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 				{
 					// TransformSystem calculated new matrices which frame due to some changes
 					comp._setInverseCameraRotation(glm::toMat4(glm::inverse(cameraTransformation->getRotation())));
+					comp._updateFrustum(cameraTransformation->getWorldSpaceMatrix());
 				}
 			}
 			else
 			{
+				// unusual case - camera without movement controlling
 				comp._setInverseCameraRotation(glm::mat4());
+				comp._updateFrustum(glm::mat4());
 			}
 		}
 	}

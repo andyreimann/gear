@@ -114,10 +114,10 @@ namespace G2
 					components.resize(size);
 				}
 			}
-			/// Returns true if the system runs in the main thread or false
-			/// if it runs in the side thread.
-			// @note A system can only run in one thread
+			/// Returns true if the system runs in the main thread.
 			virtual bool runsOnMainThread() { return true; }
+			/// Returns true if the system runs in the side thread.
+			virtual bool runsOnSideThread() { return false; }
 			
 			void lock()
 			{

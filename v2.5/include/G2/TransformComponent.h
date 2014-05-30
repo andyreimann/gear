@@ -168,6 +168,13 @@ namespace G2
 			/// the TransformComponent or not.
 			/// @return The updated flag.
 			bool updated() const { return mUpdated; }
+			/** This function will update the world and local space matrix of the TransformComponent.
+			 * Normally the world space matrices of all TransformComponent objects are updated
+			 * each frame from the TransformSystem in the 'postUpdate' phase.
+			 * The calculation is cached, which means it is internally only updated
+			 * @param updateId An id which is unique within one frame.
+			 */
+			void updateWorldSpaceMatrix(long updateId);
 		private:
 
 			TransformComponent(TransformComponent const& rhs) {}
@@ -179,13 +186,7 @@ namespace G2
 			bool _isDirty() const;
 			void _setDirty();
 			bool _hasCircularDependency(unsigned int initialParentEntityId) const;
-			/** This function will update the world and local space matrix of the TransformComponent.
-			 * Normally the world space matrices of all TransformComponent objects are updated
-			 * each frame from the TransformSystem in the 'postUpdate' phase.
-			 * The calculation is cached, which means it is internally only updated
-			 * @param updateId An id which is unique within one frame.
-			 */
-			void _updateWorldSpaceMatrix(long updateId);
+
 
 			TransformMode::Name mMode;			// Default is SRT
 			unsigned int	mParentEntityId;	// The Entity id of the parent TransformComponent

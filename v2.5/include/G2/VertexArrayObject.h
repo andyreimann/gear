@@ -1,6 +1,7 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #pragma once
+#include "Defines.h"
 #include "RefCounter.h"
 #include "VersionTracker.h"
 
@@ -39,6 +40,13 @@ namespace G2
 		 * @return The parsed Semantic enum value.
 		 */
 		Semantics::Name getSemantic(std::string const& name);
+	}
+	namespace BufferAccessMode {
+		enum Name {
+			READ_ONLY = GL_READ_ONLY,
+			WRITE_ONLY = GL_WRITE_ONLY,
+			READ_WRITE = GL_READ_WRITE,
+		};
 	}
 	/** This class defines a VertexArrayObject, combining buffers for 
 	 * vertices, normals and user defined data.
@@ -90,19 +98,32 @@ namespace G2
 			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec4 const* data);
 
 			
-			float* getDataPointer(Semantics::Name semantic);
+			float* getDataPointer(Semantics::Name semantic, G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
 			void returnDataPointer(Semantics::Name semantic);
+			unsigned int* getIndexPointer(G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
+			void returnIndexPointer();
 			
 			VertexArrayObject& writeIndices(unsigned int const* data, unsigned int numIndices);
-
+			
 			/** This function will return the NumElements. 
 			* @return The current NumElements.
 			*/
 			unsigned int getNumElements() const { return mNumElements; }
+			/** This function will return the number of indices. 
+			* @return The number of indices.
+			*/
+			unsigned int getNumIndices() const { return mNumIndices; }
 			/** Draws the VertexArrayObject with the given OpenGL draw mode.
 			 * @param glDrawMode The OpenGL draw mode to use.
 			 */
 			void draw(int glDrawMode);
+			/** Returns the number of bytes used by one value in the given semantic.
+			 * @note If the semantic is not used in the VertexArrayObject, 0 is returned.
+			 * @return The number of bytes used by one value in the given semantic.
+			 */
+			unsigned int getNumBytesBySemantic(Semantics::Name semantic) const;
+
+			bool hasIndices() const { return mIndexBufferId != GL_INVALID_VALUE; }
 
 			~VertexArrayObject();
 		private:

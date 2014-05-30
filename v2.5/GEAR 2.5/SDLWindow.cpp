@@ -223,6 +223,7 @@ SDLWindow::swapBuffer(FrameInfo& frameInfo)
 	SDL_GL_SwapWindow(mSDLWindow);
 
 	frameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
+	frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
 }
 
 void

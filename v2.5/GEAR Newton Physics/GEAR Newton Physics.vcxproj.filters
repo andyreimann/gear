@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="CollisionShapeDescriptor.h" />
+    <ClInclude Include="RigidBodyDescriptor.h" />
+    <ClInclude Include="PhysicsMaterialInteraction.h" />
+    <ClInclude Include="Collision.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="CollisionShapeDescriptor.cpp" />
+  </ItemGroup>
+</Project>

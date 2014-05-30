@@ -35,3 +35,20 @@ v2.5/lib/x64/Debug/GEARCameras.lib
 v2.5/lib/x64/Debug/GEARCore.dll
 v2.5/lib/x64/Debug/GEARCore.lib
 bullet-2.82-r2704-modified-x64/
+v2.5/GEAR Bullet Physics/ClassDiagram.cd
+tests/bin/x64/Debug/newton.dll
+tests/bin/x64/Release/GEARCameras.dll
+tests/bin/x64/Release/GEARCore.dll
+tests/bin/x64/Release/cg.dll
+tests/bin/x64/Release/cgGL.dll
+tests/bin/x64/Release/newton.dll
+v2.5/include/Newton/___pthreads.2/manual/
+v2.5/include/Newton/___pthreads.2/tests/Bmakefile
+v2.5/include/Newton/___pthreads.2/tests/
+v2.5/lib/x64/Release/GEAR.lib
+v2.5/lib/x64/Release/GEARBulletPhysics.lib
+v2.5/lib/x64/Release/GEARCameras.dll
+v2.5/lib/x64/Release/GEARCameras.lib
+v2.5/lib/x64/Release/GEARCore.dll
+v2.5/lib/x64/Release/GEARCore.lib
+v2.5/lib/x64/Release/GEARPhysics.lib

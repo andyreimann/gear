@@ -1,8 +1,6 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "AABB.h"
-#include "RenderComponent.h"
-#include "TransformComponent.h"
 #include <limits>
 
 using namespace G2;
@@ -28,15 +26,14 @@ AABB& AABB::operator=(AABB && rhs)
 	mHalfExtends = std::move(rhs.mHalfExtends);
 	// 3. Stage: modify src to a well defined state
 	// nothing here
-	// also call move on base class
-	return static_cast<AABB&>(Entity::operator=(std::move(rhs)));
+	return *this;
 }
 
 AABB::AABB( glm::vec3 const& Min, glm::vec3 const& Max ) 
 {
 	
 	setFromMinAndMax(Min, Max);
-	syncTransformComponent();
+	//syncTransformComponent();
 }
 
 AABB& AABB::merge( glm::vec3 const& pt ) 
@@ -54,7 +51,7 @@ AABB& AABB::merge( glm::vec3 const& pt )
 		Max = glm::vec3(std::max<float>(Max.x,pt.x), std::max<float>(Max.y,pt.y), std::max<float>(Max.z,pt.z));
 		setFromMinAndMax(Min,Max);
 	}
-	syncTransformComponent();
+	//syncTransformComponent();
 	return *this;
 }
 
@@ -73,7 +70,7 @@ AABB& AABB::merge( AABB const& aabb )
 		Max = glm::vec3(std::max<float>(Max.x,aabb.getMax().x), std::max<float>(Max.y,aabb.getMax().y), std::max<float>(Max.z,aabb.getMax().z));
 		setFromMinAndMax(Min,Max);
 	}
-	syncTransformComponent();
+	//syncTransformComponent();
 
 	return *this;
 }
@@ -84,7 +81,7 @@ AABB& AABB::setFromMinAndMax( glm::vec3 const& Min, glm::vec3 const& Max)
 {
 	mCenter = (Min + Max) * 0.5f;
 	mHalfExtends = (Max - Min) * 0.5f;
-	syncTransformComponent();
+	//syncTransformComponent();
 
 	return *this;
 }
@@ -93,7 +90,7 @@ AABB& AABB::setFromCenterAndHalfExtends( glm::vec3 const& center, glm::vec3 cons
 {
 	this->mCenter = center;
 	this->mHalfExtends = halfExtends;
-	syncTransformComponent();
+	//syncTransformComponent();
 
 	return *this;
 }
@@ -108,26 +105,26 @@ bool AABB::intersects( Ray const& ray ) const
 	///////////////////////////////////////////////////////////////////////////////
 	float tfar =  FLT_MAX;
 	float tnear = FLT_MIN;
-    float txMin, txMax, tyMin, tyMax, tzMin, tzMax;
+	float txMin, txMax, tyMin, tyMax, tzMin, tzMax;
 	glm::vec3 const& o = ray.getOrigin();
 	glm::vec4 const& d = ray.getDir();
 	txMin = (minimum.x - o.x ) / d.x;
-    txMax = (maximum.x - o.x ) / d.x;
-    if(txMin > txMax) std::swap(txMin, txMax);
-    tnear = txMin; 
-    tfar = txMax;
-    tyMin = (minimum.y - o.y ) / d.y;
-    tyMax = (maximum.y - o.y ) / d.y;
-    if(tyMin > tyMax) std::swap(tyMin, tyMax);
-    if(tnear <= tyMin) tnear = tyMin;
-    if(tfar > tyMax) tfar = tyMax;
-    tzMin = (minimum.z - o.z ) / d.z;
-    tzMax = (maximum.z - o.z ) / d.z;
-    if(tzMin > tzMax) std::swap(tzMin, tzMax);
-    if(tnear <= tzMin) tnear = tzMin;
-    if(tfar > tzMax) tfar = tzMax;
+	txMax = (maximum.x - o.x ) / d.x;
+	if(txMin > txMax) std::swap(txMin, txMax);
+	tnear = txMin; 
+	tfar = txMax;
+	tyMin = (minimum.y - o.y ) / d.y;
+	tyMax = (maximum.y - o.y ) / d.y;
+	if(tyMin > tyMax) std::swap(tyMin, tyMax);
+	if(tnear <= tyMin) tnear = tyMin;
+	if(tfar > tyMax) tfar = tyMax;
+	tzMin = (minimum.z - o.z ) / d.z;
+	tzMax = (maximum.z - o.z ) / d.z;
+	if(tzMin > tzMax) std::swap(tzMin, tzMax);
+	if(tnear <= tzMin) tnear = tzMin;
+	if(tfar > tzMax) tfar = tzMax;
 
-    if(tnear <= tfar && (tnear > 0.0f || tfar > 0.0f) ) 
+	if(tnear <= tfar && (tnear > 0.0f || tfar > 0.0f) ) 
 	{
 		return true; // intersection - only if the target is in front of the ray
 	}
@@ -141,7 +138,7 @@ AABB& AABB::clear()
 {
 	mCenter = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
 	mHalfExtends = -glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
-	syncTransformComponent();
+	//syncTransformComponent();
 
 	return *this;
 }
@@ -149,7 +146,6 @@ AABB& AABB::clear()
 bool AABB::isEmpty() const 
 {
 	return mHalfExtends.y < 0.0f;
-	//return center == halfExtends && center == VEC3F_ZERO;
 }
 
 glm::vec3 const& AABB::getCenter() const 
@@ -185,10 +181,10 @@ bool AABB::overlaps(AABB const& rhs) const
 	// http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=3
 	// http://devmaster.net/forums/topic/7934-aabb-collision/
 	// http://stackoverflow.com/questions/6053522/how-to-recalculate-axis-aligned-bounding-box-after-translate-rotate
-    return
-        minX > rhs.maxX || maxX < rhs.minX ||
-        minY > rhs.maxY || maxY < rhs.minY ||
-        minZ > rhs.maxZ || maxZ < rhs.minZ;
+	return
+		minX > rhs.maxX || maxX < rhs.minX ||
+		minY > rhs.maxY || maxY < rhs.minY ||
+		minZ > rhs.maxZ || maxZ < rhs.minZ;
 		*/
 	//return false;
 }
@@ -208,10 +204,10 @@ bool AABB::contains(glm::vec3 const& point) const
 {
 	glm::vec3 min = getMin();
 	glm::vec3 max = getMax();
-    return
-        min.x <= point.x && max.x >= point.x &&
-        min.y <= point.y && max.y >= point.y &&
-        min.z <= point.z && max.z >= point.z;
+	return
+		min.x <= point.x && max.x >= point.x &&
+		min.y <= point.y && max.y >= point.y &&
+		min.z <= point.z && max.z >= point.z;
 		
 }
 /*
@@ -242,13 +238,13 @@ void AABB::transform(glm::mat4 const& matrix) {
 void AABB::setCenter(glm::vec3 const& center) 
 {
 	mCenter = center;
-	syncTransformComponent();
+	//syncTransformComponent();
 }
 
 void AABB::translate(glm::vec3 const& translation) 
 {
 	mCenter += translation;
-	syncTransformComponent();
+	//syncTransformComponent();
 }
 
 unsigned int AABB::maxExtend() const 
@@ -269,130 +265,129 @@ unsigned int AABB::maxExtend() const
 void
 AABB::enableRendering() 
 {
+	//if(!hasComponent<RenderComponent>()) 
+	//{
+	//	// setup rendering as if the box is in center
+	//	// transformation is done with the TransformComponent
+	//	const int numVertices = 48;
+	//	glm::vec4 vertices[numVertices];
+	//	glm::vec4 color(0.75f,0.75f,1.f,1.f);
 
-	if(!hasComponent<RenderComponent>()) 
-	{
-		// setup rendering as if the box is in center
-		// transformation is done with the TransformComponent
-		const int numVertices = 48;
-		glm::vec4 vertices[numVertices];
-		glm::vec4 color(0.75f,0.75f,1.f,1.f);
+	//	float minX, minY, minZ, maxX, maxY, maxZ;
 
-		float minX, minY, minZ, maxX, maxY, maxZ;
+	//	glm::vec3 min = -mHalfExtends;
+	//	glm::vec3 max = mHalfExtends;
+	//
+	//	minX = min.x;
+	//	minY = min.y;
+	//	minZ = min.z;
+	//
+	//	maxX = max.x;
+	//	maxY = max.y;
+	//	maxZ = max.z;
+	//	
+	//	float cornerWidth = (max.x - min.x) / 10.f;
+	//	float cornerheight = (max.y - min.y) / 10.f;
+	//	float cornerdepth = (max.z - min.z) / 10.f;
 
-		glm::vec3 min = -mHalfExtends;
-		glm::vec3 max = mHalfExtends;
-	
-		minX = min.x;
-		minY = min.y;
-		minZ = min.z;
-	
-		maxX = max.x;
-		maxY = max.y;
-		maxZ = max.z;
-		
-		float cornerWidth = (max.x - min.x) / 10.f;
-		float cornerheight = (max.y - min.y) / 10.f;
-		float cornerdepth = (max.z - min.z) / 10.f;
+	//	//
+	//	int i = 0;
+	//	vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x+cornerWidth, min.y, min.z, 1.f);
 
-		//
-		int i = 0;
-		vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x+cornerWidth, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y+cornerheight, min.z, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, min.y+cornerheight, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, min.z+cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, min.y, min.z+cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x-cornerWidth, min.y, min.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x-cornerWidth, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y+cornerheight, min.z, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, min.y+cornerheight, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, min.z+cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, min.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, min.y, min.z+cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x-cornerWidth, min.y, max.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x-cornerWidth, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y+cornerheight, max.z, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, min.y+cornerheight, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, min.y, max.z-cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, min.y, max.z-cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x+cornerWidth, min.y, max.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x+cornerWidth, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y+cornerheight, max.z, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, min.y+cornerheight, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, min.y, max.z-cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, min.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, min.y, max.z-cornerdepth, 1.f);
+	//	// top 4
+	//	
+	//	vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x+cornerWidth, max.y, min.z, 1.f);
 
-		// top 4
-		
-		vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x+cornerWidth, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y-cornerheight, min.z, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, max.y-cornerheight, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y, min.z+cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, max.y, min.z+cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x-cornerWidth, max.y, min.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x-cornerWidth, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y-cornerheight, min.z, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, max.y-cornerheight, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, min.z+cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, max.y, min.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, max.y, min.z+cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x-cornerWidth, max.y, max.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x-cornerWidth, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y-cornerheight, max.z, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, max.y-cornerheight, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(max.x, max.y, max.z-cornerdepth, 1.f);
 
-		vertices[i++] = glm::vec4(max.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(max.x, max.y, max.z-cornerdepth, 1.f);
+	//	
+	//	vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x+cornerWidth, max.y, max.z, 1.f);
 
-		
-		vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x+cornerWidth, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y-cornerheight, max.z, 1.f);
 
-		vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, max.y-cornerheight, max.z, 1.f);
-
-		vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
-		vertices[i++] = glm::vec4(min.x, max.y, max.z-cornerdepth, 1.f);
-		
-		auto* renderComponent = addComponent<RenderComponent>(1);
-		renderComponent->vaos[0].resize(numVertices)
-								.writeData(Semantics::POSITION, vertices);
-		renderComponent->material.setAmbientAndDiffuse(color)
-								 .setSpecular(glm::vec4(0.f,0.f,0.f,0.f));
-		renderComponent->drawMode = GL_LINES;
-		TransformComponent* transformation = addComponent<TransformComponent>();
-		syncTransformComponent();
-	}
+	//	vertices[i++] = glm::vec4(min.x, max.y, max.z, 1.f);
+	//	vertices[i++] = glm::vec4(min.x, max.y, max.z-cornerdepth, 1.f);
+	//	
+	//	auto* renderComponent = addComponent<RenderComponent>(1);
+	//	renderComponent->vaos[0].resize(numVertices)
+	//							.writeData(Semantics::POSITION, vertices);
+	//	renderComponent->material.setAmbientAndDiffuse(color)
+	//							 .setSpecular(glm::vec4(0.f,0.f,0.f,0.f));
+	//	renderComponent->drawMode = GL_LINES;
+	//	TransformComponent* transformation = addComponent<TransformComponent>();
+	//	syncTransformComponent();
+	//}
 }
 
 void
 AABB::disableRendering() 
 {
-	removeComponent<RenderComponent>();
-	removeComponent<TransformComponent>();
+	//removeComponent<RenderComponent>();
+	//removeComponent<TransformComponent>();
 }
 
 float
@@ -401,12 +396,32 @@ AABB::getDistanceFromCenter(Ray const& ray) const
 	return glm::length(mCenter-ray.getOrigin());
 }
 
-void
-AABB::syncTransformComponent()
+G2::AABB
+AABB::transform(glm::mat4 const& m) 
 {
-	TransformComponent* transformation = getComponent<TransformComponent>();
-	if(transformation != nullptr)
-	{
-		transformation->setPosition(mCenter);
-	}
+	glm::vec3 min = getMin();
+	glm::vec3 max = getMax();
+
+	AABB transformed;
+
+	transformed.merge(m * glm::vec4( min.x, min.y, min.z, 1.f));
+	transformed.merge(m * glm::vec4( max.x, min.y, min.z, 1.f));
+	transformed.merge(m * glm::vec4( min.x, min.y, max.z, 1.f));
+	transformed.merge(m * glm::vec4( max.x, min.y, max.z, 1.f));
+
+	transformed.merge(m * glm::vec4( min.x, max.y, min.z, 1.f));
+	transformed.merge(m * glm::vec4( max.x, max.y, min.z, 1.f));
+	transformed.merge(m * glm::vec4( min.x, max.y, max.z, 1.f));
+	transformed.merge(m * glm::vec4( max.x, max.y, max.z, 1.f));
+
+	return std::move(transformed);
 }
+//void
+//AABB::syncTransformComponent()
+//{
+//	TransformComponent* transformation = getComponent<TransformComponent>();
+//	if(transformation != nullptr)
+//	{
+//		transformation->setPosition(mCenter);
+//	}
+//}
