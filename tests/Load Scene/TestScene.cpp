@@ -209,7 +209,6 @@ void
 TestScene::createWalls()
 {	
 	float rot = 5.f;
-
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(5.f, 0.5f, 5.f));

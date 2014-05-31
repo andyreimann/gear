@@ -23,6 +23,9 @@ namespace G2
 	class Importer 
 	{
 		public:
+			Importer()
+				: mCachingEnabled(true)
+			{ }
 			/** This generic function will call the importResource function with the given variadic template.
 			 * @param args The variadic template, which is passed to the derived importers importResource function.
 			 * @return A shared pointer to the loaded resource or pointing to nullptr, if some error occurred during the 
@@ -51,13 +54,9 @@ namespace G2
 			template<typename ... ARGS>
 			void cache(ARGS ... args) 
 			{
-				if(!mCachingEnabled)
-				{
-					return;
-				}
 				std::lock_guard<std::mutex> lock(mResourceMutex);
 				std::pair<std::string,std::shared_ptr<RESOURCE_BUILDER_TYPE>> cacheEntry = ((CONCRETE_IMPORTER*)this)->produceResourceBuilder(args ...);
-				if(mCachingEnabled && cacheEntry.second.get() != nullptr)
+				if(cacheEntry.second.get() != nullptr)
 				{
 					mCache[cacheEntry.first] = cacheEntry.second;
 				}

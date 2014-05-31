@@ -127,6 +127,9 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>GEAR.lib;GEARCore.lib;glu32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2Cameras\" /R /I /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h" />

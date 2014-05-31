@@ -35,7 +35,11 @@
 #pragma comment(lib, "cg.lib")
 #pragma comment(lib, "cgGL.lib")
 #pragma comment(lib, "freeglut.lib")
-#pragma comment(lib, "glew32.lib")
+#ifdef _DEBUG
+	#pragma comment(lib, "glew_d.lib")
+#else
+	#pragma comment(lib, "glew.lib")
+#endif
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "libfbxsdk-md.lib")
 

@@ -25,6 +25,7 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName)
 {
 	if(isCached(meshFileName))
 	{
+		logger << "[FBXImporter] FBX file " << meshFileName << " already cached" << endl;
 		return std::make_pair(meshFileName,std::shared_ptr<FBXMesh::Builder>());
 	}
 	logger << "[FBXImporter] Import FBX file " << meshFileName << endl;
