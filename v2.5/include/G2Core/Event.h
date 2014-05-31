@@ -13,6 +13,7 @@ namespace G2
 	public:
 		virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3, param4 parameter4) = 0;
 		virtual bool operator==(HandlerBase<param1,param2,param3,param4>& rhs) = 0;
+		virtual bool isSameObject(HandlerBase<param1,param2,param3,param4>& rhs) = 0;
 	};
 	
 	template <typename param1, typename param2, typename param3>
@@ -21,6 +22,7 @@ namespace G2
 	public:
 		virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3) = 0;
 		virtual bool operator==(HandlerBase<param1,param2,param3>& rhs) = 0;
+		virtual bool isSameObject(HandlerBase<param1,param2,param3>& rhs) = 0;
 	};
 	
 	template <typename param1, typename param2>
@@ -38,6 +40,7 @@ namespace G2
 	public:
 		virtual void Process(param1 parameter1) = 0;
 		virtual bool operator==(HandlerBase<param1>& rhs) = 0;
+		virtual bool isSameObject(HandlerBase<param1>& rhs) = 0;
 	};
 
 	template <typename TargetT, typename param1, typename param2=void, typename param3=void, typename param4=void>
@@ -56,6 +59,13 @@ namespace G2
 			virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3, param4 parameter4)
 			{
 				(mObject->*mMethod)(parameter1,parameter2, parameter3, parameter4);
+			}
+
+			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
+			{
+				Handler<TargetT,param1,param2,param3,param4>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3,param4>*>(&rhs);
+
+				return handler != nullptr && mObject == handler->mObject;
 			}
 
 			virtual bool operator==(HandlerBase<param1,param2,param3,param4>& rhs)
@@ -82,6 +92,13 @@ namespace G2
 			virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3)
 			{
 				(mObject->*mMethod)(parameter1, parameter2, parameter3);
+			}
+
+			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
+			{
+				Handler<TargetT,param1,param2,param3>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3>*>(&rhs);
+
+				return handler != nullptr && mObject == handler->mObject;
 			}
 
 			virtual bool operator==(HandlerBase<param1,param2,param3>& rhs) 
@@ -143,6 +160,13 @@ namespace G2
 				(mObject->*mMethod)(parameter1);
 			}
 
+			virtual bool isSameObject(HandlerBase<param1>& rhs) 
+			{
+				Handler<TargetT,param1>* handler = dynamic_cast<Handler<TargetT,param1>*>(&rhs);
+
+				return handler != nullptr && mObject == handler->mObject;
+			}
+
 			virtual bool operator==(HandlerBase<param1>& rhs)
 			{
 				Handler<TargetT,param1>* handler = dynamic_cast<Handler<TargetT,param1>*>(&rhs);
@@ -201,6 +225,21 @@ namespace G2
 					++it;
 				}
 			}
+			
+			template<typename TargetT>
+			void unHookAll(TargetT* t)
+			{
+				typename std::vector<HandlerBase<param1,param2,param3,param4>*>::iterator it = mEventListeners_.begin();
+				while(it != mEventListeners_.end())
+				{
+					Handler<TargetT, param1, param2, param3, param4> handler(t, nullptr);
+					if((**it).isSameObject(handler)) 
+					{
+						it = mEventListeners_.erase(it);
+					}
+					++it;
+				}
+			}
 
 		private:
 			std::vector<HandlerBase<param1,param2,param3,param4>*> mEventListeners_;
@@ -236,6 +275,21 @@ namespace G2
 					{
 						it = mEventListeners_.erase(it);
 						return;
+					}
+					++it;
+				}
+			}
+			
+			template<typename TargetT>
+			void unHookAll(TargetT* t)
+			{
+				typename std::vector<HandlerBase<param1,param2,param3>*>::iterator it = mEventListeners_.begin();
+				while(it != mEventListeners_.end())
+				{
+					Handler<TargetT, param1, param2, param3> handler(t, nullptr);
+					if((**it).isSameObject(handler)) 
+					{
+						it = mEventListeners_.erase(it);
 					}
 					++it;
 				}
@@ -328,6 +382,21 @@ namespace G2
 				{
 					Handler<TargetT, param1> handler(t, nullptr);
 					if((**it) == handler) 
+					{
+						it = mEventListeners_.erase(it);
+					}
+					++it;
+				}
+			}
+			
+			template<typename TargetT>
+			void unHookAll(TargetT* t)
+			{
+				typename std::vector<HandlerBase<param1>*>::iterator it = mEventListeners_.begin();
+				while(it != mEventListeners_.end())
+				{
+					Handler<TargetT, param1> handler(t, nullptr);
+					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
 					}
