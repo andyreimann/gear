@@ -20,7 +20,7 @@
             <Property name="Text" value="Submit" />
         </Window>
  
-        <Window name="Editbox" type="TaharezLook/Editbox">
+        <Window name="EditBox" type="TaharezLook/Editbox">
             <Property name="ID" value="2" />
             <Property name="VerticalAlignment" value="Bottom" />
             <Property name="MaxSize" value="{{1,0},{1,0}}" />

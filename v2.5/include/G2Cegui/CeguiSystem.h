@@ -8,6 +8,7 @@
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 
 namespace G2 
@@ -46,10 +47,11 @@ namespace G2
 				
 				void _onKeyDown(G2::KeyCode keyCode);
 				void _onKeyUp(G2::KeyCode keyCode);
+				void _init();
 
-				CEGUI::OpenGL3Renderer& mRenderer;
-
+				CEGUI::OpenGL3Renderer& mRenderer;		// The OpenGL 3+ renderer for the CEGUI subsystem
 				glm::detail::tvec2<int> mMouseCoords;
+				std::unordered_map<G2::KeyCode,CEGUI::Key::Scan> mSpecialKeyMapping;	// Mapping of gear keycodes for special keys to CEGUI ones
 		};
 	};
 };

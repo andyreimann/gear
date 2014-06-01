@@ -10,6 +10,8 @@ using namespace G2::UI;
 CeguiSystem::CeguiSystem() 
 	: mRenderer(CEGUI::OpenGL3Renderer::bootstrapSystem())
 {
+	// initialize the keymapper
+	_init();
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
 	// The GUIContext::setRootWindow function is used, unsurprisingly, to specify a window to be used as the root of the GUI for a given GUIContext. 
 	// This will replace any current root window, although do note that the previous window hierarchy is not actually destroyed 
@@ -125,7 +127,16 @@ void
 CeguiSystem::_onKeyDown(G2::KeyCode keyCode) 
 {
 	CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
-	context.injectKeyDown((CEGUI::Key::Scan)keyCode);
+	auto& it = mSpecialKeyMapping.find(keyCode);
+	if(it == mSpecialKeyMapping.end())
+	{
+		context.injectKeyDown((CEGUI::Key::Scan)keyCode);
+	}
+	else
+	{
+		context.injectKeyDown(it->second);
+	}
+	context.injectChar(keyCode);
 }
 
 void
@@ -145,4 +156,64 @@ CEGUI::Window*
 CeguiSystem::getRootWindow() const 
 {
 	return CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow();
+}
+
+void
+CeguiSystem::_init() 
+{
+	mSpecialKeyMapping[G2::KC_ESCAPE] = CEGUI::Key::Escape;
+	mSpecialKeyMapping[G2::KC_BACKSPACE] = CEGUI::Key::Backspace;
+	mSpecialKeyMapping[G2::KC_TAB] = CEGUI::Key::Tab;
+	mSpecialKeyMapping[G2::KC_LCTRL] = CEGUI::Key::LeftControl;
+	mSpecialKeyMapping[G2::KC_LSHIFT] = CEGUI::Key::LeftShift;
+	mSpecialKeyMapping[G2::KC_BACKSLASH] = CEGUI::Key::Backslash;
+	mSpecialKeyMapping[G2::KC_RSHIFT] = CEGUI::Key::RightShift;
+	mSpecialKeyMapping[G2::KC_RCTRL] = CEGUI::Key::RightControl;
+	mSpecialKeyMapping[G2::KC_SPACE] = CEGUI::Key::Space;
+	mSpecialKeyMapping[G2::KC_F1] = CEGUI::Key::F1;
+	mSpecialKeyMapping[G2::KC_F2] = CEGUI::Key::F2;
+	mSpecialKeyMapping[G2::KC_F3] = CEGUI::Key::F3;
+	mSpecialKeyMapping[G2::KC_F4] = CEGUI::Key::F4;
+	mSpecialKeyMapping[G2::KC_F5] = CEGUI::Key::F5;
+	mSpecialKeyMapping[G2::KC_F6] = CEGUI::Key::F6;
+	mSpecialKeyMapping[G2::KC_F7] = CEGUI::Key::F7;
+	mSpecialKeyMapping[G2::KC_F8] = CEGUI::Key::F8;
+	mSpecialKeyMapping[G2::KC_F9] = CEGUI::Key::F9;
+	mSpecialKeyMapping[G2::KC_F10] = CEGUI::Key::F10;
+	mSpecialKeyMapping[G2::KC_NUMLOCKCLEAR] = CEGUI::Key::NumLock;
+	mSpecialKeyMapping[G2::KC_NUM_0] = CEGUI::Key::Numpad0;
+	mSpecialKeyMapping[G2::KC_NUM_1] = CEGUI::Key::Numpad1;
+	mSpecialKeyMapping[G2::KC_NUM_2] = CEGUI::Key::Numpad2;
+	mSpecialKeyMapping[G2::KC_NUM_3] = CEGUI::Key::Numpad3;
+	mSpecialKeyMapping[G2::KC_NUM_4] = CEGUI::Key::Numpad4;
+	mSpecialKeyMapping[G2::KC_NUM_5] = CEGUI::Key::Numpad5;
+	mSpecialKeyMapping[G2::KC_NUM_6] = CEGUI::Key::Numpad6;
+	mSpecialKeyMapping[G2::KC_NUM_7] = CEGUI::Key::Numpad7;
+	mSpecialKeyMapping[G2::KC_NUM_8] = CEGUI::Key::Numpad8;
+	mSpecialKeyMapping[G2::KC_NUM_9] = CEGUI::Key::Numpad9;
+	mSpecialKeyMapping[G2::KC_NUM_PLUS] = CEGUI::Key::Add;
+	mSpecialKeyMapping[G2::KC_NUM_MINUS] = CEGUI::Key::Subtract;
+	mSpecialKeyMapping[G2::KC_NUM_DIVIDE] = CEGUI::Key::Divide;
+	mSpecialKeyMapping[G2::KC_NUM_MULTIPLY] = CEGUI::Key::Multiply;
+	mSpecialKeyMapping[G2::KC_RETURN] = CEGUI::Key::Return;
+	mSpecialKeyMapping[G2::KC_HOME] = CEGUI::Key::Home;
+	mSpecialKeyMapping[G2::KC_PAUSE] = CEGUI::Key::Pause;
+	mSpecialKeyMapping[G2::KC_UP] = CEGUI::Key::ArrowUp;
+	mSpecialKeyMapping[G2::KC_DOWN] = CEGUI::Key::ArrowDown;
+	mSpecialKeyMapping[G2::KC_LEFT] = CEGUI::Key::ArrowLeft;
+	mSpecialKeyMapping[G2::KC_RIGHT] = CEGUI::Key::ArrowRight;
+	mSpecialKeyMapping[G2::KC_DELETE] = CEGUI::Key::Delete;
+	mSpecialKeyMapping[G2::KC_POWER] = CEGUI::Key::Power;
+	mSpecialKeyMapping[G2::KC_SLEEP] = CEGUI::Key::Sleep;
+	mSpecialKeyMapping[G2::KC_MAIL] = CEGUI::Key::Mail;
+	mSpecialKeyMapping[G2::KC_NUM_ENTER] = CEGUI::Key::NumpadEnter;
+	mSpecialKeyMapping[G2::KC_LALT] = CEGUI::Key::LeftAlt;
+	mSpecialKeyMapping[G2::KC_RALT] = CEGUI::Key::RightAlt;
+	mSpecialKeyMapping[G2::KC_MUTE] = CEGUI::Key::Mute;
+	mSpecialKeyMapping[G2::KC_MINUS] = CEGUI::Key::Minus;
+	mSpecialKeyMapping[G2::KC_EQUALS] = CEGUI::Key::Equals;
+	mSpecialKeyMapping[G2::KC_LEFTBRACKET] = CEGUI::Key::LeftBracket;
+	mSpecialKeyMapping[G2::KC_RIGHTBRACKET] = CEGUI::Key::RightBracket;
+	mSpecialKeyMapping[G2::KC_PAGEUP] = CEGUI::Key::PageUp;
+	mSpecialKeyMapping[G2::KC_PAGEDOWN] = CEGUI::Key::PageDown;
 }
