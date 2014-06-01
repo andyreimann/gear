@@ -93,7 +93,8 @@
       <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARCegui.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>Copy /Y "..\..\v2.5\lib\$(PlatformTarget)\$(Configuration)\*.dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\"</Command>
+      <Command>Copy /Y "..\..\v2.5\lib\$(PlatformTarget)\$(Configuration)\*.dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\"
+Copy /Y "..\..\v2.5\lib\$(PlatformTarget)\$(Configuration)\*.pdb" "$(SolutionDir)bin\$(Platform)\$(Configuration)\"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,10 +132,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CeguiTest.cpp" />
+    <ClCompile Include="GameConsole.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CeguiTest.h" />
+    <ClInclude Include="GameConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

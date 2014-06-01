@@ -1,4 +1,5 @@
 #pragma once
+#include "GameConsole.h"
 
 #include <G2/GEAR.h>
 #include <G2Cameras/EditorCamera.h>
@@ -35,10 +36,16 @@ class CeguiTest
 
 		void createWalls();
 
+		void initCegui();
+
 		G2::SDLWindow&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 		
 		//G2::AABB	mCube;
+		
+		std::vector<G2::Entity> mGUIWindows;
+		std::shared_ptr<GameConsoleWindow> mGameConsole;
+
 
 		std::vector<G2::Entity> mPlanes;
 

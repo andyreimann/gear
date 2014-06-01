@@ -73,6 +73,7 @@ PhyTestNewton::PhyTestNewton(G2::SDLWindow& window)
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 
+	//mFBXImporter.setCachingMode(false);
 	for(int i = 0; i < 3; ++i)
 	{
 		

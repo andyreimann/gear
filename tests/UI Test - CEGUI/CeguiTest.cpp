@@ -8,6 +8,9 @@
 #include <G2/Effect.h>
 
 #include <G2Cegui/CeguiComponent.h>
+#include <CEGUI/CEGUI.h>
+
+//#define USE_LAYOUT_FILE
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -16,6 +19,10 @@ CeguiTest::CeguiTest(G2::SDLWindow& window)
 	mWindow(window),
 	mEditorCamera(&window)
 {
+
+	initCegui();
+
+
 	srand(2006);
 
 	mEditorCamera
@@ -53,9 +60,63 @@ CeguiTest::CeguiTest(G2::SDLWindow& window)
 
 	createWalls();
 
-	//bool changed = G2::ECSManager::getShared().updateInvokeOrder<G2::UI::CeguiSystem,G2::UI::CeguiComponent,G2::RenderSystem,G2::RenderComponent>();
-
 	auto uiComponent = mLight->addComponent<G2::UI::CeguiComponent>();
+
+	// create (load) the TaharezLook scheme file
+	// (this auto-loads the TaharezLook looknfeel and imageset files)
+	CEGUI::SchemeManager::getSingleton().createFromFile( "TaharezLook.scheme" );
+
+	CEGUI::System::getSingleton().getDefaultGUIContext().
+	getMouseCursor().setDefaultImage( "TaharezLook/MouseArrow" );
+
+	CEGUI::System::getSingleton().getDefaultGUIContext().
+	setDefaultTooltipType( "TaharezLook/Tooltip" );
+
+#ifdef USE_LAYOUT_FILE
+	// loading from xml-file
+
+	mGUIWindows.push_back(G2::Entity());
+	// load window
+	auto* ceguiComponent = mGUIWindows.back().addComponent<G2::UI::CeguiComponent>("Taharez_Test.layout");
+	ceguiComponent->attachToRootWindow();
+
+
+	//CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadLayoutFromFile( "Taharez_Test.layout" );
+	//CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow( myRoot );
+	//CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow().removeChild(myRoot->getID())
+#else
+	mGUIWindows.push_back(G2::Entity());
+	// load window and attach to already existing root window
+	auto* ceguiComponent = mGUIWindows.back().addComponent<G2::UI::CeguiComponent>("TaharezLook/FrameWindow", "testWindow");
+	ceguiComponent->attachToRootWindow();
+
+	// cast to the desired type if functionality in CEGUI::Window is missing
+	CEGUI::FrameWindow* fWnd = static_cast<CEGUI::FrameWindow*>(ceguiComponent->getWindow());
+
+
+	// position a quarter of the way in from the top-left of parent.
+	fWnd->setPosition( CEGUI::UVector2( CEGUI::UDim( 0.25f, 0.0f ), CEGUI::UDim( 0.25f, 0.0f ) ) );
+	// set size to be half the size of the parent
+	fWnd->setSize( CEGUI::USize( CEGUI::UDim( 0.5f, 0.0f ), CEGUI::UDim( 0.5f, 0.0f ) ) );
+
+	fWnd->setText( "Hello World!" );
+
+	// Create a button as a CeguiComponent
+	mGUIWindows.push_back(G2::Entity());
+	auto* button = mGUIWindows.back().addComponent<G2::UI::CeguiComponent>("TaharezLook/Button","TestButton");
+	
+	button->getWindow()->setPosition(CEGUI::UVector2(CEGUI::UDim(0.75,0),CEGUI::UDim(0.50,0)));
+	button->getWindow()->setSize(CEGUI::USize(CEGUI::UDim(0,150),CEGUI::UDim(0,50)));
+	button->getWindow()->setText("Jump!");
+	fWnd->addChild(button->getWindow());  
+
+#endif
+
+	mGameConsole = std::shared_ptr<GameConsoleWindow>(new GameConsoleWindow());
+
+	// ensure GUI is rendered after the scene!
+	G2::ECSManager::getShared().updateInvokeOrder<G2::RenderSystem,G2::RenderComponent,G2::UI::CeguiSystem,G2::UI::CeguiComponent>();
+
 }
 
 CeguiTest::~CeguiTest()
@@ -143,4 +204,32 @@ CeguiTest::onRenderFrame(G2::FrameInfo const& frameInfo)
 void
 CeguiTest::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
+}
+
+void
+CeguiTest::initCegui() 
+{
+	// init the CeguiSystem of gear to bootstrap the OpenGL renderer
+	G2::ECSManager::getShared().getSystem<G2::UI::CeguiSystem,G2::UI::CeguiComponent>();
+
+	/****************************************
+	 * INIT CEGUI RESOURCE LOADING SYSTEM	*
+	 ****************************************/
+	// initialise the required dirs for the DefaultResourceProvider
+	CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>
+		(CEGUI::System::getSingleton().getResourceProvider());
+	rp->setResourceGroupDirectory("schemes", ASSET_PATH + "Resources/cegui/schemes/");
+	rp->setResourceGroupDirectory("imagesets", ASSET_PATH + "Resources/cegui/imagesets/");
+	rp->setResourceGroupDirectory("fonts", ASSET_PATH + "Resources/cegui/fonts/");
+	rp->setResourceGroupDirectory("layouts", ASSET_PATH + "Resources/cegui/layouts/");
+	rp->setResourceGroupDirectory("looknfeels", ASSET_PATH + "Resources/cegui/looknfeel/");
+	rp->setResourceGroupDirectory("lua_scripts", ASSET_PATH + "Resources/cegui/lua_scripts/");
+
+	// set the default resource groups to be used
+	CEGUI::ImageManager::setImagesetDefaultResourceGroup("imagesets");
+	CEGUI::Font::setDefaultResourceGroup("fonts");
+	CEGUI::Scheme::setDefaultResourceGroup("schemes");
+	CEGUI::WidgetLookManager::setDefaultResourceGroup("looknfeels");
+	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
+	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 }

@@ -236,6 +236,7 @@ namespace G2
 					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
+						continue;
 					}
 					++it;
 				}
@@ -290,6 +291,7 @@ namespace G2
 					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
+						continue;
 					}
 					++it;
 				}
@@ -344,6 +346,7 @@ namespace G2
 					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
+						continue;
 					}
 					++it;
 				}
@@ -399,6 +402,7 @@ namespace G2
 					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
+						continue;
 					}
 					++it;
 				}

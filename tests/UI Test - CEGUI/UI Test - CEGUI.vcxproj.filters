@@ -3,8 +3,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CeguiTest.cpp" />
+    <ClCompile Include="GameConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CeguiTest.h" />
+    <ClInclude Include="GameConsole.h" />
   </ItemGroup>
 </Project>
