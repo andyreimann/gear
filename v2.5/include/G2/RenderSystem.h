@@ -2,6 +2,8 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 
+#include "EffectImporter.h"
+#include "AABB.h"
 #include <G2Core/BaseSystem.h>
 
 #include <memory>
@@ -37,10 +39,16 @@ namespace G2
 			* @param value The current DefaultShader.
 			*/
 			void setDefaultEffect(std::shared_ptr<G2::Effect> const& value) { defaultEffect = value; }
+			/// This function will return the EngineEffectImporter. 
+			/// @return The EngineEffectImporter.
+			G2::EffectImporter& getEngineEffectImporter() { return mEngineEffectImporter; }
 		private:
 
 			void renderPasses(
 				glm::mat4 const& cameraProjectionMatrix, 
+				float zNear, 
+				float zFar,
+				float fovY,
 				glm::vec3 const& cameraPosition,
 				glm::mat4 const& cameraSpaceMatrix,
 				glm::mat4 const& inverseCameraRotation,
@@ -75,6 +83,10 @@ namespace G2
 			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
 			std::shared_ptr<Shader> getPassRenderShader(RenderComponent* component, Pass const* pass) const;
 
-			std::shared_ptr<G2::Effect>						defaultEffect;		// The default UberShader to use for rendering
+			std::shared_ptr<G2::Effect>						defaultEffect;			// The default UberShader to use for rendering
+			EffectImporter									mEngineEffectImporter;	// The effect importer used when importing default engine effects
+
+			AABB											mWorldAABB;
+
 	};
 };

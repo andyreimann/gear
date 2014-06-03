@@ -72,7 +72,7 @@ FrameBuffer::unbind() const
 }
 
 void
-FrameBuffer::attachTexture(std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment /*= BufferAttachment::COLOR_0*/, int texTarget, int mipLevel /*= 0 */) const
+FrameBuffer::attachTexture(std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment, int texTarget, int mipLevel, int layer) const
 {
 	bind();
 
@@ -82,8 +82,11 @@ FrameBuffer::attachTexture(std::shared_ptr<Texture> const& tex, BufferAttachment
 	}
 	else if(tex->mType == GL_TEXTURE_3D)
 	{
-		int zSlice = 0;
-		GLDEBUG( glFramebufferTexture3D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel, zSlice ) );
+		GLDEBUG( glFramebufferTexture3D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel, layer ) );
+	}
+	else if(tex->mType == GL_TEXTURE_2D_ARRAY)
+	{
+		GLDEBUG( glFramebufferTextureLayer( GL_FRAMEBUFFER, attachment,  tex->mId, mipLevel, layer ) );
 	}
 	else
 	{

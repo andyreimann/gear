@@ -142,7 +142,9 @@ namespace G2
 		protected:
 			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
+			
 			RenderTarget							mRenderTarget;			// The render target of the Pass
+
 			PointOfView::Name						mPov;					// The point of view of the Pass
 			int										mNumRenderIterations;	// The number of iterations the pass needs to be completed
 			float									mZNear;					// The near clip plane of the Pass

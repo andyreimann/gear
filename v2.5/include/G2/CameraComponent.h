@@ -39,8 +39,11 @@ namespace G2
 			* @param value The projection matrix.
 			* @param width The width of the viewport
 			* @param height The height of the viewport
+			* @param zNear The near clip plane
+			* @param zFar The far clip plane
+			* @param fovY The field of view in y direction of the camera
 			*/
-			void setProjectionMatrix(glm::mat4 const& value, int width, int height);
+			void setProjectionMatrix(int width, int height, float zNear, float zFar, float fovY);
 			/** This function will return the ViewportWidth. 
 			* @return The ViewportWidth.
 			*/
@@ -74,6 +77,15 @@ namespace G2
 			/// This function will return the Frustum. 
 			/// @return The Frustum of the CameraComponent.
 			G2::Frustum const& getFrustum() const { return mFrustum; }
+			/// This function will return the ZNear. 
+			/// @return The ZNear.
+			float const& getZNear() const { return mZNear; }
+			/// This function will return the ZFar. 
+			/// @return The ZFar.
+			float const& getZFar() const { return mZFar; }
+			/// This function will return the FovY. 
+			/// @return The FovY.
+			float const& getFovY() const { return mFovY; }
 		private:
 			/// This function will set the InverseCameraRotation to the given value.
 			/// @param value The InverseCameraRotation.
@@ -86,6 +98,9 @@ namespace G2
 			float	  mRotationSpeed;			// The speed of the rotation
 			
 			glm::mat4 mProjectionMatrix;		// The current camera projection matrix
+			float	  mZNear;					// The near clip plane of the camera
+			float	  mZFar;					// The far clip plane of the camera
+			float	  mFovY;					// The FOVY of the CameraComponent
 			glm::mat4 mInverseCameraRotation;	// The inverse camera rotation matrix needed for several effects
 			int		  mViewportWidth;			// The width of the Viewport
 			int		  mViewportHeight;			// The height of the Viewport

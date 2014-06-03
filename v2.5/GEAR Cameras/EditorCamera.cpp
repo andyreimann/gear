@@ -212,6 +212,6 @@ EditorCamera::setViewport(int width, int height)
 	}
 	getComponent<G2::CameraComponent>()
 		->setProjectionMatrix(
-			glm::perspective(70.0f, width / (float)height, 0.01f, 50.0f), width, height
+			width, height, 0.01f, 50.f, 70.f
 		);
 }

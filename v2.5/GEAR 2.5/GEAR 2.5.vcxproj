@@ -309,11 +309,13 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="ShaderBlockParser.h" />
     <ClInclude Include="ShaderCache.h" />
     <ClInclude Include="ShaderMetaData.h" />
+    <ClInclude Include="ShadowDescriptor.h" />
     <ClInclude Include="SimpleShaderPart.h" />
     <ClInclude Include="StringTools.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Texture3D.h" />
+    <ClInclude Include="TextureArray.h" />
     <ClInclude Include="TextureCache.h" />
     <ClInclude Include="TextureCube.h" />
     <ClInclude Include="TextureImporter.h" />
@@ -398,6 +400,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
+    <ClCompile Include="TextureArray.cpp" />
     <ClCompile Include="TextureCache.cpp" />
     <ClCompile Include="TextureCube.cpp" />
     <ClCompile Include="TextureImporter.cpp" />

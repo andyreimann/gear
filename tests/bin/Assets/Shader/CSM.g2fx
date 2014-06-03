@@ -1,0 +1,61 @@
+Ubershader "GEAR/Multipass" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+   }
+   Shader "GLSL" {
+     Passes {
+        Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+           }
+           Settings {
+              Name "ShadowPass"
+              RenderTarget SHADOW
+              RenderType TEXTURE_ARRAY
+              RenderTargetWidth 512
+              RenderTargetHeight 512
+              // creates cascades - only works for RenderType TEXTURE_ARRAY so far
+              // more cascades only have an impact if the Entity has a LightComponent
+              // otherwise the scene is jusdt rendered multiple times from the same POV
+              RenderTargetDepth 3
+              // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
+              OutputFormat RGBA
+              PointOfView LOCAL
+              PolygonOffsetFactor 1.0
+              PolygonOffsetUnits 100.0
+           }
+
+           #VERTEXPROGRAM
+             #INCLUDE "G2.matrices" 
+
+             void main(void) 
+             {
+                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+             }
+           #FRAGMENTPROGRAM
+              #INCLUDE "G2.material" // include GEAR default stuff
+           
+              out vec4 outColor; // here goes the final color
+              void main() 
+              {
+                outColor = material.diffuse;
+              }
+        }
+     }
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+ 
+       void main(void) 
+       {
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+       }
+     #FRAGMENTPROGRAM
+
+        out vec4 outColor; // here goes the final color
+   
+        void main() 
+        {
+          outColor = vec4(1,1,0.5,1);
+        }
+   }
+ }

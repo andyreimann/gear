@@ -2,6 +2,7 @@
 #include "AbstractShaderPart.h"
 #include "Shader.h"
 #include "Texture2D.h"
+#include "TextureArray.h"
 #include "TextureCube.h"
 
 using namespace G2;
@@ -14,22 +15,37 @@ Pass::Pass(
 	: mSettings(settings),
 	mShaderPermutations(shaderPermutations),
 	mRenderTarget(renderTargetSampler,
-				// TODO implement case RT_1D here as well!
+				  // TODO implement case RT_1D here as well!
 				  renderTargetType == RenderTargetType::RT_2D ?
-				  std::shared_ptr<Texture>(new Texture2D(
-						NEAREST, 
-						NEAREST, 
-						(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
-						(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
-						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
-						false)) : (
-				  std::shared_ptr<Texture>(new TextureCube(
-						NEAREST, 
-						NEAREST, 
-						(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
-						(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
-						Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
-						false))
+					  std::shared_ptr<Texture>(new Texture2D(
+							NEAREST, 
+							NEAREST, 
+							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
+							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
+							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+							false,
+							nullptr))
+				  : (
+					  renderTargetType == RenderTargetType::RT_2D_ARRAY ?
+						  std::shared_ptr<Texture>(new TextureArray(
+								NEAREST, 
+								NEAREST, 
+								(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
+								(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
+								(unsigned)Setting::get("RenderTargetDepth", mSettings, "2").toInt(), 
+								Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+								false,
+								nullptr))
+					  : (
+					  // RT_CUBE
+					  std::shared_ptr<Texture>(new TextureCube(
+							NEAREST, 
+							NEAREST, 
+							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
+							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
+							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+							false))
+					)
 				),
 				renderTargetType,
 				mSettings),
@@ -44,6 +60,10 @@ Pass::Pass(
 	if(renderTargetType == RenderTargetType::RT_CUBE)
 	{
 		mNumRenderIterations = 6;
+	}
+	else if(renderTargetType == RenderTargetType::RT_2D_ARRAY)
+	{
+		mNumRenderIterations = mRenderTarget.getRenderTexture()->getDepth();
 	}
 	else
 	{

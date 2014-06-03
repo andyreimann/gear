@@ -55,7 +55,7 @@ PhysicsSystem::PhysicsSystem() :
 	mDynamicsWorld->getPairCache()->setInternalGhostPairCallback(mGhostPairCallback);
 #endif
 	
-	mDynamicsWorld->setDebugDrawer(&mDebugDrawer);
+	//mDynamicsWorld->setDebugDrawer(&mDebugDrawer);
 }
 #ifdef GEAR_GLOBAL_COLLISIONS
 #include <stdlib.h>     /* srand, rand */
@@ -104,32 +104,32 @@ PhysicsSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 {
 	if(name == "render") 
 	{
-		glUseProgram(0);
-		
-		auto* cameraSystem = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>();
-		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
+		//glUseProgram(0);
+		//
+		//auto* cameraSystem = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>();
+		//auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 
-		CameraComponent* camera = cameraSystem->getRenderCamera();
-		assert(camera != nullptr);
-		
-		glm::mat4 cameraSpaceMatrix;
-		auto* cameraTransformation = transformSystem->get(camera->getEntityId());
-		
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glMultMatrixf(glm::value_ptr(camera->getProjectionMatrix()));
+		//CameraComponent* camera = cameraSystem->getRenderCamera();
+		//assert(camera != nullptr);
+		//
+		//glm::mat4 cameraSpaceMatrix;
+		//auto* cameraTransformation = transformSystem->get(camera->getEntityId());
+		//
+		//glMatrixMode(GL_PROJECTION);
+		//glLoadIdentity();
+		//glMultMatrixf(glm::value_ptr(camera->getProjectionMatrix()));
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glMultMatrixf(glm::value_ptr(cameraTransformation->getWorldSpaceMatrix()));
+		//glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
+		//glMultMatrixf(glm::value_ptr(cameraTransformation->getWorldSpaceMatrix()));
 
-		mDynamicsWorld->debugDrawWorld();
+		//mDynamicsWorld->debugDrawWorld();
 
-		
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		//
+		//glMatrixMode(GL_PROJECTION);
+		//glLoadIdentity();
+		//glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
 
 	}
 #ifdef GEAR_SINGLE_THREADED

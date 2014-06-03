@@ -27,13 +27,13 @@ namespace G2
 			 * @warning If you bind a Texture into a specific slot, be sure to unbind it from the same slot.
 			 * Valid Slots are GEAR2::TEX_SLOT1, GEAR2::TEX_SLOT2, GEAR2::TEX_SLOT3, GEAR2::TEX_SLOT4, GEAR2::TEX_SLOT5, GEAR2::TEX_SLOT6, GEAR2::TEX_SLOT7, GEAR2::TEX_SLOT8
 			 */
-			void bind( unsigned textureSlot ) const;
+			virtual void bind( unsigned textureSlot ) const;
 			/** This function unbinds the Texture from a specific Texture slot.
 			 * @param textureSlot The TextureSlot to bind the Texture to.
 			 * @warning If you bind a Texture into a specific slot, be sure to unbind it from the same slot.
 			 * Valid Slots are GEAR2::TEX_SLOT1, GEAR2::TEX_SLOT2, GEAR2::TEX_SLOT3, GEAR2::TEX_SLOT4, GEAR2::TEX_SLOT5, GEAR2::TEX_SLOT6, GEAR2::TEX_SLOT7, GEAR2::TEX_SLOT8
 			 */
-			void unbind( unsigned textureSlot ) const;
+			virtual void unbind( unsigned textureSlot ) const;
 			/** Returns the width of the Texture
 			 * @return The width of the Texture
 			 */
@@ -68,6 +68,6 @@ namespace G2
 			
 
 			unsigned int	mId;			// The OpenGL texture ID
-			int				mType;			// The OpenGL texture ID
+			int				mType;			// The OpenGL texture type
 	};
 };

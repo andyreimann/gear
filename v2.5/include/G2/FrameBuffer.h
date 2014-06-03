@@ -42,8 +42,8 @@ namespace G2
 			///  Possible values are BufferAttachment::COLOR_0, BufferAttachment::COLOR_1, BufferAttachment::COLOR_2, BufferAttachment::COLOR_3, BufferAttachment::DEPTH, BufferAttachment::STENCIL. It is possible that your machine will support more than 4 color attachments. If so, use the constants GL_COLOR_ATTACHMENT4_EXT and so on. Use the getMaxColorAttachments function to get the number of color attachments of your machine.
 			/// @param texTarget Specifies the texture target. Must be either the type of the texture itself or one of the following constants: G2::CUBE_MAP_POS_X, G2::CUBE_MAP_NEG_X, G2::CUBE_MAP_POS_Y, G2::CUBE_MAP_NEG_Y, G2::CUBE_MAP_POS_Z, G2::CUBE_MAP_NEG_Z.
 			/// @param mipLevel The mip mapping level of the texture to attach to the given attachment point.
-			/// @note The Attachment request will be ignored if there is already a TextureArray attached to the given attachment point.
-			void attachTexture( std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment, int texTarget, int mipLevel = 0 ) const;
+			/// @param layer the Z-Slice/layer of the Texture3D or TextureArray to attach.
+			void attachTexture( std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment, int texTarget, int mipLevel = 0, int layer = 0 ) const;
 			/// This function binds the FrameBuffer
 			void bind() const;
 			/// This function unbinds the FrameBuffer

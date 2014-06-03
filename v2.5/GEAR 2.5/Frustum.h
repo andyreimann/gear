@@ -22,17 +22,11 @@ namespace G2
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class Frustum 
 	{
+		friend struct ShadowDescriptor; // DEBUG
+
 		public:
 			/// This constructs a new Frustum.
 			Frustum();
-			/// Copy constructor.
-			Frustum(Frustum const& rhs);
-			/// Move constructor.
-			Frustum(Frustum && rhs);
-			/// Basic assignment operator.
-			Frustum& operator=(Frustum const& rhs);
-			/// Basic move operator.
-			Frustum& operator=(Frustum && rhs);
 			
 			/// Tests whether a point is inside the frustum or not.
 			/// @param p The point to test.
@@ -46,6 +40,8 @@ namespace G2
 			 * @param modelViewProjectionMatrix The model view projection matrix to get a Frustum representation for.
 			 */
 			void setup(glm::mat4 const& modelViewProjectionMatrix);
+
+			glm::vec4 const* getCornerPoints() const { return &mCorners[0]; } 
 		protected:
 			
 			/// This struct defines a plane of a Frustum.
@@ -67,6 +63,7 @@ namespace G2
 				float distance( glm::vec3 const& pt ) const;
 			};
 
-			Plane mPlanes[FrustumPlane::NUM_PLANES]; // the six planes which defines the frustum
+			glm::vec4	mCorners[8];
+			Plane		mPlanes[FrustumPlane::NUM_PLANES]; // the six planes which defines the frustum
 	};
 };

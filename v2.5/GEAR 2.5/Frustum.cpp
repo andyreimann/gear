@@ -9,33 +9,6 @@ Frustum::Frustum()
 {
 }
 
-Frustum::Frustum(Frustum const& rhs) 
-{
-	// do copy here
-}
-
-Frustum::Frustum(Frustum && rhs) 
-{
-	// eliminates redundant code
-	*this = std::move(rhs); // rvalue property is kept with std::move!
-}
-
-Frustum&
-Frustum::operator=(Frustum const& rhs) 
-{
-	// do assignment here
-	return *this;
-}
-
-Frustum&
-Frustum::operator=(Frustum && rhs) 
-{
-	// 1. Stage: delete maybe allocated resources on target type
-	// 2. Stage: transfer data from src to target
-	// 3. Stage: modify src to a well defined state
-	return *this;
-}
-
 bool
 Frustum::inside(glm::vec3 const& p) const 
 {
@@ -77,6 +50,18 @@ Frustum::Plane::distance(glm::vec3 const& pt) const
 
 void 
 Frustum::setup(glm::mat4 const& mvp) {
+
+	glm::mat4 invMvp = glm::inverse(mvp);
+	
+	mCorners[0] = invMvp * glm::vec4(-1.f,-1.f,-1.f,1.f);
+	mCorners[1] = invMvp * glm::vec4(-1.f, 1.f,-1.f,1.f);
+	mCorners[2] = invMvp * glm::vec4( 1.f, 1.f,-1.f,1.f);
+	mCorners[3] = invMvp * glm::vec4( 1.f,-1.f,-1.f,1.f);
+	mCorners[4] = invMvp * glm::vec4(-1.f,-1.f, 1.f,1.f);
+	mCorners[5] = invMvp * glm::vec4(-1.f, 1.f, 1.f,1.f);
+	mCorners[6] = invMvp * glm::vec4( 1.f, 1.f, 1.f,1.f);
+	mCorners[7] = invMvp * glm::vec4( 1.f,-1.f, 1.f,1.f);
+
 
 	float a, b, c, d;
 	float const* mvpPtr = glm::value_ptr(mvp);

@@ -15,6 +15,7 @@ namespace G2
 		enum Name {
 			RT_1D,
 			RT_2D,
+			RT_2D_ARRAY,
 			RT_CUBE,
 			RT_INVALID,
 		};
@@ -68,5 +69,6 @@ namespace G2
 			RenderTargetType::Name		mRenderTargetType;		// The type of render target
 			FrameBuffer					mFrameBuffer;			// The framebuffer, the render texture is attached to
 			BufferAttachment::Name		mRenderTargetAttachmentPoint; // The attachment point, the Texture is attached to the FrameBuffer
+			int							mNumCascades;			// The number of cascades, the render texture has
 	};
 };

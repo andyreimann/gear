@@ -33,7 +33,22 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
-	if(name == "render") 
+	if(name == "postUpdate") 
+	{
+		mWorldAABB.clear();
+		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
+		for (int i = 0; i < components.size() ; ++i) 
+		{
+			RenderComponent& comp = components[i];
+			this->initializeAABB(&comp, transformSystem);
+			
+			for (int k = 0; k < comp.vaos.size() ; ++k) 
+			{
+				mWorldAABB.merge(comp.worldSpaceAABBs[k]);
+			}
+		}
+	}
+	else if(name == "render") 
 	{
 		//G2::logger << "R in " << frameInfo.frame << G2::endl;
 		// get pointer to all needed systems once per frame -> less dynamic casts!
@@ -58,6 +73,9 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		//logger << "[RenderSystem] Pass rendering in frame " << frameInfo.frame << endl;
 		renderPasses(
 			camera->getProjectionMatrix(),
+			camera->getZNear(),
+			camera->getZFar(),
+			camera->getFovY(),
 			cameraPosition,
 			cameraSpaceMatrix, 
 			inverseCameraRotation, 
@@ -89,6 +107,9 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 void
 RenderSystem::renderPasses(
 					glm::mat4 const& cameraProjectionMatrix, 
+					float zNear, 
+					float zFar,
+					float fovY,
 					glm::vec3 const& cameraPosition,
 					glm::mat4 const& cameraSpaceMatrix, 
 					glm::mat4 const& inverseCameraRotation, 
@@ -107,6 +128,9 @@ RenderSystem::renderPasses(
 		{
 			for(auto it = comp.getEffect()->getPasses().begin(); it < comp.getEffect()->getPasses().end(); ++it)
 			{
+				// Dont support rendering to texture arrays so far!
+				//assert(it->getRenderTarget().getRenderTargetType() != RenderTargetType::RT_2D_ARRAY);
+
 				it->preRender();
 				glm::mat4 passProjectionMatrix = cameraProjectionMatrix;
 					
@@ -118,9 +142,30 @@ RenderSystem::renderPasses(
 					passProjectionMatrix = glm::perspective(it->getFovY(), it->getRenderTarget().getRenderTexture()->getWidth() / (float)it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
 #endif
 				}
+				else if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
+				{
+					auto* lightComponent = lightSystem->get(comp.getEntityId());
+					if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
+					{
+						// rendering texture array for lightsource -> look for shadow descriptor
+						
+						lightComponent->getShadowDescriptor().splitWeight = 0.95f;
+						lightComponent->getShadowDescriptor().splitDistFactor = 1.05f;
 
+						lightComponent->getShadowDescriptor().setupSplitDistance(zNear,zFar);
+					}
+					
+				}
 				for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
 				{
+
+
+					
+
+
+
+
+
 					it->getRenderTarget().bind(renderIter);
 					glm::mat4 passCameraSpaceMatrix;
 					if(it->getPov() == PointOfView::MAIN_CAMERA)
@@ -153,7 +198,26 @@ RenderSystem::renderPasses(
 						auto* transformation = transformSystem->get(comp.getEntityId());
 						if(transformation != nullptr)
 						{
-							passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+							if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
+							{
+								auto* lightComponent = lightSystem->get(comp.getEntityId());
+								if(lightComponent !=  nullptr && lightComponent->getType() == LightType::DIRECTIONAL)
+								{
+									passCameraSpaceMatrix = glm::lookAt(glm::vec3(), lightComponent->getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
+								}
+								else
+								{
+									passCameraSpaceMatrix = transformation->getWorldSpaceMatrix();
+								}
+								// use the matrix as it is
+								// identity
+
+							}
+							else
+							{
+								// only use translation part
+								passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+							}
 						}
 					}
 					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
@@ -164,6 +228,139 @@ RenderSystem::renderPasses(
 							CubeMapFaceCameraRotations[renderIter] // face rotation
 						);
 					}
+
+
+					Frustum frustum;
+
+
+					
+
+
+					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
+					{
+						auto* lightComponent = lightSystem->get(comp.getEntityId());
+						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
+						{
+							// rendering texture array for lightsource -> look for shadow descriptor
+						
+							lightComponent->getShadowDescriptor().splitWeight = 0.95f;
+							lightComponent->getShadowDescriptor().splitDistFactor = 1.05f;
+
+							lightComponent->getShadowDescriptor().setupSplitDistance(zNear,zFar);
+
+							// apply camera matrix to frustum points
+							// Frustum represents now the camera slice frustum
+							lightComponent->getShadowDescriptor().setupFrustumPoints(renderIter, 100, 100, fovY, cameraSpaceMatrix, glm::inverse(cameraSpaceMatrix), inverseCameraRotation);
+							// use the frustum of the CSM
+							frustum = lightComponent->getShadowDescriptor().frusta[renderIter];
+						}
+					}
+					else
+					{
+						frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
+					}
+
+
+
+					// APPLY CROP MATRIX DEBUG
+					float maxX = -FLT_MAX;
+					float maxY = -FLT_MAX;
+					float maxZ;
+					float minX =  FLT_MAX;
+					float minY =  FLT_MAX;
+					float minZ;
+
+					glm::mat4 nv_mvp;
+					glm::vec4 transf;	
+	
+					// find the z-range of the current frustum as seen from the light
+					// in order to increase precision
+	
+					// note that only the z-component is need and thus
+					// the multiplication can be simplified
+					// transf.z = shad_modelview[2] * f.point[0].x + shad_modelview[6] * f.point[0].y + shad_modelview[10] * f.point[0].z + shad_modelview[14];
+					// frustum points are in inverse camera space!
+
+					// passCameraSpaceMatrix contains lookAt of light!
+
+					transf = passCameraSpaceMatrix*frustum.getCornerPoints()[0];
+					minZ = transf.z;
+					maxZ = transf.z;
+					for(int l=1; l<8; l++) {
+						transf = passCameraSpaceMatrix*frustum.getCornerPoints()[l];
+						if(transf.z > maxZ) maxZ = transf.z;
+						if(transf.z < minZ) minZ = transf.z;
+					}
+
+					// @todo only a hack, because there is some bug in aabb retrieval of hole scene (value here should be reseted to 1.0 which was the default).
+					float radius = 0.0;
+					// make sure all relevant shadow casters are included
+					// note that these here are dummy objects at the edges of our scene
+					// @todo here we should use the AABB of the hole Scene 
+					
+					//transf.z = mWorldAABB.getMin().z;
+					//if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+					//if(transf.z - radius < minZ) minZ = transf.z - radius;
+					//transf.z = mWorldAABB.getMax().z;
+					//if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+					//if(transf.z - radius < minZ) minZ = transf.z - radius;
+
+					// set the projection matrix with the new z-bounds
+					// note the inversion because the light looks at the neg. z axis
+					// gluPerspective(LIGHT_FOV, 1.0, maxZ, minZ); // for point lights
+					passProjectionMatrix = glm::ortho(-1.f,1.f,-1.f,1.f,-maxZ,-minZ);
+
+					glm::mat4 shadowModelViewProjection = passProjectionMatrix * passCameraSpaceMatrix;
+
+
+					// find the extends of the frustum slice as projected in light's homogeneous coordinates
+
+					for(int l=0; l<8; l++) {
+						transf = shadowModelViewProjection*frustum.getCornerPoints()[l];
+
+						transf.x /= transf.w;
+						transf.y /= transf.w;
+
+						if(transf.x > maxX) maxX = transf.x;
+						if(transf.x < minX) minX = transf.x;
+						if(transf.y > maxY) maxY = transf.y;
+						if(transf.y < minY) minY = transf.y;
+					}
+
+					float scaleX = 2.0f/(maxX - minX);
+					float scaleY = 2.0f/(maxY - minY);
+					float offsetX = -0.5f*(maxX + minX)*scaleX;
+					float offsetY = -0.5f*(maxY + minY)*scaleY;
+
+					// apply a crop matrix to modify the projection matrix we got from glOrtho.
+					glm::mat4 cropMatrix;
+					cropMatrix = glm::translate(cropMatrix, glm::vec3(offsetX, offsetY,0.0f) );
+					cropMatrix = glm::scale(cropMatrix, glm::vec3( scaleX, scaleY, 1.0f) );
+					
+					
+					// adjust the view frustum of the light, so that it encloses the camera frustum slice fully.
+					// note that this function calculates the projection matrix as it sees best fit
+					passProjectionMatrix = cropMatrix * passProjectionMatrix;
+
+					// final matrix is Crop * Proj * Model
+					// APPLY CROP MATRIX DEBUG
+
+
+
+
+					
+					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
+					{
+						auto* lightComponent = lightSystem->get(comp.getEntityId());
+						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
+						{
+							lightComponent->getShadowDescriptor().setOrthoFrustum(renderIter, passProjectionMatrix*passCameraSpaceMatrix);
+						}
+					}
+
+
+
+
 					for (int k = 0; k < components.size() ; ++k) 
 					{
 						auto& innerComp = components[k];
@@ -179,8 +376,6 @@ RenderSystem::renderPasses(
 						auto passShader = getPassRenderShader(&innerComp, &(*it));
 						// bind shader before call render()
 						passShader->bind();
-						Frustum frustum;
-						frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
 						// pass rendering
 						render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem, &frustum);
 					}
@@ -233,7 +428,7 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 	// Draw all attached VAO
 	for (int k = 0; k < component->vaos.size() ; ++k) 
 	{
-		if(frustum->inside(component->worldSpaceAABBs[k]))
+		if(true || frustum->inside(component->worldSpaceAABBs[k]))
 		{
 			component->vaos[k].draw(component->drawMode);
 		}

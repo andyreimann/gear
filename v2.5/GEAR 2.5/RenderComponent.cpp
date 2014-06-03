@@ -31,6 +31,7 @@ RenderComponent::operator=(RenderComponent && rhs)
 	drawMode = rhs.drawMode;
 	billboarding = rhs.billboarding;
 	objectSpaceAABBs = std::move(rhs.objectSpaceAABBs);
+	worldSpaceAABBs = std::move(rhs.worldSpaceAABBs);
 	aabbAnimationRecalc = rhs.aabbAnimationRecalc;
 	mEffect = std::move(rhs.mEffect);
 	mShaderCache = std::move(rhs.mShaderCache);

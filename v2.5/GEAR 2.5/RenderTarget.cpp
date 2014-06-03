@@ -36,7 +36,8 @@ RenderTarget::RenderTarget(
 	}
 	else
 	{
-		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType);
+
+		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType, 0, 0);
 	}
 }
 
@@ -73,6 +74,10 @@ RenderTarget::bind(int renderIterationIndex) const
 		// attach current cube map face
 		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, CubeMapAttachmentPoints[renderIterationIndex]);
 	}
+	else if(mRenderTargetType == RenderTargetType::RT_2D_ARRAY)
+	{
+		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType, 0, renderIterationIndex);
+	}
 
 	//GLDEBUG( glClearColor(0.3f,0.0f,0.0f,1.0f) );
 	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
@@ -98,6 +103,10 @@ RenderTargetType::getRenderTargetType(std::string const& name)
 	else if(name == "TEXTURE_CUBE" || name == "CUBEMAP") 
 	{
 		return RT_CUBE;
+	}
+	else if(name == "TEXTURE_ARRAY" || name == "TEXTURE_2D_ARRAY") 
+	{
+		return RT_2D_ARRAY;
 	}
 	return RT_INVALID;
 }

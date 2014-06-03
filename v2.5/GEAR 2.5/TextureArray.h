@@ -5,6 +5,7 @@
 #include "ResourceBuilder.h"
 
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
 
 namespace G2 
@@ -13,19 +14,10 @@ namespace G2
 	 * @created:	2014/02/17
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class Texture2D : public Texture
+	class TextureArray : public Texture
 	{
 		friend class RenderTarget;
 		public:
-
-			struct Builder : public ResourceBuilder<Builder,Texture2D>
-			{
-
-				std::shared_ptr<Texture2D> buildResource(unsigned minFilter, unsigned magFilter, bool compress);
-				~Builder();
-
-				unsigned id; // The IL image id
-			};
 
 			/** This constructs a new Texture2D from the given data.
 			 * @param minFilter The min filter to use.
@@ -33,21 +25,22 @@ namespace G2
 			 * @param width The width  to use.
 			 * @param height The height to use.
 			 * @param height The height to use.
+			 * @param size The actual number of elements in the TextureArray for this texture (so that it actually becomes a texture array)
 			 * @param compress The compress flag to use.
 			 * @param data The pointer to the initial data or nullptr.
-			 * @param numCascades The actual number of cascades for this texture (so that it actually becomes a texture array)
 			 */
-			Texture2D(unsigned int minFilter, 
+			TextureArray(unsigned int minFilter, 
 					  unsigned int magFilter, 
 					  unsigned int width,
 					  unsigned int height,
+					  unsigned int size,
 					  unsigned int format,
 					  bool compress,
 					  unsigned char * data = nullptr);
 			/// Move ctor.
-			Texture2D(Texture2D && rhs);
+			TextureArray(TextureArray && rhs);
 			/// Move ctor.
-			Texture2D& operator=(Texture2D && rhs);
+			TextureArray& operator=(TextureArray && rhs);
 			/** Returns the width of the Texture
 			 * @return The width of the Texture
 			 */
@@ -58,19 +51,21 @@ namespace G2
 			virtual unsigned getHeight() { return mHeight; }
 			/** Returns the depth of the Texture
 			 * @return The depth of the Texture
+			 * @note The TextureArray object will return the number of textures managed.
 			 */
-			virtual unsigned getDepth() { return 1; }
+			virtual unsigned getDepth() { return mDepth; }
 			
 			static void		init();
 		private:
-			Texture2D() {}
+			TextureArray() {}
 			
-			static bool		gInitialized;
 
+			static bool		gInitialized;
 			unsigned int	mMinFilter;		// The type of min filter, the texture uses
 			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
+			unsigned		mDepth;		// The width of the Texture.
 			unsigned		mChannels;		// The number of channels of the Texture
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture

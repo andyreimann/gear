@@ -255,6 +255,12 @@
     </ClInclude>
     <ClInclude Include="VertexStream.h" />
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="ShadowDescriptor.h">
+      <Filter>ECS\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureArray.h">
+      <Filter>Texture\Array</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -492,6 +498,9 @@
     </ClCompile>
     <ClCompile Include="VertexStream.cpp" />
     <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="TextureArray.cpp">
+      <Filter>Texture\Array</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -679,6 +688,9 @@
     </Filter>
     <Filter Include="VertexStream">
       <UniqueIdentifier>{de5f6648-5f4f-40d5-a79e-30f198fe7b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture\Array">
+      <UniqueIdentifier>{fbcddd63-6359-49c1-b3b7-5a604e2a3e75}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

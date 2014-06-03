@@ -1,5 +1,6 @@
 #pragma once
 #include "LightSystem.h"
+#include "ShadowDescriptor.h"
 
 #include <G2Core/BaseComponent.h>
 
@@ -51,17 +52,30 @@ namespace G2
 			float		linearAttenuation;		// The linear attenuation of the Light. Default: 0.0
 			float		exponentialAttenuation; // The exponential attenuation of the Light. Default: 0.0
 			
+			/** Configures the shadow mapping used by this LightComponent.
+			 * @param shadowDescriptor The descriptor to use for setting up the shadows.
+			 * @return True if the configuration of the shadow information was done, false if not.
+			 * @note This function may add a RenderComponent to the Entity this LightComponent 
+			 * is attached to if not already existing. Also it will override any assigned effect
+			 * of that RenderComponent.
+			 * @warning Use this function only if you not plan to implement your own shadow algorith on top!
+			 */
+			bool configureShadows(ShadowDescriptor const& shadowDescriptor);
+
+			ShadowDescriptor& getShadowDescriptor() { return mShadowDescriptor; }
+
 		private:
 			void _updateTransformedPosition(glm::vec4 const& pos);
 			void _updateTransformedDirection(glm::vec3 const& pos);
 			glm::vec4 const& _getUntransformedPosition() const { return mDefaultPosition; }
 			glm::vec3 const& _getUntransformedDirection() const { return mDefaultDirection; }
 
-			LightType::Name mType;		// the type of light
-			bool	  mEnabled;			// Flag indicating whether the light is enabled or not.
-			glm::vec4 mCachedPosition;	// The finally transformed position in world space
-			glm::vec4 mDefaultPosition; // The not transformed position in model space
-			glm::vec3 mDefaultDirection;// The not transformed direction in model space
-			glm::vec3 mCachedDirection;	// The finally transformed direction in world space
+			LightType::Name		mType;				// the type of light
+			bool				mEnabled;			// Flag indicating whether the light is enabled or not.
+			glm::vec4			mCachedPosition;	// The finally transformed position in world space
+			glm::vec4			mDefaultPosition;	// The not transformed position in model space
+			glm::vec3			mDefaultDirection;	// The not transformed direction in model space
+			glm::vec3			mCachedDirection;	// The finally transformed direction in world space
+			ShadowDescriptor	mShadowDescriptor;	// The descriptor to use for the shadowing stage for the LightComponent
 	};
 };

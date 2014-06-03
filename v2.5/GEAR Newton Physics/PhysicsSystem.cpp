@@ -61,74 +61,74 @@ PhysicsSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 		glm::mat4 cameraSpaceMatrix;
 		auto* cameraTransformation = transformSystem->get(camera->getEntityId());
 		
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glMultMatrixf(glm::value_ptr(camera->getProjectionMatrix()));
+		//glMatrixMode(GL_PROJECTION);
+		//glLoadIdentity();
+		//glMultMatrixf(glm::value_ptr(camera->getProjectionMatrix()));
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glMultMatrixf(glm::value_ptr(cameraTransformation->getWorldSpaceMatrix()));
-
-
-		glDisable (GL_LIGHTING);
-		glDisable(GL_TEXTURE_2D);
-
-		glColor3f(0.0f, 0.0f, 1.0f);
-
-		glBegin(GL_LINES);
-		for (NewtonBody* body = NewtonWorldGetFirstBody(mDynamicsWorld); body; body = NewtonWorldGetNextBody(mDynamicsWorld, body)) {
-			dVector p0; 
-			dVector p1; 
-			dMatrix matrix;
-			NewtonCollision* const collision = NewtonBodyGetCollision(body);
-			NewtonBodyGetMatrix (body, &matrix[0][0]);
-			NewtonCollisionCalculateAABB (collision, &matrix[0][0], &p0[0], &p1[0]);
-
-			glVertex3f (p0.m_x, p0.m_y, p0.m_z);
-			glVertex3f (p1.m_x, p0.m_y, p0.m_z);
-
-			glVertex3f (p0.m_x, p1.m_y, p0.m_z);
-			glVertex3f (p1.m_x, p1.m_y, p0.m_z);
-
-			glVertex3f (p0.m_x, p1.m_y, p1.m_z);
-			glVertex3f (p1.m_x, p1.m_y, p1.m_z);
-
-			glVertex3f (p0.m_x, p0.m_y, p1.m_z);
-			glVertex3f (p1.m_x, p0.m_y, p1.m_z);
+		//glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
+		//glMultMatrixf(glm::value_ptr(cameraTransformation->getWorldSpaceMatrix()));
 
 
-			glVertex3f (p0.m_x, p0.m_y, p0.m_z);
-			glVertex3f (p0.m_x, p1.m_y, p0.m_z);
+		//glDisable (GL_LIGHTING);
+		//glDisable(GL_TEXTURE_2D);
 
-			glVertex3f (p1.m_x, p0.m_y, p0.m_z);
-			glVertex3f (p1.m_x, p1.m_y, p0.m_z);
+		//glColor3f(0.0f, 0.0f, 1.0f);
 
-			glVertex3f (p0.m_x, p0.m_y, p1.m_z);
-			glVertex3f (p0.m_x, p1.m_y, p1.m_z);
+		//glBegin(GL_LINES);
+		//for (NewtonBody* body = NewtonWorldGetFirstBody(mDynamicsWorld); body; body = NewtonWorldGetNextBody(mDynamicsWorld, body)) {
+		//	dVector p0; 
+		//	dVector p1; 
+		//	dMatrix matrix;
+		//	NewtonCollision* const collision = NewtonBodyGetCollision(body);
+		//	NewtonBodyGetMatrix (body, &matrix[0][0]);
+		//	NewtonCollisionCalculateAABB (collision, &matrix[0][0], &p0[0], &p1[0]);
 
-			glVertex3f (p1.m_x, p0.m_y, p1.m_z);
-			glVertex3f (p1.m_x, p1.m_y, p1.m_z);
+		//	glVertex3f (p0.m_x, p0.m_y, p0.m_z);
+		//	glVertex3f (p1.m_x, p0.m_y, p0.m_z);
+
+		//	glVertex3f (p0.m_x, p1.m_y, p0.m_z);
+		//	glVertex3f (p1.m_x, p1.m_y, p0.m_z);
+
+		//	glVertex3f (p0.m_x, p1.m_y, p1.m_z);
+		//	glVertex3f (p1.m_x, p1.m_y, p1.m_z);
+
+		//	glVertex3f (p0.m_x, p0.m_y, p1.m_z);
+		//	glVertex3f (p1.m_x, p0.m_y, p1.m_z);
 
 
-			glVertex3f (p0.m_x, p0.m_y, p0.m_z);
-			glVertex3f (p0.m_x, p0.m_y, p1.m_z);
+		//	glVertex3f (p0.m_x, p0.m_y, p0.m_z);
+		//	glVertex3f (p0.m_x, p1.m_y, p0.m_z);
 
-			glVertex3f (p1.m_x, p0.m_y, p0.m_z);
-			glVertex3f (p1.m_x, p0.m_y, p1.m_z);
+		//	glVertex3f (p1.m_x, p0.m_y, p0.m_z);
+		//	glVertex3f (p1.m_x, p1.m_y, p0.m_z);
 
-			glVertex3f (p0.m_x, p1.m_y, p0.m_z);
-			glVertex3f (p0.m_x, p1.m_y, p1.m_z);
+		//	glVertex3f (p0.m_x, p0.m_y, p1.m_z);
+		//	glVertex3f (p0.m_x, p1.m_y, p1.m_z);
 
-			glVertex3f (p1.m_x, p1.m_y, p0.m_z);
-			glVertex3f (p1.m_x, p1.m_y, p1.m_z);
-		}
-		glEnd();
+		//	glVertex3f (p1.m_x, p0.m_y, p1.m_z);
+		//	glVertex3f (p1.m_x, p1.m_y, p1.m_z);
 
-		
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+
+		//	glVertex3f (p0.m_x, p0.m_y, p0.m_z);
+		//	glVertex3f (p0.m_x, p0.m_y, p1.m_z);
+
+		//	glVertex3f (p1.m_x, p0.m_y, p0.m_z);
+		//	glVertex3f (p1.m_x, p0.m_y, p1.m_z);
+
+		//	glVertex3f (p0.m_x, p1.m_y, p0.m_z);
+		//	glVertex3f (p0.m_x, p1.m_y, p1.m_z);
+
+		//	glVertex3f (p1.m_x, p1.m_y, p0.m_z);
+		//	glVertex3f (p1.m_x, p1.m_y, p1.m_z);
+		//}
+		//glEnd();
+
+		//
+		//glMatrixMode(GL_PROJECTION);
+		//glLoadIdentity();
+		//glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
 	}
 #ifdef GEAR_SINGLE_THREADED
 	else if(name == "preUpdate") 

@@ -52,32 +52,31 @@ TestScene::TestScene(G2::SDLWindow& window)
 	mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
-	mLight->addComponent<G2::RenderComponent>();
-	//	->setEffect(
-	//	mEffectImporter.import(ASSET_PATH + "Shader/PointLightShadowMapping.g2fx")
-	//);
+	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	light->configureShadows(G2::ShadowDescriptor().setNumCascades(3).setCustomEffect(ASSET_PATH + "Shader/CSM.g2fx"));
+
 	mLightType = light->getType();
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
 	light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
 	
-	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(
-		G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
-		G2::Physics::RigidBodyDescriptor().setMass(10.f)
-						.setFriction(0.75f)
-						.setRestitution(0.5f)
-	);
+	//auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(
+	//	G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
+	//	G2::Physics::RigidBodyDescriptor().setMass(10.f)
+	//					.setFriction(0.75f)
+	//					.setRestitution(0.5f)
+	//);
 	
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
-	lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
+	//lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
+	lightTransformation->rotateAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 	//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	//lightTransformation->setRotation(glm::angleAxis(30.0f, glm::vec3(1.f,0.f,0.f)));
 
 	std::vector<std::string> animFiles;
 	animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
-	mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
+	//mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
 	
 	if(mSampleMesh.get()) 
 	{
@@ -116,13 +115,13 @@ TestScene::TestScene(G2::SDLWindow& window)
 		animComponent->tempSetPoseIndex(0);
 	}
 
-	for(int i = 0; i < 1; ++i)
+	for(int i = 0; i < 0; ++i)
 	{
 		
-		for(int x = 0; x < 10; ++x)
+		for(int x = 0; x < 5; ++x)
 		{
 		
-			for(int y = 0; y < 10; ++y)
+			for(int y = 0; y < 5; ++y)
 			{
 				
 				mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
@@ -407,6 +406,10 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 			}
 		}
 	}
+	else if(keyCode == G2::KC_F)
+	{ 
+		generateGeometryForFrusta();
+	}
 }
 
 void
@@ -528,4 +531,151 @@ TestScene::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mo
 		renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.5f,1.f));
 		renderComp->material.setDiffuse(glm::vec4(1.f,0.5f,1.f,1.f));
 	}
+}
+
+void
+TestScene::generateGeometryForFrusta() 
+{
+	
+	auto* light = mLight->getComponent<G2::LightComponent>();
+
+	for( int i = 0; i < light->getShadowDescriptor().numCascades; ++i)
+	{
+		mPlanes.push_back(GameObject());
+	
+		auto* renderComp = mPlanes.back().addComponent<G2::RenderComponent>();
+		renderComp->drawMode = GL_TRIANGLES;
+		// prepare vao
+		G2::VertexArrayObject vao;
+
+		vao.resize(24);
+
+		glm::vec4 geometry[24];
+		// right frustum plane
+		geometry[0] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		geometry[1] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
+		geometry[2] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		geometry[3] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		geometry[4] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		geometry[5] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		// left frustum plane
+		geometry[6] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		geometry[7] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		geometry[8] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+		geometry[9] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		geometry[10] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
+		geometry[11] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		// top frustum plane
+		geometry[12] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		geometry[13] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
+		geometry[14] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		geometry[15] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		geometry[16] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		geometry[17] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		// bottom frustum plane
+		geometry[18] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		geometry[19] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+		geometry[20] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		geometry[21] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		geometry[22] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
+		geometry[23] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+
+		vao.writeData(G2::Semantics::POSITION, geometry);
+
+		// assign vao to RenderComponent using move semantic
+		renderComp->vaos.push_back(std::move(vao));
+
+		if(i == 0)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(1.0,0.0,0.0,0.2))
+				.setDiffuse(glm::vec4(1.0,0.0,0.0,0.2));
+		}
+		else if(i == 1)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(0.0,1.0,0.0,0.2))
+				.setDiffuse(glm::vec4(0.0,1.0,0.0,0.2));
+		}
+		else if(i == 2)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(0.0,0.0,1.0,0.2))
+				.setDiffuse(glm::vec4(0.0,0.0,1.0,0.2));
+		}
+
+
+
+		
+		mPlanes.push_back(GameObject());
+	
+		renderComp = mPlanes.back().addComponent<G2::RenderComponent>();
+		renderComp->drawMode = GL_TRIANGLES;
+		// prepare vao
+		G2::VertexArrayObject vao2;
+
+		vao2.resize(24);
+		// right frustum plane
+		geometry[0] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[0];
+		geometry[1] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[4];
+		geometry[2] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[5];
+		geometry[3] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[0];
+		geometry[4] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[5];
+		geometry[5] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[1];
+		// left frustum plane
+		geometry[6] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[3];
+		geometry[7] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[6];
+		geometry[8] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[7];
+		geometry[9] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[3];
+		geometry[10] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[2];
+		geometry[11] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[6];
+		// top frustum plane
+		//geometry[12] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[1];
+		//geometry[13] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[2];
+		//geometry[14] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[6];
+		//geometry[15] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[1];
+		//geometry[16] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[6];
+		//geometry[17] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[5];
+		geometry[12] = glm::vec4();
+		geometry[13] = glm::vec4();
+		geometry[14] = glm::vec4();
+		geometry[15] = glm::vec4();
+		geometry[16] = glm::vec4();
+		geometry[17] = glm::vec4();
+		// bottom frustum plane
+		geometry[18] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[0];
+		geometry[19] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[7];
+		geometry[20] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[3];
+		geometry[21] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[0];
+		geometry[22] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[4];
+		geometry[23] = light->getShadowDescriptor().orthoFrusta[i].getCornerPoints()[7];
+
+		vao2.writeData(G2::Semantics::POSITION, geometry);
+
+		// assign vao to RenderComponent using move semantic
+		renderComp->vaos.push_back(std::move(vao2));
+
+		if(i == 0)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(1.0,0.0,0.0,0.2))
+				.setDiffuse(glm::vec4(1.0,0.0,0.0,0.2));
+		}
+		else if(i == 1)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(0.0,1.0,0.0,0.2))
+				.setDiffuse(glm::vec4(0.0,1.0,0.0,0.2));
+		}
+		else if(i == 2)
+		{
+			renderComp->material
+				.setAmbient(glm::vec4(0.0,0.0,1.0,0.2))
+				.setDiffuse(glm::vec4(0.0,0.0,1.0,0.2));
+		}
+	}
+
+	// TODO Check if engine renders transparency without this!
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

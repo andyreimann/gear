@@ -40,6 +40,8 @@ class TestScene
 
 		void createWaterSurface();
 
+		void generateGeometryForFrusta();
+
 		G2::SDLWindow&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 		
