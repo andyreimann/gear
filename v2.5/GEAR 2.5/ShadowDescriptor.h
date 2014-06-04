@@ -38,6 +38,8 @@ namespace G2
 			farClips.resize(numCascades);
 			frusta.resize(numCascades);
 			orthoFrusta.resize(numCascades);
+			eyeToLightClip.resize(numCascades);
+			farClipsHomogenous.resize(numCascades);
 	
 			// set the first nearplane to the full nearplane of the user camera
 			nearClips[0] = zNear; 
@@ -47,18 +49,16 @@ namespace G2
 
 				nearClips[i] = splitWeight*(zNear*powf(ratio, si)) + (1-splitWeight)*(zNear + (zFar - zNear)*si);
 				farClips[i-1] = nearClips[i] * splitDistFactor;
-
-				G2::logger << "[ShadowDescriptor] Cascade " << i << " -> Near:" << nearClips[i-1] << " Far:" << farClips[i-1] << "\n";
 			}
 			// set the last farplane to the full farplane of the user camera
 			farClips[numCascades-1] = zFar;
-			G2::logger << "[ShadowDescriptor] Cascade " << numCascades << " -> Near:" << nearClips[numCascades-1] << " Far:" << farClips[numCascades-1] << "\n";
 		}
 
 		void setupFrustumPoints(int pass, int width, int height, float fovY, glm::mat4 modelView, glm::mat4 const& invCameraTransformation, glm::mat4 const& invCameraRotation)
 		{
 			frusta[pass].setup(glm::perspective(fovY, width / (float)height, nearClips[pass], farClips[pass]) * modelView);
 
+			
 			glm::vec3 view_dir = glm::vec3(invCameraRotation * glm::vec4(0.f,0.f,-1.f,0.f));
 			view_dir = glm::normalize(view_dir);
 
@@ -106,10 +106,12 @@ namespace G2
 		float splitDistFactor;	//!< This factor tells how many the single cascades will overlap each other
 		std::vector<float> nearClips;		//!< This array contains the newarPlane for each subfrustum
 		std::vector<float> farClips;		//!< This array contains the farplane for each subfrustum
+		std::vector<float> farClipsHomogenous;//!< This array contains the farplane for each subfrustum in camera homogenous coordinates
 		
 		std::vector<Frustum> frusta; //!< The Frusta to use
 		std::vector<Frustum> orthoFrusta; //!< The Frusta to use
 		std::vector<glm::mat4> shadowCMPMatrix;	//!< This is the full shadow transformation matrix = cropmatrix * projection * modelview
+		std::vector<glm::mat4> eyeToLightClip;	//!< This is the full shadow transformation matrix = cropmatrix * projection * modelview
 		// DEBUG USED BY RenderSystem END
 	};
 };

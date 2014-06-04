@@ -225,8 +225,8 @@ void _compile(
 			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
 		}
 		
-		//logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
-		//logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
+		logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
+		logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
 		
 		if(shadingLanguage == ShadingLanguage::GLSL) {
 		

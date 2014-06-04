@@ -174,6 +174,11 @@ ShaderBlockParser::parseLine(std::string const& line, std::stringstream& lineStr
 			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
 			mCurrentState = READING_VERTEX_SHADER;
 		}
+		else
+		{
+			// probabli a shader part
+			mCurrentShaderPart->append(line);
+		}
 	}
 	else
 	{

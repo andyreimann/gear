@@ -10,16 +10,16 @@ Ubershader "GEAR/Multipass" {
            }
            Settings {
               Name "ShadowPass"
-              RenderTarget SHADOW
+              RenderTarget SAMPLER_6
               RenderType TEXTURE_ARRAY
-              RenderTargetWidth 512
-              RenderTargetHeight 512
+              RenderTargetWidth 1024
+              RenderTargetHeight 1024
               // creates cascades - only works for RenderType TEXTURE_ARRAY so far
               // more cascades only have an impact if the Entity has a LightComponent
               // otherwise the scene is jusdt rendered multiple times from the same POV
               RenderTargetDepth 3
               // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
-              OutputFormat RGBA
+              OutputFormat DEPTH
               PointOfView LOCAL
               PolygonOffsetFactor 1.0
               PolygonOffsetUnits 100.0
@@ -38,7 +38,7 @@ Ubershader "GEAR/Multipass" {
               out vec4 outColor; // here goes the final color
               void main() 
               {
-                outColor = material.diffuse;
+                outColor = material.ambient + material.diffuse;
               }
         }
      }

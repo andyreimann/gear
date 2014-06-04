@@ -49,6 +49,8 @@ namespace G2
 				float zNear, 
 				float zFar,
 				float fovY,
+				int width,
+				int height,
 				glm::vec3 const& cameraPosition,
 				glm::mat4 const& cameraSpaceMatrix,
 				glm::mat4 const& inverseCameraRotation,

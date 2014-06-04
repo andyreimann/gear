@@ -76,6 +76,8 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			camera->getZNear(),
 			camera->getZFar(),
 			camera->getFovY(),
+			camera->getViewportWidth(),
+			camera->getViewportHeight(),
 			cameraPosition,
 			cameraSpaceMatrix, 
 			inverseCameraRotation, 
@@ -110,6 +112,8 @@ RenderSystem::renderPasses(
 					float zNear, 
 					float zFar,
 					float fovY,
+					int width,
+					int height,
 					glm::vec3 const& cameraPosition,
 					glm::mat4 const& cameraSpaceMatrix, 
 					glm::mat4 const& inverseCameraRotation, 
@@ -203,7 +207,7 @@ RenderSystem::renderPasses(
 								auto* lightComponent = lightSystem->get(comp.getEntityId());
 								if(lightComponent !=  nullptr && lightComponent->getType() == LightType::DIRECTIONAL)
 								{
-									passCameraSpaceMatrix = glm::lookAt(glm::vec3(), lightComponent->getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
+									passCameraSpaceMatrix = glm::lookAt(glm::vec3(),-lightComponent->getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
 								}
 								else
 								{
@@ -250,7 +254,7 @@ RenderSystem::renderPasses(
 
 							// apply camera matrix to frustum points
 							// Frustum represents now the camera slice frustum
-							lightComponent->getShadowDescriptor().setupFrustumPoints(renderIter, 100, 100, fovY, cameraSpaceMatrix, glm::inverse(cameraSpaceMatrix), inverseCameraRotation);
+							lightComponent->getShadowDescriptor().setupFrustumPoints(renderIter, width, height, fovY, cameraSpaceMatrix, glm::inverse(cameraSpaceMatrix), inverseCameraRotation);
 							// use the frustum of the CSM
 							frustum = lightComponent->getShadowDescriptor().frusta[renderIter];
 						}
@@ -298,12 +302,12 @@ RenderSystem::renderPasses(
 					// note that these here are dummy objects at the edges of our scene
 					// @todo here we should use the AABB of the hole Scene 
 					
-					//transf.z = mWorldAABB.getMin().z;
-					//if(transf.z + radius > maxZ) maxZ = transf.z + radius;
-					//if(transf.z - radius < minZ) minZ = transf.z - radius;
-					//transf.z = mWorldAABB.getMax().z;
-					//if(transf.z + radius > maxZ) maxZ = transf.z + radius;
-					//if(transf.z - radius < minZ) minZ = transf.z - radius;
+					transf.z = mWorldAABB.getMin().z;
+					if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+					if(transf.z - radius < minZ) minZ = transf.z - radius;
+					transf.z = mWorldAABB.getMax().z;
+					if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+					if(transf.z - radius < minZ) minZ = transf.z - radius;
 
 					// set the projection matrix with the new z-bounds
 					// note the inversion because the light looks at the neg. z axis
@@ -355,10 +359,19 @@ RenderSystem::renderPasses(
 						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
 						{
 							lightComponent->getShadowDescriptor().setOrthoFrustum(renderIter, passProjectionMatrix*passCameraSpaceMatrix);
+							// build up a matrix to transform a vertex from eye space to light clip space
+							glm::mat4 bias( 0.5f, 0.0f, 0.0f, 0.0f, 
+											0.0f, 0.5f, 0.0f, 0.0f,
+											0.0f, 0.0f, 0.5f, 0.0f,
+											0.5f, 0.5f, 0.5f, 1.0f);
+							lightComponent->getShadowDescriptor().eyeToLightClip[renderIter] = bias * passProjectionMatrix * passCameraSpaceMatrix * glm::inverse(cameraSpaceMatrix);
+							
+							// farClip[i] is originally in eye space - tell's us how far we can see.
+							// Here we compute it in camera homogeneous coordinates. Basically, we calculate
+							// cam_proj * (0, 0, f[i].fard, 1)^t and then normalize to [0; 1]
+							lightComponent->getShadowDescriptor().farClipsHomogenous[renderIter] = 0.5f*(-lightComponent->getShadowDescriptor().farClips[renderIter]*glm::value_ptr(cameraProjectionMatrix)[10]+glm::value_ptr(cameraProjectionMatrix)[14])/lightComponent->getShadowDescriptor().farClips[renderIter] + 0.5f;
 						}
 					}
-
-
 
 
 					for (int k = 0; k < components.size() ; ++k) 
@@ -510,6 +523,23 @@ RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light
 	shader->setProperty(Property(base + ".attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
 	// set special
 	shader->setProperty(Property(base + ".cosCutoff"), std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
+	// set shadow
+	ShadowDescriptor& shadowDescriptor = light->getShadowDescriptor();
+	shader->setProperty(Property(base + ".type"), shadowDescriptor.numCascades > 0 ? 1 : 0);
+	shader->setProperty(Property(base + ".numCascades"), (int)shadowDescriptor.numCascades);
+	for(unsigned int i = 0; i < shadowDescriptor.numCascades; ++i)
+	{
+		std::stringstream nearStr;
+		nearStr << base << ".zNear[" << i << "]";
+		std::stringstream farStr;
+		farStr << base << ".zFar[" << i << "]";
+		shader->setProperty(Property(nearStr.str()), shadowDescriptor.nearClips[i]);
+		shader->setProperty(Property(farStr.str()), shadowDescriptor.farClipsHomogenous[i]);
+		std::stringstream eyeToLightClipStr;
+		eyeToLightClipStr << base << ".eyeToLightClip[" << i << "]";
+		shader->setProperty(Property(eyeToLightClipStr.str()), shadowDescriptor.eyeToLightClip[i]);
+	}
+	
 }
 
 void
