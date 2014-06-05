@@ -53,8 +53,7 @@ TestScene::TestScene(G2::SDLWindow& window)
 
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-	light->configureShadows(G2::ShadowDescriptor().setNumCascades(3).setCustomEffect(ASSET_PATH + "Shader/CSM.g2fx"));
-	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMapping(3,ASSET_PATH + "Shader/CSM.g2fx"));
+	light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	mLightType = light->getType();
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
@@ -144,9 +143,6 @@ TestScene::TestScene(G2::SDLWindow& window)
 		}
 	
 	}
-	
-
-
 	//createWaterSurface();
 }
 
@@ -552,70 +548,70 @@ TestScene::generateGeometryForFrusta()
 	
 	auto* light = mLight->getComponent<G2::LightComponent>();
 
-	for( int i = 0; i < light->getShadowDescriptor().numCascades; ++i)
+	//for( int i = 0; i < light->getShadowDescriptor().numCascades; ++i)
 	{
-		mPlanes.push_back(GameObject());
+		//mPlanes.push_back(GameObject());
 	
-		auto* renderComp = mPlanes.back().addComponent<G2::RenderComponent>();
-		renderComp->drawMode = GL_TRIANGLES;
-		// prepare vao
-		G2::VertexArrayObject vao;
+		//auto* renderComp = mPlanes.back().addComponent<G2::RenderComponent>();
+		//renderComp->drawMode = GL_TRIANGLES;
+		//// prepare vao
+		//G2::VertexArrayObject vao;
 
-		vao.resize(24);
+		//vao.resize(24);
 
-		glm::vec4 geometry[24];
-		// right frustum plane
-		geometry[0] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
-		geometry[1] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
-		geometry[2] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
-		geometry[3] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
-		geometry[4] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
-		geometry[5] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
-		// left frustum plane
-		geometry[6] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
-		geometry[7] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
-		geometry[8] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
-		geometry[9] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
-		geometry[10] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
-		geometry[11] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
-		// top frustum plane
-		geometry[12] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
-		geometry[13] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
-		geometry[14] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
-		geometry[15] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
-		geometry[16] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
-		geometry[17] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
-		// bottom frustum plane
-		geometry[18] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
-		geometry[19] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
-		geometry[20] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
-		geometry[21] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
-		geometry[22] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
-		geometry[23] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+		//glm::vec4 geometry[24];
+		//// right frustum plane
+		//geometry[0] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		//geometry[1] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
+		//geometry[2] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		//geometry[3] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		//geometry[4] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		//geometry[5] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		//// left frustum plane
+		//geometry[6] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		//geometry[7] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		//geometry[8] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+		//geometry[9] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		//geometry[10] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
+		//geometry[11] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		//// top frustum plane
+		//geometry[12] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		//geometry[13] = light->getShadowDescriptor().frusta[i].getCornerPoints()[2];
+		//geometry[14] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		//geometry[15] = light->getShadowDescriptor().frusta[i].getCornerPoints()[1];
+		//geometry[16] = light->getShadowDescriptor().frusta[i].getCornerPoints()[6];
+		//geometry[17] = light->getShadowDescriptor().frusta[i].getCornerPoints()[5];
+		//// bottom frustum plane
+		//geometry[18] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		//geometry[19] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
+		//geometry[20] = light->getShadowDescriptor().frusta[i].getCornerPoints()[3];
+		//geometry[21] = light->getShadowDescriptor().frusta[i].getCornerPoints()[0];
+		//geometry[22] = light->getShadowDescriptor().frusta[i].getCornerPoints()[4];
+		//geometry[23] = light->getShadowDescriptor().frusta[i].getCornerPoints()[7];
 
-		vao.writeData(G2::Semantics::POSITION, geometry);
+		//vao.writeData(G2::Semantics::POSITION, geometry);
 
-		// assign vao to RenderComponent using move semantic
-		renderComp->vaos.push_back(std::move(vao));
+		//// assign vao to RenderComponent using move semantic
+		//renderComp->vaos.push_back(std::move(vao));
 
-		if(i == 0)
-		{
-			renderComp->material
-				.setAmbient(glm::vec4(1.0,0.0,0.0,0.2))
-				.setDiffuse(glm::vec4(1.0,0.0,0.0,0.2));
-		}
-		else if(i == 1)
-		{
-			renderComp->material
-				.setAmbient(glm::vec4(0.0,1.0,0.0,0.2))
-				.setDiffuse(glm::vec4(0.0,1.0,0.0,0.2));
-		}
-		else if(i == 2)
-		{
-			renderComp->material
-				.setAmbient(glm::vec4(0.0,0.0,1.0,0.2))
-				.setDiffuse(glm::vec4(0.0,0.0,1.0,0.2));
-		}
+		//if(i == 0)
+		//{
+		//	renderComp->material
+		//		.setAmbient(glm::vec4(1.0,0.0,0.0,0.2))
+		//		.setDiffuse(glm::vec4(1.0,0.0,0.0,0.2));
+		//}
+		//else if(i == 1)
+		//{
+		//	renderComp->material
+		//		.setAmbient(glm::vec4(0.0,1.0,0.0,0.2))
+		//		.setDiffuse(glm::vec4(0.0,1.0,0.0,0.2));
+		//}
+		//else if(i == 2)
+		//{
+		//	renderComp->material
+		//		.setAmbient(glm::vec4(0.0,0.0,1.0,0.2))
+		//		.setDiffuse(glm::vec4(0.0,0.0,1.0,0.2));
+		//}
 
 
 

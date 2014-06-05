@@ -87,7 +87,7 @@ Ubershader "GEAR/Default" {
               if (intensity > 0.0) 
               {
                 float shadowMultiplier = 1.0;
-                if(light[i].type == 1)
+                if(light[i].type == 0)
                 {
                   // CSM
                   int csmIndex = getCascadeIndex(i);

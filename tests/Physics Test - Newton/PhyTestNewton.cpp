@@ -51,11 +51,9 @@ PhyTestNewton::PhyTestNewton(G2::SDLWindow& window)
 	
 	mLight = mFBXImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
-
-
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
-	mLight->addComponent<G2::RenderComponent>();
+	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
 	light->specular = glm::vec4(1.f,1.f,1.f,0.f);

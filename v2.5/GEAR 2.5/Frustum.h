@@ -22,7 +22,7 @@ namespace G2
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class Frustum 
 	{
-		friend struct ShadowDescriptor; // DEBUG
+		friend class ShadowDescriptor; // DEBUG
 
 		public:
 			/// This constructs a new Frustum.

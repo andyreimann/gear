@@ -261,6 +261,9 @@
     <ClInclude Include="TextureArray.h">
       <Filter>Texture\Array</Filter>
     </ClInclude>
+    <ClInclude Include="LightEffectState.h">
+      <Filter>ECS\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -500,6 +503,9 @@
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="TextureArray.cpp">
       <Filter>Texture\Array</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowDescriptor.cpp">
+      <Filter>ECS\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

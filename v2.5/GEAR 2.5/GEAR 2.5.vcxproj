@@ -273,6 +273,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="LightComponent.h" />
     <ClInclude Include="LightDefaultInclude.h" />
+    <ClInclude Include="LightEffectState.h" />
     <ClInclude Include="LightSystem.h" />
     <ClInclude Include="LocationBinding.h" />
     <ClInclude Include="LocationBindingsBlockParser.h" />
@@ -395,6 +396,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderBlockParser.cpp" />
     <ClCompile Include="ShaderMetaData.cpp" />
+    <ClCompile Include="ShadowDescriptor.cpp" />
     <ClCompile Include="SimpleShaderPart.cpp" />
     <ClCompile Include="StringTools.cpp" />
     <ClCompile Include="Texture.cpp" />

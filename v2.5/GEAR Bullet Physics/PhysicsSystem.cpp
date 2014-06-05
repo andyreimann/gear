@@ -42,7 +42,7 @@ PhysicsSystem::PhysicsSystem() :
 
 	mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher,mBroadphase,mSolver,mCollisionConfiguration);
 
-	mDynamicsWorld->setGravity(btVector3(0,-9.81,0));
+	mDynamicsWorld->setGravity(btVector3(0.f,-9.81f,0.f));
 
 	
 #ifdef GEAR_GLOBAL_COLLISIONS

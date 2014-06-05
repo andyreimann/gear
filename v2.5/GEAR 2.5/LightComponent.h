@@ -2,10 +2,12 @@
 #include "LightSystem.h"
 #include "ShadowDescriptor.h"
 #include "AABB.h"
+#include "LightEffectState.h"
 
 #include <G2Core/BaseComponent.h>
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace G2 
 {
@@ -62,26 +64,31 @@ namespace G2
 			 * @note This function may add a RenderComponent to the Entity this LightComponent 
 			 * is attached to if not already existing. Also it will override any assigned effect
 			 * of that RenderComponent.
-			 * @warning Use this function only if you not plan to implement your own shadow algorith on top!
+			 * @warning Use this function only if you not plan to implement your own shadow algorithm on top!
 			 */
 			bool configureShadows(ShadowDescriptor const& shadowDescriptor);
-
-			ShadowDescriptor& getShadowDescriptor() { return mShadowDescriptor; }
+			/** This function will return the LightEffectState. 
+			 * @return The LightEffectState.
+			 */
+			std::shared_ptr<LightEffectState> const& getLightEffectState() const { return mLightEffectState; }
 
 		private:
 			/** This function is called from the RenderSystem whenever a Pass
 			 * will be rendered, which is attached to a LightComponent.
-			 * @param mainCamera The main render camera.
 			 * @param pass The Pass, which will be rendered.
+			 * @param mainCamera The main render camera.
 			 */
 			void _prePassRendering(Pass const* pass, CameraComponent const* mainCamera);
 			
 			/** This function is called from the RenderSystem whenever a Pass iteration
 			 * will be rendered, which is attached to a LightComponent.
-			 * @param mainCamera The main render camera.
 			 * @param pass The Pass, which will be rendered.
+			 * @param iterationIndex The index of iteration of the pass.
+			 * @param mainCamera The main render camera.
+			 * @param mainCameraSpaceMatrix The camera space matrix of the main camera.
 			 * @param passProjectionMatrix A modifiable reference to the pass projection matrix initialized with the main cameras projection matrix.
 			 * @param passCameraSpaceMatrix A modifiable reference to the pass camera space matrix to use.
+			 * @param worldAABB The AABB containing all objects in the world.
 			 */
 			void _prePassIterationRendering(
 				Pass const* pass, 
@@ -92,9 +99,23 @@ namespace G2
 				glm::mat4& passCameraSpaceMatrix,
 				AABB const& worldAABB
 			);
+			
+			
+			
+			void setupSplitDistance(float zNear, float zFar);
+			void setupFrustumPoints(int pass, int width, int height, float fovY, glm::mat4 modelView, glm::mat4 const& invCameraTransformation, glm::mat4 const& invCameraRotation);
+		
 
 
+
+
+			/** This function is called from within the LightSystem to update the transformed world position of the LightComponent.
+			 * @param pos The world coordinate position of the LightComponent.
+			 */
 			void _updateTransformedPosition(glm::vec4 const& pos);
+			/** This function is called from within the LightSystem to update the transformed world direction of the LightComponent.
+			 * @param pos The world coordinate direction of the LightComponent.
+			 */
 			void _updateTransformedDirection(glm::vec3 const& pos);
 			glm::vec4 const& _getUntransformedPosition() const { return mDefaultPosition; }
 			glm::vec3 const& _getUntransformedDirection() const { return mDefaultDirection; }
@@ -106,5 +127,6 @@ namespace G2
 			glm::vec3			mDefaultDirection;	// The not transformed direction in model space
 			glm::vec3			mCachedDirection;	// The finally transformed direction in world space
 			ShadowDescriptor	mShadowDescriptor;	// The descriptor to use for the shadowing stage for the LightComponent
+			std::shared_ptr<LightEffectState> mLightEffectState;
 	};
 };

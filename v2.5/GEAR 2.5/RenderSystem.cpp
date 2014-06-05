@@ -12,6 +12,7 @@
 #include "Effect.h"
 #include "Logger.h"
 #include "Frustum.h"
+#include "LightEffectState.h"
 
 #include <G2Core/ECSManager.h>
 
@@ -268,10 +269,6 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 		{
 			component->vaos[k].draw(component->drawMode);
 		}
-		//else
-		//{
-		//	logger << "[RenderSystem] Culled vao " << k << " in RenderComponent " << component->getEntityId() << endl;
-		//}
 	}
 }
 
@@ -280,7 +277,7 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 {
 
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
-	shader->setProperty(std::move(std::string("matrices.projection_matrix")), projectionMatrix);
+	shader->setProperty(std::string("matrices.projection_matrix"), projectionMatrix);
 	// TEMP END
 	if(transformation != nullptr) 
 	{
@@ -296,25 +293,25 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 			modelMatrix = transformation->getWorldSpaceMatrix() * inverseCameraRotation;
 			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
 		}
-		shader->setProperty(std::move(std::string("matrices.model_matrix")), modelMatrix);
-		shader->setProperty(std::move(std::string("matrices.view_matrix")), cameraSpaceMatrix);
-		shader->setProperty(std::move(std::string("matrices.modelview_matrix")), modelViewMatrix);
+		shader->setProperty(std::string("matrices.model_matrix"), modelMatrix);
+		shader->setProperty(std::string("matrices.view_matrix"), cameraSpaceMatrix);
+		shader->setProperty(std::string("matrices.modelview_matrix"), modelViewMatrix);
 		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
 		{
-			shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::mat3(modelViewMatrix));
+			shader->setProperty(std::string("matrices.normal_matrix"), glm::mat3(modelViewMatrix));
 		}
 		else
 		{
 			// non-uniform scaling
-			shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
+			shader->setProperty(std::string("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
 		}
 	}
 	else 
 	{
-		shader->setProperty(std::move(std::string("matrices.model_matrix")), glm::mat4());
-		shader->setProperty(std::move(std::string("matrices.view_matrix")), cameraSpaceMatrix);
-		shader->setProperty(std::move(std::string("matrices.modelview_matrix")), cameraSpaceMatrix);
-		shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::mat3(cameraSpaceMatrix));
+		shader->setProperty(std::string("matrices.model_matrix"), glm::mat4());
+		shader->setProperty(std::string("matrices.view_matrix"), cameraSpaceMatrix);
+		shader->setProperty(std::string("matrices.modelview_matrix"), cameraSpaceMatrix);
+		shader->setProperty(std::string("matrices.normal_matrix"), glm::mat3(cameraSpaceMatrix));
 	}
 }
 
@@ -336,39 +333,38 @@ RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light
 	baseStr << "light[" << index << "]";
 	std::string base = baseStr.str();
 	// set coloring
-	shader->setProperty(std::move(base + ".ambient"), light->ambient);
-	shader->setProperty(std::move(base + ".diffuse"), light->diffuse);
-	shader->setProperty(std::move(base + ".specular"), light->specular);
+	shader->setProperty(base + ".ambient", light->ambient);
+	shader->setProperty(base + ".diffuse", light->diffuse);
+	shader->setProperty(base + ".specular", light->specular);
 	// set positional
-	shader->setProperty(std::move(base + ".position"), lightPos);
-	shader->setProperty(std::move(base + ".direction"), lightDir);
-	shader->setProperty(std::move(base + ".range"), 0.f); // only needed for spotlight/point light
-	shader->setProperty(std::move(base + ".attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+	shader->setProperty(base + ".position", lightPos);
+	shader->setProperty(base + ".direction", lightDir);
+	shader->setProperty(base + ".range", 0.f); // only needed for spotlight/point light
+	shader->setProperty(base + ".attenuation", glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
 	// set special
-	shader->setProperty(std::move(base + ".cosCutoff"), std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
+	shader->setProperty(base + ".cosCutoff", std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
 	// set shadow
-	ShadowDescriptor& shadowDescriptor = light->getShadowDescriptor();
-	shader->setProperty(std::move(base + ".type"), shadowDescriptor.numCascades > 0 ? 1 : 0);
-	shader->setProperty(std::move(base + ".numCascades"), (int)shadowDescriptor.numCascades);
-	for(unsigned int i = 0; i < shadowDescriptor.numCascades; ++i)
+	std::shared_ptr<LightEffectState> const& lightEffectState = light->getLightEffectState();
+	shader->setProperty(base + ".type", lightEffectState->shadowTechnique);
+	shader->setProperty(base + ".numCascades", (int)lightEffectState->cascades);
+	for(unsigned int i = 0; i < lightEffectState->cascades; ++i)
 	{
 		std::stringstream farStr;
 		farStr << base << ".zFar[" << i << "]";
-		shader->setProperty(std::move(farStr.str()), shadowDescriptor.farClipsHomogenous[i]);
+		shader->setProperty(farStr.str(), lightEffectState->farClipsHomogenous[i]);
 		std::stringstream eyeToLightClipStr;
 		eyeToLightClipStr << base << ".eyeToLightClip[" << i << "]";
-		shader->setProperty(std::move(eyeToLightClipStr.str()), shadowDescriptor.eyeToLightClip[i]);
+		shader->setProperty(eyeToLightClipStr.str(), lightEffectState->eyeToLightClip[i]);
 	}
-	
 }
 
 void
 RenderSystem::uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
-	shader->setProperty(std::move(std::string("material.ambient")), material->getAmbient());
-	shader->setProperty(std::move(std::string("material.diffuse")), material->getDiffuse());
-	shader->setProperty(std::move(std::string("material.specular")), material->getSpecular());
-	shader->setProperty(std::move(std::string("material.shininess")), material->getShininess());
+	shader->setProperty(std::string("material.ambient"), material->getAmbient());
+	shader->setProperty(std::string("material.diffuse"), material->getDiffuse());
+	shader->setProperty(std::string("material.specular"), material->getSpecular());
+	shader->setProperty(std::string("material.shininess"), material->getShininess());
 }
 
 std::shared_ptr<Shader>

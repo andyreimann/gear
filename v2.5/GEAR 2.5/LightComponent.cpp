@@ -8,6 +8,11 @@
 #include <G2Core/ECSManager.h>
 #include <glm/ext.hpp>
 
+ 
+static  glm::mat4 BIAS( 0.5f, 0.0f, 0.0f, 0.0f, 
+						0.0f, 0.5f, 0.0f, 0.0f,
+						0.0f, 0.0f, 0.5f, 0.0f,
+						0.5f, 0.5f, 0.5f, 1.0f);
 
 using namespace G2;
 
@@ -21,7 +26,8 @@ LightComponent::LightComponent(LightType::Name type)
 	attenuation(1.f),
 	linearAttenuation(0.f),
 	exponentialAttenuation(0.f),
-	mShadowDescriptor(ShadowDescriptor::noShadows())
+	mShadowDescriptor(ShadowDescriptor::noShadows()),
+	mLightEffectState(new LightEffectState)
 {
 	if(type == LightType::POSITIONAL)
 	{
@@ -65,32 +71,28 @@ LightComponent::_updateTransformedDirection(glm::vec3 const& dir)
 bool
 LightComponent::configureShadows(ShadowDescriptor const& shadowDescriptor) 
 {
+	/********************************************************************************
+	 * IMPORTANT																	*
+	 * This function should create a shared pointer									*
+	 * to a really lightweight runtime resource for lighting effects in general.	*
+	 * Goal: Only set this object to a value, if the configuration stage passes!	*
+	 ********************************************************************************/
+
 	// check preconditions
-	if(shadowDescriptor.numCascades > 0 && mType != LightType::DIRECTIONAL)
+	if(shadowDescriptor.mNumCascades > 0 && mType != LightType::DIRECTIONAL)
 	{
 		return false; // CSM only supported by directional lights so far
 	}
-	if(shadowDescriptor.numCascades > 4)
+	if(shadowDescriptor.mNumCascades > 4)
 	{
 		return false; // CSM only supported with up to 4 cascades
 	}
 	// setup effect to use
-	std::string effectName = shadowDescriptor.customEffect;
+	std::string effectName = shadowDescriptor.mCustomEffect;
 	if(effectName.length() == 0)
 	{
 		// no custom effect
-		if(shadowDescriptor.numCascades == 0)
-		{
-			if(mType != LightType::POSITIONAL)
-			{
-				effectName = "GEAR_SM.g2fx"; // simple shadow mapping
-			}
-			else
-			{
-				effectName = "GEAR_PLSM.g2fx"; // point light shadow mapping
-			}
-		}
-		else
+		if(shadowDescriptor.mNumCascades == 0)
 		{
 			effectName = "GEAR_CSM.g2fx"; // cascaded shadow mapping for directional light
 		}
@@ -99,7 +101,7 @@ LightComponent::configureShadows(ShadowDescriptor const& shadowDescriptor)
 	std::shared_ptr<Effect> effect = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getEngineEffectImporter().import(effectName);
 	if(effect.get() == nullptr)
 	{
-		// something went wrong
+		// something went wrong while loading effect file
 		return false;
 	}
 	// setup render component
@@ -110,21 +112,94 @@ LightComponent::configureShadows(ShadowDescriptor const& shadowDescriptor)
 	}
 	renderComponent->setEffect(effect);
 	mShadowDescriptor = shadowDescriptor;
+
+	// initialize light effect state
+	if(mShadowDescriptor.mTechnique == AdvancedShadowTechnique::CASCADED_SHADOW_MAPS)
+	{
+		// allocate memory
+		mLightEffectState->nearClips.resize(mShadowDescriptor.mNumCascades);
+		mLightEffectState->farClips.resize(mShadowDescriptor.mNumCascades);
+		mLightEffectState->farClipsHomogenous.resize(mShadowDescriptor.mNumCascades);
+		mLightEffectState->frustumPoints.resize(mShadowDescriptor.mNumCascades*8);
+		mLightEffectState->eyeToLightClip.resize(mShadowDescriptor.mNumCascades);
+		// init state
+		mLightEffectState->cascades = mShadowDescriptor.mNumCascades;
+		mLightEffectState->splitWeight = mShadowDescriptor.mSplitWeight;
+		mLightEffectState->splitDistFactor = mShadowDescriptor.mSplitDistFactor;
+		mLightEffectState->shadowTechnique = mShadowDescriptor.mTechnique;
+	}
 	return true;
+}
+
+void
+LightComponent::setupSplitDistance(float zNear, float zFar) 
+{
+	float ratio = zFar/zNear;
+
+	// set the first near clip plane to the full near clip plane of the user camera
+	mLightEffectState->nearClips[0] = zNear; 
+
+	for( unsigned int i = 1; i < mShadowDescriptor.mNumCascades; ++i ) {
+		float si = i / (float)mShadowDescriptor.mNumCascades;
+
+		mLightEffectState->nearClips[i] = mLightEffectState->splitWeight*(zNear*powf(ratio, si)) + (1-mLightEffectState->splitWeight)*(zNear + (zFar - zNear)*si);
+		mLightEffectState->farClips[i-1] = mLightEffectState->nearClips[i] * mLightEffectState->splitDistFactor;
+	}
+	// set the last far clip plane to the full far clip plane of the user camera
+	mLightEffectState->farClips[mShadowDescriptor.mNumCascades-1] = zFar;
+}
+
+void
+LightComponent::setupFrustumPoints(int pass, int width, int height, float fovY, glm::mat4 modelView, glm::mat4 const& invCameraTransformation, glm::mat4 const& invCameraRotation) 
+{
+	glm::vec3 view_dir = glm::vec3(invCameraRotation * glm::vec4(0.f,0.f,-1.f,0.f));
+	view_dir = glm::normalize(view_dir);
+
+	glm::vec3 center = glm::vec3(invCameraTransformation * glm::vec4(0.f,0.f,0.f,1.f));
+
+	glm::vec3 up(0.0f, 1.0f, 0.0f);
+	glm::vec3 right = glm::cross(view_dir,up);
+
+	// compute the center points of the near clip plane and the far clip plane
+	glm::vec3 fc = center + view_dir*mLightEffectState->farClips[pass];
+	glm::vec3 nc = center + view_dir*mLightEffectState->nearClips[pass];
+
+	// compute the right orientation vector
+	right = glm::normalize(right);
+	up = glm::cross(right,view_dir);
+	up = glm::normalize(up);
+
+	float viewportRatio = (float)width/(float)height;
+
+	// these heights and widths are half the heights and widths of
+	float tan_fov_1_2 = (float)tan((fovY/57.2957795)/2.0f); // in radians
+	// the near and far plane rectangles
+	float near_height = tan_fov_1_2 * mLightEffectState->nearClips[pass];
+	float near_width = near_height * viewportRatio;
+	float far_height = tan_fov_1_2 * mLightEffectState->farClips[pass];
+	float far_width = far_height * viewportRatio;
+
+	unsigned int i = pass*8;
+	mLightEffectState->frustumPoints[i] = glm::vec4(glm::vec3(nc - up*near_height - right*near_width), 1.f);
+	mLightEffectState->frustumPoints[i+1] = glm::vec4(glm::vec3(nc + up*near_height - right*near_width), 1.f);
+	mLightEffectState->frustumPoints[i+2] = glm::vec4(glm::vec3(nc + up*near_height + right*near_width), 1.f);
+	mLightEffectState->frustumPoints[i+3] = glm::vec4(glm::vec3(nc - up*near_height + right*near_width), 1.f);
+	mLightEffectState->frustumPoints[i+4] = glm::vec4(glm::vec3(fc - up*far_height - right*far_width), 1.f);
+	mLightEffectState->frustumPoints[i+5] = glm::vec4(glm::vec3(fc + up*far_height - right*far_width), 1.f);
+	mLightEffectState->frustumPoints[i+6] = glm::vec4(glm::vec3(fc + up*far_height + right*far_width), 1.f);
+	mLightEffectState->frustumPoints[i+7] = glm::vec4(glm::vec3(fc - up*far_height + right*far_width), 1.f);
 }
 
 void
 LightComponent::_prePassRendering(Pass const* pass, CameraComponent const* mainCamera) 
 {
 	if( pass->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY &&
-		mShadowDescriptor.numCascades == pass->getRenderTarget().getRenderTexture()->getDepth() &&
+		mShadowDescriptor.mNumCascades == pass->getRenderTarget().getRenderTexture()->getDepth() &&
 		mType == LightType::DIRECTIONAL)
 	{
 		// prepare the shadow descriptor to render Cascaded Shadow Maps
 		// -> here we prepare the near/far clip planes to slice the main cameras frustum 
-		mShadowDescriptor.splitWeight = 0.95f;
-		mShadowDescriptor.splitDistFactor = 1.05f;
-		mShadowDescriptor.setupSplitDistance(mainCamera->getZNear(),mainCamera->getZFar());
+		setupSplitDistance(mainCamera->getZNear(),mainCamera->getZFar());
 	}
 }
 
@@ -147,15 +222,15 @@ LightComponent::_prePassIterationRendering(
 		// -> set the model view matrix to look into light direction
 		passCameraSpaceMatrix = glm::lookAt(glm::vec3(),-getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
 
-		mShadowDescriptor.setupFrustumPoints(
-								iterationIndex, 
-								mainCamera->getViewportWidth(), 
-								mainCamera->getViewportHeight(), 
-								mainCamera->getFovY(), 
-								mainCameraSpaceMatrix, 
-								glm::inverse(mainCameraSpaceMatrix), 
-								mainCamera->getInverseCameraRotation()
-							);
+		setupFrustumPoints(
+			iterationIndex, 
+			mainCamera->getViewportWidth(), 
+			mainCamera->getViewportHeight(), 
+			mainCamera->getFovY(), 
+			mainCameraSpaceMatrix, 
+			glm::inverse(mainCameraSpaceMatrix), 
+			mainCamera->getInverseCameraRotation()
+		);
 		// APPLY CROP MATRIX TO PROJECTION MATRIX
 		float maxX = -FLT_MAX;
 		float maxY = -FLT_MAX;
@@ -177,11 +252,11 @@ LightComponent::_prePassIterationRendering(
 
 		// passCameraSpaceMatrix contains lookAt of light!
 
-		transf = passCameraSpaceMatrix*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[0];
+		transf = passCameraSpaceMatrix*mLightEffectState->frustumPoints[iterationIndex*8];
 		minZ = transf.z;
 		maxZ = transf.z;
 		for(int l=1; l<8; l++) {
-			transf = passCameraSpaceMatrix*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[l];
+			transf = passCameraSpaceMatrix*mLightEffectState->frustumPoints[iterationIndex*8+l];
 			if(transf.z > maxZ) maxZ = transf.z;
 			if(transf.z < minZ) minZ = transf.z;
 		}
@@ -210,7 +285,7 @@ LightComponent::_prePassIterationRendering(
 		// find the extends of the frustum slice as projected in light's homogeneous coordinates
 
 		for(int l=0; l<8; l++) {
-			transf = shadowModelViewProjection*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[l];
+			transf = shadowModelViewProjection*mLightEffectState->frustumPoints[iterationIndex*8+l];
 
 			transf.x /= transf.w;
 			transf.y /= transf.w;
@@ -236,17 +311,15 @@ LightComponent::_prePassIterationRendering(
 		// note that this function calculates the projection matrix as it sees best fit
 		passProjectionMatrix = cropMatrix * passProjectionMatrix;
 
-		mShadowDescriptor.setOrthoFrustum(iterationIndex, passProjectionMatrix*passCameraSpaceMatrix);
+		glm::mat4 passMVP = passProjectionMatrix*passCameraSpaceMatrix;
+
+		//mShadowDescriptor.setOrthoFrustum(iterationIndex, passMVP);
 		// build up a matrix to transform a vertex from eye space to light clip space
-		glm::mat4 bias( 0.5f, 0.0f, 0.0f, 0.0f, 
-						0.0f, 0.5f, 0.0f, 0.0f,
-						0.0f, 0.0f, 0.5f, 0.0f,
-						0.5f, 0.5f, 0.5f, 1.0f);
-		mShadowDescriptor.eyeToLightClip[iterationIndex] = bias * passProjectionMatrix * passCameraSpaceMatrix * glm::inverse(mainCameraSpaceMatrix);
-							
+		mLightEffectState->eyeToLightClip[iterationIndex] = BIAS * passMVP * glm::inverse(mainCameraSpaceMatrix);
+
 		// farClip[i] is originally in eye space - tells us how far we can see.
 		// Here we compute it in camera homogeneous coordinates. Basically, we calculate
 		// cam_proj * (0, 0, f[i].fard, 1)^t and then normalize to [0; 1]
-		mShadowDescriptor.farClipsHomogenous[iterationIndex] = 0.5f*(-mShadowDescriptor.farClips[iterationIndex]*glm::value_ptr(mainCamera->getProjectionMatrix())[10]+glm::value_ptr(mainCamera->getProjectionMatrix())[14])/mShadowDescriptor.farClips[iterationIndex] + 0.5f;
+		mLightEffectState->farClipsHomogenous[iterationIndex] = 0.5f*(-mLightEffectState->farClips[iterationIndex]*glm::value_ptr(mainCamera->getProjectionMatrix())[10]+glm::value_ptr(mainCamera->getProjectionMatrix())[14])/mLightEffectState->farClips[iterationIndex] + 0.5f;
 	}
 }

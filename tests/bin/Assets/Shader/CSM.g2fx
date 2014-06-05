@@ -12,8 +12,8 @@ Ubershader "GEAR/Multipass" {
               Name "ShadowPass"
               RenderTarget SAMPLER_6
               RenderType TEXTURE_ARRAY
-              RenderTargetWidth 1024
-              RenderTargetHeight 1024
+              RenderTargetWidth 4096
+              RenderTargetHeight 4096
               // creates cascades - only works for RenderType TEXTURE_ARRAY so far
               // more cascades only have an impact if the Entity has a LightComponent
               // otherwise the scene is jusdt rendered multiple times from the same POV

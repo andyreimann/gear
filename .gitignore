@@ -99,3 +99,4 @@ v2.5/lib/x64/Release/GEARCegui.dll
 v2.5/lib/x64/Release/GEARCegui.lib
 v2.5/lib/x64/Debug/CEGUICoreWindowRendererSet_d.dll
 v2.5/lib/x64/Release/CEGUICoreWindowRendererSet.dll
+tests/bin/x64/Release/CEGUICoreWindowRendererSet.dll
