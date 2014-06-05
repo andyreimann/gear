@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "ShaderCache.h"
 #include "AABB.h"
+#include "ShadowDescriptor.h"
 
 #include <G2Core/BaseComponent.h>
 

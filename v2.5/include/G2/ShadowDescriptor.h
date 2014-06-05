@@ -7,6 +7,18 @@
 
 namespace G2 
 {
+	/** An AdvancedShadowTechnique indicates the engine, which exact technique to use while rendering
+	 * to create the appropriate shadow rendering. Since every different shadowing algorithm is very different, 
+	 * GEAR implements a certain amount of shadowing algorithms directly.
+	 */
+	namespace AdvancedShadowTechnique
+	{
+		enum Name {
+			CASCADED_SHADOW_MAPS = 0,
+			NUM_TECHNIQUES,
+			NO_SHADOWS = -1,
+		};
+	};
 	/// Describes the configuration of shadows and how they behave at runtime.
 	/// @created:	2014/06/02
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -109,7 +121,7 @@ namespace G2
 		std::vector<float> farClipsHomogenous;//!< This array contains the farplane for each subfrustum in camera homogenous coordinates
 		
 		std::vector<Frustum> frusta; //!< The Frusta to use
-		std::vector<Frustum> orthoFrusta; //!< The Frusta to use
+		std::vector<Frustum> orthoFrusta; //!< The Frusta to use for rendering in orthogonal mode
 		std::vector<glm::mat4> shadowCMPMatrix;	//!< This is the full shadow transformation matrix = cropmatrix * projection * modelview
 		std::vector<glm::mat4> eyeToLightClip;	//!< This is the full shadow transformation matrix = cropmatrix * projection * modelview
 		// DEBUG USED BY RenderSystem END

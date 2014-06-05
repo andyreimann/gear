@@ -72,12 +72,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		
 		//logger << "[RenderSystem] Pass rendering in frame " << frameInfo.frame << endl;
 		renderPasses(
-			camera->getProjectionMatrix(),
-			camera->getZNear(),
-			camera->getZFar(),
-			camera->getFovY(),
-			camera->getViewportWidth(),
-			camera->getViewportHeight(),
+			camera,
 			cameraPosition,
 			cameraSpaceMatrix, 
 			inverseCameraRotation, 
@@ -108,12 +103,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 
 void
 RenderSystem::renderPasses(
-					glm::mat4 const& cameraProjectionMatrix, 
-					float zNear, 
-					float zFar,
-					float fovY,
-					int width,
-					int height,
+					CameraComponent* mainCamera,
 					glm::vec3 const& cameraPosition,
 					glm::mat4 const& cameraSpaceMatrix, 
 					glm::mat4 const& inverseCameraRotation, 
@@ -132,11 +122,8 @@ RenderSystem::renderPasses(
 		{
 			for(auto it = comp.getEffect()->getPasses().begin(); it < comp.getEffect()->getPasses().end(); ++it)
 			{
-				// Dont support rendering to texture arrays so far!
-				//assert(it->getRenderTarget().getRenderTargetType() != RenderTargetType::RT_2D_ARRAY);
-
 				it->preRender();
-				glm::mat4 passProjectionMatrix = cameraProjectionMatrix;
+				glm::mat4 passProjectionMatrix = mainCamera->getProjectionMatrix();
 					
 				if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
 				{
@@ -146,30 +133,16 @@ RenderSystem::renderPasses(
 					passProjectionMatrix = glm::perspective(it->getFovY(), it->getRenderTarget().getRenderTexture()->getWidth() / (float)it->getRenderTarget().getRenderTexture()->getHeight(), it->getZNear(), it->getZFar());
 #endif
 				}
-				else if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
+				// if a lightsource is attached, we ask it to perform any steps needed
+				// before a pass can be rendered
+				auto* lightComponent = lightSystem->get(comp.getEntityId());
+				if(lightComponent != nullptr)
 				{
-					auto* lightComponent = lightSystem->get(comp.getEntityId());
-					if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
-					{
-						// rendering texture array for lightsource -> look for shadow descriptor
-						
-						lightComponent->getShadowDescriptor().splitWeight = 0.95f;
-						lightComponent->getShadowDescriptor().splitDistFactor = 1.05f;
-
-						lightComponent->getShadowDescriptor().setupSplitDistance(zNear,zFar);
-					}
-					
+					lightComponent->_prePassRendering(&(*it), mainCamera);
 				}
+
 				for(int renderIter = 0; renderIter < it->getNumRenderIterations(); ++renderIter)
 				{
-
-
-					
-
-
-
-
-
 					it->getRenderTarget().bind(renderIter);
 					glm::mat4 passCameraSpaceMatrix;
 					if(it->getPov() == PointOfView::MAIN_CAMERA)
@@ -196,32 +169,15 @@ RenderSystem::renderPasses(
 						passCameraSpaceMatrix = glm::inverse(glm::lookAt(glm::vec3(camPos),glm::vec3(camPos)+viewVec,upVec));
 						//passCameraSpaceMatrix = camera->getCameraSpaceMatrix();
 					}
-					else
+					else/* if(it->getPov() == PointOfView::LOCAL)*/
 					{
 						// try to get the local transformation component
 						auto* transformation = transformSystem->get(comp.getEntityId());
 						if(transformation != nullptr)
 						{
-							if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
-							{
-								auto* lightComponent = lightSystem->get(comp.getEntityId());
-								if(lightComponent !=  nullptr && lightComponent->getType() == LightType::DIRECTIONAL)
-								{
-									passCameraSpaceMatrix = glm::lookAt(glm::vec3(),-lightComponent->getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
-								}
-								else
-								{
-									passCameraSpaceMatrix = transformation->getWorldSpaceMatrix();
-								}
-								// use the matrix as it is
-								// identity
-
-							}
-							else
-							{
-								// only use translation part
-								passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
-							}
+							// WAS HERE
+							// only use translation part
+							passCameraSpaceMatrix = glm::translate(glm::vec3(transformation->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
 						}
 					}
 					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_CUBE)
@@ -231,6 +187,11 @@ RenderSystem::renderPasses(
 							inverseCameraRotation * // inverse render camera rotation
 							CubeMapFaceCameraRotations[renderIter] // face rotation
 						);
+					}
+					if(lightComponent != nullptr)
+					{
+						// passCameraSpaceMatrix may be modified here!
+						lightComponent->_prePassIterationRendering(&(*it), renderIter, mainCamera, cameraSpaceMatrix, passCameraSpaceMatrix);
 					}
 
 
@@ -245,16 +206,6 @@ RenderSystem::renderPasses(
 						auto* lightComponent = lightSystem->get(comp.getEntityId());
 						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
 						{
-							// rendering texture array for lightsource -> look for shadow descriptor
-						
-							lightComponent->getShadowDescriptor().splitWeight = 0.95f;
-							lightComponent->getShadowDescriptor().splitDistFactor = 1.05f;
-
-							lightComponent->getShadowDescriptor().setupSplitDistance(zNear,zFar);
-
-							// apply camera matrix to frustum points
-							// Frustum represents now the camera slice frustum
-							lightComponent->getShadowDescriptor().setupFrustumPoints(renderIter, width, height, fovY, cameraSpaceMatrix, glm::inverse(cameraSpaceMatrix), inverseCameraRotation);
 							// use the frustum of the CSM
 							frustum = lightComponent->getShadowDescriptor().frusta[renderIter];
 						}
@@ -366,10 +317,10 @@ RenderSystem::renderPasses(
 											0.5f, 0.5f, 0.5f, 1.0f);
 							lightComponent->getShadowDescriptor().eyeToLightClip[renderIter] = bias * passProjectionMatrix * passCameraSpaceMatrix * glm::inverse(cameraSpaceMatrix);
 							
-							// farClip[i] is originally in eye space - tell's us how far we can see.
+							// farClip[i] is originally in eye space - tells us how far we can see.
 							// Here we compute it in camera homogeneous coordinates. Basically, we calculate
 							// cam_proj * (0, 0, f[i].fard, 1)^t and then normalize to [0; 1]
-							lightComponent->getShadowDescriptor().farClipsHomogenous[renderIter] = 0.5f*(-lightComponent->getShadowDescriptor().farClips[renderIter]*glm::value_ptr(cameraProjectionMatrix)[10]+glm::value_ptr(cameraProjectionMatrix)[14])/lightComponent->getShadowDescriptor().farClips[renderIter] + 0.5f;
+							lightComponent->getShadowDescriptor().farClipsHomogenous[renderIter] = 0.5f*(-lightComponent->getShadowDescriptor().farClips[renderIter]*glm::value_ptr(mainCamera->getProjectionMatrix())[10]+glm::value_ptr(mainCamera->getProjectionMatrix())[14])/lightComponent->getShadowDescriptor().farClips[renderIter] + 0.5f;
 						}
 					}
 

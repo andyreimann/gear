@@ -54,7 +54,7 @@ Effect::Builder::buildResource()
 	std::shared_ptr<Effect> effect = std::shared_ptr<Effect>(new Effect());
 
 	effect->mShaderPermutations = shaderPermutations;
-
+	//effect->mPasses.resize(passes.size()); // no default ctor
 	for(int i = 0; i < passes.size(); ++i)
 	{
 		Pass::Builder const& passBuilder = passes[i];

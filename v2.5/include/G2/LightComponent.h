@@ -8,6 +8,8 @@
 
 namespace G2 
 {
+	class Pass;
+	class CameraComponent;
 	
 	namespace LightType {
 		enum Name {
@@ -27,6 +29,7 @@ namespace G2
 	class LightComponent : public BaseComponent<LightSystem> 
 	{
 			friend class LightSystem;
+			friend class RenderSystem;
 
 		public:
 			LightComponent(LightType::Name type);
@@ -65,6 +68,28 @@ namespace G2
 			ShadowDescriptor& getShadowDescriptor() { return mShadowDescriptor; }
 
 		private:
+			/** This function is called from the RenderSystem whenever a Pass
+			 * will be rendered, which is attached to a LightComponent.
+			 * @param mainCamera The main render camera.
+			 * @param pass The Pass, which will be rendered.
+			 */
+			void _prePassRendering(Pass const* pass, CameraComponent const* mainCamera);
+			
+			/** This function is called from the RenderSystem whenever a Pass iteration
+			 * will be rendered, which is attached to a LightComponent.
+			 * @param mainCamera The main render camera.
+			 * @param pass The Pass, which will be rendered.
+			 * @param passCameraSpaceMatrix a modifiable reference to the pass camera space matrix to use.
+			 */
+			void _prePassIterationRendering(
+				Pass const* pass, 
+				int iterationIndex, 
+				CameraComponent const* mainCamera, 
+				glm::mat4 const& mainCameraSpaceMatrix,
+				glm::mat4& passCameraSpaceMatrix
+			);
+
+
 			void _updateTransformedPosition(glm::vec4 const& pos);
 			void _updateTransformedDirection(glm::vec3 const& pos);
 			glm::vec4 const& _getUntransformedPosition() const { return mDefaultPosition; }

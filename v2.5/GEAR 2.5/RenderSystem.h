@@ -11,6 +11,7 @@
 
 namespace G2 
 {
+	class CameraComponent;
 	class RenderComponent;
 	class Effect;
 	class TransformComponent;
@@ -45,12 +46,7 @@ namespace G2
 		private:
 
 			void renderPasses(
-				glm::mat4 const& cameraProjectionMatrix, 
-				float zNear, 
-				float zFar,
-				float fovY,
-				int width,
-				int height,
+				CameraComponent* mainCamera,
 				glm::vec3 const& cameraPosition,
 				glm::mat4 const& cameraSpaceMatrix,
 				glm::mat4 const& inverseCameraRotation,

@@ -1,8 +1,12 @@
 #include "LightComponent.h"
 #include "RenderComponent.h"
+#include "CameraComponent.h"
+#include "Pass.h"
+#include "Texture.h"
 #include "Logger.h"
 
 #include <G2Core/ECSManager.h>
+#include <glm/ext.hpp>
 
 
 using namespace G2;
@@ -107,4 +111,48 @@ LightComponent::configureShadows(ShadowDescriptor const& shadowDescriptor)
 	renderComponent->setEffect(effect);
 	mShadowDescriptor = shadowDescriptor;
 	return true;
+}
+
+void
+LightComponent::_prePassRendering(Pass const* pass, CameraComponent const* mainCamera) 
+{
+	if( pass->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY &&
+		mShadowDescriptor.numCascades == pass->getRenderTarget().getRenderTexture()->getDepth() &&
+		mType == LightType::DIRECTIONAL)
+	{
+		// prepare the shadow descriptor to render Cascaded Shadow Maps
+		// -> here we prepare the near/far clip planes to slice the main cameras frustum 
+		mShadowDescriptor.splitWeight = 0.95f;
+		mShadowDescriptor.splitDistFactor = 1.05f;
+		mShadowDescriptor.setupSplitDistance(mainCamera->getZNear(),mainCamera->getZFar());
+	}
+}
+
+void
+LightComponent::_prePassIterationRendering(
+	Pass const* pass, 
+	int iterationIndex, 
+	CameraComponent const* mainCamera, 
+	glm::mat4 const& mainCameraSpaceMatrix,
+	glm::mat4& passCameraSpaceMatrix
+) 
+{
+	if( pass->getPov() == PointOfView::LOCAL &&
+		pass->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY &&
+		mType == LightType::DIRECTIONAL)
+	{
+		// prepare to render Cascaded Shadow Maps
+		// -> set the model view matrix to look into light direction
+		passCameraSpaceMatrix = glm::lookAt(glm::vec3(),-getTransformedDirection(), glm::vec3(-1.f, 0.f, 0.f));
+
+		mShadowDescriptor.setupFrustumPoints(
+								iterationIndex, 
+								mainCamera->getViewportWidth(), 
+								mainCamera->getViewportHeight(), 
+								mainCamera->getFovY(), 
+								mainCameraSpaceMatrix, 
+								glm::inverse(mainCameraSpaceMatrix), 
+								mainCamera->getInverseCameraRotation()
+							);
+	}
 }

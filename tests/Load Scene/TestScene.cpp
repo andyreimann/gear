@@ -54,6 +54,7 @@ TestScene::TestScene(G2::SDLWindow& window)
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	light->configureShadows(G2::ShadowDescriptor().setNumCascades(3).setCustomEffect(ASSET_PATH + "Shader/CSM.g2fx"));
+	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMapping(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	mLightType = light->getType();
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
