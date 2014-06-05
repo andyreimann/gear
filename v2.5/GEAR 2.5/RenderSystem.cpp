@@ -190,140 +190,12 @@ RenderSystem::renderPasses(
 					}
 					if(lightComponent != nullptr)
 					{
-						// passCameraSpaceMatrix may be modified here!
-						lightComponent->_prePassIterationRendering(&(*it), renderIter, mainCamera, cameraSpaceMatrix, passCameraSpaceMatrix);
+						// passProjectionMatrix and passCameraSpaceMatrix may be modified here!
+						lightComponent->_prePassIterationRendering(&(*it), renderIter, mainCamera, cameraSpaceMatrix, passProjectionMatrix, passCameraSpaceMatrix, mWorldAABB);
 					}
-
-
+					// setup the frustum to use while rendering the pass
 					Frustum frustum;
-
-
-					
-
-
-					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
-					{
-						auto* lightComponent = lightSystem->get(comp.getEntityId());
-						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
-						{
-							// use the frustum of the CSM
-							frustum = lightComponent->getShadowDescriptor().frusta[renderIter];
-						}
-					}
-					else
-					{
-						frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
-					}
-
-
-
-					// APPLY CROP MATRIX DEBUG
-					float maxX = -FLT_MAX;
-					float maxY = -FLT_MAX;
-					float maxZ;
-					float minX =  FLT_MAX;
-					float minY =  FLT_MAX;
-					float minZ;
-
-					glm::mat4 nv_mvp;
-					glm::vec4 transf;	
-	
-					// find the z-range of the current frustum as seen from the light
-					// in order to increase precision
-	
-					// note that only the z-component is need and thus
-					// the multiplication can be simplified
-					// transf.z = shad_modelview[2] * f.point[0].x + shad_modelview[6] * f.point[0].y + shad_modelview[10] * f.point[0].z + shad_modelview[14];
-					// frustum points are in inverse camera space!
-
-					// passCameraSpaceMatrix contains lookAt of light!
-
-					transf = passCameraSpaceMatrix*frustum.getCornerPoints()[0];
-					minZ = transf.z;
-					maxZ = transf.z;
-					for(int l=1; l<8; l++) {
-						transf = passCameraSpaceMatrix*frustum.getCornerPoints()[l];
-						if(transf.z > maxZ) maxZ = transf.z;
-						if(transf.z < minZ) minZ = transf.z;
-					}
-
-					// @todo only a hack, because there is some bug in aabb retrieval of hole scene (value here should be reseted to 1.0 which was the default).
-					float radius = 0.0;
-					// make sure all relevant shadow casters are included
-					// note that these here are dummy objects at the edges of our scene
-					// @todo here we should use the AABB of the hole Scene 
-					
-					transf.z = mWorldAABB.getMin().z;
-					if(transf.z + radius > maxZ) maxZ = transf.z + radius;
-					if(transf.z - radius < minZ) minZ = transf.z - radius;
-					transf.z = mWorldAABB.getMax().z;
-					if(transf.z + radius > maxZ) maxZ = transf.z + radius;
-					if(transf.z - radius < minZ) minZ = transf.z - radius;
-
-					// set the projection matrix with the new z-bounds
-					// note the inversion because the light looks at the neg. z axis
-					// gluPerspective(LIGHT_FOV, 1.0, maxZ, minZ); // for point lights
-					passProjectionMatrix = glm::ortho(-1.f,1.f,-1.f,1.f,-maxZ,-minZ);
-
-					glm::mat4 shadowModelViewProjection = passProjectionMatrix * passCameraSpaceMatrix;
-
-
-					// find the extends of the frustum slice as projected in light's homogeneous coordinates
-
-					for(int l=0; l<8; l++) {
-						transf = shadowModelViewProjection*frustum.getCornerPoints()[l];
-
-						transf.x /= transf.w;
-						transf.y /= transf.w;
-
-						if(transf.x > maxX) maxX = transf.x;
-						if(transf.x < minX) minX = transf.x;
-						if(transf.y > maxY) maxY = transf.y;
-						if(transf.y < minY) minY = transf.y;
-					}
-
-					float scaleX = 2.0f/(maxX - minX);
-					float scaleY = 2.0f/(maxY - minY);
-					float offsetX = -0.5f*(maxX + minX)*scaleX;
-					float offsetY = -0.5f*(maxY + minY)*scaleY;
-
-					// apply a crop matrix to modify the projection matrix we got from glOrtho.
-					glm::mat4 cropMatrix;
-					cropMatrix = glm::translate(cropMatrix, glm::vec3(offsetX, offsetY,0.0f) );
-					cropMatrix = glm::scale(cropMatrix, glm::vec3( scaleX, scaleY, 1.0f) );
-					
-					
-					// adjust the view frustum of the light, so that it encloses the camera frustum slice fully.
-					// note that this function calculates the projection matrix as it sees best fit
-					passProjectionMatrix = cropMatrix * passProjectionMatrix;
-
-					// final matrix is Crop * Proj * Model
-					// APPLY CROP MATRIX DEBUG
-
-
-
-
-					
-					if(it->getRenderTarget().getRenderTargetType() == RenderTargetType::RT_2D_ARRAY)
-					{
-						auto* lightComponent = lightSystem->get(comp.getEntityId());
-						if(lightComponent != nullptr && lightComponent->getShadowDescriptor().numCascades == it->getRenderTarget().getRenderTexture()->getDepth())
-						{
-							lightComponent->getShadowDescriptor().setOrthoFrustum(renderIter, passProjectionMatrix*passCameraSpaceMatrix);
-							// build up a matrix to transform a vertex from eye space to light clip space
-							glm::mat4 bias( 0.5f, 0.0f, 0.0f, 0.0f, 
-											0.0f, 0.5f, 0.0f, 0.0f,
-											0.0f, 0.0f, 0.5f, 0.0f,
-											0.5f, 0.5f, 0.5f, 1.0f);
-							lightComponent->getShadowDescriptor().eyeToLightClip[renderIter] = bias * passProjectionMatrix * passCameraSpaceMatrix * glm::inverse(cameraSpaceMatrix);
-							
-							// farClip[i] is originally in eye space - tells us how far we can see.
-							// Here we compute it in camera homogeneous coordinates. Basically, we calculate
-							// cam_proj * (0, 0, f[i].fard, 1)^t and then normalize to [0; 1]
-							lightComponent->getShadowDescriptor().farClipsHomogenous[renderIter] = 0.5f*(-lightComponent->getShadowDescriptor().farClips[renderIter]*glm::value_ptr(mainCamera->getProjectionMatrix())[10]+glm::value_ptr(mainCamera->getProjectionMatrix())[14])/lightComponent->getShadowDescriptor().farClips[renderIter] + 0.5f;
-						}
-					}
-
+					frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
 
 					for (int k = 0; k < components.size() ; ++k) 
 					{
@@ -373,7 +245,7 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 		}
 		uploadLight(boundShader, &lightComponent, cameraSpaceMatrix, numActive++);
 	}
-	boundShader->setProperty(Property("G2ActiveLights"), numActive);
+	boundShader->setProperty(std::move(std::string("G2ActiveLights")), numActive);
 
 	// Bind Textures
 	auto const& textures = component->material.getTextures();
@@ -392,7 +264,7 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 	// Draw all attached VAO
 	for (int k = 0; k < component->vaos.size() ; ++k) 
 	{
-		if(true || frustum->inside(component->worldSpaceAABBs[k]))
+		if(frustum->inside(component->worldSpaceAABBs[k]))
 		{
 			component->vaos[k].draw(component->drawMode);
 		}
@@ -408,7 +280,7 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 {
 
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
-	shader->setProperty(Property("matrices.projection_matrix"), projectionMatrix);
+	shader->setProperty(std::move(std::string("matrices.projection_matrix")), projectionMatrix);
 	// TEMP END
 	if(transformation != nullptr) 
 	{
@@ -424,25 +296,25 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 			modelMatrix = transformation->getWorldSpaceMatrix() * inverseCameraRotation;
 			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
 		}
-		shader->setProperty(Property("matrices.model_matrix"), modelMatrix);
-		shader->setProperty(Property("matrices.view_matrix"), cameraSpaceMatrix);
-		shader->setProperty(Property("matrices.modelview_matrix"), modelViewMatrix);
+		shader->setProperty(std::move(std::string("matrices.model_matrix")), modelMatrix);
+		shader->setProperty(std::move(std::string("matrices.view_matrix")), cameraSpaceMatrix);
+		shader->setProperty(std::move(std::string("matrices.modelview_matrix")), modelViewMatrix);
 		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
 		{
-			shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(modelViewMatrix));
+			shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::mat3(modelViewMatrix));
 		}
 		else
 		{
 			// non-uniform scaling
-			shader->setProperty(Property("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
+			shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
 		}
 	}
 	else 
 	{
-		shader->setProperty(Property("matrices.model_matrix"), glm::mat4());
-		shader->setProperty(Property("matrices.view_matrix"), cameraSpaceMatrix);
-		shader->setProperty(Property("matrices.modelview_matrix"), cameraSpaceMatrix);
-		shader->setProperty(Property("matrices.normal_matrix"), glm::mat3(cameraSpaceMatrix));
+		shader->setProperty(std::move(std::string("matrices.model_matrix")), glm::mat4());
+		shader->setProperty(std::move(std::string("matrices.view_matrix")), cameraSpaceMatrix);
+		shader->setProperty(std::move(std::string("matrices.modelview_matrix")), cameraSpaceMatrix);
+		shader->setProperty(std::move(std::string("matrices.normal_matrix")), glm::mat3(cameraSpaceMatrix));
 	}
 }
 
@@ -464,31 +336,28 @@ RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light
 	baseStr << "light[" << index << "]";
 	std::string base = baseStr.str();
 	// set coloring
-	shader->setProperty(Property(base + ".ambient"), light->ambient);
-	shader->setProperty(Property(base + ".diffuse"), light->diffuse);
-	shader->setProperty(Property(base + ".specular"), light->specular);
+	shader->setProperty(std::move(base + ".ambient"), light->ambient);
+	shader->setProperty(std::move(base + ".diffuse"), light->diffuse);
+	shader->setProperty(std::move(base + ".specular"), light->specular);
 	// set positional
-	shader->setProperty(Property(base + ".position"), lightPos);
-	shader->setProperty(Property(base + ".direction"), lightDir);
-	shader->setProperty(Property(base + ".range"), 0.f); // only needed for spotlight/point light
-	shader->setProperty(Property(base + ".attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+	shader->setProperty(std::move(base + ".position"), lightPos);
+	shader->setProperty(std::move(base + ".direction"), lightDir);
+	shader->setProperty(std::move(base + ".range"), 0.f); // only needed for spotlight/point light
+	shader->setProperty(std::move(base + ".attenuation"), glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
 	// set special
-	shader->setProperty(Property(base + ".cosCutoff"), std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
+	shader->setProperty(std::move(base + ".cosCutoff"), std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
 	// set shadow
 	ShadowDescriptor& shadowDescriptor = light->getShadowDescriptor();
-	shader->setProperty(Property(base + ".type"), shadowDescriptor.numCascades > 0 ? 1 : 0);
-	shader->setProperty(Property(base + ".numCascades"), (int)shadowDescriptor.numCascades);
+	shader->setProperty(std::move(base + ".type"), shadowDescriptor.numCascades > 0 ? 1 : 0);
+	shader->setProperty(std::move(base + ".numCascades"), (int)shadowDescriptor.numCascades);
 	for(unsigned int i = 0; i < shadowDescriptor.numCascades; ++i)
 	{
-		std::stringstream nearStr;
-		nearStr << base << ".zNear[" << i << "]";
 		std::stringstream farStr;
 		farStr << base << ".zFar[" << i << "]";
-		shader->setProperty(Property(nearStr.str()), shadowDescriptor.nearClips[i]);
-		shader->setProperty(Property(farStr.str()), shadowDescriptor.farClipsHomogenous[i]);
+		shader->setProperty(std::move(farStr.str()), shadowDescriptor.farClipsHomogenous[i]);
 		std::stringstream eyeToLightClipStr;
 		eyeToLightClipStr << base << ".eyeToLightClip[" << i << "]";
-		shader->setProperty(Property(eyeToLightClipStr.str()), shadowDescriptor.eyeToLightClip[i]);
+		shader->setProperty(std::move(eyeToLightClipStr.str()), shadowDescriptor.eyeToLightClip[i]);
 	}
 	
 }
@@ -496,10 +365,10 @@ RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light
 void
 RenderSystem::uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
-	shader->setProperty(Property("material.ambient"), material->getAmbient());
-	shader->setProperty(Property("material.diffuse"), material->getDiffuse());
-	shader->setProperty(Property("material.specular"), material->getSpecular());
-	shader->setProperty(Property("material.shininess"), material->getShininess());
+	shader->setProperty(std::move(std::string("material.ambient")), material->getAmbient());
+	shader->setProperty(std::move(std::string("material.diffuse")), material->getDiffuse());
+	shader->setProperty(std::move(std::string("material.specular")), material->getSpecular());
+	shader->setProperty(std::move(std::string("material.shininess")), material->getShininess());
 }
 
 std::shared_ptr<Shader>
@@ -551,7 +420,6 @@ RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transf
 	{
 		component->objectSpaceAABBs.resize(component->vaos.size());
 		component->worldSpaceAABBs.resize(component->vaos.size());
-		//logger << "[RenderSystem] Lazy initialize object space AABBs for component " << component->getEntityId() << endl;
 		for(int i = 0; i < component->vaos.size(); ++i)
 		{
 			VertexArrayObject& vao = component->vaos[i];

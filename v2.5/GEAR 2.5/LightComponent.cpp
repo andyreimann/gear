@@ -134,7 +134,9 @@ LightComponent::_prePassIterationRendering(
 	int iterationIndex, 
 	CameraComponent const* mainCamera, 
 	glm::mat4 const& mainCameraSpaceMatrix,
-	glm::mat4& passCameraSpaceMatrix
+	glm::mat4& passProjectionMatrix,
+	glm::mat4& passCameraSpaceMatrix,
+	AABB const& worldAABB
 ) 
 {
 	if( pass->getPov() == PointOfView::LOCAL &&
@@ -154,5 +156,97 @@ LightComponent::_prePassIterationRendering(
 								glm::inverse(mainCameraSpaceMatrix), 
 								mainCamera->getInverseCameraRotation()
 							);
+		// APPLY CROP MATRIX TO PROJECTION MATRIX
+		float maxX = -FLT_MAX;
+		float maxY = -FLT_MAX;
+		float maxZ;
+		float minX =  FLT_MAX;
+		float minY =  FLT_MAX;
+		float minZ;
+
+		glm::mat4 nv_mvp;
+		glm::vec4 transf;	
+	
+		// find the z-range of the current frustum as seen from the light
+		// in order to increase precision
+	
+		// note that only the z-component is need and thus
+		// the multiplication can be simplified
+		// transf.z = shad_modelview[2] * f.point[0].x + shad_modelview[6] * f.point[0].y + shad_modelview[10] * f.point[0].z + shad_modelview[14];
+		// frustum points are in inverse camera space!
+
+		// passCameraSpaceMatrix contains lookAt of light!
+
+		transf = passCameraSpaceMatrix*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[0];
+		minZ = transf.z;
+		maxZ = transf.z;
+		for(int l=1; l<8; l++) {
+			transf = passCameraSpaceMatrix*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[l];
+			if(transf.z > maxZ) maxZ = transf.z;
+			if(transf.z < minZ) minZ = transf.z;
+		}
+
+		// @todo only a hack, because there is some bug in aabb retrieval of hole scene (value here should be reseted to 1.0 which was the default).
+		float radius = 0.0;
+		// make sure all relevant shadow casters are included
+		// note that these here are dummy objects at the edges of our scene
+		// @todo here we should use the AABB of the hole Scene 
+					
+		transf.z = worldAABB.getMin().z;
+		if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+		if(transf.z - radius < minZ) minZ = transf.z - radius;
+		transf.z = worldAABB.getMax().z;
+		if(transf.z + radius > maxZ) maxZ = transf.z + radius;
+		if(transf.z - radius < minZ) minZ = transf.z - radius;
+
+		// set the projection matrix with the new z-bounds
+		// note the inversion because the light looks at the neg. z axis
+		// gluPerspective(LIGHT_FOV, 1.0, maxZ, minZ); // for point lights
+		passProjectionMatrix = glm::ortho(-1.f,1.f,-1.f,1.f,-maxZ,-minZ);
+
+		glm::mat4 shadowModelViewProjection = passProjectionMatrix * passCameraSpaceMatrix;
+
+
+		// find the extends of the frustum slice as projected in light's homogeneous coordinates
+
+		for(int l=0; l<8; l++) {
+			transf = shadowModelViewProjection*mShadowDescriptor.frusta[iterationIndex].getCornerPoints()[l];
+
+			transf.x /= transf.w;
+			transf.y /= transf.w;
+
+			if(transf.x > maxX) maxX = transf.x;
+			if(transf.x < minX) minX = transf.x;
+			if(transf.y > maxY) maxY = transf.y;
+			if(transf.y < minY) minY = transf.y;
+		}
+
+		float scaleX = 2.0f/(maxX - minX);
+		float scaleY = 2.0f/(maxY - minY);
+		float offsetX = -0.5f*(maxX + minX)*scaleX;
+		float offsetY = -0.5f*(maxY + minY)*scaleY;
+
+		// apply a crop matrix to modify the projection matrix we got from glOrtho.
+		glm::mat4 cropMatrix;
+		cropMatrix = glm::translate(cropMatrix, glm::vec3(offsetX, offsetY,0.0f) );
+		cropMatrix = glm::scale(cropMatrix, glm::vec3( scaleX, scaleY, 1.0f) );
+					
+					
+		// adjust the view frustum of the light, so that it encloses the camera frustum slice fully.
+		// note that this function calculates the projection matrix as it sees best fit
+		passProjectionMatrix = cropMatrix * passProjectionMatrix;
+
+		mShadowDescriptor.setOrthoFrustum(iterationIndex, passProjectionMatrix*passCameraSpaceMatrix);
+		// build up a matrix to transform a vertex from eye space to light clip space
+		glm::mat4 bias( 0.5f, 0.0f, 0.0f, 0.0f, 
+						0.0f, 0.5f, 0.0f, 0.0f,
+						0.0f, 0.0f, 0.5f, 0.0f,
+						0.5f, 0.5f, 0.5f, 1.0f);
+		mShadowDescriptor.eyeToLightClip[iterationIndex] = bias * passProjectionMatrix * passCameraSpaceMatrix * glm::inverse(mainCameraSpaceMatrix);
+							
+		// farClip[i] is originally in eye space - tells us how far we can see.
+		// Here we compute it in camera homogeneous coordinates. Basically, we calculate
+		// cam_proj * (0, 0, f[i].fard, 1)^t and then normalize to [0; 1]
+		mShadowDescriptor.farClipsHomogenous[iterationIndex] = 0.5f*(-mShadowDescriptor.farClips[iterationIndex]*glm::value_ptr(mainCamera->getProjectionMatrix())[10]+glm::value_ptr(mainCamera->getProjectionMatrix())[14])/mShadowDescriptor.farClips[iterationIndex] + 0.5f;
 	}
 }

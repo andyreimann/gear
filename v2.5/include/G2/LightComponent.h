@@ -1,6 +1,7 @@
 #pragma once
 #include "LightSystem.h"
 #include "ShadowDescriptor.h"
+#include "AABB.h"
 
 #include <G2Core/BaseComponent.h>
 
@@ -79,14 +80,17 @@ namespace G2
 			 * will be rendered, which is attached to a LightComponent.
 			 * @param mainCamera The main render camera.
 			 * @param pass The Pass, which will be rendered.
-			 * @param passCameraSpaceMatrix a modifiable reference to the pass camera space matrix to use.
+			 * @param passProjectionMatrix A modifiable reference to the pass projection matrix initialized with the main cameras projection matrix.
+			 * @param passCameraSpaceMatrix A modifiable reference to the pass camera space matrix to use.
 			 */
 			void _prePassIterationRendering(
 				Pass const* pass, 
 				int iterationIndex, 
 				CameraComponent const* mainCamera, 
 				glm::mat4 const& mainCameraSpaceMatrix,
-				glm::mat4& passCameraSpaceMatrix
+				glm::mat4& passProjectionMatrix,
+				glm::mat4& passCameraSpaceMatrix,
+				AABB const& worldAABB
 			);
 
 

@@ -30,7 +30,6 @@ LightDefaultInclude::LightDefaultInclude(ShadingLanguage::Name shadingLanguage)
 			"	// shadow\n"\
 			"	int	  type;				// 0 = no shadow, 1 = CSM\n"\
 			"	int	  numCascades;		// The number of shadow cascades\n"\
-			"	float zNear[4];			// The near clip planes used\n"\
 			"	float zFar[4];			// The far clip planes used\n"\
 			"	mat4  eyeToLightClip[4];// The bias*crop*proj*modelview matrix (only set if type = 1)\n"\
 			"};\n"\
@@ -62,7 +61,6 @@ LightDefaultInclude::LightDefaultInclude(ShadingLanguage::Name shadingLanguage)
 			"	// shadow\n"\
 			"	int	  type;			// 0 = no shadow, 1 = CSM\n"\
 			"	int	  numCascades;	// The number of shadow cascades\n"\
-			"	float zNear[4];		// The near clip planes used\n"\
 			"	float zFar[4];		// The far clip planes used\n"\
 			"	float4x4 eyeToLightClip[4];// The bias*crop*proj*modelview matrix (only set if type = 1)\n"\
 			"};\n"\

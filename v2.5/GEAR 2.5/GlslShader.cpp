@@ -35,39 +35,39 @@ GlslShader::bind()
 }
 
 void
-GlslShader::setProperty(Property const& property, glm::mat4 const& value) 
+GlslShader::setProperty(std::string const& property, glm::mat4 const& value) 
 {
-    GLDEBUG( glUniformMatrix4fv(getAndCacheUniformLocation(property.getName()), 1, GL_FALSE, glm::value_ptr(value)) );
+    GLDEBUG( glUniformMatrix4fv(getAndCacheUniformLocation(property), 1, GL_FALSE, glm::value_ptr(value)) );
 }
 
 void
-GlslShader::setProperty(Property const& property, glm::mat3 const& value) 
+GlslShader::setProperty(std::string const& property, glm::mat3 const& value) 
 {
-    GLDEBUG( glUniformMatrix3fv(getAndCacheUniformLocation(property.getName()), 1, GL_FALSE, glm::value_ptr(value)) );
+    GLDEBUG( glUniformMatrix3fv(getAndCacheUniformLocation(property), 1, GL_FALSE, glm::value_ptr(value)) );
 }
 
 void
-GlslShader::setProperty(Property const& property, glm::vec4 const& value) 
+GlslShader::setProperty(std::string const& property, glm::vec4 const& value) 
 {
-    GLDEBUG( glUniform4fv(getAndCacheUniformLocation(property.getName()), 1, glm::value_ptr(value)) );
+    GLDEBUG( glUniform4fv(getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
 }
 
 void
-GlslShader::setProperty(Property const& property, glm::vec3 const& value) 
+GlslShader::setProperty(std::string const& property, glm::vec3 const& value) 
 {
-    GLDEBUG( glUniform3fv(getAndCacheUniformLocation(property.getName()), 1, glm::value_ptr(value)) );
+    GLDEBUG( glUniform3fv(getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
 }
 
 void
-GlslShader::setProperty(Property const& property, float value) 
+GlslShader::setProperty(std::string const& property, float value) 
 {
-    GLDEBUG( glUniform1f(getAndCacheUniformLocation(property.getName()), value) );
+    GLDEBUG( glUniform1f(getAndCacheUniformLocation(property), value) );
 }
 
 void
-GlslShader::setProperty(Property const& property, int value) 
+GlslShader::setProperty(std::string const& property, int value) 
 {
-    GLDEBUG( glUniform1i(getAndCacheUniformLocation(property.getName()), value) );
+    GLDEBUG( glUniform1i(getAndCacheUniformLocation(property), value) );
 }
 
 bool

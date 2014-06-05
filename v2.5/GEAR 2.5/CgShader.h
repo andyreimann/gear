@@ -30,32 +30,32 @@ namespace G2
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, glm::mat4 const& value);
+			virtual void setProperty(std::string const& property, glm::mat4 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, glm::mat3 const& value);
+			virtual void setProperty(std::string const& property, glm::mat3 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, glm::vec4 const& value);
+			virtual void setProperty(std::string const& property, glm::vec4 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, glm::vec3 const& value);
+			virtual void setProperty(std::string const& property, glm::vec3 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, float value);
+			virtual void setProperty(std::string const& property, float value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(Property const& property, int value);
+			virtual void setProperty(std::string const& property, int value);
 			/** normal destructor
 			 */
 			virtual ~CgShader();

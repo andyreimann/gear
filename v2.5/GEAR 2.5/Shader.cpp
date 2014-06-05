@@ -28,7 +28,7 @@ Shader::initWithMetaData(ShaderMetaData const& metaData)
 		if(samplerMetaData.samplerSlot != Sampler::SAMPLER_INVALID)
 		{
 			// BIND SAMPLER
-			setProperty(Property(samplerMetaData.name),samplerMetaData.samplerSlot);
+			setProperty(std::move(samplerMetaData.name),samplerMetaData.samplerSlot);
 		}
 	}
 }

@@ -86,5 +86,6 @@ namespace G2
 
 			AABB											mWorldAABB;
 
+
 	};
 };

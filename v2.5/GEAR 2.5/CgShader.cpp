@@ -34,9 +34,9 @@ CgShader::bind()
 }
 
 void
-CgShader::setProperty(Property const& property, glm::mat4 const& value) 
+CgShader::setProperty(std::string const& property, glm::mat4 const& value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
@@ -45,9 +45,9 @@ CgShader::setProperty(Property const& property, glm::mat4 const& value)
 }
 
 void
-CgShader::setProperty(Property const& property, glm::mat3 const& value) 
+CgShader::setProperty(std::string const& property, glm::mat3 const& value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
@@ -56,9 +56,9 @@ CgShader::setProperty(Property const& property, glm::mat3 const& value)
 }
 
 void
-CgShader::setProperty(Property const& property, glm::vec4 const& value) 
+CgShader::setProperty(std::string const& property, glm::vec4 const& value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
@@ -67,9 +67,9 @@ CgShader::setProperty(Property const& property, glm::vec4 const& value)
 }
 
 void
-CgShader::setProperty(Property const& property, glm::vec3 const& value) 
+CgShader::setProperty(std::string const& property, glm::vec3 const& value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
@@ -78,9 +78,9 @@ CgShader::setProperty(Property const& property, glm::vec3 const& value)
 }
 
 void
-CgShader::setProperty(Property const& property, float value) 
+CgShader::setProperty(std::string const& property, float value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
@@ -89,9 +89,9 @@ CgShader::setProperty(Property const& property, float value)
 }
 
 void
-CgShader::setProperty(Property const& property, int value) 
+CgShader::setProperty(std::string const& property, int value) 
 {
-	auto location = getAndCacheUniformLocation(property.getName());
+	auto location = getAndCacheUniformLocation(property);
 	if(location.first == nullptr) 
 	{
 		return;
