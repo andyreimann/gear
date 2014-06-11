@@ -469,9 +469,9 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 {
 	int lVertexCount = 0;
 
-	if(component->aabbAnimationRecalc && component->objectSpaceAABBs.size() != component->vaos.size())
+	if(component->aabbAnimationRecalc && component->objectSpaceAABBs.size() != component->getNumVertexArrays())
 	{
-		component->objectSpaceAABBs.resize(component->vaos.size());
+		component->objectSpaceAABBs.resize(component->getNumVertexArrays());
 	}
 	if (metaData->allByControlPoint)
 	{
@@ -520,7 +520,7 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 			}
 		}
 	}
-	component->vaos[metaData->vaoOffset].writeData(Semantics::POSITION, &metaData->vertexCache[0]);
+	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::POSITION, &metaData->vertexCache[0]);
 }
 
 void

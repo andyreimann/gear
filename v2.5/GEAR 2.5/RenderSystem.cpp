@@ -17,6 +17,7 @@
 #include "MultipleRenderTarget.h"
 
 #include <G2Core/ECSManager.h>
+#include <G2Core/EventDistributer.h>
 
 #include <glm/ext.hpp>
 
@@ -37,7 +38,8 @@ RenderSystem::RenderSystem() :
 	mPostProcessingRenderTargets(2)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
-	_onViewportResize(1600,768); // TODO Hook event!
+	_onViewportResize(1600,768);
+	EventDistributer::onViewportResize.hook(this, &RenderSystem::_onViewportResize);
 	mFullScreenQuad.resize(4);
 	glm::vec3 geometry[4];
 	geometry[0] = glm::vec3(-1.f,-1.f,0.f);
@@ -53,23 +55,34 @@ RenderSystem::RenderSystem() :
 	mFullScreenQuad.writeData(G2::Semantics::TEXCOORD_0, texCoord);
 }
 
+RenderSystem::~RenderSystem() 
+{
+	EventDistributer::onViewportResize.unHook(this, &RenderSystem::_onViewportResize);
+}
+
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
 	if(name == "postUpdate") 
 	{
-		mWorldAABB.clear();
+		// calculate only those AABBs, which are scheduled for recalculation
+		// TODO Animated meshes will not schedule a recalculation so far! Should be configurable!
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
-		for (int i = 0; i < components.size() ; ++i) 
+		for (auto it = mRecalcAABBEntityIds.begin(); it != mRecalcAABBEntityIds.end() ; ++it) 
 		{
-			RenderComponent& comp = components[i];
-			this->initializeAABB(&comp, transformSystem);
-			
-			for (int k = 0; k < comp.vaos.size() ; ++k) 
+			RenderComponent* comp = get(*it);
+			if(comp != nullptr)
 			{
-				mWorldAABB.merge(comp.worldSpaceAABBs[k]);
+				this->_recalculateAABB(comp, transformSystem);
+			
+				for (unsigned int k = 0; k < comp->getNumVertexArrays() ; ++k) 
+				{
+					// TODO Just merging it will may lead to a much bigger AABB for the world as needed over time
+					mWorldAABB.merge(comp->worldSpaceAABBs[k]);
+				}
 			}
 		}
+		mRecalcAABBEntityIds.clear();
 	}
 	else if(name == "render") 
 	{
@@ -94,7 +107,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		}
 		
 		//logger << "[RenderSystem] Pass rendering in frame " << frameInfo.frame << endl;
-		renderPasses(
+		_renderPasses(
 			camera,
 			cameraPosition,
 			cameraSpaceMatrix, 
@@ -105,97 +118,121 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 
 		if(mRenderType == RenderType::FORWARD_RENDERING)
 		{
-			// do normal rendering
-			if(mPostProcessingEffects.size() > 0)
-			{
-				// capture frame in first render target
-				mCurrentPostProcessingRenderTargetIndex = 0;
-				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
-			}
-
-			for (int i = 0; i < components.size() ; ++i) 
-			{
-				RenderComponent& comp = components[i];
-				if(comp.vaos.size() == 0)
-				{
-					// no VAO attached
-					continue;
-				}
-				// calc which shader to use for rendering
-				std::shared_ptr<Shader> shader = getRenderShader(&comp);
-				// bind shader before call render()
-				shader->bind();
-				// regular rendering
-				GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-				render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
-			}
-			if(mPostProcessingEffects.size() > 0)
-			{
-				// capture frame in first render target
-				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
-			}
-			for(int i = 0; i < mPostProcessingEffects.size(); ++i)
-			{
-				mPostProcessingEffects[i]->getShader()->bind();
-
-				uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
-
-				mCurrentPostProcessingRenderTargetIndex = 1 - mCurrentPostProcessingRenderTargetIndex;
-				if(i < mPostProcessingEffects.size() - 1)
-				{
-					// bind next ping pong render target for capturing
-					mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
-				}
-				// bind last scene rendering texture
-				mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
-				// draw post processing
-				mFullScreenQuad.draw(GL_QUADS);
-				// unbind render target
-				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
-			}
+			_renderForward(camera, cameraSpaceMatrix, inverseCameraRotation, transformSystem, lightSystem);
 		}
 		else if(mRenderType == RenderType::DEFERRED_SHADING)
 		{
-			// render to G-Buffer
-			mDeferredShadingPass = DeferredShadingPass::ATTRIBUTES_PASS;
-			mDeferredShadingTarget->bind();
-			//mGBufferEffect->bind();
-			for (int i = 0; i < components.size() ; ++i) 
-			{
-				RenderComponent& comp = components[i];
-				if(comp.vaos.size() == 0)
-				{
-					// no VAO attached
-					continue;
-				}
-				// calc which shader to use for rendering
-				std::shared_ptr<Shader> shader = getRenderShader(&comp);
-				// bind shader before call render()
-				shader->bind();
-				// regular rendering
-				GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-				render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
-			}
-			mDeferredShadingTarget->unbind();
-
-			mDeferredShadingPass = DeferredShadingPass::SHADING_PASS;
-			// TODO render to full screen quad -> possible user defined shading shader
-			// Need to find solution of how to get a Shader from an Effect without a material
-			
-			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_0)->bind(TEX_SLOT1);	// diffuse
-			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_1)->bind(TEX_SLOT1+1);	// normals
-			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_2)->bind(TEX_SLOT1+2);	// positions
-			
-			// combine everything back using one surface shader
-			// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
-			//mShadingEffect->bind();
-			mFullScreenQuad.draw(GL_QUADS);
+			_renderDeferred(camera, cameraSpaceMatrix, inverseCameraRotation, transformSystem, lightSystem);
 		}
 	}
 }
 
 void
-RenderSystem::renderPasses(
+RenderSystem::_renderForward(
+				CameraComponent* mainCamera,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+)
+{
+	// do normal rendering
+	if(mPostProcessingEffects.size() > 0)
+	{
+		// capture frame in first render target
+		mCurrentPostProcessingRenderTargetIndex = 0;
+		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
+	}
+
+	for (int i = 0; i < components.size() ; ++i) 
+	{
+		RenderComponent& comp = components[i];
+		
+		bool unculledFound = _performFrustumCulling(&comp, &mainCamera->getFrustum());
+		if(unculledFound)
+		{
+			// calc which shader to use for rendering
+			std::shared_ptr<Shader> shader = _getRenderShader(&comp);
+			// bind shader before call render()
+			shader->bind();
+			// regular rendering
+			GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+			_render(mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
+		}
+	}
+	if(mPostProcessingEffects.size() > 0)
+	{
+		// capture frame in first render target
+		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+	}
+	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
+	{
+		mPostProcessingEffects[i]->getShader()->bind();
+
+		_uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
+
+		mCurrentPostProcessingRenderTargetIndex = 1 - mCurrentPostProcessingRenderTargetIndex;
+		if(i < mPostProcessingEffects.size() - 1)
+		{
+			// bind next ping pong render target for capturing
+			mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
+		}
+		// bind last scene rendering texture
+		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
+		// draw post processing
+		mFullScreenQuad.draw(GL_QUADS);
+		// unbind render target
+		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+	}
+}
+
+void
+RenderSystem::_renderDeferred(
+				CameraComponent* mainCamera,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+)
+{
+	// render to G-Buffer
+	mDeferredShadingPass = DeferredShadingPass::ATTRIBUTES_PASS;
+	mDeferredShadingTarget->bind();
+	//mGBufferEffect->bind();
+	for (int i = 0; i < components.size() ; ++i) 
+	{
+		RenderComponent& comp = components[i];
+		
+		bool unculledFound = _performFrustumCulling(&comp, &mainCamera->getFrustum());
+		if(unculledFound)
+		{
+			// calc which shader to use for rendering
+			std::shared_ptr<Shader> shader = _getRenderShader(&comp);
+			// bind shader before call render()
+			shader->bind();
+			// regular rendering
+			GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+			_render(mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
+		}
+	}
+	mDeferredShadingTarget->unbind();
+
+	mDeferredShadingPass = DeferredShadingPass::SHADING_PASS;
+	// TODO render to full screen quad -> possible user defined shading shader
+	// Need to find solution of how to get a Shader from an Effect without a material
+			
+	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_0)->bind(TEX_SLOT1);	// diffuse
+	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_1)->bind(TEX_SLOT1+1);	// normals
+	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_2)->bind(TEX_SLOT1+2);	// positions
+			
+	// combine everything back using one surface shader
+	// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
+	//mShadingEffect->bind();
+	mFullScreenQuad.draw(GL_QUADS);
+}
+
+void
+RenderSystem::_renderPasses(
 					CameraComponent* mainCamera,
 					glm::vec3 const& cameraPosition,
 					glm::mat4 const& cameraSpaceMatrix, 
@@ -207,9 +244,6 @@ RenderSystem::renderPasses(
 	for (int i = 0; i < components.size() ; ++i) 
 	{
 		auto& comp = components[i];// check if this component has a pass attached
-
-		// lazy init aabb if needed
-		initializeAABB(&comp, transformSystem);
 
 		if(comp.getEffect().get() != nullptr && comp.getEffect()->getPasses().size() > 0) 
 		{
@@ -293,20 +327,16 @@ RenderSystem::renderPasses(
 					for (int k = 0; k < components.size() ; ++k) 
 					{
 						auto& innerComp = components[k];
-						
-						// lazy init aabb if needed
-						initializeAABB(&innerComp, transformSystem);
 
-						if(innerComp.vaos.size() == 0 || i == k)
+						bool unculledFound = _performFrustumCulling(&innerComp, &frustum);
+						if(unculledFound)
 						{
-							// no VAO attached or pass component is this component
-							continue;
+							auto passShader = _getPassRenderShader(&innerComp, &(*it));
+							// bind shader before call render()
+							passShader->bind();
+							// pass rendering
+							_render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem);
 						}
-						auto passShader = getPassRenderShader(&innerComp, &(*it));
-						// bind shader before call render()
-						passShader->bind();
-						// pass rendering
-						render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem, &frustum);
 					}
 					it->getRenderTarget().unbind();
 				}
@@ -319,12 +349,12 @@ RenderSystem::renderPasses(
 }
 
 void
-RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem, Frustum const* frustum)
+RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem)
 {
 
 	// Upload Matrices
 	auto* transformation = transformSystem->get(component->getEntityId());
-	uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
+	_uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
 
 	// Upload Lights
 	int maxLights = std::min(8,(int)lightSystem->components.size());
@@ -336,7 +366,7 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 		{
 			continue;
 		}
-		uploadLight(boundShader, &lightComponent, cameraSpaceMatrix, numActive++);
+		_uploadLight(boundShader, &lightComponent, cameraSpaceMatrix, numActive++);
 	}
 	boundShader->setProperty(std::move(std::string("G2ActiveLights")), numActive);
 
@@ -352,20 +382,21 @@ RenderSystem::render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraS
 	}
 
 	// Upload Material
-	uploadMaterial(boundShader, &component->material);
+	_uploadMaterial(boundShader, &component->material);
 
 	// Draw all attached VAO
-	for (int k = 0; k < component->vaos.size() ; ++k) 
+	for (int k = 0; k < component->mVaos.size() ; ++k) 
 	{
-		if(frustum->inside(component->worldSpaceAABBs[k]))
+		// the real culling with the current frustum is done way earlier
+		if(!component->mVaosFrustumCulled[k])
 		{
-			component->vaos[k].draw(component->drawMode);
+			component->mVaos[k].draw(component->drawMode);
 		}
 	}
 }
 
 void
-RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, bool billboarding) 
+RenderSystem::_uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, bool billboarding) 
 {
 
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
@@ -408,7 +439,7 @@ RenderSystem::uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent
 }
 
 void
-RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index) 
+RenderSystem::_uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index) 
 {
 	glm::vec4 lightPos;
 	glm::vec3 lightDir;
@@ -451,7 +482,7 @@ RenderSystem::uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light
 }
 
 void
-RenderSystem::uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
+RenderSystem::_uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
 	shader->setProperty(std::string("material.ambient"), material->getAmbient());
 	shader->setProperty(std::string("material.diffuse"), material->getDiffuse());
@@ -460,7 +491,7 @@ RenderSystem::uploadMaterial(std::shared_ptr<Shader>& shader, Material* material
 }
 
 std::shared_ptr<Shader>
-RenderSystem::getRenderShader(RenderComponent* component) 
+RenderSystem::_getRenderShader(RenderComponent* component) 
 {
 	std::shared_ptr<Shader> shader;
 
@@ -475,76 +506,73 @@ RenderSystem::getRenderShader(RenderComponent* component)
 	 * When changing something on the UberShader assigned to	*
 	 * the RenderComponent, the cache is also invalidated!		*
 	 ************************************************************/
-	if(component->_getShaderCache().isCacheValid(component->material.getVersion(), component->vaos[0].getVersion()))
+	if(component->_getShaderCache().isCacheValid(component->material.getVersion(), component->mVaos[0].getVersion()))
 	{
 		shader = component->_getShaderCache().getShader();
 	}
 	else if(component->mEffect.get() != nullptr && component->mEffect->hasCompiledShaders()) 
 	{
-		shader = component->getEffect()->getShader(&component->material,&component->vaos[0]);
+		shader = component->getEffect()->getShader(&component->material,&component->mVaos[0]);
 		// update shader cache
-		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->mVaos[0].getVersion());
 	}
 	else
 	{
-		shader = defaultEffect->getShader(&component->material,&component->vaos[0]);
+		shader = defaultEffect->getShader(&component->material,&component->mVaos[0]);
 		// update shader cache
-		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
+		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->mVaos[0].getVersion());
 	}
 	return shader;
 }
 
 std::shared_ptr<Shader>
-RenderSystem::getPassRenderShader(RenderComponent* component, Pass const* pass) const
+RenderSystem::_getPassRenderShader(RenderComponent* component, Pass const* pass) const
 {
 	// TODO add caching for pass shader as well
-	return pass->getShader(component->material,component->vaos[0]);;
+	return pass->getShader(component->material,component->mVaos[0]);;
 }
 
 void
-RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transformSystem) 
+RenderSystem::_recalculateAABB(RenderComponent* component, TransformSystem* transformSystem) 
 {
-	if(component->objectSpaceAABBs.size() != component->vaos.size())
+	component->objectSpaceAABBs.resize(component->getNumVertexArrays());
+	component->worldSpaceAABBs.resize(component->getNumVertexArrays());
+	for(unsigned int i = 0; i < component->getNumVertexArrays(); ++i)
 	{
-		component->objectSpaceAABBs.resize(component->vaos.size());
-		component->worldSpaceAABBs.resize(component->vaos.size());
-		for(int i = 0; i < component->vaos.size(); ++i)
+		VertexArrayObject& vao = component->getVertexArray(i);
+		AABB& aabb = component->objectSpaceAABBs[i];
+		aabb.clear();
+		unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+		if(componentsPerPosition == 3)
 		{
-			VertexArrayObject& vao = component->vaos[i];
-			AABB& aabb = component->objectSpaceAABBs[i];
-			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
-			if(componentsPerPosition == 3)
+			glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			for(unsigned int v = 0; v < vao.getNumElements(); ++v)
 			{
-				glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
-				{
-					aabb.merge(vertices[v]);
-				}
-				vao.returnDataPointer(Semantics::POSITION);
+				aabb.merge(vertices[v]);
 			}
-			else if(componentsPerPosition == 4)
-			{
-				glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
-				{
-					aabb.merge(glm::vec3(vertices[v]));
-				}
-				vao.returnDataPointer(Semantics::POSITION);
-			}
-			transformSystem->lock();
-			auto* transformComponent = transformSystem->get(component->getEntityId());
-			
-			if(transformComponent != nullptr)
-			{
-				component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
-			}
-			else
-			{
-				component->worldSpaceAABBs[i] = aabb;
-			}
-			transformSystem->unlock();
+			vao.returnDataPointer(Semantics::POSITION);
 		}
-
+		else if(componentsPerPosition == 4)
+		{
+			glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+			{
+				aabb.merge(glm::vec3(vertices[v]));
+			}
+			vao.returnDataPointer(Semantics::POSITION);
+		}
+		transformSystem->lock();
+		auto* transformComponent = transformSystem->get(component->getEntityId());
+			
+		if(transformComponent != nullptr)
+		{
+			component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
+		}
+		else
+		{
+			component->worldSpaceAABBs[i] = aabb;
+		}
+		transformSystem->unlock();
 	}
 }
 
@@ -597,4 +625,29 @@ RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect)
 	);
 	shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
 	shader->setProperty(std::string("postProcessInfo.windowSize"), windowSize);
+}
+
+bool
+RenderSystem::_performFrustumCulling(RenderComponent* comp, Frustum const* frustum) 
+{
+	bool unculledFound = false;
+	for(unsigned int v = 0; v < comp->getNumVertexArrays(); ++v)
+	{
+		if(frustum->inside(comp->worldSpaceAABBs[v]))
+		{
+			unculledFound = true;
+			comp->mVaosFrustumCulled[v] = false;
+		}
+		else
+		{
+			comp->mVaosFrustumCulled[v] = true;
+		}
+	}
+	return unculledFound;
+}
+
+void
+RenderSystem::scheduleAABBRecalculation(unsigned int entityId) 
+{
+	mRecalcAABBEntityIds.push_back(entityId);
 }

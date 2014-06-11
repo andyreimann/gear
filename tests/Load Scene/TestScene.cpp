@@ -173,12 +173,14 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 {
 	mPlanes.push_back(GameObject());
 	auto* plane = mPlanes.back().addComponent<G2::RenderComponent>();
+	plane->allocateVertexArrays(1);
 	plane->drawMode = GL_TRIANGLES;
 	// import and assign a texture
 	plane->material.setTexture(G2::Sampler::NORMAL, diffuseTex); // only rendered/used in passes
 
 	// prepare vao
-	G2::VertexArrayObject vao;
+	// assign vao to RenderComponent using move semantic
+	G2::VertexArrayObject& vao = plane->getVertexArray(0);
 
 	vao.resize(4);
 
@@ -201,9 +203,6 @@ TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> c
 	// build indices - planes were rendered using indices as soon as we add some to the vao
 	unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
 	vao.writeIndices(&indices[0], 6);
-
-	// assign vao to RenderComponent using move semantic
-	plane->vaos.push_back(std::move(vao));
 
 	// load and assign texturing shader
 	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Test.g2fx"));
@@ -474,9 +473,10 @@ void
 TestScene::createWaterSurface() 
 {
 	auto* water = mWaterSurface.addComponent<G2::RenderComponent>();
+	water->allocateVertexArrays(1);
 	water->drawMode = GL_TRIANGLES;
 	// prepare vao
-	G2::VertexArrayObject vao;
+	G2::VertexArrayObject& vao = water->getVertexArray(0);
 
 	vao.resize(4);
 
@@ -507,9 +507,6 @@ TestScene::createWaterSurface()
 	// build indices - planes were rendered using indices as soon as we add some to the vao
 	unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
 	vao.writeIndices(&indices[0], 6);
-
-	// assign vao to RenderComponent using move semantic
-	water->vaos.push_back(std::move(vao));
 
 	// load and assign shader
 	water->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Water.g2fx"));

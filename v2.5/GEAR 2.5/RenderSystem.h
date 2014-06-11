@@ -70,22 +70,45 @@ namespace G2
 			/** This function will return the DefaultShader. 
 			* @return The current DefaultShader.
 			*/
-			std::shared_ptr<G2::Effect> const& getDefaultEffect() const { return defaultEffect; }
+			std::shared_ptr<Effect> const& getDefaultEffect() const { return defaultEffect; }
 			/** This function will set the DefaultShader to the given value.
 			* @param value The current DefaultShader.
 			*/
-			void setDefaultEffect(std::shared_ptr<G2::Effect> const& value) { defaultEffect = value; }
-			/// This function will return the EngineEffectImporter. 
-			/// @return The EngineEffectImporter.
-			G2::EffectImporter& getEngineEffectImporter() { return mEngineEffectImporter; }
-
+			void setDefaultEffect(std::shared_ptr<Effect> const& value) { defaultEffect = value; }
+			/** This function will return the EngineEffectImporter. 
+			 * @return The EngineEffectImporter.
+			 */
+			EffectImporter& getEngineEffectImporter() { return mEngineEffectImporter; }
 			/** This function will add the given Effect to the end of the post processing pipeling
 			 * @param effect The Effect to add.
 			 */
-			void addPostProcessingEffect(std::shared_ptr<G2::Effect> effect);
-		private:
+			void addPostProcessingEffect(std::shared_ptr<Effect> effect);
+			/** Schedules the RenderComponent registered under the given entity id to recalculate it's AABB within the next "update" phase. 
+			 * @param entityId The entity id to recalculate the RenderComponent for.
+			 * @note Not thread safe.
+			 */
+			void scheduleAABBRecalculation(unsigned int entityId);
 
-			void renderPasses(
+			~RenderSystem();
+		private:
+			
+			void _renderForward(
+				CameraComponent* mainCamera,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+			);
+
+			void _renderDeferred(
+				CameraComponent* mainCamera,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem
+			);
+
+			void _renderPasses(
 				CameraComponent* mainCamera,
 				glm::vec3 const& cameraPosition,
 				glm::mat4 const& cameraSpaceMatrix,
@@ -94,18 +117,17 @@ namespace G2
 				LightSystem* lightSystem
 			);
 
-			void render(
+			void _render(
 				glm::mat4 const& projectionMatrix, 
 				glm::mat4 const& cameraSpaceMatrix, 
 				glm::mat4 const& inverseCameraRotation,
 				RenderComponent* component, 
 				std::shared_ptr<Shader>& boundShader,
 				TransformSystem* transformSystem,
-				LightSystem* lightSystem,
-				Frustum const* frustum
+				LightSystem* lightSystem
 			);
 			
-			void uploadMatrices(
+			void _uploadMatrices(
 				std::shared_ptr<Shader>& shader, 
 				TransformComponent* transformation, 
 				glm::mat4 const& projectionMatrix, 
@@ -113,33 +135,39 @@ namespace G2
 				glm::mat4 const& inverseCameraRotation,
 				bool billboarding
 			);
-			void uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
-			void uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
+			void _uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
+			void _uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
+			/** This function will recalculate the object space AABBs for the given RenderComponent.
+			 */
+			void _recalculateAABB(RenderComponent* component, TransformSystem* transformSystem);
 			
-			void initializeAABB(RenderComponent* component, TransformSystem* transformSystem);
-			
-			std::shared_ptr<Shader> getRenderShader(RenderComponent* component);
-			std::shared_ptr<Shader> getPassRenderShader(RenderComponent* component, Pass const* pass) const;
+			std::shared_ptr<Shader> _getRenderShader(RenderComponent* component);
+			std::shared_ptr<Shader> _getPassRenderShader(RenderComponent* component, Pass const* pass) const;
 
 			void _onViewportResize(int w, int h);
+			/** This function performs the frustum culling for all vertex array objects
+			 * contained in the RenderComponent.
+			 * @param comp The RenderComponent to perform frustum culling for.
+			 * @param frustum The frustum to cull against.
+			 * @return True if at least one vertex array object was not culled, false if all were culled.
+			 * @note This function will cache the result for every vertex array object inside of the RenderComponent in the mVaosFrustumCulled member!
+			 */
+			bool _performFrustumCulling(RenderComponent* comp, Frustum const* frustum);
 
 
 			RenderType::Name								mRenderType;
-
 			std::shared_ptr<G2::Effect>						defaultEffect;			// The default UberShader to use for rendering
 			EffectImporter									mEngineEffectImporter;	// The effect importer used when importing default engine effects
-
 			AABB											mWorldAABB;
-
 			DeferredShadingPass::Name						mDeferredShadingPass;
 			std::shared_ptr<G2::Effect>						mGBufferEffect;
 			std::shared_ptr<G2::Effect>						mShadingEffect;
 			std::shared_ptr<MultipleRenderTarget>			mDeferredShadingTarget;
 			VertexArrayObject								mFullScreenQuad;
-
 			PostProcessingPipeline							mPostProcessingEffects;			// A vector of shader to use for post processing
 			PostProcessingPingPongRenderTargets				mPostProcessingRenderTargets;	// The render target of the post processing pipeline
 			int												mCurrentPostProcessingRenderTargetIndex;
 			
+			std::list<unsigned int>							mRecalcAABBEntityIds;
 	};
 };

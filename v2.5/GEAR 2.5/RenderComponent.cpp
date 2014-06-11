@@ -9,14 +9,6 @@ RenderComponent::RenderComponent()
 {
 }
 
-RenderComponent::RenderComponent(unsigned int numVertexArrayObjects) 
-	: billboarding(false),
-	drawMode(GL_TRIANGLES),
-	aabbAnimationRecalc(false)
-{
-	vaos.resize(numVertexArrayObjects);
-}
-
 RenderComponent::RenderComponent(RenderComponent && rhs) 
 {
 	// eliminates redundant code
@@ -27,7 +19,8 @@ RenderComponent&
 RenderComponent::operator=(RenderComponent && rhs) 
 {
 	material = std::move(rhs.material);
-	vaos = std::move(rhs.vaos);
+	mVaos = std::move(rhs.mVaos);
+	mVaosFrustumCulled = std::move(rhs.mVaosFrustumCulled);
 	drawMode = rhs.drawMode;
 	billboarding = rhs.billboarding;
 	objectSpaceAABBs = std::move(rhs.objectSpaceAABBs);
@@ -35,8 +28,9 @@ RenderComponent::operator=(RenderComponent && rhs)
 	aabbAnimationRecalc = rhs.aabbAnimationRecalc;
 	mEffect = std::move(rhs.mEffect);
 	mShaderCache = std::move(rhs.mShaderCache);
-
-	rhs.vaos.clear();
+	
+	rhs.mVaos.clear();
+	rhs.mVaosFrustumCulled.clear();
 	rhs.objectSpaceAABBs.clear();
 	rhs.drawMode = GL_INVALID_VALUE;
 	
@@ -48,4 +42,12 @@ RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value)
 {
 	mEffect = value; 
 	mShaderCache = ShaderCache(); // invalidate
+}
+
+void
+RenderComponent::allocateVertexArrays(unsigned int numVertexArrayObjects) 
+{
+	mVaos.resize(numVertexArrayObjects);
+	mVaosFrustumCulled.resize(numVertexArrayObjects);
+	ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->scheduleAABBRecalculation(getEntityId());
 }

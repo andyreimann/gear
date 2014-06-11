@@ -107,17 +107,17 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 #endif
 
 
-	size_t numMeshes = renderComponent->vaos.size();
+	size_t numMeshes = renderComponent->getNumVertexArrays();
 
-	if(renderComponent->aabbAnimationRecalc && renderComponent->objectSpaceAABBs.size() != renderComponent->vaos.size())
+	if(renderComponent->aabbAnimationRecalc && renderComponent->objectSpaceAABBs.size() != numMeshes)
 	{
-		renderComponent->objectSpaceAABBs.resize(renderComponent->vaos.size());
+		renderComponent->objectSpaceAABBs.resize(numMeshes);
 	}
 
 	for (size_t c = 0; c < numMeshes; ++c) 
 	{
 		MeshAnimationData& meshAnimationData = animationComponent->animationData.meshAnimationData[c];
-		unsigned int numVertices = renderComponent->vaos[c].getNumElements();
+		unsigned int numVertices = renderComponent->getVertexArray((unsigned int)c).getNumElements();
 		if(renderComponent->aabbAnimationRecalc)
 		{
 			renderComponent->objectSpaceAABBs[c].clear();
@@ -176,7 +176,7 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 		});
 		handles.push_back(handle);
 #else
-		renderComponent->vaos[c].writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
+			renderComponent->getVertexArray((unsigned int)c).writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
 								.writeData(Semantics::NORMAL, &meshAnimationData.normalCache[0]);
 		
 #endif
@@ -190,7 +190,7 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 		// write cached data
 		MeshAnimationData& meshAnimationData = animationComponent->animationData.meshAnimationData[i];
 		
-		renderComponent->vaos[i].writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
+		renderComponent->mVaos[i].writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
 								.writeData(Semantics::NORMAL, &meshAnimationData.normalCache[0]);
 	}
 #endif

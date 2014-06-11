@@ -26,8 +26,6 @@ namespace G2
 		public:
 
 			RenderComponent();
-
-			RenderComponent(unsigned int numVertexArrayObjects);
 			/** Move constructor to move a RenderComponent.
 			 */
 			RenderComponent(RenderComponent && rhs);
@@ -42,9 +40,24 @@ namespace G2
 			* @param value The current UberShader.
 			*/
 			void setEffect(std::shared_ptr<G2::Effect> const& value);
+			/** Returns the number of vertex array objects, this RenderComponent maintains.
+			 * @return The number of vertex array objects, this RenderComponent maintains.
+			 */
+			unsigned int getNumVertexArrays() const { return (unsigned int)mVaos.size(); }
+			/** Returns the vertex array object at the given index.
+			 * @param index The index to get the vertex array object for.
+			 * @note Make sure to not request an index, which does not exist!
+			 */
+			VertexArrayObject& getVertexArray(unsigned int index) { return mVaos[(size_t)index]; }
+			/** This function will allocate the given number of vertex array objects for the RenderComponent.
+			 * If the given number is smaller than the current amount, some or all vertex array objects may be deleted.
+			 * @param numVertexArrayObjects The number of vertex array objects to allocate.
+			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
+			 */
+			void allocateVertexArrays(unsigned int numVertexArrayObjects);
 
 			Material						material;		// The Material of the RenderComponent
-			std::vector<VertexArrayObject>	vaos;			// The vertex array objects of the RenderComponent
+			
 			unsigned int					drawMode;		// The OpenGL draw mode to use when rendering
 			bool							billboarding;	// The billboarding mode to use when rendering
 			std::vector<AABB>				objectSpaceAABBs;// The object space axis aligned bounding box
@@ -52,7 +65,9 @@ namespace G2
 			bool							aabbAnimationRecalc; // Flag indicating if the aabb should be recalculated with the animation
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }
-
+			
+			std::vector<bool>				mVaosFrustumCulled;	// The frustum culling flag of the vertex array objects of the RenderComponent
+			std::vector<VertexArrayObject>	mVaos;			// The vertex array objects of the RenderComponent
 			std::shared_ptr<G2::Effect>		mEffect;		// The UberShader of the RenderComponent (default is an empty UberShader!)
 			ShaderCache						mShaderCache;	// The cache used for the Shader
 	};
