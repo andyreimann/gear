@@ -334,6 +334,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="VertexArrayObject.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexStream.h" />
+    <ClInclude Include="ZSorter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />

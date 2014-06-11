@@ -31,7 +31,7 @@ namespace G2
 			/** This function will return the unique ID of the Entity. 
 			* @return The unique ID of the Entity.
 			*/
-			unsigned int getId() const;
+			COREDLL_API unsigned int getId() const;
 
 			/* This function will return a pointer to the requested Component or nullptr
 			 * if no such Component is attached.
@@ -105,13 +105,15 @@ namespace G2
 
 			COREDLL_API ~Entity();
 
+			COREDLL_API static unsigned int UNINITIALIZED_ENTITY_ID;
+
 		private:
 
-			COREDLL_API Entity& operator=(Entity const& rhs);
+			Entity& operator=(Entity const& rhs);
 
 			unsigned int	mId; // The unique ID of the entity
 			
-			static unsigned int UNINITIALIZED_ENTITY_ID;
 			static unsigned int LAST_ENTITY_ID;
+			
 	};
 };

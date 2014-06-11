@@ -18,6 +18,7 @@ namespace G2
 	 */
 	class Material : public VersionTracker
 	{
+		friend class RenderComponent;
 		public:
 			/** This constructs a new Material with default values as following:
 			 * ambient(0.2,0.2,0.2,1.0)
@@ -102,8 +103,16 @@ namespace G2
 			std::map<Sampler::Name,std::shared_ptr<Texture>> const& getTextures() const { return mTextures; }
 
 		private:
-			void updateTransparencyFlag();
+			void _updateTransparencyFlag();
+			/** This function will set the entity id the Material is connected to.
+			 * @note It is called as soon as a RenderComponent allocates some vertex array objects the first time.
+			 * This is ok, since a default constructed RenderComponent does not have any renderable vertex array objects and thus no connection is needed.
+			 * @param entityId The id of the entity, the Material is connected with.
+			 */
+			void _connectToEntityId(unsigned int entityId);
+
 			// private members
+			unsigned int			mEntityId;		// The id of the Entity, the Material is connected to.
 			bool					mIsTransparent; // The flag for the transparency of the Material
 			glm::vec4				mAmbient;		// The ambient material term
 			glm::vec4				mDiffuse;		// The diffuse material term

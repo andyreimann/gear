@@ -6,9 +6,12 @@
 #include "AABB.h"
 
 #include <G2Core/BaseSystem.h>
+#include <G2Core/Entity.h>
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <unordered_set>
+#include <map>
 
 namespace G2 
 {
@@ -54,14 +57,16 @@ namespace G2
 
 	typedef std::vector<std::shared_ptr<G2::Effect>> PostProcessingPipeline;
 	typedef std::vector<std::shared_ptr<RenderTarget>> PostProcessingPingPongRenderTargets;
+	
 	/** This class defines the whole render pipeline of the GEAR engine.
-	 * It render all registered RenderComponents with their settings.
+	 * It render all registered RenderComponents with their settings and all passes.
 	 * The rendering takes place in the 'render' phase.
 	 * @created:	2014/01/30
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
 	class RenderSystem : public BaseSystem<RenderSystem,RenderComponent> 
 	{
+			friend class RenderComponent;
 		public:
 
 			RenderSystem();
@@ -79,7 +84,7 @@ namespace G2
 			 * @return The EngineEffectImporter.
 			 */
 			EffectImporter& getEngineEffectImporter() { return mEngineEffectImporter; }
-			/** This function will add the given Effect to the end of the post processing pipeling
+			/** This function will add the given Effect to the end of the post processing pipeline
 			 * @param effect The Effect to add.
 			 */
 			void addPostProcessingEffect(std::shared_ptr<Effect> effect);
@@ -88,10 +93,20 @@ namespace G2
 			 * @note Not thread safe.
 			 */
 			void scheduleAABBRecalculation(unsigned int entityId);
+			/** This function will update the transparency mode for the given entity ids RenderComponent.
+			 * @note Transparent RenderComponents are treated different in terms of rendering.
+			 * They are rendered depending on their distance to the render camera to reduce rendering artifacts.
+			 * Use this function to register and unregister a RenderComponent from being treated as transparent.
+			 * @warning The engine itself will register/unregister the RenderComponent objects when setting the material properties or adding/removing vertex array objects,
+			 * thus this function should normally not be called unless you exactly know what you do!
+			 */
+			void updateTransparencyMode(unsigned int entityId, bool transparent);
 
 			~RenderSystem();
 		private:
-			
+			/** This function will perform the complete forward rendering pipeline.
+			 * This does not include rendering the passes of the RenderComponent objects Effects!
+			 */
 			void _renderForward(
 				CameraComponent* mainCamera,
 				glm::mat4 const& cameraSpaceMatrix,
@@ -99,7 +114,9 @@ namespace G2
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem
 			);
-
+			/** This function will perform the complete deferred rendering pipeline.
+			 * This does not include rendering the passes of the RenderComponent objects Effects!
+			 */
 			void _renderDeferred(
 				CameraComponent* mainCamera,
 				glm::mat4 const& cameraSpaceMatrix,
@@ -107,7 +124,8 @@ namespace G2
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem
 			);
-
+			/** This function will perform the complete pass rendering pipeline.
+			 */
 			void _renderPasses(
 				CameraComponent* mainCamera,
 				glm::vec3 const& cameraPosition,
@@ -116,17 +134,37 @@ namespace G2
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem
 			);
-
+			/** This function will render all components with the given parameters.
+			 * It will also perform frustum culling before rendering.
+			 * It is used generic for rendering the RenderComponent objects in passes, deferred rendering and normal rendering.
+			 * @note This function will take care of rendering transparent vertex arrays in a proper way.
+			 */
+			void _renderAllComponents(
+				Frustum const* frustum,
+				glm::mat4 const& projectionMatrix,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				glm::vec4 const& cameraPosition,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem,
+				G2::Pass const* pass = nullptr,
+				unsigned int entityIdToSkip = Entity::UNINITIALIZED_ENTITY_ID
+			);
+			/** This function will perform the rendering for one single RenderComponent.
+			 * @note If vertexArrayObjectIndex is -1, all vertex array objects are draw, otherwise, only the given index is drawn
+			 */
 			void _render(
 				glm::mat4 const& projectionMatrix, 
 				glm::mat4 const& cameraSpaceMatrix, 
 				glm::mat4 const& inverseCameraRotation,
-				RenderComponent* component, 
+				RenderComponent* component,
 				std::shared_ptr<Shader>& boundShader,
 				TransformSystem* transformSystem,
-				LightSystem* lightSystem
+				LightSystem* lightSystem,
+				int vertexArrayObjectIndex = -1
 			);
-			
+			/** This function will upload the matrices to the given shader.
+			 */
 			void _uploadMatrices(
 				std::shared_ptr<Shader>& shader, 
 				TransformComponent* transformation, 
@@ -135,7 +173,11 @@ namespace G2
 				glm::mat4 const& inverseCameraRotation,
 				bool billboarding
 			);
+			/** This function will upload the lights to the given shader.
+			 */
 			void _uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
+			/** This function will upload the material to the given shader.
+			 */
 			void _uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
 			/** This function will recalculate the object space AABBs for the given RenderComponent.
 			 */
@@ -144,7 +186,6 @@ namespace G2
 			std::shared_ptr<Shader> _getRenderShader(RenderComponent* component);
 			std::shared_ptr<Shader> _getPassRenderShader(RenderComponent* component, Pass const* pass) const;
 
-			void _onViewportResize(int w, int h);
 			/** This function performs the frustum culling for all vertex array objects
 			 * contained in the RenderComponent.
 			 * @param comp The RenderComponent to perform frustum culling for.
@@ -153,7 +194,13 @@ namespace G2
 			 * @note This function will cache the result for every vertex array object inside of the RenderComponent in the mVaosFrustumCulled member!
 			 */
 			bool _performFrustumCulling(RenderComponent* comp, Frustum const* frustum);
-
+			
+			void _onViewportResize(int w, int h);
+			/** This function is called from a RenderComponent if a resize for the vertex array objects occurs.
+			 * @param entityId The entity id of the RenderComponent
+			 * @param sizeDifference The difference in size of the vertex array objects.
+			 */
+			void _onVertexArrayObjectsResize(unsigned int entityId, int sizeDifference);
 
 			RenderType::Name								mRenderType;
 			std::shared_ptr<G2::Effect>						defaultEffect;			// The default UberShader to use for rendering
@@ -168,6 +215,9 @@ namespace G2
 			PostProcessingPingPongRenderTargets				mPostProcessingRenderTargets;	// The render target of the post processing pipeline
 			int												mCurrentPostProcessingRenderTargetIndex;
 			
+
 			std::list<unsigned int>							mRecalcAABBEntityIds;
+			std::unordered_set<unsigned int>				mTransparentEntityIds;			// Entity ids of the RenderComponent objects to treat as transparent while rendering
+			std::vector<std::pair<unsigned int,unsigned int>> mZSortedTransparentEntityIdsToVaoIndex;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
 	};
 };

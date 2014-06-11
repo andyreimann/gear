@@ -1,6 +1,10 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "Material.h"
+#include "RenderComponent.h"
+
+#include <G2Core/Entity.h>
+#include <G2Core/ECSManager.h>
 #include <limits>
 
 using namespace G2;
@@ -10,7 +14,8 @@ Material::Material()
 	mDiffuse(1.0f,1.0f,1.0f,1.0f),
 	mSpecular(0.0f,0.0f,0.0f,1.0f),
 	mShininess(0.0f),
-	mIsTransparent(false) 
+	mIsTransparent(false),
+	mEntityId(Entity::UNINITIALIZED_ENTITY_ID)
 {
 }
 
@@ -26,6 +31,7 @@ Material& Material::operator=(Material && rhs)
 	// 1. Stage: delete maybe allocated resources on target type
 	// nothing here
 	// 2. Stage: transfer data from src to target
+	mEntityId = rhs.mEntityId;
 	mIsTransparent = rhs.mIsTransparent;
 	mAmbient = std::move(rhs.mAmbient);
 	mDiffuse = std::move(rhs.mDiffuse);
@@ -34,6 +40,7 @@ Material& Material::operator=(Material && rhs)
 	mShininess = rhs.mShininess;
 	// copy and increment the version!
 	setVersion(rhs.getVersion()+1);
+	rhs.mEntityId = Entity::UNINITIALIZED_ENTITY_ID;
 	return *this;
 }
 
@@ -55,7 +62,7 @@ Material&
 Material::setSpecular(glm::vec4 const& specular)
 {
 	mSpecular = specular;
-	updateTransparencyFlag();
+	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
 }
@@ -63,7 +70,7 @@ Material::setSpecular(glm::vec4 const& specular)
 Material&
 Material::setDiffuse(glm::vec4 const& diffuse) {
 	mDiffuse = diffuse;
-	updateTransparencyFlag();
+	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
 }
@@ -72,21 +79,31 @@ Material&
 Material::setAmbient(glm::vec4 const& ambient)
 {
 	mAmbient = ambient;
-	updateTransparencyFlag();
+	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
 }
 
 void
-Material::updateTransparencyFlag()
+Material::_updateTransparencyFlag()
 {
 	float threshold = 1.f - std::numeric_limits<int>::epsilon();
 	if(mAmbient.w < threshold || mDiffuse.w < threshold || mSpecular.w < threshold)
 	{
-		mIsTransparent = true;
+		if(mIsTransparent != true)
+		{
+			mIsTransparent = true;
+			// newly transparent
+			ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->updateTransparencyMode(mEntityId, true);
+		}
 		return;
 	}
-	mIsTransparent = false;
+	if(mIsTransparent == true)
+	{
+		// newly solid
+		mIsTransparent = false;
+		ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->updateTransparencyMode(mEntityId, false);
+	}
 }
 
 Material&
@@ -94,7 +111,7 @@ Material::setAmbientAndDiffuse(glm::vec4 const& color)
 {
 	mAmbient = color;
 	mDiffuse = color;
-	updateTransparencyFlag();
+	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
 }
@@ -106,4 +123,10 @@ Material::operator==(Material const& rhs)
 			mDiffuse == rhs.getDiffuse() &&
 			mSpecular == rhs.getSpecular() &&
 			mShininess == rhs.getShininess();
+}
+
+void
+Material::_connectToEntityId(unsigned int entityId) 
+{
+	mEntityId = entityId;
 }

@@ -47,7 +47,11 @@ RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value)
 void
 RenderComponent::allocateVertexArrays(unsigned int numVertexArrayObjects) 
 {
+	int sizeDifference = (int)numVertexArrayObjects - (int)mVaos.size();
 	mVaos.resize(numVertexArrayObjects);
 	mVaosFrustumCulled.resize(numVertexArrayObjects);
-	ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->scheduleAABBRecalculation(getEntityId());
+	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
+	renderSystem->scheduleAABBRecalculation(getEntityId());
+	renderSystem->_onVertexArrayObjectsResize(getEntityId(),sizeDifference);
+	material._connectToEntityId(getEntityId());
 }

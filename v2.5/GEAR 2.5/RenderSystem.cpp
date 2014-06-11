@@ -15,11 +15,13 @@
 #include "Frustum.h"
 #include "LightEffectState.h"
 #include "MultipleRenderTarget.h"
+#include "ZSorter.h"
 
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
 
 #include <glm/ext.hpp>
+#include <algorithm>
 
 using namespace G2;
 
@@ -143,23 +145,14 @@ RenderSystem::_renderForward(
 		mCurrentPostProcessingRenderTargetIndex = 0;
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
 	}
+	
+	GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	
+	// TODO cache inverse camera space matrix!
+	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
 
-	for (int i = 0; i < components.size() ; ++i) 
-	{
-		RenderComponent& comp = components[i];
-		
-		bool unculledFound = _performFrustumCulling(&comp, &mainCamera->getFrustum());
-		if(unculledFound)
-		{
-			// calc which shader to use for rendering
-			std::shared_ptr<Shader> shader = _getRenderShader(&comp);
-			// bind shader before call render()
-			shader->bind();
-			// regular rendering
-			GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
-			_render(mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
-		}
-	}
+	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem);
+					
 	if(mPostProcessingEffects.size() > 0)
 	{
 		// capture frame in first render target
@@ -199,22 +192,13 @@ RenderSystem::_renderDeferred(
 	mDeferredShadingPass = DeferredShadingPass::ATTRIBUTES_PASS;
 	mDeferredShadingTarget->bind();
 	//mGBufferEffect->bind();
-	for (int i = 0; i < components.size() ; ++i) 
-	{
-		RenderComponent& comp = components[i];
-		
-		bool unculledFound = _performFrustumCulling(&comp, &mainCamera->getFrustum());
-		if(unculledFound)
-		{
-			// calc which shader to use for rendering
-			std::shared_ptr<Shader> shader = _getRenderShader(&comp);
-			// bind shader before call render()
-			shader->bind();
-			// regular rendering
-			GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
-			_render(mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
-		}
-	}
+	GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	
+	// TODO cache inverse camera space matrix!
+	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
+
+	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem);
+			
 	mDeferredShadingTarget->unbind();
 
 	mDeferredShadingPass = DeferredShadingPass::SHADING_PASS;
@@ -324,20 +308,8 @@ RenderSystem::_renderPasses(
 					Frustum frustum;
 					frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
 
-					for (int k = 0; k < components.size() ; ++k) 
-					{
-						auto& innerComp = components[k];
-
-						bool unculledFound = _performFrustumCulling(&innerComp, &frustum);
-						if(unculledFound)
-						{
-							auto passShader = _getPassRenderShader(&innerComp, &(*it));
-							// bind shader before call render()
-							passShader->bind();
-							// pass rendering
-							_render(passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, &innerComp, passShader, transformSystem, lightSystem);
-						}
-					}
+					_renderAllComponents(&frustum, passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, glm::vec4(cameraPosition, 1.f), transformSystem, lightSystem, &(*it), comp.getEntityId());
+					
 					it->getRenderTarget().unbind();
 				}
 				// bind result of pass
@@ -349,9 +321,78 @@ RenderSystem::_renderPasses(
 }
 
 void
-RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem)
+RenderSystem::_renderAllComponents(
+				Frustum const* frustum,
+				glm::mat4 const& projectionMatrix,
+				glm::mat4 const& cameraSpaceMatrix,
+				glm::mat4 const& inverseCameraRotation,
+				glm::vec4 const& cameraPosition,
+				TransformSystem* transformSystem,
+				LightSystem* lightSystem,
+				G2::Pass const* pass,
+				unsigned int entityIdToSkip
+)
 {
+	// render all opaque objects as normal
+	for (int i = 0; i < components.size() ; ++i) 
+	{
+		RenderComponent& comp = components[i];
+		if(comp.getEntityId() == entityIdToSkip || comp.material.isTransparent())
+		{
+			continue;
+		}
+		bool unculledFound = _performFrustumCulling(&comp, frustum);
+		if(unculledFound)
+		{
+			// calc which shader to use for rendering
+			std::shared_ptr<Shader> shader;
+			if(pass != nullptr)
+			{
+				shader = _getPassRenderShader(&comp, pass);
+			}
+			else 
+			{
+				shader = _getRenderShader(&comp);
+			}
+			// bind shader before call render()
+			shader->bind();
+			// regular rendering
+			_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
+		}
+	}
+	
+	// perform Z-Sorting for transparent vertex array objects
+	std::sort(std::begin(mZSortedTransparentEntityIdsToVaoIndex), std::end(mZSortedTransparentEntityIdsToVaoIndex), ZSorter(this, cameraPosition));
+	
+	// render all transparent vertex array objects Z-ordered
+	for (int i = 0; i < mZSortedTransparentEntityIdsToVaoIndex.size() ; ++i) 
+	{
+		// TODO No frustum culling so far for transparent objects!
+		RenderComponent* comp = get(mZSortedTransparentEntityIdsToVaoIndex[i].first);
+		if(comp->getEntityId() == entityIdToSkip)
+		{
+			continue;
+		}
+		// calc which shader to use for rendering
+		std::shared_ptr<Shader> shader;
+		if(pass != nullptr)
+		{
+			shader = _getPassRenderShader(comp, pass);
+		}
+		else 
+		{
+			shader = _getRenderShader(comp);
+		}
+		// bind shader before call render()
+		shader->bind();
+		// regular rendering
+		_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem, (int)mZSortedTransparentEntityIdsToVaoIndex[i].second);
+	}
+}
 
+void
+RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem, int vertexArrayObjectIndex)
+{
 	// Upload Matrices
 	auto* transformation = transformSystem->get(component->getEntityId());
 	_uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
@@ -385,12 +426,22 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 	_uploadMaterial(boundShader, &component->material);
 
 	// Draw all attached VAO
-	for (int k = 0; k < component->mVaos.size() ; ++k) 
-	{
-		// the real culling with the current frustum is done way earlier
-		if(!component->mVaosFrustumCulled[k])
+	if(vertexArrayObjectIndex < 0)
+	{ // draw all
+		for (int k = 0; k < component->mVaos.size() ; ++k) 
 		{
-			component->mVaos[k].draw(component->drawMode);
+			// the real culling with the current frustum is done way earlier
+			if(!component->mVaosFrustumCulled[k])
+			{
+				component->mVaos[k].draw(component->drawMode);
+			}
+		}
+	}
+	else
+	{ // only draw given index
+		if(!component->mVaosFrustumCulled[vertexArrayObjectIndex])
+		{
+			component->mVaos[vertexArrayObjectIndex].draw(component->drawMode);
 		}
 	}
 }
@@ -650,4 +701,55 @@ void
 RenderSystem::scheduleAABBRecalculation(unsigned int entityId) 
 {
 	mRecalcAABBEntityIds.push_back(entityId);
+}
+
+void
+RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent) 
+{
+	if(transparent)
+	{
+		auto state = mTransparentEntityIds.insert(entityId);
+		if(state.second == true)
+		{
+			// was newly inserted
+			auto* comp = get(entityId);
+			// add mapping for RenderComponent
+			unsigned int offset = (unsigned int)mZSortedTransparentEntityIdsToVaoIndex.size();
+			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() + comp->getNumVertexArrays());
+			for(unsigned int i = 0; i < comp->getNumVertexArrays(); ++i)
+			{
+				mZSortedTransparentEntityIdsToVaoIndex[offset++] = std::make_pair(comp->getEntityId(),i);
+			}
+		}
+	}
+	else
+	{
+		if(mTransparentEntityIds.erase(entityId) == 1)
+		{
+			// was removed
+			auto* comp = get(entityId);
+			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
+			// rebuild mapping completely
+			unsigned int offset = 0;
+			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
+			{
+				auto* comp = get(*it);
+				for(unsigned int i = 0; i < comp->getNumVertexArrays(); ++i)
+				{
+					mZSortedTransparentEntityIdsToVaoIndex[offset++] = std::make_pair(comp->getEntityId(),i);
+				}
+			}
+		}
+	}
+}
+
+void
+RenderSystem::_onVertexArrayObjectsResize(unsigned int entityId, int sizeDifference) 
+{
+	auto* comp = get(entityId);
+	if(comp->material.isTransparent())
+	{
+		// should be already registered
+		mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() + sizeDifference);
+	}
 }

@@ -270,6 +270,9 @@
     <ClInclude Include="PostProcessDefaultInclude.h">
       <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
+    <ClInclude Include="ZSorter.h">
+      <Filter>ECS\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
