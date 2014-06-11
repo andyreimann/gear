@@ -158,6 +158,15 @@ Pass::Builder::addVertexShaderParts(std::vector<std::shared_ptr<AbstractShaderPa
 }
 
 void
+Pass::Builder::addGeometryShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
+{
+	for(auto it = parts.begin(); it != parts.end(); ++it)
+	{
+		geometryShaderParts.push_back(*it);
+	}
+}
+
+void
 Pass::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
 {
 	for(auto it = parts.begin(); it != parts.end(); ++it)

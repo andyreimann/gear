@@ -8,8 +8,12 @@
 using namespace G2;
 
 std::shared_ptr<Shader>
-Effect::getShader(Material const& material, VertexArrayObject const& vao) const
+Effect::getShader(Material const* material, VertexArrayObject const* vao) const
 {
+	if(material == nullptr || vao == nullptr)
+	{
+		return mShaderPermutations.front();
+	}
 	#undef max
 	int bestFitFailCount = std::numeric_limits<int>::max();
 	std::shared_ptr<Shader> bestFit = std::shared_ptr<Shader>();
@@ -21,7 +25,7 @@ Effect::getShader(Material const& material, VertexArrayObject const& vao) const
 		int failCount = 0; // number of checks failed for this Shader
 		for (int k = 0; k < numConditions ; ++k) 
 		{
-			if(!conditions[k].check(material,vao))
+			if(!conditions[k].check(*material,*vao))
 			{
 				++failCount;
 			}
@@ -100,6 +104,15 @@ Effect::Builder::addVertexShaderParts(std::vector<std::shared_ptr<AbstractShader
 }
 
 void
+Effect::Builder::addGeometryShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
+{
+	for(auto it = parts.begin(); it != parts.end(); ++it)
+	{
+		geometryShaderParts.push_back(*it);
+	}
+}
+
+void
 Effect::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts) 
 {
 	for(auto it = parts.begin(); it != parts.end(); ++it)
@@ -113,6 +126,7 @@ void _compile(
 	std::vector<LocationBinding> const& locationBindings,
 	std::vector<Property> const& properties,
 	std::vector<std::shared_ptr<AbstractShaderPart>> const& vertexShaderParts,
+	std::vector<std::shared_ptr<AbstractShaderPart>> const& geometryShaderParts,
 	std::vector<std::shared_ptr<AbstractShaderPart>> const& fragmentShaderParts,
 	ShaderMetaData const& shaderMetaData,
 	std::vector<std::shared_ptr<Shader>>& target
@@ -124,12 +138,16 @@ void _compile(
 	}
 
 	// build shader headers
-	std::string vertexShaderHeader = "", fragmentShaderHeader = "";
+	std::string vertexShaderHeader = "", geometryShaderHeader = "", fragmentShaderHeader = "";
 
 	
 	if(shadingLanguage == ShadingLanguage::GLSL) 
 	{
 		vertexShaderHeader = fragmentShaderHeader = "#version 330\n\n";
+		if(geometryShaderParts.size() > 0)
+		{
+			geometryShaderHeader = "#version 330\n\n";
+		}
 	}
 
 	// create code for location bindings in vertex shader
@@ -145,10 +163,19 @@ void _compile(
 	{
 		vertexShaderHeader.append(properties[i].getShaderCode());
 		vertexShaderHeader.append("\n");
+		if(geometryShaderParts.size() > 0)
+		{
+			geometryShaderHeader.append(properties[i].getShaderCode());
+			geometryShaderHeader.append("\n");
+		}
 		fragmentShaderHeader.append(properties[i].getShaderCode());
 		fragmentShaderHeader.append("\n");
 	}
 	vertexShaderHeader.append("\n");
+	if(geometryShaderParts.size() > 0)
+	{
+		geometryShaderHeader.append("\n");
+	}
 	fragmentShaderHeader.append("\n");
 
 	// calculate the number of permutations to create
@@ -156,6 +183,10 @@ void _compile(
 	for (int i = 0; i < vertexShaderParts.size() ; ++i) 
 	{
 		numPermutations *= vertexShaderParts[i]->getNumPermutations();
+	}
+	for (int i = 0; i < geometryShaderParts.size() ; ++i) 
+	{
+		numPermutations *= geometryShaderParts[i]->getNumPermutations();
 	}
 	for (int i = 0; i < fragmentShaderParts.size() ; ++i) 
 	{
@@ -165,8 +196,9 @@ void _compile(
 	
 	// create permutations
 	int numVSParts = (int)vertexShaderParts.size();
+	int numGSParts = (int)geometryShaderParts.size();
 	int numFSParts = (int)fragmentShaderParts.size();
-	std::vector<int> permutationIndexAtPosition(numVSParts+numFSParts);
+	std::vector<int> permutationIndexAtPosition(numVSParts+numGSParts+numFSParts);
 	bool increasedThisRound = false;
 
 	for (int i = 0; i < numPermutations ; ++i) 
@@ -174,7 +206,7 @@ void _compile(
 		std::vector<MacroCondition> shaderConditions;
 		increasedThisRound = false;
 		
-		std::string vertexShaderCode = vertexShaderHeader, fragmentShaderCode = fragmentShaderHeader;
+		std::string vertexShaderCode = vertexShaderHeader, geometryShaderCode = geometryShaderHeader, fragmentShaderCode = fragmentShaderHeader;
 
 		for (int k = 0; k < numVSParts; ++k) 
 		{
@@ -200,9 +232,9 @@ void _compile(
 			std::vector<MacroCondition> partConditions = vertexShaderParts[k]->getMacroConditions(permutationIndexAtPosition[k]);
 			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
 		}
-		for (int k = 0; k < numFSParts; ++k) 
+		for (int k = 0; k < numGSParts; ++k) 
 		{
-			int numPermutationsOfPart = fragmentShaderParts[k]->getNumPermutations();
+			int numPermutationsOfPart = geometryShaderParts[k]->getNumPermutations();
 			if(!increasedThisRound && i > 0 && numPermutationsOfPart > 1) 
 			{
 				// try to increase permutation index of part
@@ -218,20 +250,48 @@ void _compile(
 					permutationIndexAtPosition[numVSParts+k] = 0; 
 				}
 			}
-			fragmentShaderCode.append(fragmentShaderParts[k]->getPermutedShaderPart(permutationIndexAtPosition[numVSParts+k]));
+			geometryShaderCode.append(geometryShaderParts[k]->getPermutedShaderPart(permutationIndexAtPosition[numVSParts+k]));
+			geometryShaderCode.append("\n");
+			// collect all conditions
+			std::vector<MacroCondition> partConditions = geometryShaderParts[k]->getMacroConditions(permutationIndexAtPosition[numVSParts+k]);
+			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
+		}
+		for (int k = 0; k < numFSParts; ++k) 
+		{
+			int numPermutationsOfPart = fragmentShaderParts[k]->getNumPermutations();
+			if(!increasedThisRound && i > 0 && numPermutationsOfPart > 1) 
+			{
+				// try to increase permutation index of part
+				// which provides multiple permutations
+				if(permutationIndexAtPosition[numVSParts+numGSParts+k] < numPermutationsOfPart-1)
+				{
+					++permutationIndexAtPosition[numVSParts+numGSParts+k];
+					increasedThisRound = true;
+				}
+				else 
+				{
+					// reset permutation index
+					permutationIndexAtPosition[numVSParts+numGSParts+k] = 0; 
+				}
+			}
+			fragmentShaderCode.append(fragmentShaderParts[k]->getPermutedShaderPart(permutationIndexAtPosition[numVSParts+numGSParts+k]));
 			fragmentShaderCode.append("\n");
 			// collect all conditions
-			std::vector<MacroCondition> partConditions = fragmentShaderParts[k]->getMacroConditions(permutationIndexAtPosition[numVSParts+k]);
+			std::vector<MacroCondition> partConditions = fragmentShaderParts[k]->getMacroConditions(permutationIndexAtPosition[numVSParts+numGSParts+k]);
 			shaderConditions.insert( shaderConditions.end(), partConditions.begin(), partConditions.end() );
 		}
 		
-		logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
-		logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
+		//logger << "[Effect::Builder] -> VertexShaderCode:\n" << vertexShaderCode;
+		//if(geometryShaderParts.size() > 0)
+		//{
+		//	logger << "[Effect::Builder] -> GeometryShaderCode:\n" << geometryShaderCode;
+		//}
+		//logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
 		
 		if(shadingLanguage == ShadingLanguage::GLSL) {
 		
 			auto shader = std::shared_ptr<Shader>(new GlslShader());
-			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode,fragmentShaderCode, shaderMetaData, shader))
+			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
 			{
 				// attach a list of conditions
 				// to the shader, which are used for the decision making process
@@ -242,7 +302,7 @@ void _compile(
 		else if(shadingLanguage == ShadingLanguage::CG) {
 		
 			auto shader = std::shared_ptr<Shader>(new CgShader());
-			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode,fragmentShaderCode, shaderMetaData, shader))
+			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
 			{
 				// attach a list of conditions
 				// to the shader, which are used for the decision making process
@@ -254,9 +314,9 @@ void _compile(
 }
 
 bool
-Effect::Builder::compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
+Effect::Builder::compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
 {
-	bool compiled = shader->compile(vertexShaderCode,fragmentShaderCode);
+	bool compiled = shader->compile(vertexShaderCode,geometryShaderCode,fragmentShaderCode);
 	if(compiled)
 	{
 		// preset samplers and uniforms
@@ -274,6 +334,7 @@ Effect::Builder::buildAndCompile()
 		locationBindings, 
 		properties, 
 		vertexShaderParts, 
+		geometryShaderParts,
 		fragmentShaderParts, 
 		metaData, 
 		shaderPermutations
@@ -290,6 +351,7 @@ Effect::Builder::buildAndCompile()
 			passBuilder.locationBindings, 
 			passBuilder.properties, 
 			passBuilder.vertexShaderParts, 
+			passBuilder.geometryShaderParts, 
 			passBuilder.fragmentShaderParts, 
 			passBuilder.metaData, 
 			passBuilder.shaderPermutations

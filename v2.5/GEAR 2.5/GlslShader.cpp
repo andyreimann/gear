@@ -11,6 +11,7 @@ using namespace G2;
 
 GlslShader::GlslShader() 
     : mVertexShaderId(0),
+    mGeometryShaderId(0),
     mFragmentShaderId(0),
     mProgramId(0)
 {
@@ -19,9 +20,11 @@ GlslShader::GlslShader()
 GlslShader::~GlslShader() 
 {
     GLDEBUG( glDetachShader(mProgramId, mVertexShaderId) );
+    GLDEBUG( glDetachShader(mProgramId, mGeometryShaderId) );
     GLDEBUG( glDetachShader(mProgramId, mFragmentShaderId) );
-
+	
     GLDEBUG( glDeleteShader(mFragmentShaderId) );
+    GLDEBUG( glDeleteShader(mGeometryShaderId) );
     GLDEBUG( glDeleteShader(mVertexShaderId) );
 
     GLDEBUG( glDeleteProgram(mProgramId) );
@@ -59,6 +62,12 @@ GlslShader::setProperty(std::string const& property, glm::vec3 const& value)
 }
 
 void
+GlslShader::setProperty(std::string const& property, glm::vec2 const& value) 
+{
+    GLDEBUG( glUniform2fv(getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
+}
+
+void
 GlslShader::setProperty(std::string const& property, float value) 
 {
     GLDEBUG( glUniform1f(getAndCacheUniformLocation(property), value) );
@@ -71,11 +80,10 @@ GlslShader::setProperty(std::string const& property, int value)
 }
 
 bool
-GlslShader::compile(std::string const& vertexCode, std::string const& fragmentCode) 
+GlslShader::compile(std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) 
 {
     mCompiled = false;
     const char* vertexShaderCode = vertexCode.c_str();
-    const char* fragmentShaderCode = fragmentCode.c_str();
     GLDEBUG( mVertexShaderId = glCreateShader(GL_VERTEX_SHADER) );
     GLDEBUG( glShaderSource(mVertexShaderId, 1, &vertexShaderCode, NULL) );
     GLDEBUG( glCompileShader(mVertexShaderId) );
@@ -85,7 +93,21 @@ GlslShader::compile(std::string const& vertexCode, std::string const& fragmentCo
         logger << "[GlslShader] Error: Compilation of Vertex Shader failed: \n" << errorLog;
         return mCompiled;
     }
-
+	if(geometryCode != "")
+	{
+		const char* geometryShaderCode = geometryCode.c_str();
+		GLDEBUG( mGeometryShaderId = glCreateShader(GL_GEOMETRY_SHADER) );
+		GLDEBUG( glShaderSource(mGeometryShaderId, 1, &geometryShaderCode, NULL) );
+		GLDEBUG( glCompileShader(mGeometryShaderId) );
+		std::string errorLog = getShaderInfoLog(mGeometryShaderId);
+		if(errorLog.length() > 0)
+		{
+			logger << "[GlslShader] Error: Compilation of Geometry Shader failed: \n" << errorLog;
+			return mCompiled;
+		}
+	}
+	
+    const char* fragmentShaderCode = fragmentCode.c_str();
     GLDEBUG( mFragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER) );
     GLDEBUG( glShaderSource(mFragmentShaderId, 1, &fragmentShaderCode, NULL) );
     GLDEBUG( glCompileShader(mFragmentShaderId) );
@@ -98,6 +120,14 @@ GlslShader::compile(std::string const& vertexCode, std::string const& fragmentCo
 
     GLDEBUG( mProgramId = glCreateProgram() );
     GLDEBUG( glAttachShader(mProgramId, mVertexShaderId) );
+	if(geometryCode != "")
+	{
+		GLDEBUG( glAttachShader(mProgramId, mGeometryShaderId) );
+		// not needed anymore on core standard!
+		//GLDEBUG( glProgramParameteri(mProgramId, GL_GEOMETRY_VERTICES_OUT, geometryVerticesOut) );
+		//GLDEBUG( glProgramParameteri(mProgramId, GL_GEOMETRY_INPUT_TYPE, geometryInputType) );
+		//GLDEBUG( glProgramParameteri(mProgramId, GL_GEOMETRY_OUTPUT_TYPE, geometryOutputType) );
+	}
     GLDEBUG( glAttachShader(mProgramId, mFragmentShaderId) );
     GLDEBUG( glLinkProgram(mProgramId) );
     errorLog = getProgramInfoLog(mProgramId);

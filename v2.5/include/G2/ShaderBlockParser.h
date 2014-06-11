@@ -22,6 +22,7 @@ namespace G2
 		READING_LOCATIONBINDINGS_BLOCK,
 		READING_PASSES_BLOCK,
 		READING_VERTEX_SHADER,
+		READING_GEOMETRY_SHADER,
 		READING_FRAGMENT_SHADER,
 	};
 	/** This class takes care of loading the content of an Shader block
@@ -44,7 +45,13 @@ namespace G2
 			{ 
 				return mVertexShaderParts; 
 			}
-			
+			/** This function will return the parsed GeometryShaderParts. 
+			* @return The parsed GeometryShaderParts.
+			*/
+			std::vector<std::shared_ptr<AbstractShaderPart>> const& getGeometryShaderParts() const 
+			{ 
+				return mGeometryShaderParts; 
+			}
 			/** This function will return the parsed FragmentShaderParts. 
 			* @return The parsed FragmentShaderParts.
 			*/
@@ -107,6 +114,7 @@ namespace G2
 			std::shared_ptr<AbstractShaderPart>					mCurrentShaderPart;
 
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mVertexShaderParts;		// The available parts of vertex shader code
+			std::vector<std::shared_ptr<AbstractShaderPart>>	mGeometryShaderParts;	// The available parts of vertex shader code
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mFragmentShaderParts;	// The available parts of fragment shader code
 			
 

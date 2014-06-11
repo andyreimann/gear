@@ -50,6 +50,11 @@ namespace G2
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
+			virtual void setProperty(std::string const& property, glm::vec2 const& value);
+			/** This function will set the given Property on the Shader to the given value.
+			 * @param property The Property to set
+			 * @param value The value to set the Property to.
+			 */
 			virtual void setProperty(std::string const& property, float value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
@@ -63,12 +68,14 @@ namespace G2
 			static void initContext();
 
 		protected:
-			/** This function will compile a new Shader from the given vertex and fragment shader code.
+			
+			/** This function will compile a new Shader from the given shader code.
 			 * @param vertexCode The Vertex-Shader code to use
+			 * @param geometryCode The Geometry-Shader code to use or an empty string if no geometry shader should be used.
 			 * @param fragmentCode The Fragment-Shader code to use
 			 * @return True if the Shader compiled successfully, false if not.
 			 */
-			virtual bool compile(std::string const& vertexCode, std::string const& fragmentCode);
+			virtual bool compile(std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
 			/** This function will try to cache and get the location of the 
 			 * uniform variable for the given name.
 			 * @param name The name of the uniform to get the location for.
@@ -81,10 +88,12 @@ namespace G2
 			static CGcontext gCgContext;
 
 			static CGprofile	gCgVertexShaderProfile;	// Vertex Shader Profile
+			static CGprofile	gCgGeometryShaderProfile;	// Geometry Shader Profile
 			static CGprofile	gCgFragmentShaderProfile;	// Fragment Shader Profile
 
 
 			CGprogram	mVertexShaderId;	// The vertex shader id
+			CGprogram	mGeometryShaderId;	// The geometry shader id	
 			CGprogram	mFragmentShaderId;	// The fragment shader id	
 	};
 };

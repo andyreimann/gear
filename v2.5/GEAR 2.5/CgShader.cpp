@@ -11,6 +11,7 @@ using namespace G2;
 
 CgShader::CgShader() 
 	: mVertexShaderId(nullptr),
+	mGeometryShaderId(nullptr),
 	mFragmentShaderId(nullptr)
 {
 	initContext();
@@ -19,6 +20,10 @@ CgShader::CgShader()
 CgShader::~CgShader() 
 {
 	cgDestroyProgram(mVertexShaderId);
+	if(mGeometryShaderId != nullptr)
+	{
+		cgDestroyProgram(mGeometryShaderId);
+	}
 	cgDestroyProgram(mFragmentShaderId);
 }
 
@@ -28,6 +33,11 @@ CgShader::bind()
 	GLDEBUG( glUseProgram(0) );
 	cgGLEnableProfile(gCgVertexShaderProfile);
 	cgGLEnableProfile(gCgFragmentShaderProfile);
+	if(mGeometryShaderId != nullptr)
+	{
+		cgGLEnableProfile(gCgGeometryShaderProfile);
+		cgGLBindProgram(mGeometryShaderId);
+	}
 
 	cgGLBindProgram(mVertexShaderId);
 	cgGLBindProgram(mFragmentShaderId);
@@ -78,6 +88,17 @@ CgShader::setProperty(std::string const& property, glm::vec3 const& value)
 }
 
 void
+CgShader::setProperty(std::string const& property, glm::vec2 const& value) 
+{
+	auto location = getAndCacheUniformLocation(property);
+	if(location.first == nullptr) 
+	{
+		return;
+	}
+	cgSetParameter2fv(location.first, glm::value_ptr(value));
+}
+
+void
 CgShader::setProperty(std::string const& property, float value) 
 {
 	auto location = getAndCacheUniformLocation(property);
@@ -100,19 +121,29 @@ CgShader::setProperty(std::string const& property, int value)
 }
 
 bool
-CgShader::compile(std::string const& vertexCode, std::string const& fragmentCode) 
+CgShader::compile(std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) 
 {
 	mCompiled = false;
+	if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN && geometryCode != "")
+	{
+		return false; // error -> geometry shader given but not supported!
+	}
 	
 	const char* sourcePtr = vertexCode.c_str();
 	
 	mVertexShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgVertexShaderProfile, "main", 0);
 	
+	if(geometryCode != "")
+	{
+		sourcePtr = geometryCode.c_str();
+		mGeometryShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgGeometryShaderProfile, "main", 0);
+	}
 	sourcePtr = fragmentCode.c_str();
 	mFragmentShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgFragmentShaderProfile, "main", 0);
-
+	
 	cgGLLoadProgram(mVertexShaderId);
 	cgGLLoadProgram(mFragmentShaderId);
+	
 
 	return mCompiled = true;
 }
@@ -157,6 +188,7 @@ void cgErrorHandler(CGcontext context, CGerror error, void* appData)
 
 CGcontext		CgShader::gCgContext = nullptr;
 CGprofile		CgShader::gCgVertexShaderProfile;
+CGprofile		CgShader::gCgGeometryShaderProfile;
 CGprofile		CgShader::gCgFragmentShaderProfile;
 
 void
@@ -184,6 +216,13 @@ CgShader::initContext()
 			return;
 		}
 		
+		gCgGeometryShaderProfile = cgGLGetLatestProfile(CG_GL_GEOMETRY);
+		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
+		{
+			// WARNING
+			logger << "[Cg] Warning: Could not get valid Geometry-Profile." << endl;
+		}
+		
 		gCgFragmentShaderProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
 		if(gCgFragmentShaderProfile == CG_PROFILE_UNKNOWN)
 		{
@@ -192,6 +231,10 @@ CgShader::initContext()
 			return;
 		}
 		cgGLSetOptimalOptions(gCgVertexShaderProfile);	
+		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
+		{
+			cgGLSetOptimalOptions(gCgGeometryShaderProfile);	
+		}
 		cgGLSetOptimalOptions(gCgFragmentShaderProfile);
 	}
 }

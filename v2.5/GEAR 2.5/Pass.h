@@ -48,6 +48,11 @@ namespace G2
 				 */
 				void addVertexShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
 				/** This function will add a list of new shader part to the list of shader parts for 
+				 * the geometry shader.
+				 * @param parts The shader code parts to add.
+				 */
+				void addGeometryShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
+				/** This function will add a list of new shader part to the list of shader parts for 
 				 * the fragment shader.
 				 * @param parts The shader code parts to add.
 				 */
@@ -59,6 +64,7 @@ namespace G2
 				std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 				std::vector<Property>								properties;	
 				std::vector<std::shared_ptr<AbstractShaderPart>>	vertexShaderParts;		// The available parts of vertex shader code
+				std::vector<std::shared_ptr<AbstractShaderPart>>	geometryShaderParts;	// The available parts of fragment shader code
 				std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;	// The available parts of fragment shader code
 				std::vector<std::shared_ptr<Shader>>				shaderPermutations;		// The vector containing all available Shader-Permutations
 				

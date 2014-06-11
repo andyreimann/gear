@@ -288,12 +288,14 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="MD5AnimationSystem.h" />
     <ClInclude Include="MD5Importer.h" />
     <ClInclude Include="MD5Mesh.h" />
+    <ClInclude Include="MultipleRenderTarget.h" />
     <ClInclude Include="NameComponent.h" />
     <ClInclude Include="NameSystem.h" />
     <ClInclude Include="NonInstanceable.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PassBlockParser.h" />
     <ClInclude Include="PassesBlockParser.h" />
+    <ClInclude Include="PostProcessDefaultInclude.h" />
     <ClInclude Include="PropertiesBlockParser.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="Ray.h" />
@@ -378,10 +380,12 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="MD5AnimationSystem.cpp" />
     <ClCompile Include="MD5Importer.cpp" />
     <ClCompile Include="MD5Mesh.cpp" />
+    <ClCompile Include="MultipleRenderTarget.cpp" />
     <ClCompile Include="NameSystem.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="PassBlockParser.cpp" />
     <ClCompile Include="PassesBlockParser.cpp" />
+    <ClCompile Include="PostProcessDefaultInclude.cpp" />
     <ClCompile Include="PropertiesBlockParser.cpp" />
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Ray.cpp" />

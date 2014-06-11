@@ -59,6 +59,11 @@ namespace G2
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
+			virtual void setProperty(std::string const& property, glm::vec2 const& value) = 0;
+			/** This function will set the given Property on the Shader to the given value.
+			 * @param property The Property to set
+			 * @param value The value to set the Property to.
+			 */
 			virtual void setProperty(std::string const& property, float value) = 0;
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
@@ -83,13 +88,14 @@ namespace G2
 			 * @param metaData The ShaderMetaData to use for initialization.
 			 */
 			void initWithMetaData(ShaderMetaData const& metaData);
-
-			/** This function will compile a new Shader from the given vertex and fragment shader code.
+			
+			/** This function will compile a new Shader from the given shader code.
 			 * @param vertexCode The Vertex-Shader code to use
+			 * @param geometryCode The Geometry-Shader code to use or an empty string if no geometry shader should be used.
 			 * @param fragmentCode The Fragment-Shader code to use
 			 * @return True if the Shader compiled successfully, false if not.
 			 */
-			virtual bool compile(std::string const& vertexCode, std::string const& fragmentCode) = 0;
+			virtual bool compile(std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) = 0;
 
 			bool						mCompiled;		// True if the Shader is compiled, false if not.
 			std::vector<MacroCondition>	mConditions;	// The conditions to pass to use this Shader 

@@ -264,6 +264,12 @@
     <ClInclude Include="LightEffectState.h">
       <Filter>ECS\Light</Filter>
     </ClInclude>
+    <ClInclude Include="MultipleRenderTarget.h">
+      <Filter>RTT</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessDefaultInclude.h">
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -506,6 +512,12 @@
     </ClCompile>
     <ClCompile Include="ShadowDescriptor.cpp">
       <Filter>ECS\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="MultipleRenderTarget.cpp">
+      <Filter>RTT</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessDefaultInclude.cpp">
+      <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

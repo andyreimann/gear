@@ -144,6 +144,17 @@ TestScene::TestScene(G2::SDLWindow& window)
 	
 	}
 	//createWaterSurface();
+	
+	// setup the post processing pipeline
+	std::shared_ptr<G2::Effect> postProcess = mEffectImporter.import(ASSET_PATH + "Shader/BlurShader.g2fx");
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem,G2::RenderComponent>()
+		->addPostProcessingEffect(postProcess);
+	postProcess = mEffectImporter.import(ASSET_PATH + "Shader/RedDistortion.g2fx");
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem,G2::RenderComponent>()
+		->addPostProcessingEffect(postProcess);
+
 }
 
 TestScene::~TestScene()
@@ -235,6 +246,7 @@ TestScene::createWalls()
 	renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,1.f));
 
 	
+	//renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/GeometryProposal.g2fx"));
 
 	/*
 	mReflecting = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");

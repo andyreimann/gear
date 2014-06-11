@@ -1,0 +1,43 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _scene ("The last rendering of the scene", sampler2D) = { DIFFUSE }
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+       #INCLUDE "G2.postprocess"
+ 
+       out Data
+       {
+          vec2 texCoord;
+          vec2 texCoordRed;
+       } dataOut; 
+
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+            dataOut.texCoordRed = inTexCoord + vec2(postProcessInfo.pixelSize.x*50.0, 0.0);
+           	gl_Position = inPosition; // write position of vertex using GEAR default filled matrices
+
+       }
+     #FRAGMENTPROGRAM
+
+        in Data
+        {
+          vec2 texCoord;
+          vec2 texCoordRed;
+        } dataIn; // this data comes from the vertex program
+
+        out vec4 outColor; // here goes the final color
+
+        void main() 
+        {
+          outColor = texture(_scene, dataIn.texCoord);
+          outColor.r = texture(_scene, dataIn.texCoordRed).r;
+        }
+   }
+ }

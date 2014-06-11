@@ -53,6 +53,11 @@ namespace G2
 					 */
 					void addVertexShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
 					/** This function will add a list of new shader part to the list of shader parts for 
+					 * the geometry shader.
+					 * @param parts The shader code parts to add.
+					 */
+					void addGeometryShaderParts(std::vector<std::shared_ptr<AbstractShaderPart>> const& parts);
+					/** This function will add a list of new shader part to the list of shader parts for 
 					 * the fragment shader.
 					 * @param parts The shader code parts to add.
 					 */
@@ -63,13 +68,14 @@ namespace G2
 					 */
 					Effect::Builder& buildAndCompile();
 
-					static bool compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
+					static bool compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
 			
 					ShadingLanguage::Name								shadingLanguage;	// The shading language to use.
 					std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 					std::vector<Property>								properties;			// The available Properties used by all Shader
 			
 					std::vector<std::shared_ptr<AbstractShaderPart>>	vertexShaderParts;	// The available parts of vertex shader code
+					std::vector<std::shared_ptr<AbstractShaderPart>>	geometryShaderParts;// The available parts of geometry shader code
 					std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;// The available parts of fragment shader code
 					std::vector<std::shared_ptr<Shader>>				shaderPermutations;	// The vector containing all available Shader-Permutations
 
@@ -89,8 +95,9 @@ namespace G2
 			 * @param vao The VertexArrayObject, which should be used for decision making.
 			 * @return The Shader which fits best or a shared pointer pointing to nullptr,
 			 * if no Shader was found.
+			 * @note By passing in no material and/or no vao, the first shader will be returned as default.
 			 */
-			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao) const;
+			std::shared_ptr<Shader> getShader(Material const* material = nullptr, VertexArrayObject const* vao = nullptr) const;
 			/** This function will return the Passes. 
 			* @return The current Passes.
 			*/

@@ -5,6 +5,7 @@
 #include "MatricesDefaultInclude.h"
 #include "MaterialDefaultInclude.h"
 #include "LightDefaultInclude.h"
+#include "PostProcessDefaultInclude.h"
 #include "IfElseMacro.h"
 #include "Logger.h"
 #include "FileResource.h"
@@ -104,6 +105,10 @@ ShaderBlockParser::parse(ShaderMetaData* shaderMetaData)
 					{
 						mCurrentState = READING_FRAGMENT_SHADER;
 					}
+					else if(macro == "#GEOMETRYPROGRAM") 
+					{
+						mCurrentState = READING_GEOMETRY_SHADER;
+					}
 					if( mCurrentState != READING_PASSES_BLOCK && 
 						mCurrentState != READING_SETTINGS_BLOCK && 
 						mCurrentState != READING_PROPERTIES_BLOCK && 
@@ -114,6 +119,7 @@ ShaderBlockParser::parse(ShaderMetaData* shaderMetaData)
 					break;
 				}
 				case READING_VERTEX_SHADER:
+				case READING_GEOMETRY_SHADER:
 				case READING_FRAGMENT_SHADER:
 				{
 					parseLine(line, lineStr);
@@ -164,19 +170,24 @@ ShaderBlockParser::parseLine(std::string const& line, std::stringstream& lineStr
 		{
 			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart()));
 		}
-		else if(macro == "#FRAGMENTPROGRAM") 
-		{
-			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
-			mCurrentState = READING_FRAGMENT_SHADER;
-		}
 		else if(macro == "#VERTEXPROGRAM") 
 		{
 			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
 			mCurrentState = READING_VERTEX_SHADER;
 		}
+		else if(macro == "#GEOMETRYPROGRAM") 
+		{
+			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
+			mCurrentState = READING_GEOMETRY_SHADER;
+		}
+		else if(macro == "#FRAGMENTPROGRAM") 
+		{
+			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
+			mCurrentState = READING_FRAGMENT_SHADER;
+		}
 		else
 		{
-			// probabli a shader part
+			// probably a shader part
 			mCurrentShaderPart->append(line);
 		}
 	}
@@ -194,6 +205,10 @@ ShaderBlockParser::flushShaderPart(std::shared_ptr<AbstractShaderPart> newPart)
 		if(mCurrentState == READING_VERTEX_SHADER) 
 		{
 			mVertexShaderParts.push_back(mCurrentShaderPart);
+		}
+		else if(mCurrentState == READING_GEOMETRY_SHADER) 
+		{
+			mGeometryShaderParts.push_back(mCurrentShaderPart);
 		}
 		else if(mCurrentState == READING_FRAGMENT_SHADER) 
 		{
@@ -255,6 +270,8 @@ ShaderBlockParser::initDefaultIncludes()
 		std::make_pair("G2.material.GLSL", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude(ShadingLanguage::GLSL))));
 	defaultIncludes.insert(
 		std::make_pair("G2.light.GLSL", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude(ShadingLanguage::GLSL))));
+	defaultIncludes.insert(
+		std::make_pair("G2.postprocess.GLSL", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude(ShadingLanguage::GLSL))));
 
 	defaultIncludes.insert(
 		std::make_pair("G2.matrices.CG", std::shared_ptr<AbstractShaderPart>(new MatricesDefaultInclude(ShadingLanguage::CG))));
@@ -262,6 +279,8 @@ ShaderBlockParser::initDefaultIncludes()
 		std::make_pair("G2.material.CG", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude(ShadingLanguage::CG))));
 	defaultIncludes.insert(
 		std::make_pair("G2.light.CG", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude(ShadingLanguage::CG))));
+	defaultIncludes.insert(
+		std::make_pair("G2.postprocess.CG", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude(ShadingLanguage::CG))));
 	return defaultIncludes;
 }
 

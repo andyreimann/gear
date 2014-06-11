@@ -9,10 +9,12 @@
 #include "TransformComponent.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Texture2D.h"
 #include "Effect.h"
 #include "Logger.h"
 #include "Frustum.h"
 #include "LightEffectState.h"
+#include "MultipleRenderTarget.h"
 
 #include <G2Core/ECSManager.h>
 
@@ -30,6 +32,26 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,0,1),glm::vec3(0,-1,0)),
 	glm::lookAt(glm::vec3(),glm::vec3() +glm::vec3(0,0,-1),glm::vec3(0,-1,0)),
 };
+
+RenderSystem::RenderSystem() :
+	mPostProcessingRenderTargets(2)
+{
+	mRenderType = RenderType::FORWARD_RENDERING;
+	_onViewportResize(1600,768); // TODO Hook event!
+	mFullScreenQuad.resize(4);
+	glm::vec3 geometry[4];
+	geometry[0] = glm::vec3(-1.f,-1.f,0.f);
+	geometry[1] = glm::vec3( 1.f,-1.f,0.f);
+	geometry[2] = glm::vec3( 1.f, 1.f,0.f);
+	geometry[3] = glm::vec3(-1.f, 1.f,0.f);
+	mFullScreenQuad.writeData(G2::Semantics::POSITION, geometry);
+	glm::vec2 texCoord[4];
+	texCoord[0] = glm::vec2(0.f,0.f);
+	texCoord[1] = glm::vec2(1.f,0.f);
+	texCoord[2] = glm::vec2(1.f,1.f);
+	texCoord[3] = glm::vec2(0.f,1.f);
+	mFullScreenQuad.writeData(G2::Semantics::TEXCOORD_0, texCoord);
+}
 
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
@@ -81,23 +103,93 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			lightSystem
 		);
 
-		// do normal rendering
-		//logger << "[RenderSystem] Normal rendering in frame " << frameInfo.frame << endl;
-		for (int i = 0; i < components.size() ; ++i) 
+		if(mRenderType == RenderType::FORWARD_RENDERING)
 		{
-			RenderComponent& comp = components[i];
-			if(comp.vaos.size() == 0)
+			// do normal rendering
+			if(mPostProcessingEffects.size() > 0)
 			{
-				// no VAO attached
-				continue;
+				// capture frame in first render target
+				mCurrentPostProcessingRenderTargetIndex = 0;
+				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
 			}
-			// calc which shader to use for rendering
-			std::shared_ptr<Shader> shader = getRenderShader(&comp);
-			// bind shader before call render()
-			shader->bind();
-			// regular rendering
-			GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
-			render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
+
+			for (int i = 0; i < components.size() ; ++i) 
+			{
+				RenderComponent& comp = components[i];
+				if(comp.vaos.size() == 0)
+				{
+					// no VAO attached
+					continue;
+				}
+				// calc which shader to use for rendering
+				std::shared_ptr<Shader> shader = getRenderShader(&comp);
+				// bind shader before call render()
+				shader->bind();
+				// regular rendering
+				GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
+				render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
+			}
+			if(mPostProcessingEffects.size() > 0)
+			{
+				// capture frame in first render target
+				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+			}
+			for(int i = 0; i < mPostProcessingEffects.size(); ++i)
+			{
+				mPostProcessingEffects[i]->getShader()->bind();
+
+				uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
+
+				mCurrentPostProcessingRenderTargetIndex = 1 - mCurrentPostProcessingRenderTargetIndex;
+				if(i < mPostProcessingEffects.size() - 1)
+				{
+					// bind next ping pong render target for capturing
+					mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
+				}
+				// bind last scene rendering texture
+				mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
+				// draw post processing
+				mFullScreenQuad.draw(GL_QUADS);
+				// unbind render target
+				mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+			}
+		}
+		else if(mRenderType == RenderType::DEFERRED_SHADING)
+		{
+			// render to G-Buffer
+			mDeferredShadingPass = DeferredShadingPass::ATTRIBUTES_PASS;
+			mDeferredShadingTarget->bind();
+			//mGBufferEffect->bind();
+			for (int i = 0; i < components.size() ; ++i) 
+			{
+				RenderComponent& comp = components[i];
+				if(comp.vaos.size() == 0)
+				{
+					// no VAO attached
+					continue;
+				}
+				// calc which shader to use for rendering
+				std::shared_ptr<Shader> shader = getRenderShader(&comp);
+				// bind shader before call render()
+				shader->bind();
+				// regular rendering
+				GLDEBUG( glViewport(0,0,camera->getViewportWidth(),camera->getViewportHeight()));
+				render(camera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem, &camera->getFrustum());
+			}
+			mDeferredShadingTarget->unbind();
+
+			mDeferredShadingPass = DeferredShadingPass::SHADING_PASS;
+			// TODO render to full screen quad -> possible user defined shading shader
+			// Need to find solution of how to get a Shader from an Effect without a material
+			
+			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_0)->bind(TEX_SLOT1);	// diffuse
+			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_1)->bind(TEX_SLOT1+1);	// normals
+			mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_2)->bind(TEX_SLOT1+2);	// positions
+			
+			// combine everything back using one surface shader
+			// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
+			//mShadingEffect->bind();
+			mFullScreenQuad.draw(GL_QUADS);
 		}
 	}
 }
@@ -389,13 +481,13 @@ RenderSystem::getRenderShader(RenderComponent* component)
 	}
 	else if(component->mEffect.get() != nullptr && component->mEffect->hasCompiledShaders()) 
 	{
-		shader = component->getEffect()->getShader(component->material,component->vaos[0]);
+		shader = component->getEffect()->getShader(&component->material,&component->vaos[0]);
 		// update shader cache
 		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
 	}
 	else
 	{
-		shader = defaultEffect->getShader(component->material,component->vaos[0]);
+		shader = defaultEffect->getShader(&component->material,&component->vaos[0]);
 		// update shader cache
 		component->_getShaderCache().setShader(shader, component->material.getVersion(), component->vaos[0].getVersion());
 	}
@@ -454,4 +546,55 @@ RenderSystem::initializeAABB(RenderComponent* component, TransformSystem* transf
 		}
 
 	}
+}
+
+void
+RenderSystem::_onViewportResize(int w, int h) 
+{
+	if(mRenderType == RenderType::DEFERRED_SHADING)
+	{
+		// setup render target for deferred rendering 
+		mDeferredShadingTarget = std::shared_ptr<MultipleRenderTarget>(new MultipleRenderTarget(w,h));
+		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_0);	// diffuse texture
+		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_1);	// normals texture
+		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_2);	// positions texture
+	}
+
+	// Setup render targets for post processing
+	for(int i = 0; i < 2; ++i)
+	{
+		mPostProcessingRenderTargets[i] = std::shared_ptr<RenderTarget>(
+			new RenderTarget(
+				Sampler::DIFFUSE,
+				std::shared_ptr<Texture>(new Texture2D(
+					NEAREST, 
+					NEAREST, 
+					w, 
+					h, 
+					RGBA, 
+					false,
+					nullptr
+				)), 
+				RenderTargetType::RT_2D
+			)
+		);
+	}
+}
+
+void
+RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect) 
+{
+	mPostProcessingEffects.push_back(effect);
+	auto shader = mPostProcessingEffects.back()->getShader();
+	shader->bind();
+	glm::vec2 windowSize(
+		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getWidth(),
+		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getHeight()
+	);
+	glm::vec2 pixelSize(
+		1.f / windowSize.x,
+		1.f / windowSize.y
+	);
+	shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
+	shader->setProperty(std::string("postProcessInfo.windowSize"), windowSize);
 }
