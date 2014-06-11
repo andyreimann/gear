@@ -37,6 +37,15 @@ RenderComponent::operator=(RenderComponent && rhs)
 	return static_cast<RenderComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
 
+G2::RenderComponent::~RenderComponent() 
+{
+	if(material.isTransparent() && getEntityId() != Entity::UNINITIALIZED_ENTITY_ID)
+	{
+		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
+		ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->updateTransparencyMode(getEntityId(), false);
+	}
+}
+
 void
 RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value) 
 {

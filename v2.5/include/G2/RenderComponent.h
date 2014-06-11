@@ -63,6 +63,8 @@ namespace G2
 			std::vector<AABB>				objectSpaceAABBs;// The object space axis aligned bounding box
 			std::vector<AABB>				worldSpaceAABBs;// The world space axis aligned bounding box (object space aabb transformed)
 			bool							aabbAnimationRecalc; // Flag indicating if the aabb should be recalculated with the animation
+
+			~RenderComponent();
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }
 			

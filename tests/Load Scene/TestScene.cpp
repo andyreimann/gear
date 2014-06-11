@@ -393,6 +393,13 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 	{ 
 		mExitRendering = true; 
 	}
+	if(keyCode == G2::KC_I)
+	{ 
+		mWalls.pop_back();
+	}
+
+	
+
 	else if(keyCode == G2::KC_UP)
 	{ 
 		auto* trans = mLight->getComponent<G2::TransformComponent>();

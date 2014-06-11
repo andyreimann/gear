@@ -15,6 +15,25 @@ namespace G2
 	{
 			template<class AnySystem,class AnyComponent> friend class BaseSystem;
 		public:
+			BaseComponent() 
+				: mEntityId(0)
+			{
+			}
+
+			BaseComponent(BaseComponent && rhs) 
+			{
+				// eliminates redundant code
+				*this = std::move(rhs); // rvalue property is kept with std::move!
+			}
+
+			BaseComponent& operator=(BaseComponent && rhs) 
+			{
+				mEntityId = rhs.mEntityId;
+	
+				rhs.mEntityId = 0;
+	
+				return *this;
+			}
 			/** This function will return the entity id the component is attached to. 
 			* @return The entity id.
 			*/
