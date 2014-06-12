@@ -65,10 +65,13 @@ G2_loop(AbstractWindow& window)
 	mainThreadRunning = true;
 
 	std::thread sideThread(G2_loopSideThread);
-
+	
+	TimeTracker	frameTimer;
 	FrameInfo frameInfo;
 	do {
-		window.renderSingleFrame(frameInfo);
+		frameTimer.start(true);
+		
+		window.processEvents(frameInfo.frame);
 		
 		GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
@@ -81,11 +84,17 @@ G2_loop(AbstractWindow& window)
 		
 		EventDistributer::onFrameRendered(frameInfo);
 
-		window.swapBuffer(frameInfo);
+		window.swapBuffer();
+
+		++frameInfo.frame;
+		frameInfo.timeSinceLastFrame = frameTimer.getSeconds();
+		frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
+
 		if(frameInfo.frame%100 == 0)
 		{
 			G2::logger << "fps=" << (1.f / frameInfo.timeSinceLastFrame) << G2::endl;
 		}
+
 	} while(!frameInfo.stopRenderingAfterThisFrame);
 
 	mainThreadRunning = false;

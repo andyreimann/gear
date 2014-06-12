@@ -40,8 +40,10 @@ RenderSystem::RenderSystem() :
 	mPostProcessingRenderTargets(2)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
-	_onViewportResize(1600,768);
+
 	EventDistributer::onViewportResize.hook(this, &RenderSystem::_onViewportResize);
+
+	// setup full screen quad in NDC
 	mFullScreenQuad.resize(4);
 	glm::vec3 geometry[4];
 	geometry[0] = glm::vec3(-1.f,-1.f,0.f);
@@ -658,14 +660,7 @@ RenderSystem::_onViewportResize(int w, int h)
 			)
 		);
 	}
-}
-
-void
-RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect) 
-{
-	mPostProcessingEffects.push_back(effect);
-	auto shader = mPostProcessingEffects.back()->getShader();
-	shader->bind();
+	
 	glm::vec2 windowSize(
 		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getWidth(),
 		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getHeight()
@@ -674,8 +669,19 @@ RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect)
 		1.f / windowSize.x,
 		1.f / windowSize.y
 	);
-	shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
-	shader->setProperty(std::string("postProcessInfo.windowSize"), windowSize);
+	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
+	{
+		auto shader = mPostProcessingEffects[i]->getShader();
+		shader->bind();
+		shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
+		shader->setProperty(std::string("postProcessInfo.windowSize"), windowSize);
+	}
+}
+
+void
+RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect) 
+{
+	mPostProcessingEffects.push_back(effect);
 }
 
 bool

@@ -15,7 +15,6 @@ namespace G2
 	 */
 	class EventDistributer 
 	{
-		friend class Editor;
 		friend class RenderController;
 
 		public:

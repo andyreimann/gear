@@ -98,14 +98,12 @@ SDLWindow::~SDLWindow()
 }
 
 void
-SDLWindow::renderSingleFrame(FrameInfo& frameInfo) 
+SDLWindow::processEvents(int frame) 
 {
-	if(frameInfo.frame == 0)
+	if(frame == 0)
 	{
 		EventDistributer::onViewportResize(getWidth(),getHeight());
 	}
-	++frameInfo.frame;
-	mFrameTimer.start(true);
 	SDL_Event e;
 	while ( SDL_PollEvent(&e) ) 
 	{
@@ -218,12 +216,9 @@ SDLWindow::renderSingleFrame(FrameInfo& frameInfo)
 }
 
 void
-SDLWindow::swapBuffer(FrameInfo& frameInfo) 
+SDLWindow::swapBuffer() 
 {
 	SDL_GL_SwapWindow(mSDLWindow);
-
-	frameInfo.timeSinceLastFrame = mFrameTimer.getSeconds();
-	frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
 }
 
 void

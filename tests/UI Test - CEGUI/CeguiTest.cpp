@@ -28,7 +28,8 @@ CeguiTest::CeguiTest(G2::SDLWindow& window)
 	mEditorCamera
 		.pan(0.f,10.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f);
+		.moveView(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
 	G2::logger << "IMPORTING DEFAULT SHADER" << G2::endl;

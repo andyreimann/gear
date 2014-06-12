@@ -13,14 +13,17 @@ static std::string ASSET_PATH = "../../Assets/";
 TestScene::TestScene(G2::SDLWindow& window)
 	: mExitRendering(false),
 	mWindow(window),
-	mEditorCamera(&window)
+	mEditorCamera(&window),
+	mEditor(&window, ASSET_PATH + "G2Editor/"),
+	mEditorOn(false)
 {
 	srand(2006);
 
 	mEditorCamera
 		.pan(0.f,10.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f);
+		.moveView(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
@@ -460,6 +463,20 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 	else if(keyCode == G2::KC_F)
 	{ 
 		generateGeometryForFrusta();
+	}
+	else if(keyCode == G2::KC_SPACE)
+	{ 
+		mEditorOn = !mEditorOn;
+		if(mEditorOn)
+		{
+			mEditorCamera.pause();
+			mEditor.start();
+		}
+		else
+		{
+			mEditorCamera.unpause();
+			mEditor.stop();
+		}
 	}
 }
 

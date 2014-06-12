@@ -47,6 +47,9 @@ namespace G2Cameras
 			CAMERADLL_API EditorCamera& pan(float strafe, float up);
 			CAMERADLL_API EditorCamera& moveView(float units);
 
+			
+			CAMERADLL_API EditorCamera& pause();
+			CAMERADLL_API EditorCamera& unpause();
 
 
 		private:
@@ -58,7 +61,8 @@ namespace G2Cameras
 			CAMERADLL_API void onKeyUp(G2::KeyCode keyCode);
 			CAMERADLL_API void onKeyDown(G2::KeyCode keyCode);
 
-			G2::AbstractWindow*			mWindow;
+			bool					mPaused;
+			G2::AbstractWindow*		mWindow;
 			glm::vec4				mView;
 			glm::vec4				mUp;
 			glm::vec4				mStrafe;

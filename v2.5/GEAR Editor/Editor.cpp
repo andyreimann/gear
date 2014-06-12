@@ -1,0 +1,50 @@
+#include "Editor.h"
+#include "EditorComponent.h"
+
+#include <G2/AbstractWindow.h>
+#include <G2/RenderComponent.h>
+#include <G2/CameraComponent.h>
+#include <G2Core/EventDistributer.h>
+
+using namespace G2::Editor;
+
+RootEditor::RootEditor(G2::AbstractWindow* window, std::string const& editorAssetsFolder)
+	: mWindow(window),
+	mEditorAssetsFolder(editorAssetsFolder),
+	mEditorCamera(window),
+	mRenderSystem(G2::ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()),
+	mCameraSystem(G2::ECSManager::getShared().getSystem<G2::CameraSystem,G2::CameraComponent>())
+{
+	G2::EventDistributer::onViewportResize.hook(this, &RootEditor::_onViewportResize);
+	mEditorCamera.pause();
+}
+
+RootEditor::~RootEditor() 
+{
+	G2::EventDistributer::onViewportResize.unHook(this, &RootEditor::_onViewportResize);
+}
+
+void
+RootEditor::start() 
+{
+	// safe state
+	mPreviousMainCameraId = mCameraSystem->getRenderCamera()->getEntityId();
+	// enable rendering from editor view
+	mEditorCamera.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+	mEditorCamera.unpause();
+	ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->_setRootEditor(this);
+}
+
+void
+RootEditor::stop() 
+{
+	// restore previous state
+	mCameraSystem->get(mPreviousMainCameraId)->setAsRenderCamera();
+	mEditorCamera.pause();
+}
+
+void
+RootEditor::_onViewportResize(int width, int height) 
+{
+	mEditorCamera.setViewport(width, height);
+}

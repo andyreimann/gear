@@ -19,10 +19,10 @@ EditorCamera::EditorCamera(G2::AbstractWindow* window)
 	mSpeedBoost(10.f),
 	mViewPlaneTranslationSpeed(0.05f),
 	mRotationSpeed(0.05f),
-	mWindow(window)
+	mWindow(window),
+	mPaused(false)
 {
 	auto* cameraComponent = addComponent<G2::CameraComponent>("Editor Camera");
-	cameraComponent->setAsRenderCamera();
 	cameraComponent->setMoveSpeed(1.0f);
 	cameraComponent->setMoveSpeed(0.02f);
 
@@ -65,6 +65,7 @@ EditorCamera::operator=(EditorCamera && rhs)
 	mMouseCoords = rhs.mMouseCoords;
 	mTranslationMode = rhs.mTranslationMode;
 	mRotationMode = rhs.mRotationMode;
+	mPaused = rhs.mPaused;
 
 	return static_cast<EditorCamera&>(G2::Entity::operator=(std::move(rhs)));
 }
@@ -117,6 +118,10 @@ EditorCamera::moveView(float units)
 void
 EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords) 
 {
+	if(mPaused)
+	{
+		return;
+	}
 	int dx = mouseCoords.x - mMouseCoords.x;
 	int dy = mouseCoords.y - mMouseCoords.y;
 		
@@ -141,6 +146,10 @@ EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 void
 EditorCamera::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
+	if(mPaused)
+	{
+		return;
+	}
 	if(button == G2::MOUSE_LEFT)
 	{
 		mWindow->setHideMouseMode(true);
@@ -160,6 +169,10 @@ EditorCamera::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const&
 void
 EditorCamera::onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
+	if(mPaused)
+	{
+		return;
+	}
 	if(button == G2::MOUSE_LEFT)
 	{
 		mWindow->setHideMouseMode(false);
@@ -179,6 +192,10 @@ EditorCamera::onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& m
 void
 EditorCamera::onMouseWheel(int y) 
 {
+	if(mPaused)
+	{
+		return;
+	}
 	if(mTranslationMode != VIEW_PLANE)
 	{
 		moveView(getComponent<G2::CameraComponent>()->getMoveSpeed() * y * mSpeedBoost);
@@ -214,4 +231,18 @@ EditorCamera::setViewport(int width, int height)
 		->setProjectionMatrix(
 			width, height, 0.01f, 50.f, 70.f
 		);
+}
+
+EditorCamera&
+EditorCamera::pause() 
+{
+	mPaused = true;
+	return *this;
+}
+
+EditorCamera&
+EditorCamera::unpause() 
+{
+	mPaused = false;
+	return *this;
 }

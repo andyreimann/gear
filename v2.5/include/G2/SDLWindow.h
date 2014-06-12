@@ -23,12 +23,11 @@ namespace G2
 			/// @param heightThe width of the SDLWindow
 			/// @param hideMouse the Flag for hiding the mouse
 			SDLWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse);
-			/** This function triggers the rendering of one single frame.
-			 * @return False if the rendering should be stopped, true if not.
+			/** This function triggers the event processing of one single frame.
 			 */
-			virtual void renderSingleFrame(FrameInfo& frameInfo) override;
+			virtual void processEvents(int frame) override;
 
-			virtual void swapBuffer(FrameInfo& frameInfo) override;
+			virtual void swapBuffer() override;
 
 			virtual void setHideMouseMode(bool mode) override;
 			/** normal destructor

@@ -39,9 +39,9 @@ namespace G2
 			/// @return The current Title.
 			std::string const& getTitle() const { return mTitle; }
 			/// This function triggers the rendering of one single frame.
-			virtual void renderSingleFrame(FrameInfo& frameInfo) = 0;
+			virtual void processEvents(int frame) = 0;
 
-			virtual void swapBuffer(FrameInfo& frameInfo) = 0;
+			virtual void swapBuffer() = 0;
 
 			virtual void setHideMouseMode(bool mode) = 0;
 		protected:
@@ -50,9 +50,6 @@ namespace G2
 			unsigned int		mHeight;
 			std::string			mTitle;
 			bool				mHideMouse;
-
-			TimeTracker			mFrameTimer;
-			TimeTracker			mRenderTimer;
 
 		private:
 			AbstractWindow(AbstractWindow const& rhs) {}

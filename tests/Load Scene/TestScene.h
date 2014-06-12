@@ -2,8 +2,11 @@
 #include "GameObject.h"
 
 #include <G2/GEAR.h>
-#include <G2Cameras/EditorCamera.h>
 #include <G2/SDLWindow.h>
+
+#include <G2Cameras/EditorCamera.h>
+#include <G2Editor/Editor.h>
+
 #include <vector>
 
 class TestScene
@@ -74,5 +77,8 @@ class TestScene
 		std::shared_ptr<G2::FBXMesh> mSampleMesh3;
 		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
 		std::vector<std::shared_ptr<G2::FBXMesh>> mFbxMeshes;
+
+		G2::Editor::RootEditor	mEditor;
+		bool					mEditorOn;
 };
 

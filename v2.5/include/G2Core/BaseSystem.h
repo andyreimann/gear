@@ -88,6 +88,10 @@ namespace G2
 			 */
 			void remove(unsigned int entityId) 
 			{
+				if(entityId <= 0)
+				{
+					return;
+				}
 				std::lock_guard<std::mutex> lock(componentsMutex);
 				auto it = entityIdToVectorIndex.find(entityId);
 				if(it != entityIdToVectorIndex.end()) 
@@ -144,6 +148,11 @@ namespace G2
 			{
 				componentsMutex.unlock();
 			}
+			/** This function will return a const reference to all components registered
+			 * in this particular BastSystem.
+			 * @return A const reference to all components registered in this particular BastSystem.
+			 */
+			std::vector<COMPONENT> const& getComponents() const { return components; } 
 		protected:
 
 			std::mutex										componentsMutex;

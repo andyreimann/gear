@@ -22,7 +22,8 @@ PhyTestNewton::PhyTestNewton(G2::SDLWindow& window)
 	mEditorCamera
 		.pan(0.f,10.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f);
+		.moveView(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
