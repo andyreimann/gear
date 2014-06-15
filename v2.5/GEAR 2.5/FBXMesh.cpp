@@ -160,7 +160,7 @@ FBXMesh::Builder::buildResource()
 #endif
 	
 	auto* nameComponent = mesh->addComponent<NameComponent>();
-	nameComponent->name = "FBXMesh";
+	nameComponent->name = name;
 
 	return mesh;
 }

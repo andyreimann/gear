@@ -24,7 +24,10 @@ Entity::Entity(Entity && rhs)
 Entity& Entity::operator=(Entity && rhs)
 {
 	// 1. Stage: delete maybe allocated resources on target type
-	// nothing here
+	if(mId != UNINITIALIZED_ENTITY_ID)
+	{
+		ECSManager::getShared().deleteComponentsForEntity(mId);
+	}
 	// 2. Stage: transfer data from src to target
 	mId = rhs.mId;
 	// 3. Stage: modify src to a well defined state

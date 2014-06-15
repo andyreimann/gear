@@ -1,5 +1,7 @@
 #pragma once
 #include "Defines.h"
+#include "EditorUI.h"
+#include "EditorGeometryManager.h"
 
 #include <G2Core/FrameInfo.h>
 #include <G2/VertexArrayObject.h>
@@ -28,6 +30,13 @@ namespace G2
 				EDITORDLL_API void start();
 				EDITORDLL_API void stop();
 
+				G2Cameras::EditorCamera* getCamera() { return &mEditorCamera; }
+				EditorUI*	getUI() { return &mEditorUI; }
+				/// This function will return the EditorAssetsFolder. 
+				/// @return The EditorAssetsFolder.
+				std::string const& getEditorAssetsFolder() const { return mEditorAssetsFolder; }
+
+
 				EDITORDLL_API ~RootEditor();
 
 			private:
@@ -43,6 +52,9 @@ namespace G2
 				G2Cameras::EditorCamera mEditorCamera;
 				G2::RenderSystem*		mRenderSystem;
 				G2::CameraSystem*		mCameraSystem;
+
+				EditorUI				mEditorUI;
+				EditorGeometryManager	mEditorGeometryManager;
 
 				
 		};

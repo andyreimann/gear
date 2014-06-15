@@ -89,10 +89,10 @@ PhysicsSystem::tick(btScalar timeStep)
 				const btVector3& ptB = pt.getPositionWorldOnB();
 				const btVector3& normalOnB = pt.m_normalWorldOnB;
 				
-				float r = (rand() % 100) / 100.f;
+				//float r = (rand() % 100) / 100.f;
 
-				renderSystem->get(entityA)->material.setAmbient(glm::vec4(1-r,r,0.f,1.f));
-				renderSystem->get(entityB)->material.setAmbient(glm::vec4(1-r,r,0.f,1.f));
+				//renderSystem->get(entityA)->material.setAmbient(glm::vec4(1-r,r,0.f,1.f));
+				//renderSystem->get(entityB)->material.setAmbient(glm::vec4(1-r,r,0.f,1.f));
 			}
 		}
 	}

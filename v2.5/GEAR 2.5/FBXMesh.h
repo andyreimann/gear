@@ -64,6 +64,7 @@ namespace G2
 
 				std::shared_ptr<FBXMesh> buildResource();
 
+				std::string				name;
 				FbxScene*				fbxScene; // This object holds most objects imported from files.
 				FbxImporter *			fbxImporter;
 				bool					isAnimated;

@@ -41,6 +41,25 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName)
         FBXSDK_printf("Error: Unable to create FBX scene!\n");
         return std::make_pair(meshFileName, std::shared_ptr<FBXMesh::Builder>());
     }
+
+	size_t pos = meshFileName.find_last_of("/");
+	if( pos != std::string::npos)
+	{
+		builder->name = meshFileName.substr(pos+1);
+	}
+	else 
+	{
+		pos = meshFileName.find_last_of("\\");
+		if( pos != std::string::npos)
+		{
+			builder->name = meshFileName.substr(pos+1);
+		}
+		else 
+		{
+			builder->name = meshFileName;
+		}
+	}
+
 	// Create the importer.
     int fileFormat = -1;
     builder->fbxImporter = FbxImporter::Create(gSdkManager,"");

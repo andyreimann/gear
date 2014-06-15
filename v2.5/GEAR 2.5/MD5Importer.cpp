@@ -48,11 +48,6 @@ MD5Importer::produceResourceBuilder(std::string const& meshFileName,
 		logger << "[MD5Importer] Error: MD5-Mesh file '" << meshFileName << "' not found!" << endl;
 		return std::make_pair(meshFileName, std::shared_ptr<MD5Mesh::Builder>());
 	}
-	/*if(!fp2) 
-	{
-		logger << "[MD5Importer] Error: File '" << animationFileName << "' not found!" << endl;
-		return std::shared_ptr<MD5Mesh>();
-	}*/
 	if(!_importMesh(builder, fp))
 	{
 		// some error occurred
@@ -74,6 +69,24 @@ MD5Importer::produceResourceBuilder(std::string const& meshFileName,
 		}
 		_importAnimation(builder, fp2);
 		close(fp2);
+	}
+
+	size_t pos = meshFileName.find_last_of("/");
+	if( pos != std::string::npos)
+	{
+		builder->name = meshFileName.substr(pos+1);
+	}
+	else 
+	{
+		pos = meshFileName.find_last_of("\\");
+		if( pos != std::string::npos)
+		{
+			builder->name = meshFileName.substr(pos+1);
+		}
+		else 
+		{
+			builder->name = meshFileName;
+		}
 	}
 
 	return std::make_pair(meshFileName, builder);

@@ -5,9 +5,13 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="EditorSystem.h" />
     <ClInclude Include="EditorComponent.h" />
+    <ClInclude Include="EditorUI.h" />
+    <ClInclude Include="EditorGeometryManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorSystem.cpp" />
+    <ClCompile Include="EditorUI.cpp" />
+    <ClCompile Include="EditorGeometryManager.cpp" />
   </ItemGroup>
 </Project>

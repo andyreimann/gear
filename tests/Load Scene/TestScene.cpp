@@ -149,14 +149,14 @@ TestScene::TestScene(G2::SDLWindow& window)
 	//createWaterSurface();
 	
 	// setup the post processing pipeline
-	std::shared_ptr<G2::Effect> postProcess = mEffectImporter.import(ASSET_PATH + "Shader/BlurShader.g2fx");
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem,G2::RenderComponent>()
-		->addPostProcessingEffect(postProcess);
-	postProcess = mEffectImporter.import(ASSET_PATH + "Shader/RedDistortion.g2fx");
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem,G2::RenderComponent>()
-		->addPostProcessingEffect(postProcess);
+	//std::shared_ptr<G2::Effect> postProcess = mEffectImporter.import(ASSET_PATH + "Shader/BlurShader.g2fx");
+	//G2::ECSManager::getShared()
+	//	.getSystem<G2::RenderSystem,G2::RenderComponent>()
+	//	->addPostProcessingEffect(postProcess);
+	//postProcess = mEffectImporter.import(ASSET_PATH + "Shader/RedDistortion.g2fx");
+	//G2::ECSManager::getShared()
+	//	.getSystem<G2::RenderSystem,G2::RenderComponent>()
+	//	->addPostProcessingEffect(postProcess);
 
 }
 
@@ -293,7 +293,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 	
 	std::cout << "KEY: " << keyCode << std::endl;
 
-	if(keyCode == G2::KC_Y)
+	if(keyCode == G2::KC_Y && !mEditorOn)
 	{
 		
 		if(mPlanes.size() > 0)
@@ -302,7 +302,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			tc->translate(glm::vec3(0.1,0.0,0.1));
 		}
 	}
-	else if(keyCode == G2::KC_U) 
+	else if(keyCode == G2::KC_U && !mEditorOn) 
 	{ 
 		
 		auto* light = mLight->getComponent<G2::LightComponent>();
@@ -352,21 +352,21 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		//lightTransformation->setPosition(glm::vec3(0.f,1.5f,0.f));
 		//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
 	}
-	else if(keyCode == G2::KC_N)
+	else if(keyCode == G2::KC_N && !mEditorOn)
 	{ 
 		if(mFbxMeshes.size() > 0)
 		{
 			mFbxMeshes.pop_back();
 		}
 	}
-	else if(keyCode == G2::KC_J)
+	else if(keyCode == G2::KC_J && !mEditorOn)
 	{ 
 		if(mMd5Meshes.size() > 0)
 		{
 			mMd5Meshes.pop_back();
 		}
 	}
-	else if(keyCode == G2::KC_Q)
+	else if(keyCode == G2::KC_Q && !mEditorOn)
 	{ 
 		for(int i = 0; i < 1; ++i)
 		{
@@ -396,34 +396,34 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 	{ 
 		mExitRendering = true; 
 	}
-	if(keyCode == G2::KC_I)
+	if(keyCode == G2::KC_I && !mEditorOn)
 	{ 
 		mWalls.pop_back();
 	}
 
 	
 
-	else if(keyCode == G2::KC_UP)
+	else if(keyCode == G2::KC_UP && !mEditorOn)
 	{ 
 		auto* trans = mLight->getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,-0.1f));
 	}
-	else if(keyCode == G2::KC_DOWN) 
+	else if(keyCode == G2::KC_DOWN && !mEditorOn) 
 	{ 
 		auto* trans = mLight->getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,0.1f));
 	}
-	else if(keyCode == G2::KC_LEFT) 
+	else if(keyCode == G2::KC_LEFT && !mEditorOn) 
 	{ 
 		auto* trans = mLight->getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(-0.1f,0.f,0.f));
 	}
-	else if(keyCode == G2::KC_RIGHT)
+	else if(keyCode == G2::KC_RIGHT && !mEditorOn)
 	{ 
 		auto* trans = mLight->getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.1f,0.f,0.f));
 	}
-	else if(keyCode == G2::KC_M)
+	else if(keyCode == G2::KC_M && !mEditorOn)
 	{ 
 		mFbxMeshes.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/humanoid.fbx"));
 		if(mFbxMeshes.back().get()) 
@@ -435,7 +435,7 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 			animComp->tempSetPoseIndex(mFbxMeshes.size()%3);
 		}
 	}
-	else if(keyCode == G2::KC_K)
+	else if(keyCode == G2::KC_K && !mEditorOn)
 	{ 
 		std::vector<std::string> animFiles;
 		animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
@@ -460,7 +460,7 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 			}
 		}
 	}
-	else if(keyCode == G2::KC_F)
+	else if(keyCode == G2::KC_F && !mEditorOn)
 	{ 
 		generateGeometryForFrusta();
 	}
@@ -576,6 +576,10 @@ TestScene::createWaterSurface()
 void
 TestScene::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords) 
 {
+	if(mEditorOn)
+	{
+		return;
+	}
 	if(button == G2::MOUSE_LEFT)
 	{
 		auto* transformComp = mEditorCamera.getComponent<G2::TransformComponent>();

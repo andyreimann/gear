@@ -20,6 +20,9 @@ EditorCamera::EditorCamera(G2::AbstractWindow* window)
 	mViewPlaneTranslationSpeed(0.05f),
 	mRotationSpeed(0.05f),
 	mWindow(window),
+	mFovY(70.f),
+	mZNear(0.01f),
+	mZFar(50.f),
 	mPaused(false)
 {
 	auto* cameraComponent = addComponent<G2::CameraComponent>("Editor Camera");
@@ -66,6 +69,9 @@ EditorCamera::operator=(EditorCamera && rhs)
 	mTranslationMode = rhs.mTranslationMode;
 	mRotationMode = rhs.mRotationMode;
 	mPaused = rhs.mPaused;
+	mFovY = rhs.mFovY;
+	mZNear = rhs.mZNear;
+	mZFar = rhs.mZFar;
 
 	return static_cast<EditorCamera&>(G2::Entity::operator=(std::move(rhs)));
 }
@@ -229,8 +235,16 @@ EditorCamera::setViewport(int width, int height)
 	}
 	getComponent<G2::CameraComponent>()
 		->setProjectionMatrix(
-			width, height, 0.01f, 50.f, 70.f
+			width, height, mZNear, mZFar, mFovY
 		);
+}
+
+void
+G2Cameras::EditorCamera::setInternals(float fovY, float zNear, float zFar) 
+{
+	mFovY = fovY;
+	mZNear = zNear;
+	mZFar = zFar;
 }
 
 EditorCamera&

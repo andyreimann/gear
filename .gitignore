@@ -100,3 +100,12 @@ v2.5/lib/x64/Release/GEARCegui.lib
 v2.5/lib/x64/Debug/CEGUICoreWindowRendererSet_d.dll
 v2.5/lib/x64/Release/CEGUICoreWindowRendererSet.dll
 tests/bin/x64/Release/CEGUICoreWindowRendererSet.dll
+tests/bin/Assets/G2Editor/cegui/fonts/DejaVuSans-10.font
+tests/bin/Assets/G2Editor/cegui/fonts/DejaVuSans-12.font
+tests/bin/x64/Debug/GEAREditor.dll
+tests/bin/x64/Release/GEAREditor.dll
+v2.5/GEAR Editor/GEAR Editor.vcxproj.user
+v2.5/lib/x64/Debug/GEAREditor.dll
+v2.5/lib/x64/Debug/GEAREditor.lib
+v2.5/lib/x64/Release/GEAREditor.dll
+v2.5/lib/x64/Release/GEAREditor.lib

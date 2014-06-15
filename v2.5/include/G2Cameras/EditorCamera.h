@@ -39,6 +39,8 @@ namespace G2Cameras
 			CAMERADLL_API ~EditorCamera();
 
 			CAMERADLL_API void setViewport(int width, int height);
+			CAMERADLL_API void setInternals(float fovY, float zNear, float zFar);
+
 			/// This function will return the camera view vector. 
 			/// @return The camera view vector.
 			CAMERADLL_API glm::vec4 const& getViewVec() const { return mView; }
@@ -69,6 +71,10 @@ namespace G2Cameras
 
 			float					mRotY;
 			float					mRotX;
+			
+			float					mFovY;
+			float					mZNear;
+			float					mZFar;
 
 			float					mSpeedBoost;
 			float					mViewPlaneTranslationSpeed;

@@ -2,8 +2,11 @@
 #include "Defines.h"
 #include <G2Core/Entity.h>
 #include <G2Core/BaseSystem.h>
+#include <G2/EffectImporter.h>
+#include <G2Core/Event.h>
 
 #include <unordered_map>
+
 
 
 namespace G2 
@@ -30,13 +33,19 @@ namespace G2
 
 				/// normal destructor
 				EDITORDLL_API ~EditorSystem();
+				
+				G2::Event<unsigned int>	onRenderComponentAdded;
+				G2::Event<unsigned int>	onRenderComponentRemoved;
 			private:
 				void _onRenderFrame(G2::FrameInfo const& frameInfo);
 				void _setRootEditor(RootEditor* editor);
+				/** This function is called by the RootEditor on destruction.
+				 * It is essential that this function is called before the engine stops it's rendering!
+				 */
+				void _releaseResources();
 
 				RootEditor*										mEditor;
-
-				std::unordered_map<unsigned int,G2::Entity>	mCameraFrustumEntities;	// The cached frustum entity ids for all cameras in the scene
+				std::unordered_map<unsigned int,bool>			mRenderComponentsProcessed; // state of the
 		};
 	};
 };

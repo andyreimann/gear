@@ -48,6 +48,7 @@ namespace G2
 					glm::quat orient;
 				};	
 				
+				std::string			 name;
 				Skeleton			 baseSkeleton; // build mesh vertex coords with this skeleton to get the default pose!
 				AnimationData		 animationData; // comes from anim file!
 				std::vector<SubMesh> subMeshes;

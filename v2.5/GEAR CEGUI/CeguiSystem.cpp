@@ -32,6 +32,7 @@ CeguiSystem::CeguiSystem()
 	EventDistributer::onMouseWheel.hook(this, &CeguiSystem::_onMouseWheel);
 	EventDistributer::onKeyDown.hook(this, &CeguiSystem::_onKeyDown);
 	EventDistributer::onKeyUp.hook(this, &CeguiSystem::_onKeyUp);
+	EventDistributer::onViewportResize.hook(this, &CeguiSystem::_onViewportResize);
 }
 
 CeguiSystem::~CeguiSystem() 
@@ -42,6 +43,7 @@ CeguiSystem::~CeguiSystem()
 	EventDistributer::onMouseWheel.unHook(this, &CeguiSystem::_onMouseWheel);
 	EventDistributer::onKeyDown.unHook(this, &CeguiSystem::_onKeyDown);
 	EventDistributer::onKeyUp.unHook(this, &CeguiSystem::_onKeyUp);
+	EventDistributer::onViewportResize.unHook(this, &CeguiSystem::_onViewportResize);
 }
 
 void
@@ -62,10 +64,10 @@ CeguiSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 		// if you fail to inject into System, you may find some things – 
 		// such as animations – not working quite as they should!
 		CEGUI::System::getSingleton().injectTimePulse((float)frameInfo.timeSinceLastFrame);
-
 		CEGUI::System::getSingleton().renderAllGUIContexts();
 		
 		GLDEBUG( glEnable(GL_DEPTH_TEST) );
+		GLDEBUG( glDisable(GL_SCISSOR_TEST) ); // CEGUI doesn't disable it again!
 	}
 }
 
@@ -144,6 +146,12 @@ CeguiSystem::_onKeyUp(G2::KeyCode keyCode)
 {
 	CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
 	context.injectKeyUp((CEGUI::Key::Scan)keyCode);
+}
+
+void
+CeguiSystem::_onViewportResize(int w, int h)
+{
+	mRenderer.setDisplaySize(CEGUI::Sizef((float)w, (float)h));
 }
 
 CEGUI::WindowManager&

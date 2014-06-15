@@ -7,9 +7,10 @@ namespace G2
 {
 	namespace Editor 
 	{
-		/// This class defines...
-		/// @created:	2014/06/12
-		/// @author Andy Reimann <a.reimann@moorlands-grove.de>
+		/** This class defines...
+		 * @created:	2014/06/12
+		 * @author Andy Reimann <a.reimann@moorlands-grove.de>
+		 */
 		class EditorComponent : public BaseComponent<EditorSystem>
 		{
 			public:

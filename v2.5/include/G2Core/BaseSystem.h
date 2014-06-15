@@ -2,6 +2,7 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "FrameInfo.h"
+#include "EventDistributer.h"
 
 #include <vector>
 #include <algorithm>

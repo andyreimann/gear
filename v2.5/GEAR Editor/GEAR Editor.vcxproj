@@ -155,11 +155,15 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorComponent.h" />
+    <ClInclude Include="EditorGeometryManager.h" />
     <ClInclude Include="EditorSystem.h" />
+    <ClInclude Include="EditorUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorGeometryManager.cpp" />
     <ClCompile Include="EditorSystem.cpp" />
+    <ClCompile Include="EditorUI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

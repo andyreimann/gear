@@ -18,12 +18,12 @@ CameraSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 		for(auto i = 0; i < components.size(); ++i) 
 		{
-			auto& comp = components[i];// check if this component has a pass attached
+			auto& comp = components[i];
 			
 			auto* cameraTransformation = transformSystem->get(comp.getEntityId());
 			if(cameraTransformation != nullptr)
 			{
-				if(cameraTransformation->updated())
+				//if(cameraTransformation->updated())
 				{
 					// TransformSystem calculated new matrices which frame due to some changes
 					comp._setInverseCameraRotation(glm::toMat4(glm::inverse(cameraTransformation->getRotation())));

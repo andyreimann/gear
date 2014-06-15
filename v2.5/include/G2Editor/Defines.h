@@ -11,6 +11,7 @@
 #pragma comment(lib, "cg.lib")
 #pragma comment(lib, "cgGL.lib")
 #pragma comment(lib, "freeglut.lib")
+#pragma comment(lib, "GEARCegui.lib")
 #ifdef _DEBUG
 	#pragma comment(lib, "glew_d.lib")
 #else

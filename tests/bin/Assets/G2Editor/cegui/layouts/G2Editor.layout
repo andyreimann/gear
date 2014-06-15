@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<GUILayout version="4">
+    <Window type="DefaultWindow" name="G2Editor">
+        <Window type="TaharezLook/FrameWindow" name="G2EditorComponents">
+            <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
+            <Property name="Size" value="{ {0.2, 0}, {1.0, 0} }" />
+            <Property name="Text" value="Components" />
+	        <Window type="TaharezLook/MultiColumnList" name="ComponentsList">
+	            <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
+	            <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }" />
+	            <Property name="Text" value="MultiColumnList" />
+	        </Window>
+        </Window>
+        <Window type="TaharezLook/FrameWindow" name="G2EditorProperties">
+            <Property name="Position" value="{ {0.8, 0}, {0.0, 0} }" />
+            <Property name="Size" value="{ {0.2, 0}, {1.0, 0} }" />
+            <Property name="Text" value="Properties" />
+	        <Window type="TaharezLook/ItemListbox" name="PropertiesMainList">
+	            <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
+	            <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }" />
+	            <Property name="Text" value="Components" />
+	        </Window>
+        </Window>
+    </Window>
+</GUILayout>

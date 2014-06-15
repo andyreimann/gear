@@ -4,7 +4,7 @@
 
 using namespace G2;
 
-			// INPUT EVENTS
+// INPUT EVENTS
 Event<G2::KeyCode>									EventDistributer::onKeyUp;
 Event<G2::KeyCode>									EventDistributer::onKeyDown;
 Event<MouseButton,glm::detail::tvec2<int> const&>	EventDistributer::onMouseUp;
@@ -12,9 +12,7 @@ Event<MouseButton,glm::detail::tvec2<int> const&>	EventDistributer::onMouseDown;
 Event<glm::detail::tvec2<int> const&>				EventDistributer::onMouseMove;
 Event<int>											EventDistributer::onMouseWheel;
 			
-			// RENDER CONTEXT EVENTS
+// RENDER CONTEXT EVENTS
 Event<int,int>										EventDistributer::onViewportResize;
 Event<FrameInfo const&>								EventDistributer::onRenderFrame;
 Event<FrameInfo const&>								EventDistributer::onFrameRendered;
-
-Event<std::string const&>							EventDistributer::terraFormingModuleChanged;

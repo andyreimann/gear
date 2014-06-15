@@ -1,0 +1,3 @@
+<Imageset autoScaled="vertical" imagefile="G2EditorProperties.png" name="G2EditorProperties" nativeHorzRes="1280" nativeVertRes="720" version="2">
+    <Image height="600" name="Sphere" width="600" xPos="0" yPos="0" />
+</Imageset>

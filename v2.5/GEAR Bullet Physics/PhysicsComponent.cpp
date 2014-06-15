@@ -312,10 +312,10 @@ PhysicsComponent::_updateGhostObjectCollisions(btDynamicsWorld* world)
 					/// work here
 					//G2::logger << "[PhysicsComponent#" << getEntityId() << "] Got ghost collision for Entity ID pair [" << entityA << ":" << entityB << "]" << G2::endl;
 					
-					float r = (rand() % 100) / 100.f;
+					//float r = (rand() % 100) / 100.f;
 
-					renderSystem->get(entityA)->material.setAmbient(glm::vec4(0.f,r,1-r,1.f));
-					renderSystem->get(entityB)->material.setAmbient(glm::vec4(0.f,r,1-r,1.f));
+					//renderSystem->get(entityA)->material.setAmbient(glm::vec4(0.f,r,1-r,1.f));
+					//renderSystem->get(entityB)->material.setAmbient(glm::vec4(0.f,r,1-r,1.f));
 				}
 			}
 		}

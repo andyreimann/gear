@@ -4,6 +4,7 @@
 #include "RenderComponent.h"
 #include "TransformComponent.h"
 #include "MD5AnimationComponent.h"
+#include "NameComponent.h"
 
 using namespace G2;
 
@@ -44,15 +45,15 @@ std::shared_ptr<MD5Mesh>
 MD5Mesh::Builder::buildResource() 
 {
 	// create new MD5Mesh
-	std::shared_ptr<MD5Mesh> md5Mesh = std::shared_ptr<MD5Mesh>(new MD5Mesh());
+	std::shared_ptr<MD5Mesh> mesh = std::shared_ptr<MD5Mesh>(new MD5Mesh());
 
 	// create VAO from submeshes
-	md5Mesh->createVAO(subMeshes);
+	mesh->createVAO(subMeshes);
 
 	// attach an animation component and configure it
 	if(animationData.skeletonFrames.frames.size() > 0) 
 	{
-		auto* animationComponent = md5Mesh->addComponent<MD5AnimationComponent>(animationData.numJoints);
+		auto* animationComponent = mesh->addComponent<MD5AnimationComponent>(animationData.numJoints);
 		animationComponent->animationData = animationData;
 
 		// transfer vertex weights and weights to animation data
@@ -71,5 +72,8 @@ MD5Mesh::Builder::buildResource()
 		animationComponent->animationState.maxFrame = animationData.numFrames - 1;
 		animationComponent->animationState.animMode = 1;
 	}
-	return md5Mesh;
+	
+	auto* nameComponent = mesh->addComponent<NameComponent>();
+	nameComponent->name = name;
+	return mesh;
 }

@@ -47,6 +47,7 @@ namespace G2
 				
 				void _onKeyDown(G2::KeyCode keyCode);
 				void _onKeyUp(G2::KeyCode keyCode);
+				void _onViewportResize(int w, int h);
 				void _init();
 
 				CEGUI::OpenGL3Renderer& mRenderer;		// The OpenGL 3+ renderer for the CEGUI subsystem
