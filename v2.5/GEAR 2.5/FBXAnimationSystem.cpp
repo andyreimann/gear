@@ -486,10 +486,9 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 			metaData->vertexCache[lIndex].x = static_cast<float>(pVertices[lIndex][0]);
 			metaData->vertexCache[lIndex].y = static_cast<float>(pVertices[lIndex][1]);
 			metaData->vertexCache[lIndex].z = static_cast<float>(pVertices[lIndex][2]);
-			metaData->vertexCache[lIndex].w = 1.f;
 			if(component->aabbAnimationRecalc)
 			{
-				component->objectSpaceAABBs[metaData->vaoOffset].merge(glm::vec3(metaData->vertexCache[lIndex]));
+				component->objectSpaceAABBs[metaData->vaoOffset].merge(metaData->vertexCache[lIndex]);
 			}
 		}
 	}
@@ -510,7 +509,6 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 				metaData->vertexCache[lVertexCount].x = static_cast<float>(pVertices[lControlPointIndex][0]);
 				metaData->vertexCache[lVertexCount].y = static_cast<float>(pVertices[lControlPointIndex][1]);
 				metaData->vertexCache[lVertexCount].z = static_cast<float>(pVertices[lControlPointIndex][2]);
-				metaData->vertexCache[lVertexCount].w = 1.f;
 				if(component->aabbAnimationRecalc)
 				{
 					component->objectSpaceAABBs[metaData->vaoOffset].merge(glm::vec3(metaData->vertexCache[lVertexCount]));

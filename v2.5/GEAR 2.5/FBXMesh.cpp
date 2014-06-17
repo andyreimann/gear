@@ -311,10 +311,9 @@ FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int v
 			// Save the vertex position.
 			lCurrentVertex = lControlPoints[lIndex];
 
-			vertices[lIndex] = glm::vec4(static_cast<float>(lCurrentVertex[0]),
+			vertices[lIndex] = glm::vec3(static_cast<float>(lCurrentVertex[0]),
 										 static_cast<float>(lCurrentVertex[1]),
-										 static_cast<float>(lCurrentVertex[2]),
-										 1.f);
+										 static_cast<float>(lCurrentVertex[2]));
 
 			// Save the normal.
 			if (hasNormals)
@@ -376,10 +375,9 @@ FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int v
 
 				lCurrentVertex = lControlPoints[lControlPointIndex];
 
-				vertices[lVertexCount] = glm::vec4(static_cast<float>(lCurrentVertex[0]),
+				vertices[lVertexCount] = glm::vec3(static_cast<float>(lCurrentVertex[0]),
 												   static_cast<float>(lCurrentVertex[1]),
-												   static_cast<float>(lCurrentVertex[2]),
-												   1.f);
+												   static_cast<float>(lCurrentVertex[2]));
 
 				if (hasNormals)
 				{

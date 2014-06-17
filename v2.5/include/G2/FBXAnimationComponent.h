@@ -23,8 +23,8 @@ namespace G2
 		//unsigned int metaDataType; // later
 		unsigned int vaoOffset;
 		bool		 allByControlPoint; 
-
-		std::vector<glm::vec4> vertexCache;	// used while animation
+		
+		std::vector<glm::vec3> vertexCache;	// used while animation
 	};
 
 	/** This class holds all informations needed to animate a FBXMesh

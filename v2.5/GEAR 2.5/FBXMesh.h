@@ -48,7 +48,7 @@ namespace G2
 					bool					allByControlPoint; // Vertices are controlled by the control points or not
 					bool					hasNormals;		// Indicates whether the Mesh has normals or not
 					bool					hasUvs;			// Indicates whether the Mesh has texture coordinates or not
-					std::vector<glm::vec4>  vertices;		// The initial vertices
+					std::vector<glm::vec3>  vertices;		// The initial vertices
 					std::vector<glm::vec3>  normals;		// The initial normals
 					std::vector<glm::vec2>  uvs;			// The initial texture coordinates
 					std::vector<unsigned int> indices;		// The indices
