@@ -56,6 +56,7 @@ namespace G2
 				component.mEntityId = entityId;
 				components.push_back(std::move(component)); // use move semantic with fallback to copy semantic
 				entityIdToVectorIndex.insert(std::make_pair(entityId,(unsigned int)components.size()-1));
+				onComponentAdded(entityId);
 				return get(entityId);
 			}
 			/** This generic function will return a pointer to the Component
@@ -106,6 +107,7 @@ namespace G2
 					components.pop_back();
 					// drop linkage for component
 					entityIdToVectorIndex.erase(entityId);
+					onComponentRemoved(entityId);
 				}
 			}
 			/** This function allows you to reserve size for components managed 
@@ -155,6 +157,16 @@ namespace G2
 			 */
 			std::vector<COMPONENT> const& getComponents() const { return components; } 
 		protected:
+			/** This function is called from the BaseSystem whenever a new component was added to the BaseSystem.
+			 * @param entityId The ID of the Entity, that was added.
+			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
+			 */
+			virtual void onComponentAdded(unsigned int entityId) {}
+			/** This function is called from the BaseSystem whenever a component was removed from the BaseSystem.
+			 * @param entityId The ID of the Entity, that was removed.
+			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
+			 */
+			virtual void onComponentRemoved(unsigned int entityId) {}
 
 			std::mutex										componentsMutex;
 			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;

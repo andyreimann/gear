@@ -4,6 +4,7 @@
 
 #include "EffectImporter.h"
 #include "AABB.h"
+#include "RenderStatesGroup.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -57,6 +58,7 @@ namespace G2
 
 	typedef std::vector<std::shared_ptr<G2::Effect>> PostProcessingPipeline;
 	typedef std::vector<std::shared_ptr<RenderTarget>> PostProcessingPingPongRenderTargets;
+	typedef std::vector<std::shared_ptr<RenderStatesGroup>> RenderStatesGroups;
 	
 	/** This class defines the whole render pipeline of the GEAR engine.
 	 * It render all registered RenderComponents with their settings and all passes.
@@ -101,6 +103,7 @@ namespace G2
 			 * thus this function should normally not be called unless you exactly know what you do!
 			 */
 			void updateTransparencyMode(unsigned int entityId, bool transparent);
+
 
 			~RenderSystem();
 		private:
@@ -194,13 +197,32 @@ namespace G2
 			 * @note This function will cache the result for every vertex array object inside of the RenderComponent in the mVaosFrustumCulled member!
 			 */
 			bool _performFrustumCulling(RenderComponent* comp, Frustum const* frustum);
-			
+			/** This function is called automatically whenever the viewport of the render window performed a resize.
+			 */
 			void _onViewportResize(int w, int h);
 			/** This function is called from a RenderComponent if a resize for the vertex array objects occurs.
 			 * @param entityId The entity id of the RenderComponent
 			 * @param sizeDifference The difference in size of the vertex array objects.
 			 */
 			void _onVertexArrayObjectsResize(unsigned int entityId, int sizeDifference);
+			/** This function is called from the BaseSystem whenever a component was removed from the BaseSystem.
+			 * @param entityId The ID of the Entity, that was removed.
+			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
+			 */
+			virtual void onComponentAdded(unsigned int entityId) override;
+			/** This function is called from the BaseSystem whenever a component was removed from the BaseSystem.
+			 * @param entityId The ID of the Entity, that was removed.
+			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
+			 */
+			virtual void onComponentRemoved(unsigned int entityId) override;
+			/** This function will add the given RenderComponent to a RenderStatesGroup containing the given RenderStates.
+			 * @param component The RenderComponent to add to the RenderStatesGroup
+			 * @param newRenderStates The RenderStates of the RenderStatesGroup, the RenderComponent should be added to.
+			 */
+			void _updateRenderStatesGroup(RenderComponent* component, RenderStates* newRenderStates);
+			/** This function will delete all RenderStatesGroups, which do not contain any RenderComponent entity id anymore.
+			 */
+			void _deleteEmptyRenderStatesGroups();
 
 			RenderType::Name								mRenderType;
 			std::shared_ptr<G2::Effect>						defaultEffect;			// The default UberShader to use for rendering
@@ -214,10 +236,11 @@ namespace G2
 			PostProcessingPipeline							mPostProcessingEffects;			// A vector of shader to use for post processing
 			PostProcessingPingPongRenderTargets				mPostProcessingRenderTargets;	// The render target of the post processing pipeline
 			int												mCurrentPostProcessingRenderTargetIndex;
-			
 
 			std::list<unsigned int>							mRecalcAABBEntityIds;
 			std::unordered_set<unsigned int>				mTransparentEntityIds;			// Entity ids of the RenderComponent objects to treat as transparent while rendering
 			std::vector<std::pair<unsigned int,unsigned int>> mZSortedTransparentEntityIdsToVaoIndex;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
+
+			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
 	};
 };

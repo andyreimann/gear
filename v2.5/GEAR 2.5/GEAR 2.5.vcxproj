@@ -301,6 +301,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RefCounter.h" />
     <ClInclude Include="RenderComponent.h" />
+    <ClInclude Include="RenderStates.h" />
+    <ClInclude Include="RenderStatesGroup.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceBuilder.h" />
@@ -391,6 +393,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
+    <ClCompile Include="RenderStates.cpp" />
+    <ClCompile Include="RenderStatesGroup.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceBuilder.cpp" />

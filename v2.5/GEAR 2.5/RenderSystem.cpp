@@ -759,3 +759,62 @@ RenderSystem::_onVertexArrayObjectsResize(unsigned int entityId, int sizeDiffere
 		mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() + sizeDifference);
 	}
 }
+
+void
+RenderSystem::onComponentAdded(unsigned int entityId) 
+{
+	RenderComponent* component = get(entityId);
+	RenderStates defaultStates;
+
+	_updateRenderStatesGroup(component, &defaultStates);
+}
+
+void
+RenderSystem::onComponentRemoved(unsigned int entityId) 
+{
+	for(auto it = mRenderSortedComponents.begin(); it != mRenderSortedComponents.end(); ++it)
+	{
+		if((*it)->erase(entityId))
+		{
+			// cleanup since there might be a group with no entities
+			_deleteEmptyRenderStatesGroups();
+			return;
+		}
+	}
+}
+
+void
+RenderSystem::_updateRenderStatesGroup(RenderComponent* component, RenderStates* newRenderStates) 
+{
+	for(auto it = mRenderSortedComponents.begin(); it != mRenderSortedComponents.end(); ++it)
+	{
+		if((*it)->consume(component->getEntityId(), *newRenderStates))
+		{
+			// link component to group
+			component->_updateRenderStatesGroupLinkage(*it);
+			// cleanup since there might be a group with no entities
+			_deleteEmptyRenderStatesGroups();
+			return;
+		}
+	}
+	// create new group
+	mRenderSortedComponents.push_back(std::shared_ptr<RenderStatesGroup>(new RenderStatesGroup(component->getEntityId(), *newRenderStates)));
+	// link component to group
+	component->_updateRenderStatesGroupLinkage(mRenderSortedComponents.back());
+	// cleanup since there might be a group with no entities
+	_deleteEmptyRenderStatesGroups();
+}
+
+void
+RenderSystem::_deleteEmptyRenderStatesGroups() 
+{
+	for(int i = 0; i < mRenderSortedComponents.size(); ++i)
+	{
+		if(mRenderSortedComponents[i]->getEntityIds().size() == 0)
+		{
+			std::swap(mRenderSortedComponents[i], mRenderSortedComponents.back());
+			mRenderSortedComponents.pop_back();
+			--i;
+		}
+	}
+}

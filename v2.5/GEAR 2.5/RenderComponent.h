@@ -7,6 +7,7 @@
 #include "ShaderCache.h"
 #include "AABB.h"
 #include "ShadowDescriptor.h"
+#include "RenderStatesGroup.h"
 
 #include <G2Core/BaseComponent.h>
 
@@ -67,10 +68,17 @@ namespace G2
 			~RenderComponent();
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }
+			/** This function will update the linkage to a RenderStatesGroup for the RenderComponent.
+			 * It will also erase the linbkage to a previous one.
+			 * @param newGroup the new RenderStatesGroup the RenderComponent should be linked to.
+			 * @note This function is normally only called from the RenderSystem.
+			 */
+			void _updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup);
 			
-			std::vector<bool>				mVaosFrustumCulled;	// The frustum culling flag of the vertex array objects of the RenderComponent
-			std::vector<VertexArrayObject>	mVaos;			// The vertex array objects of the RenderComponent
-			std::shared_ptr<G2::Effect>		mEffect;		// The UberShader of the RenderComponent (default is an empty UberShader!)
-			ShaderCache						mShaderCache;	// The cache used for the Shader
+			std::vector<bool>				mVaosFrustumCulled;		// The frustum culling flag of the vertex array objects of the RenderComponent
+			std::vector<VertexArrayObject>	mVaos;					// The vertex array objects of the RenderComponent
+			std::shared_ptr<G2::Effect>		mEffect;				// The UberShader of the RenderComponent (default is an empty UberShader!)
+			ShaderCache						mShaderCache;			// The cache used for the Shader
+			std::shared_ptr<RenderStatesGroup> mRenderStatesGroup;	// The group of entities sharing the same RenderStates the RenderComponent belongs to (set and maintained by the RenderSystem!)
 	};
 };

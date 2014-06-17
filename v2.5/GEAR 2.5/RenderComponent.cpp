@@ -47,6 +47,16 @@ G2::RenderComponent::~RenderComponent()
 }
 
 void
+RenderComponent::_updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup) 
+{
+	if(mRenderStatesGroup.get() != nullptr)
+	{
+		// remove from group
+		mRenderStatesGroup->erase(getEntityId());
+	}
+	mRenderStatesGroup = newGroup;
+}
+void
 RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value) 
 {
 	mEffect = value; 
