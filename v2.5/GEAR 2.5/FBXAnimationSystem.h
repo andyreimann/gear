@@ -78,18 +78,27 @@ namespace G2
 										 FbxMesh* pMesh, 
 										 FbxTime& pTime, 
 										 FbxVector4* pVertexArray,
-										 FbxPose* pPose);
+										 FbxPose* pPose,
+										 FbxVector4* pNormalArray);
 
 			void _computeLinearDeformation(FbxAMatrix& pGlobalPosition, 
 										   FbxMesh* pMesh, 
 										   FbxTime& pTime, 
 										   FbxVector4* pVertexArray,
+										   FbxVector4* pNormalArray,
 										   FbxPose* pPose);
 			
 			void _computeClusterDeformation(FbxAMatrix& pGlobalPosition, 
 										   FbxMesh* pMesh,
 							   			   FbxCluster* pCluster, 
 										   FbxAMatrix& pVertexTransformMatrix,
+										   FbxTime pTime, 
+										   FbxPose* pPose);
+			
+			void _computeNormalDeformation(FbxAMatrix& pGlobalPosition, 
+										   FbxMesh* pMesh,
+							   			   FbxCluster* pCluster, 
+										   FbxAMatrix& pNormalTransformMatrix,
 										   FbxTime pTime, 
 										   FbxPose* pPose);
 
@@ -101,6 +110,7 @@ namespace G2
 			// NEW UPLOAD INTO RENDERCOMPONENT
 			void _updateVertexPosition(const FbxMesh * pMesh, 
 									   const FbxVector4 * pVertices, 
+									   const FbxVector4 * pNormals, 
 									   RenderComponent* component,
 									   FbxMetaData * metaData) const;
 

@@ -25,6 +25,7 @@ namespace G2
 		bool		 allByControlPoint; 
 		
 		std::vector<glm::vec3> vertexCache;	// used while animation
+		std::vector<glm::vec3> normalCache;	// used while animation
 	};
 
 	/** This class holds all informations needed to animate a FBXMesh

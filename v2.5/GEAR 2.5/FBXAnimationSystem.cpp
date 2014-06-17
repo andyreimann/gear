@@ -357,8 +357,9 @@ FBXAnimationSystem::_drawMesh(FbxNode* pNode,
 	const bool lHasShape = lMesh->GetShapeCount() > 0;
 	const bool lHasSkin = lMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
 	const bool lHasDeformation = lHasVertexCache || lHasShape || lHasSkin;
-
+	
 	FbxVector4* lVertexArray = NULL;
+	FbxArray<FbxVector4>* lNormalArray = NULL;
 #ifndef USE_META_DATA
 	if (!lMeshCache || lHasDeformation)
 #else
@@ -366,7 +367,40 @@ FBXAnimationSystem::_drawMesh(FbxNode* pNode,
 #endif
 	{
 		lVertexArray = new FbxVector4[lVertexCount];
+
+		
+
+		lNormalArray = new FbxArray<FbxVector4>(lVertexCount);
+
+		if(metaData->allByControlPoint)
+		{
+			const FbxGeometryElementNormal * lNormalElement = lMesh->GetElementNormal(0);
+
+			
+			FbxVector4 lCurrentNormal;
+			for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
+			{
+				int lNormalIndex = lIndex;
+				if (lNormalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				{
+					lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
+				}
+				lNormalArray->SetAt(lIndex, lNormalElement->GetDirectArray().GetAt(lNormalIndex));
+			}
+		}
+		else
+		{
+
+		}
+
+		//lMesh->GetPolygonVertexNormals(*lNormalArray);
+
 		memcpy(lVertexArray, lMesh->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+		
+		//for(int i = 0; i < lVertexCount; ++i)
+		//{
+		//	logger << normals[i][0] << "," << normals[i][1] << "," << normals[i][2] << "  |  ";
+		//}
 	}
 
 	if (lHasDeformation)
@@ -394,7 +428,7 @@ FBXAnimationSystem::_drawMesh(FbxNode* pNode,
 			if (lClusterCount)
 			{
 				// Deform the vertex array with the skin deformer.
-				_computeSkinDeformation(pGlobalPosition, lMesh, pTime, lVertexArray, pPose);
+				_computeSkinDeformation(pGlobalPosition, lMesh, pTime, lVertexArray, pPose, lNormalArray->GetArray());
 			}
 		}
 #ifndef USE_META_DATA
@@ -403,7 +437,7 @@ FBXAnimationSystem::_drawMesh(FbxNode* pNode,
 #else
 		if (metaData) 
 		{
-			_updateVertexPosition(lMesh, lVertexArray, component, metaData);
+			_updateVertexPosition(lMesh, lVertexArray, lNormalArray->GetArray(), component, metaData);
 		}
 #endif
 	}
@@ -459,11 +493,13 @@ FBXAnimationSystem::_drawMesh(FbxNode* pNode,
 	glPopMatrix();
 #endif
 	delete [] lVertexArray;
+	delete lNormalArray;
 }
 
 void
 FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh, 
 										  const FbxVector4 * pVertices, 
+										  const FbxVector4 * pNormals, 
 										  RenderComponent* component, 
 										  FbxMetaData* metaData) const 
 {
@@ -477,6 +513,7 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 	{
 		lVertexCount = pMesh->GetControlPointsCount();
 		metaData->vertexCache.resize(lVertexCount);
+		metaData->normalCache.resize(lVertexCount);
 		if(component->aabbAnimationRecalc)
 		{
 			component->objectSpaceAABBs[metaData->vaoOffset].clear();
@@ -486,6 +523,12 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 			metaData->vertexCache[lIndex].x = static_cast<float>(pVertices[lIndex][0]);
 			metaData->vertexCache[lIndex].y = static_cast<float>(pVertices[lIndex][1]);
 			metaData->vertexCache[lIndex].z = static_cast<float>(pVertices[lIndex][2]);
+
+			metaData->normalCache[lIndex].x = static_cast<float>(pNormals[lIndex][0]);
+			metaData->normalCache[lIndex].y = static_cast<float>(pNormals[lIndex][1]);
+			metaData->normalCache[lIndex].z = static_cast<float>(pNormals[lIndex][2]);
+			metaData->normalCache[lIndex] = glm::normalize(metaData->normalCache[lIndex]);
+
 			if(component->aabbAnimationRecalc)
 			{
 				component->objectSpaceAABBs[metaData->vaoOffset].merge(metaData->vertexCache[lIndex]);
@@ -509,6 +552,12 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 				metaData->vertexCache[lVertexCount].x = static_cast<float>(pVertices[lControlPointIndex][0]);
 				metaData->vertexCache[lVertexCount].y = static_cast<float>(pVertices[lControlPointIndex][1]);
 				metaData->vertexCache[lVertexCount].z = static_cast<float>(pVertices[lControlPointIndex][2]);
+
+				metaData->normalCache[lVertexCount].x = static_cast<float>(pNormals[lVertexCount][0]);
+				metaData->normalCache[lVertexCount].y = static_cast<float>(pNormals[lVertexCount][1]);
+				metaData->normalCache[lVertexCount].z = static_cast<float>(pNormals[lVertexCount][2]);
+				metaData->normalCache[lVertexCount] = glm::normalize(metaData->normalCache[lVertexCount]);
+
 				if(component->aabbAnimationRecalc)
 				{
 					component->objectSpaceAABBs[metaData->vaoOffset].merge(glm::vec3(metaData->vertexCache[lVertexCount]));
@@ -519,6 +568,7 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 		}
 	}
 	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::POSITION, &metaData->vertexCache[0]);
+	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::NORMAL, &metaData->normalCache[0]);
 }
 
 void
@@ -571,7 +621,7 @@ FBXAnimationSystem::_computeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, Fbx
 
 
 	int lVertexCount = pMesh->GetControlPointsCount();
-
+	
 	FbxVector4* lSrcVertexArray = pVertexArray;
 
 	
@@ -729,14 +779,14 @@ FBXAnimationSystem::_computeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, Fbx
 
 // Deform the vertex array according to the links contained in the mesh and the skinning type.
 void
-FBXAnimationSystem::_computeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh, FbxTime& pTime, FbxVector4* pVertexArray, FbxPose* pPose) 
+FBXAnimationSystem::_computeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh, FbxTime& pTime, FbxVector4* pVertexArray, FbxPose* pPose, FbxVector4* pNormalArray) 
 {
 	FbxSkin * lSkinDeformer = (FbxSkin *)pMesh->GetDeformer(0, FbxDeformer::eSkin);
 	FbxSkin::EType lSkinningType = lSkinDeformer->GetSkinningType();
 
 	if(lSkinningType == FbxSkin::eLinear || lSkinningType == FbxSkin::eRigid)
 	{
-		_computeLinearDeformation(pGlobalPosition, pMesh, pTime, pVertexArray, pPose);
+		_computeLinearDeformation(pGlobalPosition, pMesh, pTime, pVertexArray, pNormalArray, pPose);
 	}
 	else if(lSkinningType == FbxSkin::eDualQuaternion)
 	{
@@ -752,7 +802,8 @@ FBXAnimationSystem::_computeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh
 		FbxVector4* lVertexArrayDQ = new FbxVector4[lVertexCount];
 		memcpy(lVertexArrayDQ, pMesh->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
 
-		_computeLinearDeformation(pGlobalPosition, pMesh, pTime, lVertexArrayLinear, pPose);
+		// TODO PASSING pNormal IS OBVIOUSLY NOT RIGHT HERE!
+		_computeLinearDeformation(pGlobalPosition, pMesh, pTime, lVertexArrayLinear, pNormalArray, pPose);
 		_computeDualQuaternionDeformation(pGlobalPosition, pMesh, pTime, lVertexArrayDQ, pPose);
 
 		// To blend the skinning according to the blend weights
@@ -770,14 +821,16 @@ FBXAnimationSystem::_computeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh
 
 // Deform the vertex array in classic linear way.
 void
-FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh, FbxTime& pTime, FbxVector4* pVertexArray, FbxPose* pPose) 
+FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh, FbxTime& pTime, FbxVector4* pVertexArray, FbxVector4* pNormalArray, FbxPose* pPose) 
 {
 	// All the links must have the same link mode.
 	FbxCluster::ELinkMode lClusterMode = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetCluster(0)->GetLinkMode();
 
 	int lVertexCount = pMesh->GetControlPointsCount();
 	FbxAMatrix* lClusterDeformation = new FbxAMatrix[lVertexCount];
+	FbxAMatrix* lNormalDeformation = new FbxAMatrix[lVertexCount];
 	memset(lClusterDeformation, 0, lVertexCount * sizeof(FbxAMatrix));
+	memset(lNormalDeformation, 0, lVertexCount * sizeof(FbxAMatrix));
 
 	double* lClusterWeight = new double[lVertexCount];
 	memset(lClusterWeight, 0, lVertexCount * sizeof(double));
@@ -787,6 +840,7 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 		for (int i = 0; i < lVertexCount; ++i)
 		{
 			lClusterDeformation[i].SetIdentity();
+			lNormalDeformation[i].SetIdentity();
 		}
 	}
 
@@ -811,6 +865,8 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 
 			FbxAMatrix lVertexTransformMatrix;
 			_computeClusterDeformation(pGlobalPosition, pMesh, lCluster, lVertexTransformMatrix, pTime, pPose);
+			FbxAMatrix lNormalTransformMatrix;
+			_computeNormalDeformation(pGlobalPosition, pMesh, lCluster, lNormalTransformMatrix, pTime, pPose);
 
 			int lVertexIndexCount = lCluster->GetControlPointIndicesCount();
 			for (int k = 0; k < lVertexIndexCount; ++k) 
@@ -831,13 +887,17 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 
 				// Compute the influence of the link on the vertex.
 				FbxAMatrix lInfluence = lVertexTransformMatrix;
+				FbxAMatrix lNormalInfluence = lNormalTransformMatrix;
 				fbxMatrixScale(lInfluence, lWeight);
+				fbxMatrixScale(lNormalInfluence, lWeight);
 
 				if (lClusterMode == FbxCluster::eAdditive)
 				{    
 					// Multiply with the product of the deformations on the vertex.
 					fbxMatrixAddToDiagonal(lInfluence, 1.0 - lWeight);
+					fbxMatrixAddToDiagonal(lNormalInfluence, 1.0 - lWeight);
 					lClusterDeformation[lIndex] = lInfluence * lClusterDeformation[lIndex];
+					lNormalDeformation[lIndex] = lNormalInfluence * lNormalDeformation[lIndex];
 
 					// Set the link to 1.0 just to know this vertex is influenced by a link.
 					lClusterWeight[lIndex] = 1.0;
@@ -846,6 +906,7 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 				{
 					// Add to the sum of the deformations on the vertex.
 					fbxMatrixAdd(lClusterDeformation[lIndex], lInfluence);
+					fbxMatrixAdd(lNormalDeformation[lIndex], lNormalInfluence);
 
 					// Add to the sum of weights to either normalize or complete the vertex.
 					lClusterWeight[lIndex] += lWeight;
@@ -859,27 +920,37 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 	{
 		FbxVector4 lSrcVertex = pVertexArray[i];
 		FbxVector4& lDstVertex = pVertexArray[i];
+		pNormalArray[i].Normalize();
+		FbxVector4 lSrcNormal = pNormalArray[i];
+		FbxVector4& lDstNormal = pNormalArray[i];
 		double lWeight = lClusterWeight[i];
 
 		// Deform the vertex if there was at least a link with an influence on the vertex,
 		if (lWeight != 0.0) 
 		{
 			lDstVertex = lClusterDeformation[i].MultT(lSrcVertex);
+			// use inverse transpose for normals
+			lDstNormal = lNormalDeformation[i].MultT(lSrcNormal);
+			lDstNormal.Normalize();
 			if (lClusterMode == FbxCluster::eNormalize)
 			{
 				// In the normalized link mode, a vertex is always totally influenced by the links. 
 				lDstVertex /= lWeight;
+				lDstNormal /= lWeight;
 			}
 			else if (lClusterMode == FbxCluster::eTotalOne)
 			{
 				// In the total 1 link mode, a vertex can be partially influenced by the links. 
 				lSrcVertex *= (1.0 - lWeight);
-				lDstVertex += lSrcVertex;
+				lDstVertex += lSrcVertex; 
+				lSrcNormal *= (1.0 - lWeight);
+				lDstNormal += lSrcNormal;
 			}
 		} 
 	}
-
+	
 	delete [] lClusterDeformation;
+	delete [] lNormalDeformation;
 	delete [] lClusterWeight;
 }
 
@@ -951,6 +1022,84 @@ FBXAnimationSystem::_computeClusterDeformation(FbxAMatrix& pGlobalPosition, FbxM
 
 		// Compute the shift of the link relative to the reference.
 		pVertexTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
+	}
+}
+
+
+
+void
+FBXAnimationSystem::_computeNormalDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh, FbxCluster* pCluster, FbxAMatrix& pNormalTransformMatrix, FbxTime pTime, FbxPose* pPose) 
+{
+
+	// Note only the pCluster is changed for 60 calls!
+
+	FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
+
+	FbxAMatrix lReferenceGlobalInitPosition;
+	FbxAMatrix lReferenceGlobalCurrentPosition;
+	FbxAMatrix lAssociateGlobalInitPosition;
+	FbxAMatrix lAssociateGlobalCurrentPosition;
+	FbxAMatrix lClusterGlobalInitPosition;
+	FbxAMatrix lClusterGlobalCurrentPosition;
+
+	FbxAMatrix lReferenceGeometry;
+	FbxAMatrix lAssociateGeometry;
+	FbxAMatrix lClusterGeometry;
+
+	FbxAMatrix lClusterRelativeInitPosition;
+	FbxAMatrix lClusterRelativeCurrentPositionInverse;
+	
+	if (lClusterMode == FbxCluster::eAdditive && pCluster->GetAssociateModel())
+	{
+		pCluster->GetTransformAssociateModelMatrix(lAssociateGlobalInitPosition);
+		// Geometric transform of the model
+		lAssociateGeometry = _getGeometry(pCluster->GetAssociateModel());
+		lAssociateGlobalInitPosition *= lAssociateGeometry;
+		lAssociateGlobalCurrentPosition = _getGlobalPosition(pCluster->GetAssociateModel(), pTime, pPose);
+
+		pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+		// Multiply lReferenceGlobalInitPosition by Geometric Transformation
+		lReferenceGeometry = _getGeometry(pMesh->GetNode());
+		lReferenceGlobalInitPosition *= lReferenceGeometry;
+		lReferenceGlobalCurrentPosition = pGlobalPosition;
+
+		// Get the link initial global position and the link current global position.
+		pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+		// Multiply lClusterGlobalInitPosition by Geometric Transformation
+		lClusterGeometry = _getGeometry(pCluster->GetLink());
+		lClusterGlobalInitPosition *= lClusterGeometry;
+		lClusterGlobalCurrentPosition = _getGlobalPosition(pCluster->GetLink(), pTime, pPose);
+
+		// Compute the shift of the link relative to the reference.
+		//ModelM-1 * AssoM * AssoGX-1 * LinkGX * LinkM-1*ModelM
+		pNormalTransformMatrix = lReferenceGlobalInitPosition.Inverse() * lAssociateGlobalInitPosition * lAssociateGlobalCurrentPosition.Inverse() *
+								 lClusterGlobalCurrentPosition * lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+		
+		pNormalTransformMatrix = pNormalTransformMatrix.Inverse();
+		pNormalTransformMatrix = pNormalTransformMatrix.Transpose();
+	}
+	else
+	{
+		pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+		lReferenceGlobalCurrentPosition = pGlobalPosition;
+		// Multiply lReferenceGlobalInitPosition by Geometric Transformation
+		lReferenceGeometry = _getGeometry(pMesh->GetNode());
+		lReferenceGlobalInitPosition *= lReferenceGeometry;
+
+		// Get the link initial global position and the link current global position.
+		pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+		lClusterGlobalCurrentPosition = _getGlobalPosition(pCluster->GetLink(), pTime, pPose);
+
+		// Compute the initial position of the link relative to the reference.
+		lClusterRelativeInitPosition = lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+
+		// Compute the current position of the link relative to the reference.
+		lClusterRelativeCurrentPositionInverse = lReferenceGlobalCurrentPosition.Inverse() * lClusterGlobalCurrentPosition;
+
+		// Compute the shift of the link relative to the reference.
+		pNormalTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
+		pNormalTransformMatrix = pNormalTransformMatrix.Inverse();
+		pNormalTransformMatrix = pNormalTransformMatrix.Transpose();
 	}
 }
 
