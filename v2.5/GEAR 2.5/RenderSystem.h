@@ -244,3 +244,4 @@ namespace G2
 			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
 	};
 };
+

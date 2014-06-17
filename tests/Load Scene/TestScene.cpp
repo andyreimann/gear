@@ -235,9 +235,9 @@ TestScene::createWalls()
 		glm::vec3(0.f, -20.f, 0.f)
 	);
 	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 0.1f, 1.f));
+	transformation->setScale(glm::vec3(1.f, 1.f, 1.f));
 	transformation->setPosition(glm::vec3(0.f, -15.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
@@ -247,9 +247,9 @@ TestScene::createWalls()
 	renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
 	renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,0.3));
 	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 0.1f, 1.f));
+	transformation->setScale(glm::vec3(1.f, 1.f, 1.f));
 	transformation->setPosition(glm::vec3(0.f, -10.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
@@ -292,7 +292,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 {
 	
 	std::cout << "KEY: " << keyCode << std::endl;
-
+	
 	if(keyCode == G2::KC_Y && !mEditorOn)
 	{
 		
@@ -301,6 +301,14 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 			auto* tc = mPlanes[0].getComponent<G2::TransformComponent>();
 			tc->translate(glm::vec3(0.1,0.0,0.1));
 		}
+	}
+	if(keyCode == G2::KC_G && !mEditorOn)
+	{
+		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2::PolygonDrawMode::LINE);
+	}
+	if(keyCode == G2::KC_H && !mEditorOn)
+	{
+		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2::PolygonDrawMode::FILL);
 	}
 	else if(keyCode == G2::KC_U && !mEditorOn) 
 	{ 

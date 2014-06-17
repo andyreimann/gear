@@ -335,31 +335,38 @@ RenderSystem::_renderAllComponents(
 				unsigned int entityIdToSkip
 )
 {
-	// render all opaque objects as normal
-	for (int i = 0; i < components.size() ; ++i) 
+	// render for each RenderStatesGroup
+	for (int i = 0; i < mRenderSortedComponents.size() ; ++i) 
 	{
-		RenderComponent& comp = components[i];
-		if(comp.getEntityId() == entityIdToSkip || comp.material.isTransparent())
+		std::shared_ptr<RenderStatesGroup> componentGroup = mRenderSortedComponents[i];
+		// send states to renderer
+		componentGroup->getRenderStates().applyStates(pass != nullptr);
+		auto const& renderComponentIds = componentGroup->getEntityIds();
+		for (int k = 0; k < renderComponentIds.size() ; ++k) 
 		{
-			continue;
-		}
-		bool unculledFound = _performFrustumCulling(&comp, frustum);
-		if(unculledFound)
-		{
-			// calc which shader to use for rendering
-			std::shared_ptr<Shader> shader;
-			if(pass != nullptr)
+			RenderComponent* comp = get(renderComponentIds[k]);
+			if(comp->getEntityId() == entityIdToSkip || comp->material.isTransparent())
 			{
-				shader = _getPassRenderShader(&comp, pass);
+				continue;
 			}
-			else 
+			bool unculledFound = _performFrustumCulling(comp, frustum);
+			if(unculledFound)
 			{
-				shader = _getRenderShader(&comp);
+				// calc which shader to use for rendering
+				std::shared_ptr<Shader> shader;
+				if(pass != nullptr)
+				{
+					shader = _getPassRenderShader(comp, pass);
+				}
+				else
+				{
+					shader = _getRenderShader(comp);
+				}
+				// bind shader before call render()
+				shader->bind();
+				// regular rendering
+				_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem);
 			}
-			// bind shader before call render()
-			shader->bind();
-			// regular rendering
-			_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, &comp, shader, transformSystem, lightSystem);
 		}
 	}
 	
@@ -385,10 +392,17 @@ RenderSystem::_renderAllComponents(
 		{
 			shader = _getRenderShader(comp);
 		}
+		// send states to renderer
+		comp->mRenderStatesGroup->getRenderStates().applyStates(pass != nullptr);
 		// bind shader before call render()
 		shader->bind();
-		// regular rendering
+		// Enable blending
+
+		GLDEBUG( glDisable(GL_CULL_FACE) );
+		GLDEBUG( glDepthMask(false) );
 		_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem, (int)mZSortedTransparentEntityIdsToVaoIndex[i].second);
+		GLDEBUG( glDepthMask(true) );
+		GLDEBUG( glEnable(GL_CULL_FACE) );
 	}
 }
 
@@ -799,6 +813,10 @@ RenderSystem::_updateRenderStatesGroup(RenderComponent* component, RenderStates*
 	}
 	// create new group
 	mRenderSortedComponents.push_back(std::shared_ptr<RenderStatesGroup>(new RenderStatesGroup(component->getEntityId(), *newRenderStates)));
+
+	/*********************************************************************************************************
+	 * TODO If Entity is currently in a group were it is the only member -> just change RenderStates object! *
+	 *********************************************************************************************************/
 	// link component to group
 	component->_updateRenderStatesGroupLinkage(mRenderSortedComponents.back());
 	// cleanup since there might be a group with no entities

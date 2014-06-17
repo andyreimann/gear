@@ -29,6 +29,10 @@ namespace G2
 			bool erase(unsigned int entityId);
 
 			std::vector<unsigned int> const& getEntityIds() const { return mEntityIds; }
+			/** This function will return the RenderStates. 
+			* @return The RenderStates.
+			*/
+			G2::RenderStates const& getRenderStates() const { return mRenderStates; }
 
 		private:
 

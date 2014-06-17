@@ -56,6 +56,54 @@ namespace G2
 			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
 			 */
 			void allocateVertexArrays(unsigned int numVertexArrayObjects);
+			/** This function will return the PolygonOffsetUnits. 
+			* @return The PolygonOffsetUnits.
+			*/
+			float const& getPolygonOffsetUnits() const { return mRenderStatesGroup->getRenderStates().getPolygonOffsetUnits(); }
+			/** This function will set the PolygonOffsetUnits to the given value.
+			* @param value The PolygonOffsetUnits.
+			*/
+			void setPolygonOffsetUnits(float const& value);
+			/** This function will return the PolygonOffsetFactor. 
+			* @return The PolygonOffsetFactor.
+			*/
+			float const& getPolygonOffsetFactor() const { return mRenderStatesGroup->getRenderStates().getPolygonOffsetFactor(); }
+			/** This function will set the PolygonOffsetFactor to the given value.
+			* @param value The PolygonOffsetFactor.
+			*/
+			void setPolygonOffsetFactor(float const& value);
+			/** This function will return the PolygonDrawMode. 
+			* @return The PolygonDrawMode.
+			*/
+			PolygonDrawMode::Name const& getPolygonDrawMode() const { return mRenderStatesGroup->getRenderStates().getPolygonDrawMode(); }
+			/** This function will set the PolygonDrawMode to the given value.
+			* @param value The PolygonDrawMode.
+			*/
+			void setPolygonDrawMode(PolygonDrawMode::Name const& value);
+			/** This function will return the FaceCulling. 
+			* @return The FaceCulling.
+			*/
+			FaceCulling::Name const& getFaceCulling() const { return mRenderStatesGroup->getRenderStates().getFaceCulling(); }
+			/** This function will set the FaceCulling to the given value.
+			* @param value The FaceCulling.
+			*/
+			void setFaceCulling(FaceCulling::Name const& value);
+			/** This function will return the SourceFactor. 
+			* @return The SourceFactor.
+			*/
+			BlendFactor::Name const& getSourceBlendFactor() const { return mRenderStatesGroup->getRenderStates().getSourceFactor(); }
+			/** This function will set the SourceFactor to the given value.
+			* @param value The SourceFactor.
+			*/
+			void setSourceBlendFactor(BlendFactor::Name const& value);
+			/** This function will return the DestinationFactor. 
+			* @return The DestinationFactor.
+			*/
+			BlendFactor::Name const& getDestinationBlendFactor() const { return mRenderStatesGroup->getRenderStates().getDestinationFactor(); }
+			/** This function will set the DestinationFactor to the given value.
+			* @param value The DestinationFactor.
+			*/
+			void setDestinationBlendFactor(BlendFactor::Name const& value);
 
 			Material						material;		// The Material of the RenderComponent
 			
@@ -75,6 +123,7 @@ namespace G2
 			 */
 			void _updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup);
 			
+			RenderSystem*					mRenderSystem;
 			std::vector<bool>				mVaosFrustumCulled;		// The frustum culling flag of the vertex array objects of the RenderComponent
 			std::vector<VertexArrayObject>	mVaos;					// The vertex array objects of the RenderComponent
 			std::shared_ptr<G2::Effect>		mEffect;				// The UberShader of the RenderComponent (default is an empty UberShader!)

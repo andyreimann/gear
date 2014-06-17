@@ -5,11 +5,13 @@ using namespace G2;
 RenderComponent::RenderComponent() 
 	: billboarding(false),
 	drawMode(GL_TRIANGLES),
-	aabbAnimationRecalc(false)
+	aabbAnimationRecalc(false),
+	mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
 {
 }
 
 RenderComponent::RenderComponent(RenderComponent && rhs) 
+	: mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
 {
 	// eliminates redundant code
 	*this = std::move(rhs); // rvalue property is kept with std::move!
@@ -28,11 +30,15 @@ RenderComponent::operator=(RenderComponent && rhs)
 	aabbAnimationRecalc = rhs.aabbAnimationRecalc;
 	mEffect = std::move(rhs.mEffect);
 	mShaderCache = std::move(rhs.mShaderCache);
+	mRenderSystem = rhs.mRenderSystem;
+	mRenderStatesGroup = rhs.mRenderStatesGroup;
 	
 	rhs.mVaos.clear();
 	rhs.mVaosFrustumCulled.clear();
 	rhs.objectSpaceAABBs.clear();
 	rhs.drawMode = GL_INVALID_VALUE;
+	rhs.mRenderSystem = nullptr;
+	rhs.mRenderStatesGroup = std::shared_ptr<RenderStatesGroup>();
 	
 	return static_cast<RenderComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
@@ -73,4 +79,52 @@ RenderComponent::allocateVertexArrays(unsigned int numVertexArrayObjects)
 	renderSystem->scheduleAABBRecalculation(getEntityId());
 	renderSystem->_onVertexArrayObjectsResize(getEntityId(),sizeDifference);
 	material._connectToEntityId(getEntityId());
+}
+
+void
+RenderComponent::setPolygonOffsetUnits(float const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setPolygonOffsetUnits(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::setPolygonOffsetFactor(float const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setPolygonOffsetFactor(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::setPolygonDrawMode(PolygonDrawMode::Name const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setPolygonDrawMode(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::setFaceCulling(FaceCulling::Name const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setFaceCulling(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::setSourceBlendFactor(BlendFactor::Name const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setSourceFactor(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::setDestinationBlendFactor(BlendFactor::Name const& value) 
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setDestinationFactor(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
 }

@@ -25,9 +25,10 @@ void G2_init()
 
 	// enable transparency and so on
 	GLDEBUG( glEnable(GL_BLEND) );
-	GLDEBUG( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_MULTISAMPLE);
+	GLDEBUG( glEnable(GL_DEPTH_TEST) );
+	GLDEBUG( glEnable(GL_MULTISAMPLE) );
+	GLDEBUG( glEnable(GL_CULL_FACE) );
+	GLDEBUG( glEnable(GL_BLEND) );
 	
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 

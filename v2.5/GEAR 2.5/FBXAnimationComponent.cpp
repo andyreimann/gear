@@ -34,12 +34,12 @@ FBXAnimationComponent& FBXAnimationComponent::operator=(FBXAnimationComponent &&
 void
 FBXAnimationComponent::tempSetPoseIndex(unsigned int poseIndex) 
 {
-    const int lAnimStackCount = animationData.animStackNameArray.GetCount();
+	const int lAnimStackCount = animationData.animStackNameArray.GetCount();
 	logger << "[FBXAnimationComponent] Change pose to " << poseIndex << endl;
-    if (poseIndex >= (unsigned int)lAnimStackCount)
-    {
-        return;
-    }
+	if (poseIndex >= (unsigned int)lAnimStackCount)
+	{
+		return;
+	}
 	// select the base layer from the animation stack
 	FbxAnimStack * animationStack = fbxScene->FindMember<FbxAnimStack>(animationData.animStackNameArray[poseIndex]->Buffer());
 	if (animationStack == NULL)
