@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
 	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
 	
-	G2::SDLWindow window("Physics Test - Newton",1600,768,false);
+	G2::SDL::Window window("Physics Test - Newton",1600,768,false);
 	
 	G2_init();
 	{

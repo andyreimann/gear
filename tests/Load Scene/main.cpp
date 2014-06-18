@@ -1,6 +1,5 @@
 #include "TestScene.h"
 
-#include <G2/SDLWindow.h>
 #include <G2/GEAR.h>
 #include <G2/Logger.h>
 
@@ -14,7 +13,7 @@
 int main(int argc, char *argv[])
 {
 	
-	G2::SDLWindow window("Engine Test",1600,768,false);
+	G2::SDL::Window window("Engine Test",1600,768,false);
 	
 	G2_init();
 	{

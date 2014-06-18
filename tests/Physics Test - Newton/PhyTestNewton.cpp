@@ -11,7 +11,7 @@
 
 static std::string ASSET_PATH = "../../Assets/";
 
-PhyTestNewton::PhyTestNewton(G2::SDLWindow& window)
+PhyTestNewton::PhyTestNewton(G2::SDL::Window& window)
 	: mExitRendering(false),
 	mWindow(window),
 	mEditorCamera(&window),

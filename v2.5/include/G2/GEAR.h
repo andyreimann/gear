@@ -40,17 +40,8 @@
 #else
 	#pragma comment(lib, "glew.lib")
 #endif
-#pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "libfbxsdk-md.lib")
 
-
-//#pragma comment(lib, "OpenCL.lib")
-
-#ifndef _DEBUG
-	#pragma comment(lib, "OIS.lib")
-#else
-	#pragma comment(lib, "OIS_d.lib")
-#endif
 #include "AbstractWindow.h"
 extern "C" {
 
@@ -59,7 +50,7 @@ extern "C" {
 	 * @param window The AbstractWindow to manage the render loop for.
 	 */
 	void G2_loop(G2::AbstractWindow& window);
-	/** This functionreleases all engine related resources.
+	/** This function releases all engine related resources.
 	 */
 	void G2_shutdown();
 }

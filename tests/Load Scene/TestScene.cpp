@@ -10,7 +10,7 @@
 
 static std::string ASSET_PATH = "../../Assets/";
 
-TestScene::TestScene(G2::SDLWindow& window)
+TestScene::TestScene(G2::SDL::Window& window)
 	: mExitRendering(false),
 	mWindow(window),
 	mEditorCamera(&window),

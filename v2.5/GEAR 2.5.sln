@@ -42,6 +42,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR Editor", "GEAR Editor\
 		{228383E4-121C-4EBB-8B19-7C3834E6E1ED} = {228383E4-121C-4EBB-8B19-7C3834E6E1ED}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR SDL Context", "GEAR SDL Context\GEAR SDL Context.vcxproj", "{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27} = {2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27}
+		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -136,6 +142,17 @@ Global
 		{99E2543D-3BD3-4552-A54B-C9F543D5528B}.Release|Win32.Build.0 = Release|Win32
 		{99E2543D-3BD3-4552-A54B-C9F543D5528B}.Release|x64.ActiveCfg = Release|x64
 		{99E2543D-3BD3-4552-A54B-C9F543D5528B}.Release|x64.Build.0 = Release|x64
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|Win32.Build.0 = Debug|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|x64.ActiveCfg = Debug|x64
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Debug|x64.Build.0 = Debug|x64
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|Win32.ActiveCfg = Release|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|Win32.Build.0 = Release|Win32
+		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

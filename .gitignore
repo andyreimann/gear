@@ -109,3 +109,7 @@ v2.5/lib/x64/Debug/GEAREditor.dll
 v2.5/lib/x64/Debug/GEAREditor.lib
 v2.5/lib/x64/Release/GEAREditor.dll
 v2.5/lib/x64/Release/GEAREditor.lib
+tests/bin/x64/Debug/GEARSdlContext.dll
+v2.5/GEAR SDL Context/GEAR SDL Context.vcxproj.user
+v2.5/lib/x64/Debug/GEARSdlContext.dll
+v2.5/lib/x64/Debug/GEARSdlContext.lib

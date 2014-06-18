@@ -2,14 +2,14 @@
 
 #include <G2/GEAR.h>
 #include <G2Cameras/EditorCamera.h>
-#include <G2/SDLWindow.h>
+#include <G2SdlContext/SDLWindow.h>
 #include <vector>
 #include <G2NewtonPhysics/PhysicsComponent.h>
 
 class PhyTestNewton
 {
 	public:
-		PhyTestNewton(G2::SDLWindow& window);
+		PhyTestNewton(G2::SDL::Window& window);
 		~PhyTestNewton();
 
 
@@ -37,7 +37,7 @@ class PhyTestNewton
 
 		void createWalls();
 
-		G2::SDLWindow&			mWindow;
+		G2::SDL::Window&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 
 		G2::Physics::PhysicsSystem* mPhysicsSystem;

@@ -14,7 +14,7 @@
 
 static std::string ASSET_PATH = "../../Assets/";
 
-CeguiTest::CeguiTest(G2::SDLWindow& window)
+CeguiTest::CeguiTest(G2::SDL::Window& window)
 	: mExitRendering(false),
 	mWindow(window),
 	mEditorCamera(&window)

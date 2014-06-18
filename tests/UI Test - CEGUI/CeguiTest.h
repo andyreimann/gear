@@ -3,13 +3,13 @@
 
 #include <G2/GEAR.h>
 #include <G2Cameras/EditorCamera.h>
-#include <G2/SDLWindow.h>
+#include <G2SdlContext/SDLWindow.h>
 #include <vector>
 
 class CeguiTest
 {
 	public:
-		CeguiTest(G2::SDLWindow& window);
+		CeguiTest(G2::SDL::Window& window);
 		~CeguiTest();
 
 
@@ -38,7 +38,7 @@ class CeguiTest
 
 		void initCegui();
 
-		G2::SDLWindow&			mWindow;
+		G2::SDL::Window&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 		
 		//G2::AABB	mCube;

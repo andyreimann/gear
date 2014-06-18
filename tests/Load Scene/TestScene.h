@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 #include <G2/GEAR.h>
-#include <G2/SDLWindow.h>
+#include <G2SdlContext/SDLWindow.h>
 
 #include <G2Cameras/EditorCamera.h>
 #include <G2Editor/Editor.h>
@@ -12,7 +12,7 @@
 class TestScene
 {
 	public:
-		TestScene(G2::SDLWindow& window);
+		TestScene(G2::SDL::Window& window);
 		~TestScene();
 
 
@@ -45,7 +45,7 @@ class TestScene
 
 		void generateGeometryForFrusta();
 
-		G2::SDLWindow&			mWindow;
+		G2::SDL::Window&			mWindow;
 		G2Cameras::EditorCamera mEditorCamera;
 		
 		//G2::AABB	mCube;

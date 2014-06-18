@@ -1,9 +1,8 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "SDLWindow.h"
-#include "Defines.h"
-#include "AABB.h"
-#include "Logger.h"
+#include <G2/Defines.h>
+#include <G2/Logger.h>
 
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
@@ -11,7 +10,7 @@
 #include <iostream>
 #include <unordered_map>
 
-using namespace G2;
+using namespace G2::SDL;
 
 /* A simple function that prints a message, the error code returned by SDL,
  * and quits the application */
@@ -36,8 +35,8 @@ void checkSDLError(int line = -1)
 #endif
 }
 
-SDLWindow::SDLWindow(std::string const& title, unsigned int width, unsigned int height, bool hideMouse)
-	: AbstractWindow(title,width,height,hideMouse),
+Window::Window(std::string const& title, unsigned int width, unsigned int height, bool hideMouse)
+	: G2::AbstractWindow(title,width,height,hideMouse),
 	mMousePosition(0,0),
 	mZDown(false),
 	mCtrlDown(false),
@@ -90,7 +89,7 @@ SDLWindow::SDLWindow(std::string const& title, unsigned int width, unsigned int 
 	GLDEBUG( glViewport(0, 0, mWidth, mHeight) );
 }
 
-SDLWindow::~SDLWindow() 
+Window::~Window() 
 {
 	SDL_GL_DeleteContext(mMainContext);
 	SDL_DestroyWindow(mSDLWindow);
@@ -98,11 +97,11 @@ SDLWindow::~SDLWindow()
 }
 
 void
-SDLWindow::processEvents(int frame) 
+Window::processEvents(int frame) 
 {
 	if(frame == 0)
 	{
-		EventDistributer::onViewportResize(getWidth(),getHeight());
+		G2::EventDistributer::onViewportResize(getWidth(),getHeight());
 	}
 	SDL_Event e;
 	while ( SDL_PollEvent(&e) ) 
@@ -112,10 +111,10 @@ SDLWindow::processEvents(int frame)
 			return;
 		}
 		else if (e.type == SDL_MOUSEBUTTONDOWN) {
-			EventDistributer::onMouseDown(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
+			G2::EventDistributer::onMouseDown(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP) {
-			EventDistributer::onMouseUp(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
+			G2::EventDistributer::onMouseUp(e.button.button, glm::detail::tvec2<int>(e.button.x,e.button.y));
 		}
 		else if (e.type == SDL_MOUSEMOTION) {
 			if(mHideMouse)
@@ -128,17 +127,17 @@ SDLWindow::processEvents(int frame)
 			// track relative motion to absolute motion
 			mMousePosition.x += e.motion.xrel;
 			mMousePosition.y += e.motion.yrel;
-			EventDistributer::onMouseMove(mMousePosition);
+			G2::EventDistributer::onMouseMove(mMousePosition);
 		}
 		else if (e.type == SDL_MOUSEWHEEL) {
-			EventDistributer::onMouseWheel(e.wheel.y);
+			G2::EventDistributer::onMouseWheel(e.wheel.y);
 		}
 		else if (e.type == SDL_KEYDOWN) {
-			EventDistributer::onKeyDown(static_cast<G2::KeyCode>(e.key.keysym.sym));
+			G2::EventDistributer::onKeyDown(static_cast<G2::KeyCode>(e.key.keysym.sym));
 			onKeyDown(static_cast<G2::KeyCode>(e.key.keysym.sym));
 		}
 		else if (e.type == SDL_KEYUP) {
-			EventDistributer::onKeyUp(static_cast<G2::KeyCode>(e.key.keysym.sym));
+			G2::EventDistributer::onKeyUp(static_cast<G2::KeyCode>(e.key.keysym.sym));
 			onKeyUp(static_cast<G2::KeyCode>(e.key.keysym.sym));
 		}
 		else if (e.type == SDL_WINDOWEVENT) {
@@ -163,7 +162,7 @@ SDLWindow::processEvents(int frame)
 							e.window.windowID, e.window.data1,
 							e.window.data2);
 					GLDEBUG( glViewport(0, 0, e.window.data1, e.window.data2) );
-					EventDistributer::onViewportResize(e.window.data1,e.window.data2);
+					G2::EventDistributer::onViewportResize(e.window.data1,e.window.data2);
 					break;
 				case SDL_WINDOWEVENT_MINIMIZED:
 					printf("[SDLWindow] : Window %d minimized\n", e.window.windowID);
@@ -216,13 +215,13 @@ SDLWindow::processEvents(int frame)
 }
 
 void
-SDLWindow::swapBuffer() 
+Window::swapBuffer() 
 {
 	SDL_GL_SwapWindow(mSDLWindow);
 }
 
 void
-SDLWindow::onKeyUp(G2::KeyCode keyCode) 
+Window::onKeyUp(G2::KeyCode keyCode) 
 {
 	if(mHideMouse)
 	{
@@ -238,7 +237,7 @@ SDLWindow::onKeyUp(G2::KeyCode keyCode)
 }
 
 void
-SDLWindow::onKeyDown(G2::KeyCode keyCode) 
+Window::onKeyDown(G2::KeyCode keyCode) 
 {
 	if(mHideMouse)
 	{
@@ -251,12 +250,12 @@ SDLWindow::onKeyDown(G2::KeyCode keyCode)
 				mNsightActive = !mNsightActive;
 				if(mNsightActive)
 				{
-					logger << "Activate NSight mode" << endl;
+					G2::logger << "Activate NSight mode" << G2::endl;
 					SDL_SetRelativeMouseMode(SDL_FALSE);
 				}
 				else
 				{
-					logger << "Deactivate NSight mode" << endl;
+					G2::logger << "Deactivate NSight mode" << G2::endl;
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 				}
 			}
@@ -270,12 +269,12 @@ SDLWindow::onKeyDown(G2::KeyCode keyCode)
 				mNsightActive = !mNsightActive;
 				if(mNsightActive)
 				{
-					logger << "Activate NSight mode" << endl;
+					G2::logger << "Activate NSight mode" << G2::endl;
 					SDL_SetRelativeMouseMode(SDL_FALSE);
 				}
 				else
 				{
-					logger << "Deactivate NSight mode" << endl;
+					G2::logger << "Deactivate NSight mode" << G2::endl;
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 				}
 			}
@@ -284,7 +283,7 @@ SDLWindow::onKeyDown(G2::KeyCode keyCode)
 }
 
 void
-SDLWindow::initHideMouseState() 
+Window::initHideMouseState() 
 {
 	if(mHideMouse)
 	{
@@ -301,7 +300,7 @@ SDLWindow::initHideMouseState()
 }
 
 void
-SDLWindow::setHideMouseMode(bool mode) 
+Window::setHideMouseMode(bool mode) 
 {
 	mHideMouse = mode;
 	initHideMouseState();

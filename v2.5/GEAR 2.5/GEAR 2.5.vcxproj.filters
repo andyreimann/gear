@@ -12,9 +12,6 @@
     <ClInclude Include="AbstractWindow.h">
       <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="SDLWindow.h">
-      <Filter>Window\SDL</Filter>
-    </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Logging</Filter>
     </ClInclude>
@@ -292,9 +289,6 @@
     <ClCompile Include="AbstractWindow.cpp">
       <Filter>Window</Filter>
     </ClCompile>
-    <ClCompile Include="SDLWindow.cpp">
-      <Filter>Window\SDL</Filter>
-    </ClCompile>
     <ClCompile Include="GEAR.cpp" />
     <ClCompile Include="Logger.cpp">
       <Filter>Logging</Filter>
@@ -545,9 +539,6 @@
     </Filter>
     <Filter Include="Window">
       <UniqueIdentifier>{bf3fede8-d07b-4d72-ac2e-28c8f0cb5a94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Window\SDL">
-      <UniqueIdentifier>{60292311-e9e9-4ea8-8265-c75a95f17c03}</UniqueIdentifier>
     </Filter>
     <Filter Include="Input">
       <UniqueIdentifier>{5cd9d6ad-fc43-4084-b854-5a745f1f9305}</UniqueIdentifier>

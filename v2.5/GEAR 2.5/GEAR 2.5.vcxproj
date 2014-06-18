@@ -307,7 +307,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceBuilder.h" />
     <ClInclude Include="Sampler.h" />
-    <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="SettingsBlockParser.h" />
     <ClInclude Include="Shader.h" />
@@ -399,7 +398,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceBuilder.cpp" />
     <ClCompile Include="Sampler.cpp" />
-    <ClCompile Include="SDLWindow.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="SettingsBlockParser.cpp" />
     <ClCompile Include="Shader.cpp" />

@@ -504,7 +504,6 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 										  FbxMetaData* metaData) const 
 {
 	int lVertexCount = 0;
-	G2::logger << sizeof(FbxVector4) << " ";
 
 	if(component->aabbAnimationRecalc && component->objectSpaceAABBs.size() != component->getNumVertexArrays())
 	{
