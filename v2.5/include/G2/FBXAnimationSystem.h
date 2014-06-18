@@ -36,7 +36,7 @@ namespace G2
 
 			bool _updateAnimationStack(FBXAnimationComponent* component, FrameInfo const& frameInfo);
 
-			void _drawNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLayer,
+			void _animateNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLayer,
 									FbxAMatrix& pParentGlobalPosition, FbxPose* pPose,
 									ShadingMode pShadingMode,
 									RenderComponent* component);
@@ -49,7 +49,7 @@ namespace G2
 
 			FbxAMatrix _getGeometry(FbxNode* pNode);
 
-			void _drawNode(FbxNode* pNode, 
+			void _animateNode(FbxNode* pNode, 
 						  FbxTime& pTime, 
 						  FbxAnimLayer* pAnimLayer,
 						  FbxAMatrix& pParentGlobalPosition,
@@ -58,7 +58,7 @@ namespace G2
 						  ShadingMode pShadingMode,
 						  RenderComponent* component);
 
-			void _drawMesh(FbxNode* pNode, 
+			void _animateMesh(FbxNode* pNode, 
 						   FbxTime& pTime, 
 						   FbxAnimLayer* pAnimLayer,
 						   FbxAMatrix& pGlobalPosition, 
@@ -94,20 +94,13 @@ namespace G2
 										   FbxAMatrix& pVertexTransformMatrix,
 										   FbxTime pTime, 
 										   FbxPose* pPose);
-			
-			void _computeNormalDeformation(FbxAMatrix& pGlobalPosition, 
-										   FbxMesh* pMesh,
-							   			   FbxCluster* pCluster, 
-										   FbxAMatrix& pNormalTransformMatrix,
-										   FbxTime pTime, 
-										   FbxPose* pPose);
 
 			void _computeDualQuaternionDeformation(FbxAMatrix& pGlobalPosition, 
 												   FbxMesh* pMesh, 
 												   FbxTime& pTime, 
 												   FbxVector4* pVertexArray,
 												   FbxPose* pPose);
-			// NEW UPLOAD INTO RENDERCOMPONENT
+
 			void _updateVertexPosition(const FbxMesh * pMesh, 
 									   const FbxVector4 * pVertices, 
 									   const FbxVector4 * pNormals, 
