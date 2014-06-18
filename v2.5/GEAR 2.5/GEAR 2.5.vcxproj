@@ -328,6 +328,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="timevalue_win.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformSystem.h" />
+    <ClInclude Include="TriangeTools.h" />
     <ClInclude Include="UberShaderBlockParser.h" />
     <ClInclude Include="UberShaderParser.h" />
     <ClInclude Include="UniformBlock.h" />
@@ -418,6 +419,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="timevalue_win.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformSystem.cpp" />
+    <ClCompile Include="TriangeTools.cpp" />
     <ClCompile Include="UberShaderBlockParser.cpp" />
     <ClCompile Include="UberShaderParser.cpp" />
     <ClCompile Include="UniformBlock.cpp" />

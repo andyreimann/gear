@@ -278,6 +278,9 @@
     <ClInclude Include="RenderStatesGroup.h">
       <Filter>RenderStates</Filter>
     </ClInclude>
+    <ClInclude Include="TriangeTools.h">
+      <Filter>Tools\Triangles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -532,6 +535,9 @@
     <ClCompile Include="RenderStatesGroup.cpp">
       <Filter>RenderStates</Filter>
     </ClCompile>
+    <ClCompile Include="TriangeTools.cpp">
+      <Filter>Tools\Triangles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -722,6 +728,9 @@
     </Filter>
     <Filter Include="RenderStates">
       <UniqueIdentifier>{7ca4e763-0d78-4157-b4d8-1716e065ee32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\Triangles">
+      <UniqueIdentifier>{ab08d07c-33b5-46b0-9068-5ccd2e865f13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

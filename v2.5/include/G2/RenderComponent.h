@@ -50,6 +50,12 @@ namespace G2
 			 * @note Make sure to not request an index, which does not exist!
 			 */
 			VertexArrayObject& getVertexArray(unsigned int index) { return mVaos[(size_t)index]; }
+			/** This function will calculate the tangent vectors and the binormal vectors for the VertexArrayObjects in the RenderComponents.
+			 * @note It expects and supports only triangle vertex data!
+			 * @param vertexSemantic The semantics to interpret as vertex positions.
+			 * @param texCoordsSemantic The semantics to interpret as texture coordinates.
+			 */
+			void calculateBinormalsAndTangents(Semantics::Name vertexSemantic = Semantics::POSITION, Semantics::Name texCoordsSemantic = Semantics::TEXCOORD_0);
 			/** This function will allocate the given number of vertex array objects for the RenderComponent.
 			 * If the given number is smaller than the current amount, some or all vertex array objects may be deleted.
 			 * @param numVertexArrayObjects The number of vertex array objects to allocate.

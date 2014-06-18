@@ -1,4 +1,5 @@
 #include "RenderComponent.h"
+#include "TriangeTools.h"
 
 using namespace G2;
 
@@ -127,4 +128,68 @@ RenderComponent::setDestinationBlendFactor(BlendFactor::Name const& value)
 	RenderStates copy(mRenderStatesGroup->getRenderStates());
 	copy.setDestinationFactor(value);
 	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, Semantics::Name texCoordsSemantic) 
+{
+	for(size_t v = 0; v < mVaos.size(); ++v)
+	{
+		VertexArrayObject& vao = mVaos[v];
+		// allocate data for binormals and tangents
+		std::vector<glm::vec3> binormals(vao.getNumElements());
+		std::vector<glm::vec3> tangents(vao.getNumElements());
+		// get some data out of VertexArrayObject
+		unsigned int vertexComponents = vao.getNumBytesBySemantic(vertexSemantic) / sizeof(float);
+		unsigned int texCoordsComponents = vao.getNumBytesBySemantic(texCoordsSemantic) / sizeof(float);
+		// transfer data from GPU to CPU
+		float* vertices = vao.getDataPointer(vertexSemantic,BufferAccessMode::READ_ONLY);
+		float* texCoords = vao.getDataPointer(texCoordsSemantic,BufferAccessMode::READ_ONLY);
+		if(!vao.hasIndices())
+		{ // interpret as continuous vertex data for triangles
+			for(unsigned int i = 0; i < vao.getNumElements()-2; i+=2)
+			{
+				// get 3 vertices (vec3 also works for vec4 data)
+				glm::vec3& p1 = *(glm::vec3*)(&(vertices[i*vertexComponents]));
+				glm::vec3& p2 = *(glm::vec3*)(&(vertices[(i+1)*vertexComponents]));
+				glm::vec3& p3 = *(glm::vec3*)(&(vertices[(i+2)*vertexComponents]));
+				// get 3 texture coordinates
+				glm::vec2& t1 = *(glm::vec2*)(&(vertices[i*texCoordsComponents]));
+				glm::vec2& t2 = *(glm::vec2*)(&(vertices[(i+1)*texCoordsComponents]));
+				glm::vec2& t3 = *(glm::vec2*)(&(vertices[(i+2)*texCoordsComponents]));
+				
+				//calculate for current triangle
+				TriangeTools::calculateTangentAndBinormalForTriangle(i, i+1, i+2, p1, p2, p3, t1, t2, t3, binormals, tangents);
+			}
+		}
+		else
+		{ // interpret as indexed vertex data for triangles
+			// transfer indices data from GPU to CPU
+			unsigned int* indices = vao.getIndexPointer(BufferAccessMode::READ_ONLY);
+
+			// do something
+			for(unsigned int i = 0; i < vao.getNumIndices()-2; i+=2)
+			{
+				// get 3 vertices (vec3 also works for vec4 data)
+				glm::vec3& p1 = *(glm::vec3*)(&(vertices[indices[i]*vertexComponents]));
+				glm::vec3& p2 = *(glm::vec3*)(&(vertices[indices[i+1]*vertexComponents]));
+				glm::vec3& p3 = *(glm::vec3*)(&(vertices[indices[i+2]*vertexComponents]));
+				// get 3 texture coordinates
+				glm::vec2& t1 = *(glm::vec2*)(&(vertices[indices[i]*texCoordsComponents]));
+				glm::vec2& t2 = *(glm::vec2*)(&(vertices[indices[i+1]*texCoordsComponents]));
+				glm::vec2& t3 = *(glm::vec2*)(&(vertices[indices[i+2]*texCoordsComponents]));
+				
+				//calculate for current triangle
+				TriangeTools::calculateTangentAndBinormalForTriangle(indices[i], indices[i+1], indices[i+2], p1, p2, p3, t1, t2, t3, binormals, tangents);
+			}
+			// release data to GPU
+			vao.returnIndexPointer();
+		}
+		// release data to GPU
+		vao.returnDataPointer(texCoordsSemantic);
+		vao.returnDataPointer(vertexSemantic);
+		// transmit data
+		vao.writeData(Semantics::BINORMAL, &binormals[0]);
+		vao.writeData(Semantics::TANGENT, &tangents[0]);
+	}
 }
