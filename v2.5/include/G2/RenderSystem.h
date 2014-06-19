@@ -103,6 +103,14 @@ namespace G2
 			 * thus this function should normally not be called unless you exactly know what you do!
 			 */
 			void updateTransparencyMode(unsigned int entityId, bool transparent);
+			/** This function will return the clear color to use for clearing the render frame buffer. 
+			* @return The clear color.
+			*/
+			glm::vec4 const& getClearColor() const { return mClearColor; }
+			/** This function will set the clear color to use for clearing the render frame buffer. 
+			* @param value The clear color.
+			*/
+			void setClearColor(glm::vec4 const& value) { mClearColor = value; }
 
 
 			~RenderSystem();
@@ -224,6 +232,8 @@ namespace G2
 			 */
 			void _deleteEmptyRenderStatesGroups();
 
+			
+			glm::vec4										mClearColor;			// The clear color to use for rendering
 			RenderType::Name								mRenderType;
 			std::shared_ptr<G2::Effect>						defaultEffect;			// The default UberShader to use for rendering
 			EffectImporter									mEngineEffectImporter;	// The effect importer used when importing default engine effects

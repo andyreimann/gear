@@ -1,6 +1,9 @@
 #include "RenderTarget.h"
 #include "Defines.h"
 #include "Texture.h"
+#include "RenderComponent.h"
+
+#include <G2Core/ECSManager.h>
 
 using namespace G2;
 
@@ -21,8 +24,16 @@ RenderTarget::RenderTarget(
 	: mRenderTextureSampler(targetSampler), 
 	mRenderTexture(renderTexture),
 	mRenderTargetType(renderTargetType),
-	mFrameBuffer(renderTexture->getWidth(),renderTexture->getHeight())
+	mFrameBuffer(renderTexture->getWidth(),renderTexture->getHeight()),
+	mUseClearColor(false),
+	mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
 {
+	Setting const& clearColorSetting = Setting::get("ClearColor", settings, "DEFAULT");
+	if(clearColorSetting.value != "DEFAULT")
+	{
+		mUseClearColor = true;
+		mClearColor = clearColorSetting.toVec4();
+	}
 	// Get the buffer attachment point depending
 	// on the requested output format
 	mRenderTargetAttachmentPoint = BufferAttachment::getByOutputFormat(
@@ -57,6 +68,9 @@ RenderTarget& RenderTarget::operator=(RenderTarget && rhs)
 	mRenderTargetType = rhs.mRenderTargetType;
 	mFrameBuffer = std::move(rhs.mFrameBuffer);
 	mRenderTargetAttachmentPoint = rhs.mRenderTargetAttachmentPoint;
+	mClearColor = rhs.mClearColor;
+	mUseClearColor = rhs.mUseClearColor;
+	mRenderSystem = rhs.mRenderSystem;
 	// 3. Stage: modify src to a well defined state
 	rhs.mRenderTextureSampler = Sampler::SAMPLER_INVALID;
 	rhs.mRenderTargetType = RenderTargetType::RT_INVALID;
@@ -78,8 +92,16 @@ RenderTarget::bind(int renderIterationIndex) const
 	{
 		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType, 0, renderIterationIndex);
 	}
-
-	//GLDEBUG( glClearColor(0.3f,0.0f,0.0f,1.0f) );
+	
+	if(mUseClearColor)
+	{
+		GLDEBUG( glClearColor(mClearColor.r,mClearColor.g,mClearColor.b,mClearColor.a) );
+	}
+	else
+	{
+		glm::vec4 const& clearColor = mRenderSystem->getClearColor();
+		GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,mClearColor.a) );
+	}
 	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 }
 

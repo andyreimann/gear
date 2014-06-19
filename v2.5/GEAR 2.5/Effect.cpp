@@ -346,6 +346,12 @@ Effect::Builder::buildAndCompile()
 		logger << "[Effect::Builder] Build Pass " << (i+1) << endl;
 		Pass::Builder& passBuilder = passes[i];
 		// compile one single pass
+
+		if(passBuilder.vertexShaderParts.size() == 0 || passBuilder.fragmentShaderParts.size() == 0)
+		{
+			continue; // valid -> nothing to compile here
+		}
+
 		_compile(
 			shadingLanguage, 
 			passBuilder.locationBindings, 

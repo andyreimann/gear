@@ -16,6 +16,7 @@ Entity::Entity()
 }
 
 Entity::Entity(Entity && rhs) 
+	: mId(UNINITIALIZED_ENTITY_ID)
 {
 	// eliminates redundant code
 	*this = std::move(rhs); // rvalue property is kept with std::move!

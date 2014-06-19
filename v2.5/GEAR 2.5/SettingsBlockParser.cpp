@@ -42,9 +42,25 @@ SettingsBlockParser::parse()
 			std::stringstream lineStr;
 			lineStr << line;
 
-			std::string settingName, settingValue;
+			std::string settingName, settingValue, singleSettingValue;	
+			lineStr >> settingName;
+
+			do 
+			{
+				singleSettingValue = "";
+				lineStr >> singleSettingValue;
+				if(singleSettingValue == "")
+				{
+					break;
+				}
+				if(settingValue != "")
+				{
+					settingValue += " ";
+				}
+				settingValue += singleSettingValue;
+			} while (true);
+
 			
-			lineStr >> settingName >> settingValue;
 
 			if(settingName.substr(0,2) == "//")
 			{

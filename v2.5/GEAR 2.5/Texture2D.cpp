@@ -26,13 +26,15 @@ Texture2D::Texture2D(unsigned int minFilter,
 	mBytes(0)
 {
 	init();
+	mWrapModeS = wrapS;
+	mWrapModeT = wrapT;
 	checkFilter(mMinFilter, mMagFilter);
 	GLDEBUG( glGenTextures(1, &mId) );
 	GLDEBUG( glBindTexture(mType, mId) );
 	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, mMinFilter) );
 	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, mMagFilter) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, wrapS) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, wrapT) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, mWrapModeS) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, mWrapModeT) );
 	GLDEBUG( glTexImage2D(mType, 0, baseFormatToCompressedFormat(format, mCompressed), mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data) );
 	GLint compFlag;
 	GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );

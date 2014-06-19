@@ -2,37 +2,49 @@ Ubershader "GEAR/Default" {
    LocationBindings {
      inPosition ("Vertex Position", vec4) = { POSITION }
      inNormal ("Vertex Normal", vec3) = { NORMAL }
-     inBinormal ("Vertex Binormal", vec3) = { BINORMAL }
-     inTangent ("Vertex Tangent", vec3) = { TANGENT }
-     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
    }
    Properties {
-       _normalTex ("The normal texture", sampler2D) = { NORMAL }
        _shadowTex ("The shadow texture of a pointlight", samplerCube) = { SHADOW }
        _csmTex ("The cascade shadow texture of a directional light", sampler2DArrayShadow) = { SAMPLER_6 }
+       _reflectionMap ("The reflection map", samplerCube) = { DIFFUSE }
    }
    Shader "GLSL" {
+     Passes {
+        Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+           }
+           Settings {
+              Name "ShadowPass"
+              RenderTarget DIFFUSE
+              RenderType CUBEMAP
+              RenderTargetWidth 512
+              RenderTargetHeight 512
+              // Select, what kind of output data you want to capture in the RenderTarget: RGB, RGBA, DEPTH, LUMINANCE, INTENSITY, ...
+              OutputFormat RGB
+              PointOfView LOCAL
+              ZNear 0.01
+              ZFar 50.0
+              FovY 90.0
+              PolygonOffsetFactor 0.0
+              PolygonOffsetUnits 0.0
+              ClearColor 0.0 0.0 0.0 0.0
+           }
+        }
+     }
      #VERTEXPROGRAM
        #INCLUDE "G2.matrices"
  
        out Data
        {
-          vec2 texCoord;
           vec3 normal;
-          vec3 binormal;
-          vec3 tangent;
           vec3 eye;
        } dataOut; 
  
        void main(void) 
        {
-            dataOut.texCoord = inTexCoord;
-            // transform normal, binormal and tangent vectors
             dataOut.normal = matrices.normal_matrix * inNormal;
-            dataOut.binormal = matrices.normal_matrix * inBinormal;
-            dataOut.tangent = matrices.normal_matrix * inTangent;
             dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
-
            	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
@@ -40,22 +52,7 @@ Ubershader "GEAR/Default" {
        #INCLUDE "G2.material" // include GEAR default stuff
        #INCLUDE "G2.light" // include GEAR default stuff
 
-        in Data
-        {
-          vec2 texCoord;
-          vec3 normal;
-          vec3 binormal;
-          vec3 tangent;
-          vec3 eye;
-        } dataIn; // this data comes from the vertex program
-
         out vec4 outColor; // here goes the final color
-
-        // Helper to transforms a given vertex into tangent space
-        vec3 toTangentSpace(vec3 vector, mat3 tbnMatrix ) 
-        {
-            return normalize(vector * tbnMatrix);
-        }
 
         int getCascadeIndex(int lightIndex) 
         {
@@ -77,37 +74,34 @@ Ubershader "GEAR/Default" {
           dist = ((far+near)/(fmn)) + (1.0/dist)*((-2.0*far*near)/(fmn));   
           return (dist+1.0)/2.0;   
         }
-   
+           
+        in Data
+        {
+           vec3 normal;
+           vec3 eye;
+        } dataIn; // this data comes from the vertex program
+ 
         void main() 
         {
-
-          vec3 normal = normalize(dataIn.normal);
-          vec3 binormal = normalize(dataIn.binormal);
-          vec3 tangent = normalize(dataIn.tangent);
-          vec3 e = normalize(dataIn.eye);
-
-          mat3 tbnMatrix = mat3(tangent, binormal, normal);
-          // read normal from normalMap
-          vec3 normalMapNormal = (texture(_normalTex, dataIn.texCoord).xyz);
-          //Expand the normal-map into a normalized signed vector
-          normal = (normalMapNormal -0.5) * 2.0;
-
           // set the specular term to black
           vec4 spec = vec4(0.0);
 
+          // normalize both input vectors
+          vec3 n = normalize(dataIn.normal);
+          vec3 e = normalize(dataIn.eye);
+
+          float glassOpacity = pow(1.0 - abs(dot(-e,n)), 4.0);
+
           // set color to ambient material term
           outColor = material.ambient;
+
 
           for(int i = 0; i < G2ActiveLights; ++i)
           {
             if(light[i].position.w == 0.0)
             {
               // directional light
-
-              // calculate light direction in tangent space
-              vec3 lightDir = normalize(toTangentSpace(light[i].direction,tbnMatrix));
-
-              float intensity = max(dot(normal,lightDir), 0.0);
+              float intensity = max(dot(n,light[i].direction), 0.0);
 
               // if the vertex is lit compute the specular color
               if (intensity > 0.0) 
@@ -133,9 +127,9 @@ Ubershader "GEAR/Default" {
                   shadowMultiplier = clamp( diff*250.0 + 1.0, 0.0, 1.0);
                 }
                 // compute the half vector
-                vec3 h = normalize(lightDir + e);
+                vec3 h = normalize(light[i].direction + e);
                 // compute the specular term into spec
-                float intSpec = max(dot(h,normal), 0.0);
+                float intSpec = max(dot(h,n), 0.0);
                 spec = shadowMultiplier * light[i].specular * material.specular * pow(intSpec,material.shininess);
                 outColor += max(shadowMultiplier * intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
               }
@@ -150,7 +144,7 @@ Ubershader "GEAR/Default" {
               float intensity = 0.0;
               vec4 spec = vec4(0.0);
            
-              // calculate light direction in tangent space
+              // Compute the ligt direction
               vec3 l = vec3(light[i].position)+dataIn.eye;
               float dist = length(l);
               l = normalize(l);
@@ -159,36 +153,32 @@ Ubershader "GEAR/Default" {
               // inside the cone?
               if (dot(sd,l) > light[i].cosCutoff) 
               {
-                vec3 lightDirTangentSpace = toTangentSpace(light[i].direction,tbnMatrix);
-                intensity = max(dot(normal,lightDirTangentSpace), 0.0);
+                intensity = max(dot(n,l), 0.0);
          
                 if (intensity > 0.0) 
                 {
                     float att = 1.0 / (light[i].attenuation.x +
                             light[i].attenuation.y * dist +
                             light[i].attenuation.z * dist * dist);
-
-                    vec3 eyeVecTangentSpace = toTangentSpace(e,tbnMatrix); 
-                    vec3 reflection = reflect(lightDirTangentSpace, normal);
-                    float intSpec = max(dot(reflection,eyeVecTangentSpace), 0.0);
+                    vec3 h = normalize(l + e);
+                    float intSpec = max(dot(h,n), 0.0);
                     spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
                 }
               }
               outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              //outColor = vec4(1.f,0.f,0.f,1.f);
             }
             else
             {
               // point light
-           
-              // calculate light direction in tangent space
-              vec3 lightDir = vec3(light[i].position)+dataIn.eye;
-              float dist = length(lightDir);
-              float texDepth = toTexDepth(lightDir, 0.01, 50.0);
-              float shadowDepth = texture(_shadowTex, -lightDir).r; // pass l normalized for lookup
-              // transform light direction to tangent space
-              lightDir = toTangentSpace(lightDir,tbnMatrix); 
-
               vec4 spec = vec4(0.0);
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              // near clip plane, far clip plane used while calculating shadow
+              float texDepth = toTexDepth(l, 0.01, 50.0);
+              l = normalize(l);
+              float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
 
               if( texDepth >= shadowDepth && texDepth < 1.0 )
               {
@@ -197,24 +187,27 @@ Ubershader "GEAR/Default" {
               }
               else
               {
-                float intensity = max(dot(normal,lightDir), 0.0);
+
+                float intensity = max(dot(n,l), 0.0);
                 if (intensity > 0.0) 
                 {
-                  vec3 eyeVecTangentSpace = toTangentSpace(e,tbnMatrix); 
-                  vec3 reflection = reflect(-lightDir, normal);
-
                   float att = 1.0 / (light[i].attenuation.x +
                           light[i].attenuation.y * dist +
                           light[i].attenuation.z * dist * dist);
-                  //vec3 h = normalize(l + e);
-
-                  float intSpec = max(dot(reflect(-eyeVecTangentSpace, normal),lightDir), 0.0);
-                  //float intSpec = max(dot(h,normal), 0.0);
+                  vec3 h = normalize(l + e);
+                  float intSpec = max(dot(h,n), 0.0);
                   spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
                 }
                 outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
               }
             }
+            outColor.w = max(0,glassOpacity);
+
+          float refractiveIndex = 1.5;
+          vec3 refractedDirection = refract(-e,n, 1.0 / refractiveIndex);
+          vec3 reflectedDirection = reflect(-e,n);
+          outColor += vec4(texture(_reflectionMap, refractedDirection).rgb, 0.05);
+          outColor += vec4(texture(_reflectionMap, reflectedDirection).rgb, 0.05);
           }
         }
    }

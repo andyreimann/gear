@@ -21,6 +21,7 @@ namespace G2
 			}
 
 			BaseComponent(BaseComponent && rhs) 
+				: mEntityId(0)
 			{
 				// eliminates redundant code
 				*this = std::move(rhs); // rvalue property is kept with std::move!

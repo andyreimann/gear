@@ -3,6 +3,8 @@
 #include "GEAR.h"
 #include "Logger.h"
 #include "FileResource.h"
+#include "RenderComponent.h"
+
 #include <G2Core/ECSManager.h>
 
 #include <thread>
@@ -33,7 +35,7 @@ void G2_init()
 	GLDEBUG( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
 	logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << endl;
 	
-	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+		
 
 	GLint bufs;
 	GLint samples;
@@ -76,7 +78,9 @@ G2_loop(AbstractWindow& window)
 		frameTimer.start(true);
 		
 		window.processEvents(frameInfo.frame);
-		
+
+		glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
+		GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
 		GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
 		EventDistributer::onRenderFrame(frameInfo);

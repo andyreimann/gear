@@ -161,6 +161,8 @@ FBXMesh::Builder::buildResource()
 	
 	auto* nameComponent = mesh->addComponent<NameComponent>();
 	nameComponent->name = name;
+	
+	logger << "FBXMesh will have " << renderComponent->getNumVertexArrays() << " VAOs\n";
 
 	return mesh;
 }

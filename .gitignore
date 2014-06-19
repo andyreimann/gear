@@ -113,3 +113,6 @@ tests/bin/x64/Debug/GEARSdlContext.dll
 v2.5/GEAR SDL Context/GEAR SDL Context.vcxproj.user
 v2.5/lib/x64/Debug/GEARSdlContext.dll
 v2.5/lib/x64/Debug/GEARSdlContext.lib
+tests/bin/x64/Release/GEARSdlContext.dll
+v2.5/lib/x64/Release/GEARSdlContext.dll
+v2.5/lib/x64/Release/GEARSdlContext.lib

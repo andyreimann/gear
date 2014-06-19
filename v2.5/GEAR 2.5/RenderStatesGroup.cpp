@@ -42,7 +42,7 @@ RenderStatesGroup::operator=(RenderStatesGroup && rhs)
 	mRenderStates = std::move(rhs.mRenderStates);
 	mEntityIds = std::move(rhs.mEntityIds);
 	// 3. Stage: modify src to a well defined state
-	mEntityIds.clear();
+	rhs.mEntityIds.clear();
 	return *this;
 }
 

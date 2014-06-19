@@ -49,7 +49,7 @@ G2::RenderComponent::~RenderComponent()
 	if(material.isTransparent() && getEntityId() != Entity::UNINITIALIZED_ENTITY_ID)
 	{
 		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
-		ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->updateTransparencyMode(getEntityId(), false);
+		renderSystem->updateTransparencyMode(getEntityId(), false);
 	}
 }
 
@@ -76,6 +76,7 @@ RenderComponent::allocateVertexArrays(unsigned int numVertexArrayObjects)
 	int sizeDifference = (int)numVertexArrayObjects - (int)mVaos.size();
 	mVaos.resize(numVertexArrayObjects);
 	mVaosFrustumCulled.resize(numVertexArrayObjects);
+	
 	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
 	renderSystem->scheduleAABBRecalculation(getEntityId());
 	renderSystem->_onVertexArrayObjectsResize(getEntityId(),sizeDifference);
@@ -133,6 +134,7 @@ RenderComponent::setDestinationBlendFactor(BlendFactor::Name const& value)
 void
 RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, Semantics::Name texCoordsSemantic) 
 {
+	logger << "RenderComponent has " << mVaos.size() << " VAOs\n";
 	for(size_t v = 0; v < mVaos.size(); ++v)
 	{
 		VertexArrayObject& vao = mVaos[v];

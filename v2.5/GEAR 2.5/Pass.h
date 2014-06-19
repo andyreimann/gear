@@ -91,6 +91,10 @@ namespace G2
 			/// @return The Shader which fits best or a shared pointer pointing to nullptr,
 			/// if no Shader was found.
 			std::shared_ptr<Shader> getShader(Material const& material, VertexArrayObject const& vao) const;
+			/// Returns whether this pass has it's own compiled set of shader to use for rendering.
+			/// If the pass does not provide a set of shader, the shader of the RenderComponents should be used while rendering the Pass
+			/// @return True if the Pass provides it's own shader, false if not.
+			bool hasShader() const { return mShaderPermutations.size() > 0; }
 			///  This function will return the RenderTarget. 
 			/// @return The RenderTarget of the Pass.
 			G2::RenderTarget const& getRenderTarget() const { return mRenderTarget; }

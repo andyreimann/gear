@@ -6,10 +6,14 @@
 #include <memory>
 #include <unordered_map>
 
+#include <glm/glm.hpp>
+
 
 namespace G2 
 {
 	class Texture;
+	class RenderSystem;
+
 	namespace RenderTargetType
 	{
 		enum Name {
@@ -70,5 +74,9 @@ namespace G2
 			FrameBuffer					mFrameBuffer;			// The framebuffer, the render texture is attached to
 			BufferAttachment::Name		mRenderTargetAttachmentPoint; // The attachment point, the Texture is attached to the FrameBuffer
 			int							mNumCascades;			// The number of cascades, the render texture has
+			
+			glm::vec4					mClearColor;
+			bool						mUseClearColor;
+			RenderSystem*				mRenderSystem;
 	};
 };

@@ -56,7 +56,8 @@ TestScene::TestScene(G2::SDL::Window& window)
 
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-	light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
+	
+	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	mLightType = light->getType();
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
@@ -225,12 +226,12 @@ TestScene::createWalls()
 	transformation->setPosition(glm::vec3(0.f, -20.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
-	auto* renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	auto* renderComp = mWalls.back()->getComponent<G2::RenderComponent>();
+	renderComp->calculateBinormalsAndTangents();
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
-	renderComp->calculateBinormalsAndTangents();
 	
 	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/NormalMapping.g2fx"));
 	renderComp->material.setTexture(G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "Resources/normalmap.png", G2::NEAREST, G2::NEAREST, false));
@@ -252,30 +253,20 @@ TestScene::createWalls()
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
 	renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,0.3));
+	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Glass.g2fx"));
 	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
+	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
 	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 1.f, 1.f));
-	transformation->setPosition(glm::vec3(0.f, -10.f, 0.f));
+	transformation->setScale(glm::vec3(3.f, 3.f, 3.f));
+	transformation->setPosition(glm::vec3(0.f, -17.5f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
 	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(0.f,1.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
-	renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
-	renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,0.3));
-	
-	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
-	transformation->setScale(glm::vec3(1.f, 0.1f, 1.f));
-	transformation->setPosition(glm::vec3(0.f, -5.f, 0.f));
-	//transformation->rotateX(45.f);
-	transformation->updateWorldSpaceMatrix(0);
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(0.f,1.f,0.f,1.f));
-	renderComp->material.setShininess(128.f);
-	renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
-	renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,0.3));
+	renderComp->material.setAmbient(glm::vec4(0.0f,0.0f,0.0f,0.3));
+	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,0.0));
+	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Glass.g2fx"));
 
 	
 	//renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/GeometryProposal.g2fx"));

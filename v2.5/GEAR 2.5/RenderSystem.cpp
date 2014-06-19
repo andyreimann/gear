@@ -37,7 +37,8 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 };
 
 RenderSystem::RenderSystem() :
-	mPostProcessingRenderTargets(2)
+	mPostProcessingRenderTargets(2),
+	mClearColor(0.25f, 0.25f, 0.25f, 1.f)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
 
@@ -61,6 +62,7 @@ RenderSystem::RenderSystem() :
 
 RenderSystem::~RenderSystem() 
 {
+	components.clear();
 	EventDistributer::onViewportResize.unHook(this, &RenderSystem::_onViewportResize);
 }
 
@@ -354,7 +356,7 @@ RenderSystem::_renderAllComponents(
 			{
 				// calc which shader to use for rendering
 				std::shared_ptr<Shader> shader;
-				if(pass != nullptr)
+				if(pass != nullptr && pass->hasShader())
 				{
 					shader = _getPassRenderShader(comp, pass);
 				}
@@ -384,7 +386,7 @@ RenderSystem::_renderAllComponents(
 		}
 		// calc which shader to use for rendering
 		std::shared_ptr<Shader> shader;
-		if(pass != nullptr)
+		if(pass != nullptr && pass->hasShader())
 		{
 			shader = _getPassRenderShader(comp, pass);
 		}
@@ -750,7 +752,19 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 		{
 			// was removed
 			auto* comp = get(entityId);
-			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
+			logger << "Size " << (mZSortedTransparentEntityIdsToVaoIndex.size()) << "\n";
+			logger << "VAO Size " << (comp->getNumVertexArrays()) << "\n";
+			logger << "Resize to " << (mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays()) << "\n";
+
+			unsigned int numVaos = 0;
+			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
+			{
+				auto* comp = get(*it);
+				numVaos += comp->getNumVertexArrays();
+			}
+			mZSortedTransparentEntityIdsToVaoIndex.resize(numVaos);
+
+			//mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
 			// rebuild mapping completely
 			unsigned int offset = 0;
 			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)

@@ -23,6 +23,9 @@ Texture& Texture::operator=(Texture && rhs)
 	// 2. Stage: transfer data from src to target
 	mId = rhs.mId;
 	mType = rhs.mType;
+	mWrapModeS = rhs.mWrapModeS;
+	mWrapModeR = rhs.mWrapModeR;
+	mWrapModeT = rhs.mWrapModeT;
 	// 3. Stage: modify src to a well defined state
 	rhs.mId = GL_INVALID_VALUE;
 

@@ -129,4 +129,5 @@ void
 Material::_connectToEntityId(unsigned int entityId) 
 {
 	mEntityId = entityId;
+	ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->updateTransparencyMode(mEntityId, mIsTransparent);
 }
