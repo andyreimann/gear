@@ -221,6 +221,7 @@ TestScene::createWalls()
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
 	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(5.f, 0.5f, 5.f));
+	transformation->rotateX(10.f);
 	transformation->setPosition(glm::vec3(0.f, -20.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
@@ -229,6 +230,11 @@ TestScene::createWalls()
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
+	renderComp->calculateBinormalsAndTangents();
+	
+	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/NormalMapping.g2fx"));
+	renderComp->material.setTexture(G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "Resources/normalmap.png", G2::NEAREST, G2::NEAREST, false));
+
 	mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(
 		G2::Physics::CollisionShapeDescriptor::box(glm::vec3(5.f, 0.5f, 5.f)),
 		G2::Physics::RigidBodyDescriptor().setMass(0.f).setFriction(0.5f).setRestitution(0.7f),

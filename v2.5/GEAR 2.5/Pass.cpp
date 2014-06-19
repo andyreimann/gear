@@ -23,6 +23,8 @@ Pass::Pass(
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+							WrapMode::getWrapMode(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
+							WrapMode::getWrapMode(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value), 
 							false,
 							nullptr))
 				  : (

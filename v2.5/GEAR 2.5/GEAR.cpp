@@ -29,6 +29,9 @@ void G2_init()
 	GLDEBUG( glEnable(GL_MULTISAMPLE) );
 	GLDEBUG( glEnable(GL_CULL_FACE) );
 	GLDEBUG( glEnable(GL_BLEND) );
+	int max;
+	GLDEBUG( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
+	logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << endl;
 	
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 

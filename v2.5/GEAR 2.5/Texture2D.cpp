@@ -11,6 +11,8 @@ Texture2D::Texture2D(unsigned int minFilter,
 					 unsigned int width,
 					 unsigned int height,
 					 unsigned int format,
+					 WrapMode::Name wrapS,
+					 WrapMode::Name wrapT,
 					 bool compress,
 					 unsigned char * data)
 	: Texture(GL_TEXTURE_2D),
@@ -29,8 +31,8 @@ Texture2D::Texture2D(unsigned int minFilter,
 	GLDEBUG( glBindTexture(mType, mId) );
 	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, mMinFilter) );
 	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, mMagFilter) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, wrapS) );
+	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, wrapT) );
 	GLDEBUG( glTexImage2D(mType, 0, baseFormatToCompressedFormat(format, mCompressed), mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data) );
 	GLint compFlag;
 	GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
@@ -73,7 +75,7 @@ Texture2D::init()
 }
 
 std::shared_ptr<Texture2D>
-Texture2D::Builder::buildResource(unsigned minFilter, unsigned magFilter, bool compress) 
+Texture2D::Builder::buildResource(unsigned minFilter, unsigned magFilter, bool compress, WrapMode::Name wrapS, WrapMode::Name wrapT) 
 {
 	ilBindImage(id);		// bind ID as current Texture
 
@@ -86,7 +88,7 @@ Texture2D::Builder::buildResource(unsigned minFilter, unsigned magFilter, bool c
 	unsigned height		= ilGetInteger( IL_IMAGE_HEIGHT );	
 	unsigned format		= ilGetInteger( IL_IMAGE_FORMAT );
 	// build texture
-	std::shared_ptr<Texture2D> tex(new Texture2D(minFilter, magFilter, width, height, format, compress, data));
+	std::shared_ptr<Texture2D> tex(new Texture2D(minFilter, magFilter, width, height, format, wrapS, wrapT, compress, data));
 	ilBindImage(0);
 	return tex;
 }

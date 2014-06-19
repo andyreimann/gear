@@ -8,21 +8,21 @@
 using namespace G2;
 
 std::shared_ptr<Texture2D>
-TextureImporter::importResource(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress) 
+TextureImporter::importResource(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress, WrapMode::Name wrapS, WrapMode::Name wrapT) 
 {
 	
 	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
-		return it->second->build(minFilter, magFilter, compress);
+		return it->second->build(minFilter, magFilter, compress, wrapS, wrapT);
 	}
 	// should never occur
 	return std::shared_ptr<Texture2D>();
 }
 
 std::pair<std::string,std::shared_ptr<Texture2D::Builder>> 
-TextureImporter::produceResourceBuilder(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress) 
+TextureImporter::produceResourceBuilder(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress, WrapMode::Name wrapS, WrapMode::Name wrapT) 
 {
 	logger << "[TextureImporter] Import image file " << fileName << endl;
 

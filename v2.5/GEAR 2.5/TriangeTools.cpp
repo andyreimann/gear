@@ -21,6 +21,9 @@ TriangeTools::calculateTangentAndBinormalForTriangle(
 	if(TriangeTools::isDegenerated(p1,p2,p3) ) 
 	{
 		logger << "[TriangleTools] Detected degenerated triangle!" << endl;
+		tangents[i1]  = tangents[i2]  = tangents[i3]  = glm::vec3(1.f,0.f,0.f);
+		binormals[i1] = binormals[i2] = binormals[i3] = glm::vec3(0.f,0.f,1.f);
+		return;
 	}
 	glm::vec3 p2p1, p3p1;
 	float c2c1_T, c2c1_B, c3c1_T, c3c1_B;

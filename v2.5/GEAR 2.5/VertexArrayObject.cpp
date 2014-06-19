@@ -172,7 +172,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-    GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
@@ -202,7 +202,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-    GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
@@ -232,7 +232,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-    GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
@@ -440,14 +440,6 @@ Semantics::getSemantic(std::string const& name)
 	else if(name == "TEXCOORD_5") 
 	{
 		return TEXCOORD_5;
-	}
-	else if(name == "TEXCOORD_6") 
-	{
-		return TEXCOORD_6;
-	}
-	else if(name == "TEXCOORD_7") 
-	{
-		return TEXCOORD_7;
 	}
 	else if(name == "TANGENT") 
 	{

@@ -20,7 +20,9 @@ MultipleRenderTarget::allocateRenderTexture(BufferAttachment::Name attachmentPoi
 			NEAREST, 
 			mWidth, 
 			mHeight, 
-			RGBA, 
+			RGBA,
+			WrapMode::REPEAT,
+			WrapMode::REPEAT, 
 			false,
 			nullptr
 		)

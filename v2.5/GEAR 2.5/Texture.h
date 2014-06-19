@@ -5,6 +5,24 @@
 
 namespace G2 
 {
+	namespace WrapMode
+	{
+		enum Name {
+			CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
+			CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
+			MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
+			MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
+			REPEAT = GL_REPEAT,
+			NUM_WRAP_MODES,
+			WRAP_MODE_INVALID = GL_INVALID_VALUE,
+		};
+		/** This function will parse the given string to the appropriate
+		 * WrapMode enum value.
+		 * @param name The name to parse.
+		 * @return The parsed WrapMode enum value.
+		 */
+		WrapMode::Name getWrapMode(std::string const& name);
+	};
 	/** This class defines...
 	 * @created:	2014/02/12
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -69,5 +87,9 @@ namespace G2
 
 			unsigned int	mId;			// The OpenGL texture ID
 			int				mType;			// The OpenGL texture type
+			
+			WrapMode::Name  mWrapModeS;		// The textures wrap mode for s coordinates
+			WrapMode::Name  mWrapModeT;		// The textures wrap mode for s coordinates
+			WrapMode::Name  mWrapModeR;		// The textures wrap mode for s coordinates
 	};
 };

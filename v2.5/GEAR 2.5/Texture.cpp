@@ -251,3 +251,29 @@ Texture::getFormatByString(std::string const& format)
 	if(format == "INTENSITY_UI") { return INTENSITY_UI; }
 	return GL_INVALID_VALUE;
 }
+
+WrapMode::Name
+WrapMode::getWrapMode(std::string const& name) 
+{
+	if(name == "CLAMP_TO_EDGE") 
+	{
+		return CLAMP_TO_EDGE;
+	}
+	if(name == "CLAMP_TO_BORDER") 
+	{
+		return CLAMP_TO_BORDER;
+	}
+	else if(name == "MIRRORED_REPEAT") 
+	{
+		return MIRRORED_REPEAT;
+	}
+	else if(name == "MIRROR_CLAMP_TO_EDGE") 
+	{
+		return MIRROR_CLAMP_TO_EDGE;
+	}
+	else if(name == "REPEAT") 
+	{
+		return REPEAT;
+	}
+	return WRAP_MODE_INVALID;
+}

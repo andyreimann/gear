@@ -21,7 +21,7 @@ namespace G2
 			struct Builder : public ResourceBuilder<Builder,Texture2D>
 			{
 
-				std::shared_ptr<Texture2D> buildResource(unsigned minFilter, unsigned magFilter, bool compress);
+				std::shared_ptr<Texture2D> buildResource(unsigned minFilter, unsigned magFilter, bool compress, WrapMode::Name wrapS, WrapMode::Name wrapT);
 				~Builder();
 
 				unsigned id; // The IL image id
@@ -42,6 +42,8 @@ namespace G2
 					  unsigned int width,
 					  unsigned int height,
 					  unsigned int format,
+					  WrapMode::Name wrapS,
+					  WrapMode::Name wrapT,
 					  bool compress,
 					  unsigned char * data = nullptr);
 			/// Move ctor.

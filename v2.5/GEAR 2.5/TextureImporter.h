@@ -14,7 +14,20 @@ namespace G2
 	class TextureImporter : public Importer<TextureImporter,Texture2D, Texture2D::Builder>
 	{
 		public:
-			std::shared_ptr<Texture2D> importResource(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress);
-			std::pair<std::string,std::shared_ptr<Texture2D::Builder>> produceResourceBuilder(std::string const& fileName, unsigned minFilter, unsigned magFilter, bool compress);
+			std::shared_ptr<Texture2D> importResource(
+				std::string const& fileName, 
+				unsigned minFilter, 
+				unsigned magFilter, 
+				bool compress = false, 
+				WrapMode::Name wrapS = WrapMode::REPEAT, 
+				WrapMode::Name wrapT = WrapMode::REPEAT);
+
+			std::pair<std::string,std::shared_ptr<Texture2D::Builder>> produceResourceBuilder(
+				std::string const& fileName, 
+				unsigned minFilter, 
+				unsigned magFilter, 
+				bool compress = false, 
+				WrapMode::Name wrapS = WrapMode::REPEAT,
+				WrapMode::Name wrapT = WrapMode::REPEAT);
 	};
 };
