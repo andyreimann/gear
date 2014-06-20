@@ -1,5 +1,4 @@
 #pragma once
-#include "RenderComponent.h"
 #include "Logger.h"
 
 #include <glm/glm.hpp>
@@ -8,6 +7,24 @@
 
 namespace G2 
 {
+	class RenderSystem;
+	struct VaoIndexDrawCallPair
+	{
+		VaoIndexDrawCallPair()
+			: vaoIndex(0),
+			drawCall(0) {}
+		VaoIndexDrawCallPair(unsigned int vaoIndex, unsigned int drawCall)
+			: vaoIndex(vaoIndex),
+			drawCall(drawCall) {}
+		G2::VaoIndexDrawCallPair& operator=(G2::VaoIndexDrawCallPair const& rhs)
+		{
+			vaoIndex = rhs.vaoIndex;
+			drawCall = rhs.drawCall;
+			return *this;
+		}
+		unsigned int vaoIndex;
+		unsigned int drawCall;
+	};
 	/// This class defines...
 	/// @created:	2014/06/11
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -19,13 +36,7 @@ namespace G2
 				: mCameraPosition(cameraPosition),
 				mRenderSystem(renderSystem) {}
 			
-			bool operator()(std::pair<unsigned int,unsigned int> a, std::pair<unsigned int,unsigned int> b)
-			{
-				float distA = glm::length(mCameraPosition - mRenderSystem->get(a.first)->worldSpaceAABBs[a.second].getCenter());
-				float distB = glm::length(mCameraPosition - mRenderSystem->get(b.first)->worldSpaceAABBs[b.second].getCenter());
-				// objects more far away are considered to be "smaller" aka rendered earlier
-				return distA > distB;
-			}
+			bool operator()(std::pair<unsigned int,VaoIndexDrawCallPair> a, std::pair<unsigned int,VaoIndexDrawCallPair> b);
 			
 		private:
 

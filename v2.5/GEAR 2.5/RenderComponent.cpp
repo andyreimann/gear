@@ -84,14 +84,48 @@ RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value)
 void
 RenderComponent::allocateVertexArrays(unsigned int numVertexArrayObjects) 
 {
-	int sizeDifference = (int)numVertexArrayObjects - (int)mVaos.size();
+	int drawCallsDifference = 0;
+	if(mVaos.size() > numVertexArrayObjects)
+	{
+		// calculate the number of draw calls, which will disappear
+		for(size_t i = numVertexArrayObjects; i < mVaos.size(); ++i)
+		{
+			drawCallsDifference -= mVaos[i].getNumDrawCalls();
+		}
+	}
+	else
+	{
+		// we just add one draw call per newly added VertexArrayObject
+		drawCallsDifference = (int)numVertexArrayObjects - (int)mVaos.size();
+	}
 	mVaos.resize(numVertexArrayObjects);
-	mVaosFrustumCulled.resize(numVertexArrayObjects);
+	mVaosFrustumCulled.resize(mVaosFrustumCulled.size()+drawCallsDifference);
 	
-	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
-	renderSystem->scheduleAABBRecalculation(getEntityId());
-	renderSystem->_onVertexArrayObjectsResize(getEntityId(),sizeDifference);
+	mRenderSystem->scheduleAABBRecalculation(getEntityId());
+	mRenderSystem->_onDrawCallResize(getEntityId(),drawCallsDifference);
 	material._connectToEntityId(getEntityId());
+}
+
+void
+RenderComponent::allocateIndexArrays(unsigned int vertexArrayIndex, unsigned int numIndexArrays) 
+{
+	int drawCallsDifference = 0;
+	if(mVaos[vertexArrayIndex].hasIndexBuffers())
+	{
+		// calculate the number of draw calls, which will be added
+		drawCallsDifference = (int)numIndexArrays - (int)mVaos[vertexArrayIndex].getNumDrawCalls();
+	}
+	else
+	{
+		// this vao is already registered with one draw call from allocateVertexArrays at some point before!
+		// take this into account -> -1
+		drawCallsDifference = (int)numIndexArrays-1;
+	}
+	mVaos[vertexArrayIndex]._resizeIndexBufferCount(numIndexArrays);
+	mVaosFrustumCulled.resize(mVaosFrustumCulled.size()+drawCallsDifference);
+
+	mRenderSystem->scheduleAABBRecalculation(getEntityId());
+	mRenderSystem->_onDrawCallResize(getEntityId(),drawCallsDifference);
 }
 
 void

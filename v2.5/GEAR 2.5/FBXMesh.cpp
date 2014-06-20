@@ -153,7 +153,7 @@ FBXMesh::Builder::buildResource()
 		}
 		if(meshData.indices.size() > 0)
 		{
-			renderComponent->getVertexArray(i).resizeIndexBufferCount(1);
+			renderComponent->allocateIndexArrays(i,1);
 			renderComponent->getVertexArray(i).writeIndices(0, &meshData.indices[0], (unsigned int)meshData.indices.size());
 		}
 	}

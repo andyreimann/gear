@@ -116,3 +116,7 @@ v2.5/lib/x64/Debug/GEARSdlContext.lib
 tests/bin/x64/Release/GEARSdlContext.dll
 v2.5/lib/x64/Release/GEARSdlContext.dll
 v2.5/lib/x64/Release/GEARSdlContext.lib
+tests/bin/x64/Debug/GEARTerrains.dll
+v2.5/GEAR Terrains/GEAR Terrains.vcxproj.user
+v2.5/lib/x64/Debug/GEARTerrains.dll
+v2.5/lib/x64/Debug/GEARTerrains.lib

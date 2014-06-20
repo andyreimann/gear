@@ -5,6 +5,7 @@
 #include "EffectImporter.h"
 #include "AABB.h"
 #include "RenderStatesGroup.h"
+#include "ZSorter.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -172,7 +173,7 @@ namespace G2
 				std::shared_ptr<Shader>& boundShader,
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem,
-				int vertexArrayObjectIndex = -1
+				VaoIndexDrawCallPair* drawCallToDraw = nullptr
 			);
 			/** This function will upload the matrices to the given shader.
 			 */
@@ -212,7 +213,7 @@ namespace G2
 			 * @param entityId The entity id of the RenderComponent
 			 * @param sizeDifference The difference in size of the vertex array objects.
 			 */
-			void _onVertexArrayObjectsResize(unsigned int entityId, int sizeDifference);
+			void _onDrawCallResize(unsigned int entityId, int sizeDifference);
 			/** This function is called from the BaseSystem whenever a component was removed from the BaseSystem.
 			 * @param entityId The ID of the Entity, that was removed.
 			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
@@ -249,7 +250,8 @@ namespace G2
 
 			std::list<unsigned int>							mRecalcAABBEntityIds;
 			std::unordered_set<unsigned int>				mTransparentEntityIds;			// Entity ids of the RenderComponent objects to treat as transparent while rendering
-			std::vector<std::pair<unsigned int,unsigned int>> mZSortedTransparentEntityIdsToVaoIndex;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
+			
+			std::vector<std::pair<unsigned int,VaoIndexDrawCallPair>> mZSortedTransparentEntityIdsToVaoDrawCall;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
 
 			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
 	};

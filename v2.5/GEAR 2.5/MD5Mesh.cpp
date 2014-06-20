@@ -34,7 +34,7 @@ MD5Mesh::createVAO(std::vector<Builder::SubMesh> const& meshes)
 		Builder::SubMesh const& mesh = meshes[i];
 		VertexArrayObject& vao = renderComponent->getVertexArray((unsigned int)i);
 		vao.resizeElementCount((unsigned int)mesh.vertices.size());
-		vao.resizeIndexBufferCount(1);
+		renderComponent->allocateIndexArrays(i,1);
 		vao.writeData( Semantics::POSITION, (glm::vec3*)&mesh.vertices[0]);
 		vao.writeData( Semantics::NORMAL, (glm::vec3*)&mesh.normals[0]);
 		vao.writeData( Semantics::TEXCOORD_0, (glm::vec2*)&mesh.uvs[0]);
@@ -49,7 +49,7 @@ MD5Mesh::Builder::buildResource()
 	// create new MD5Mesh
 	std::shared_ptr<MD5Mesh> mesh = std::shared_ptr<MD5Mesh>(new MD5Mesh());
 
-	// create VAO from submeshes
+	// create VAO from sub meshes
 	mesh->createVAO(subMeshes);
 
 	// attach an animation component and configure it

@@ -538,6 +538,9 @@
     <ClCompile Include="TriangeTools.cpp">
       <Filter>Tools\Triangles</Filter>
     </ClCompile>
+    <ClCompile Include="ZSorter.cpp">
+      <Filter>ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">

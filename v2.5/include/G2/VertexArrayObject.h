@@ -54,6 +54,8 @@ namespace G2
 	 */
 	class VertexArrayObject : public VersionTracker
 	{
+			friend class RenderSystem;
+			friend class RenderComponent;
 		public:
 			
 			/** This constructs a new VertexArrayObject.
@@ -92,19 +94,6 @@ namespace G2
 			 * @return The calling VertexArrayObject instance.
 			 */
 			VertexArrayObject& resizeElementCount(unsigned int numElements);
-			/** Resizes the number of index buffers associated with the VertexArrayObject.
-			 * By default a VertexArrayObject does not use an index buffer.
-			 * If you plan to use one or more index buffers for a VertexArrayObject, you can
-			 * allocate them by a call to this function before accessing them.
-			 * Using more than one index buffer for an VAO will result in the same amount of draw calls during rendering.
-			 * @param numIndexBuffer The new amount of index buffers to allocate.
-			 * @note The VertexArrayObject will try to not reallocate the space if possible.
-			 * Therefore it will hold the biggest requested space as long as possible even
-			 * if you later request a resize to a smaller size.
-			 * @warning Previously written data may be lost!
-			 * @return The calling VertexArrayObject instance.
-			 */
-			VertexArrayObject& resizeIndexBufferCount(unsigned int numIndexBuffer);
 			
 			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec2 const* data);
 			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec3 const* data);
@@ -141,10 +130,6 @@ namespace G2
 			 * when the draw() function is called.
 			 */
 			unsigned int getNumDrawCalls() const;
-			/** Draws the VertexArrayObject with the given OpenGL draw mode.
-			 * @param glDrawMode The OpenGL draw mode to use.
-			 */
-			void draw(int glDrawMode);
 			/** Returns the number of bytes used by one value in the given semantic.
 			 * @note If the semantic is not used in the VertexArrayObject, 0 is returned.
 			 * @return The number of bytes used by one value in the given semantic.
@@ -155,6 +140,19 @@ namespace G2
 
 			~VertexArrayObject();
 		private:
+			/** Resizes the number of index buffers associated with the VertexArrayObject.
+			 * By default a VertexArrayObject does not use an index buffer.
+			 * If you plan to use one or more index buffers for a VertexArrayObject, you can
+			 * allocate them by a call to this function before accessing them.
+			 * Using more than one index buffer for an VAO will result in the same amount of draw calls during rendering.
+			 * @param numIndexBuffer The new amount of index buffers to allocate.
+			 * @note The VertexArrayObject will try to not reallocate the space if possible.
+			 * Therefore it will hold the biggest requested space as long as possible even
+			 * if you later request a resize to a smaller size.
+			 * @warning Previously written data may be lost!
+			 * @return The calling VertexArrayObject instance.
+			 */
+			VertexArrayObject& _resizeIndexBufferCount(unsigned int numIndexBuffer);
 
 			struct IndexBuffer
 			{
@@ -166,10 +164,14 @@ namespace G2
 				unsigned int	numIndices;			// The amount of indices the IndexBufferObject holds
 			};
 
-			void bind();
-			void initVAOBuffer();
-			void deleteBuffers();
-			void unbind();
+			void _bind();
+			/** Draws the VertexArrayObject with the given OpenGL draw mode.
+			 * @param glDrawMode The OpenGL draw mode to use.
+			 */
+			void _draw(int glDrawMode, unsigned int drawCall);
+			void _initVAOBuffer();
+			void _deleteBuffers();
+			void _unbind();
 			
 			bool			mBound;					// Flag if the VertexArrayObject is bound or not.
 			unsigned int	mNumElements;			// The number of elements the VertexArrayObject manages

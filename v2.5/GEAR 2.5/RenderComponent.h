@@ -62,6 +62,13 @@ namespace G2
 			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
 			 */
 			void allocateVertexArrays(unsigned int numVertexArrayObjects);
+			/** This function will allocate the given number of index arrays in the given VertexArrayObject.
+			 * If the given number is smaller than the current amount, some or all index arrays may be deleted.
+			 * @param vertexArrayIndex The index of the VertexArrayObject to allocate index buffers for.
+			 * @param numIndexArrays The number of index arrays to allocate.
+			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
+			 */
+			void allocateIndexArrays(unsigned int vertexArrayIndex, unsigned int numIndexArrays);
 			/** This function will return the number of draw calls, the VertexArrayObject will invoke
 			 * when the draw() function is called.
 			 * @return The  number of draw calls, the VertexArrayObject will invoke

@@ -15,7 +15,6 @@
 #include "Frustum.h"
 #include "LightEffectState.h"
 #include "MultipleRenderTarget.h"
-#include "ZSorter.h"
 
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
@@ -177,7 +176,9 @@ RenderSystem::_renderForward(
 		// bind last scene rendering texture
 		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
 		// draw post processing
-		mFullScreenQuad.draw(GL_QUADS);
+		mFullScreenQuad._bind();
+		mFullScreenQuad._draw(GL_QUADS, 0);
+		mFullScreenQuad._unbind();
 		// unbind render target
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
 	}
@@ -216,7 +217,7 @@ RenderSystem::_renderDeferred(
 	// combine everything back using one surface shader
 	// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
 	//mShadingEffect->bind();
-	mFullScreenQuad.draw(GL_QUADS);
+	mFullScreenQuad._draw(GL_QUADS, 0);
 }
 
 void
@@ -373,13 +374,13 @@ RenderSystem::_renderAllComponents(
 	}
 	
 	// perform Z-Sorting for transparent vertex array objects
-	std::sort(std::begin(mZSortedTransparentEntityIdsToVaoIndex), std::end(mZSortedTransparentEntityIdsToVaoIndex), ZSorter(this, cameraPosition));
+	std::sort(std::begin(mZSortedTransparentEntityIdsToVaoDrawCall), std::end(mZSortedTransparentEntityIdsToVaoDrawCall), ZSorter(this, cameraPosition));
 	
 	// render all transparent vertex array objects Z-ordered
-	for (int i = 0; i < mZSortedTransparentEntityIdsToVaoIndex.size() ; ++i) 
+	for (int i = 0; i < mZSortedTransparentEntityIdsToVaoDrawCall.size() ; ++i) 
 	{
 		// TODO No frustum culling so far for transparent objects!
-		RenderComponent* comp = get(mZSortedTransparentEntityIdsToVaoIndex[i].first);
+		RenderComponent* comp = get(mZSortedTransparentEntityIdsToVaoDrawCall[i].first);
 		if(comp->getEntityId() == entityIdToSkip)
 		{
 			continue;
@@ -402,14 +403,14 @@ RenderSystem::_renderAllComponents(
 
 		GLDEBUG( glDisable(GL_CULL_FACE) );
 		GLDEBUG( glDepthMask(false) );
-		_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem, (int)mZSortedTransparentEntityIdsToVaoIndex[i].second);
+		_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem, &mZSortedTransparentEntityIdsToVaoDrawCall[i].second);
 		GLDEBUG( glDepthMask(true) );
 		GLDEBUG( glEnable(GL_CULL_FACE) );
 	}
 }
 
 void
-RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem, int vertexArrayObjectIndex)
+RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, RenderComponent* component, std::shared_ptr<Shader>& boundShader, TransformSystem* transformSystem, LightSystem* lightSystem, VaoIndexDrawCallPair* drawCallToDraw)
 {
 	// Upload Matrices
 	auto* transformation = transformSystem->get(component->getEntityId());
@@ -444,22 +445,32 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 	_uploadMaterial(boundShader, &component->material);
 
 	// Draw all attached VAO
-	if(vertexArrayObjectIndex < 0)
+	if(drawCallToDraw == nullptr)
 	{ // draw all
-		for (int k = 0; k < component->mVaos.size() ; ++k) 
+		unsigned int frustumCulledIndex = 0;
+		for (int k = 0; k < component->mVaos.size(); ++k) 
 		{
-			// the real culling with the current frustum is done way earlier
-			if(!component->mVaosFrustumCulled[k])
+			unsigned int drawCalls = component->mVaos[k].getNumDrawCalls();
+			component->mVaos[k]._bind();
+			for (unsigned int drawCall = 0; drawCall < drawCalls; ++drawCall) 
 			{
-				component->mVaos[k].draw(component->drawMode);
+				// the real culling with the current frustum is done way earlier
+				if(!component->mVaosFrustumCulled[frustumCulledIndex+drawCall])
+				{
+					component->mVaos[k]._draw(component->drawMode, drawCall);
+				}
 			}
+			component->mVaos[k]._unbind();
+			frustumCulledIndex += drawCalls;
 		}
 	}
 	else
 	{ // only draw given index
-		if(!component->mVaosFrustumCulled[vertexArrayObjectIndex])
+		if(!component->mVaosFrustumCulled[drawCallToDraw->drawCall])
 		{
-			component->mVaos[vertexArrayObjectIndex].draw(component->drawMode);
+			component->mVaos[drawCallToDraw->vaoIndex]._bind();
+			component->mVaos[drawCallToDraw->vaoIndex]._draw(component->drawMode,drawCallToDraw->drawCall);
+			component->mVaos[drawCallToDraw->vaoIndex]._unbind();
 		}
 	}
 }
@@ -616,7 +627,7 @@ RenderSystem::_recalculateAABB(RenderComponent* component, TransformSystem* tran
 			float* vertexData = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
 			for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
 			{
-				AABB& aabb = component->objectSpaceAABBs[aabbIndex++];
+				AABB& aabb = component->objectSpaceAABBs[aabbIndex];
 				aabb.clear();
 				unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
 				unsigned int* indices = vao.getIndexPointer(ib);
@@ -631,13 +642,26 @@ RenderSystem::_recalculateAABB(RenderComponent* component, TransformSystem* tran
 						aabb.merge(((glm::vec4*)vertexData)[indices[v]]);
 					}
 				}
+				transformSystem->lock();
+				auto* transformComponent = transformSystem->get(component->getEntityId());
+			
+				if(transformComponent != nullptr)
+				{
+					component->worldSpaceAABBs[aabbIndex] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
+				}
+				else
+				{
+					component->worldSpaceAABBs[aabbIndex] = aabb;
+				}
+				transformSystem->unlock();
 				vao.returnIndexPointer(ib);
+				++aabbIndex;
 			}
 			vao.returnDataPointer(Semantics::POSITION);
 		}
 		else
 		{
-			AABB& aabb = component->objectSpaceAABBs[aabbIndex++];
+			AABB& aabb = component->objectSpaceAABBs[i];
 			aabb.clear();
 			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
 			if(componentsPerPosition == 3)
@@ -735,7 +759,7 @@ bool
 RenderSystem::_performFrustumCulling(RenderComponent* comp, Frustum const* frustum) 
 {
 	bool unculledFound = false;
-	for(unsigned int v = 0; v < comp->getNumVertexArrays(); ++v)
+	for(unsigned int v = 0; v < comp->getNumDrawCalls(); ++v)
 	{
 		if(frustum->inside(comp->worldSpaceAABBs[v]))
 		{
@@ -767,11 +791,14 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 			// was newly inserted
 			auto* comp = get(entityId);
 			// add mapping for RenderComponent
-			unsigned int offset = (unsigned int)mZSortedTransparentEntityIdsToVaoIndex.size();
-			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() + comp->getNumVertexArrays());
-			for(unsigned int i = 0; i < comp->getNumVertexArrays(); ++i)
+			unsigned int offset = (unsigned int)mZSortedTransparentEntityIdsToVaoDrawCall.size();
+			mZSortedTransparentEntityIdsToVaoDrawCall.resize(mZSortedTransparentEntityIdsToVaoDrawCall.size() + comp->getNumDrawCalls());
+			for(unsigned int v = 0; v < comp->getNumVertexArrays(); ++v)
 			{
-				mZSortedTransparentEntityIdsToVaoIndex[offset++] = std::make_pair(comp->getEntityId(),i);
+				for(unsigned int i = 0; i < comp->getVertexArray(v).getNumDrawCalls(); ++i)
+				{
+					mZSortedTransparentEntityIdsToVaoDrawCall[offset++] = std::make_pair(comp->getEntityId(),VaoIndexDrawCallPair(v,i));
+				}
 			}
 		}
 	}
@@ -782,15 +809,18 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 			// was removed
 			auto* comp = get(entityId);
 
-			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
+			mZSortedTransparentEntityIdsToVaoDrawCall.resize(mZSortedTransparentEntityIdsToVaoDrawCall.size() - comp->getNumDrawCalls());
 			// rebuild mapping completely
 			unsigned int offset = 0;
 			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
 			{
 				auto* comp = get(*it);
-				for(unsigned int i = 0; i < comp->getNumVertexArrays(); ++i)
+				for(unsigned int v = 0; v < comp->getNumVertexArrays(); ++v)
 				{
-					mZSortedTransparentEntityIdsToVaoIndex[offset++] = std::make_pair(comp->getEntityId(),i);
+					for(unsigned int i = 0; i < comp->getVertexArray(v).getNumDrawCalls(); ++i)
+					{
+						mZSortedTransparentEntityIdsToVaoDrawCall[offset++] = std::make_pair(comp->getEntityId(),VaoIndexDrawCallPair(v,i));
+					}
 				}
 			}
 		}
@@ -798,13 +828,13 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 }
 
 void
-RenderSystem::_onVertexArrayObjectsResize(unsigned int entityId, int sizeDifference) 
+RenderSystem::_onDrawCallResize(unsigned int entityId, int sizeDifference) 
 {
 	auto* comp = get(entityId);
 	if(comp->material.isTransparent())
 	{
 		// should be already registered
-		mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() + sizeDifference);
+		mZSortedTransparentEntityIdsToVaoDrawCall.resize(mZSortedTransparentEntityIdsToVaoDrawCall.size() + sizeDifference);
 	}
 }
 
