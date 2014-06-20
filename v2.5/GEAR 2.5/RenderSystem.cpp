@@ -752,19 +752,8 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 		{
 			// was removed
 			auto* comp = get(entityId);
-			logger << "Size " << (mZSortedTransparentEntityIdsToVaoIndex.size()) << "\n";
-			logger << "VAO Size " << (comp->getNumVertexArrays()) << "\n";
-			logger << "Resize to " << (mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays()) << "\n";
 
-			unsigned int numVaos = 0;
-			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
-			{
-				auto* comp = get(*it);
-				numVaos += comp->getNumVertexArrays();
-			}
-			mZSortedTransparentEntityIdsToVaoIndex.resize(numVaos);
-
-			//mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
+			mZSortedTransparentEntityIdsToVaoIndex.resize(mZSortedTransparentEntityIdsToVaoIndex.size() - comp->getNumVertexArrays());
 			// rebuild mapping completely
 			unsigned int offset = 0;
 			for(auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
