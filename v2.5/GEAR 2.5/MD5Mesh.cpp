@@ -32,11 +32,13 @@ MD5Mesh::createVAO(std::vector<Builder::SubMesh> const& meshes)
 	for (int i = 0; i < meshes.size() ; ++i) 
 	{
 		Builder::SubMesh const& mesh = meshes[i];
-		renderComponent->getVertexArray((unsigned int)i).resize((unsigned int)mesh.vertices.size());
-		renderComponent->getVertexArray((unsigned int)i).writeData( Semantics::POSITION, (glm::vec3*)&mesh.vertices[0]);
-		renderComponent->getVertexArray((unsigned int)i).writeData( Semantics::NORMAL, (glm::vec3*)&mesh.normals[0]);
-		renderComponent->getVertexArray((unsigned int)i).writeData( Semantics::TEXCOORD_0, (glm::vec2*)&mesh.uvs[0]);
-		renderComponent->getVertexArray((unsigned int)i).writeIndices( &mesh.indices[0], (unsigned int)mesh.indices.size());
+		VertexArrayObject& vao = renderComponent->getVertexArray((unsigned int)i);
+		vao.resizeElementCount((unsigned int)mesh.vertices.size());
+		vao.resizeIndexBufferCount(1);
+		vao.writeData( Semantics::POSITION, (glm::vec3*)&mesh.vertices[0]);
+		vao.writeData( Semantics::NORMAL, (glm::vec3*)&mesh.normals[0]);
+		vao.writeData( Semantics::TEXCOORD_0, (glm::vec2*)&mesh.uvs[0]);
+		vao.writeIndices( 0, &mesh.indices[0], (unsigned int)mesh.indices.size());
 	}
 	renderComponent->drawMode = GL_TRIANGLES;
 }

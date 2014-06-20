@@ -132,7 +132,7 @@ DebugDrawer::transport(G2::RenderComponent* target)
 {
 	std::lock_guard<std::mutex> lock(mAccessMutex);
 
-	target->getVertexArray(0).resize((unsigned int)mLines.vertices.size())
+	target->getVertexArray(0).resizeElementCount((unsigned int)mLines.vertices.size())
 				   .writeData(Semantics::POSITION, &mLines.vertices[0])
 				   .writeData(Semantics::COLOR_0, &mLines.colors[0]);
 	target->drawMode = GL_LINES;

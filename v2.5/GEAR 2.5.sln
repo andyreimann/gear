@@ -48,6 +48,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR SDL Context", "GEAR SD
 		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR Terrains", "GEAR Terrains\GEAR Terrains.vcxproj", "{4B9C8D0C-4869-4775-81F7-C084E321B807}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27} = {2B6A7B77-BC96-4F30-BDAA-B0CE7DDAFC27}
+		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -154,6 +160,18 @@ Global
 		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|Win32.Build.0 = Release|Win32
 		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|x64.ActiveCfg = Release|x64
 		{05CF8C4F-89F3-4A84-8A28-9A86A5BDD1C8}.Release|x64.Build.0 = Release|x64
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|Win32.Build.0 = Debug|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|x64.ActiveCfg = Debug|x64
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Debug|x64.Build.0 = Debug|x64
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|Win32.ActiveCfg = Release|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|Win32.Build.0 = Release|Win32
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|x64.ActiveCfg = Release|x64
+		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

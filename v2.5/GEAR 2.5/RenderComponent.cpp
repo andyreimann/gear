@@ -53,6 +53,17 @@ G2::RenderComponent::~RenderComponent()
 	}
 }
 
+unsigned int
+RenderComponent::getNumDrawCalls() const 
+{
+	unsigned int drawCalls = 0;
+	for(size_t i = 0; i < mVaos.size(); ++i)
+	{
+		drawCalls += mVaos[i].getNumDrawCalls();
+	}
+	return drawCalls;
+}
+
 void
 RenderComponent::_updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup) 
 {
@@ -147,7 +158,7 @@ RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, S
 		// transfer data from GPU to CPU
 		float* vertices = vao.getDataPointer(vertexSemantic,BufferAccessMode::READ_ONLY);
 		float* texCoords = vao.getDataPointer(texCoordsSemantic,BufferAccessMode::READ_ONLY);
-		if(!vao.hasIndices())
+		if(!vao.hasIndexBuffers())
 		{ // interpret as continuous vertex data for triangles
 			for(unsigned int i = 0; i < vao.getNumElements()-2; i+=2)
 			{
@@ -166,11 +177,16 @@ RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, S
 		}
 		else
 		{ // interpret as indexed vertex data for triangles
+			/********************************************************************
+			 * Since a VertexArrayObject can have more than one index buffer	*
+			 * but we can only calculate tangent and binormal vectors for one,	*
+			 * we just calculate for the very first index buffer!				*
+			 ********************************************************************/
 			// transfer indices data from GPU to CPU
-			unsigned int* indices = vao.getIndexPointer(BufferAccessMode::READ_ONLY);
+			unsigned int* indices = vao.getIndexPointer(0, BufferAccessMode::READ_ONLY);
 
 			// do something
-			for(unsigned int i = 0; i < vao.getNumIndices()-2; i+=2)
+			for(unsigned int i = 0; i < vao.getNumIndices(0)-2; i+=2)
 			{
 				// get 3 vertices (vec3 also works for vec4 data)
 				glm::vec3& p1 = *(glm::vec3*)(&(vertices[indices[i]*vertexComponents]));
@@ -185,7 +201,7 @@ RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, S
 				TriangeTools::calculateTangentAndBinormalForTriangle(indices[i], indices[i+1], indices[i+2], p1, p2, p3, t1, t2, t3, binormals, tangents);
 			}
 			// release data to GPU
-			vao.returnIndexPointer();
+			vao.returnIndexPointer(0);
 		}
 		// release data to GPU
 		vao.returnDataPointer(texCoordsSemantic);

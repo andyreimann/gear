@@ -175,44 +175,44 @@ TestScene::~TestScene()
 void
 TestScene::createPlane(glm::vec4 const& corner, std::shared_ptr<G2::Texture2D> const& diffuseTex, glm::quat const& rot) 
 {
-	mPlanes.push_back(GameObject());
-	auto* plane = mPlanes.back().addComponent<G2::RenderComponent>();
-	plane->allocateVertexArrays(1);
-	plane->drawMode = GL_TRIANGLES;
-	// import and assign a texture
-	plane->material.setTexture(G2::Sampler::NORMAL, diffuseTex); // only rendered/used in passes
+	//mPlanes.push_back(GameObject());
+	//auto* plane = mPlanes.back().addComponent<G2::RenderComponent>();
+	//plane->allocateVertexArrays(1);
+	//plane->drawMode = GL_TRIANGLES;
+	//// import and assign a texture
+	//plane->material.setTexture(G2::Sampler::NORMAL, diffuseTex); // only rendered/used in passes
 
-	// prepare vao
-	// assign vao to RenderComponent using move semantic
-	G2::VertexArrayObject& vao = plane->getVertexArray(0);
+	//// prepare vao
+	//// assign vao to RenderComponent using move semantic
+	//G2::VertexArrayObject& vao = plane->getVertexArray(0);
 
-	vao.resize(4);
+	//vao.resizeElementCount(4);
 
-	glm::vec4 planeGeometry[4];
-	planeGeometry[0] = corner + glm::vec4(-5.f,0.f,-5.f,1.f);
-	planeGeometry[1] = corner + glm::vec4(5.f,0.f,-5.f,1.f);
-	planeGeometry[2] = corner + glm::vec4(5.f,0.f,5.f,1.f);
-	planeGeometry[3] = corner + glm::vec4(-5.f,0.f,5.f,1.f);
+	//glm::vec4 planeGeometry[4];
+	//planeGeometry[0] = corner + glm::vec4(-5.f,0.f,-5.f,1.f);
+	//planeGeometry[1] = corner + glm::vec4(5.f,0.f,-5.f,1.f);
+	//planeGeometry[2] = corner + glm::vec4(5.f,0.f,5.f,1.f);
+	//planeGeometry[3] = corner + glm::vec4(-5.f,0.f,5.f,1.f);
 
-	vao.writeData(G2::Semantics::POSITION, planeGeometry);
+	//vao.writeData(G2::Semantics::POSITION, planeGeometry);
 
-	// build tex coordinates
-	glm::vec2 tex[6];
-	tex[0] = glm::vec2(0.f,0.f);
-	tex[1] = glm::vec2(0.f,1.f);
-	tex[2] = glm::vec2(1.f,1.f);
-	tex[3] = glm::vec2(1.f,0.f);
-	vao.writeData(G2::Semantics::TEXCOORD_0, tex);
+	//// build tex coordinates
+	//glm::vec2 tex[6];
+	//tex[0] = glm::vec2(0.f,0.f);
+	//tex[1] = glm::vec2(0.f,1.f);
+	//tex[2] = glm::vec2(1.f,1.f);
+	//tex[3] = glm::vec2(1.f,0.f);
+	//vao.writeData(G2::Semantics::TEXCOORD_0, tex);
 
-	// build indices - planes were rendered using indices as soon as we add some to the vao
-	unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
-	vao.writeIndices(&indices[0], 6);
+	//// build indices - planes were rendered using indices as soon as we add some to the vao
+	//unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
+	//vao.writeIndices(&indices[0], 6);
 
-	// load and assign texturing shader
-	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Test.g2fx"));
-	
-	auto* transformation = mPlanes.back().addComponent<G2::TransformComponent>();
-	transformation->setRotation(rot);
+	//// load and assign texturing shader
+	//plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Test.g2fx"));
+	//
+	//auto* transformation = mPlanes.back().addComponent<G2::TransformComponent>();
+	//transformation->setRotation(rot);
 }
 
 void 
@@ -262,10 +262,10 @@ TestScene::createWalls()
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
 	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
-	renderComp->material.setSpecular(glm::vec4(0.f,1.f,0.f,1.f));
-	renderComp->material.setShininess(128.f);
-	renderComp->material.setAmbient(glm::vec4(0.0f,0.0f,0.0f,0.3));
-	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,0.0));
+	renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
+	renderComp->material.setShininess(255.f);
+	renderComp->material.setAmbient(glm::vec4(0.0f,0.0f,0.0f,1.0));
+	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.0));
 	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Glass.g2fx"));
 
 	
@@ -525,57 +525,53 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 void
 TestScene::createWaterSurface() 
 {
-	auto* water = mWaterSurface.addComponent<G2::RenderComponent>();
-	water->allocateVertexArrays(1);
-	water->drawMode = GL_TRIANGLES;
-	// prepare vao
-	G2::VertexArrayObject& vao = water->getVertexArray(0);
+	//auto* water = mWaterSurface.addComponent<G2::RenderComponent>();
+	//water->allocateVertexArrays(1);
+	//water->drawMode = GL_TRIANGLES;
+	//// prepare vao
+	//G2::VertexArrayObject& vao = water->getVertexArray(0);
 
-	vao.resize(4);
+	//vao.resizeElementCount(4);
 
-	glm::vec4 planeGeometry[4];
-	planeGeometry[0] = glm::vec4(-5.f,0.f,-5.f,1.f);
-	planeGeometry[1] = glm::vec4(5.f,0.f,-5.f,1.f);
-	planeGeometry[2] = glm::vec4(5.f,0.f,5.f,1.f);
-	planeGeometry[3] = glm::vec4(-5.f,0.f,5.f,1.f);
+	//glm::vec4 planeGeometry[4];
+	//planeGeometry[0] = glm::vec4(-5.f,0.f,-5.f,1.f);
+	//planeGeometry[1] = glm::vec4(5.f,0.f,-5.f,1.f);
+	//planeGeometry[2] = glm::vec4(5.f,0.f,5.f,1.f);
+	//planeGeometry[3] = glm::vec4(-5.f,0.f,5.f,1.f);
 
-	vao.writeData(G2::Semantics::POSITION, planeGeometry);
+	//vao.writeData(G2::Semantics::POSITION, planeGeometry);
 
-	// build tex coordinates
-	glm::vec2 tex[4];
-	tex[0] = glm::vec2(0.f,0.f);
-	tex[1] = glm::vec2(0.f,1.f);
-	tex[2] = glm::vec2(1.f,1.f);
-	tex[3] = glm::vec2(1.f,0.f);
-	vao.writeData(G2::Semantics::TEXCOORD_0, tex);
+	//// build tex coordinates
+	//glm::vec2 tex[4];
+	//tex[0] = glm::vec2(0.f,0.f);
+	//tex[1] = glm::vec2(0.f,1.f);
+	//tex[2] = glm::vec2(1.f,1.f);
+	//tex[3] = glm::vec2(1.f,0.f);
+	//vao.writeData(G2::Semantics::TEXCOORD_0, tex);
 
-	// build tex coordinates
-	glm::vec3 normal[4];
-	normal[0] = glm::vec3(0.f,1.f,0.f);
-	normal[1] = glm::vec3(0.f,1.f,0.f);
-	normal[2] = glm::vec3(0.f,1.f,0.f);
-	normal[3] = glm::vec3(0.f,1.f,0.f);
-	vao.writeData(G2::Semantics::NORMAL, normal);
+	//// build tex coordinates
+	//glm::vec3 normal[4];
+	//normal[0] = glm::vec3(0.f,1.f,0.f);
+	//normal[1] = glm::vec3(0.f,1.f,0.f);
+	//normal[2] = glm::vec3(0.f,1.f,0.f);
+	//normal[3] = glm::vec3(0.f,1.f,0.f);
+	//vao.writeData(G2::Semantics::NORMAL, normal);
 
-	// build indices - planes were rendered using indices as soon as we add some to the vao
-	unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
-	vao.writeIndices(&indices[0], 6);
+	//// build indices - planes were rendered using indices as soon as we add some to the vao
+	//unsigned int indices[6] = {0, 1, 3, 3, 1, 2};
+	//vao.writeIndices(&indices[0], 6);
 
-	// load and assign shader
-	water->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Water.g2fx"));
+	//// load and assign shader
+	//water->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Water.g2fx"));
 
-	water->material
-		.setAmbient(glm::vec4(0.2,0.2,0.2,0.2))
-		.setDiffuse(glm::vec4(0.2,0.3,0.4,0.3))
-		.setSpecular(glm::vec4(0.2,0.3,0.4,0.2))
-		.setShininess(128.f);
-
-	// TODO Check if engine renders transparency without this!
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	auto* transformation = mWaterSurface.addComponent<G2::TransformComponent>();
-	transformation->translate(glm::vec3(0.f,-3.5f,0.f));
+	//water->material
+	//	.setAmbient(glm::vec4(0.2,0.2,0.2,0.2))
+	//	.setDiffuse(glm::vec4(0.2,0.3,0.4,0.3))
+	//	.setSpecular(glm::vec4(0.2,0.3,0.4,0.2))
+	//	.setShininess(128.f);
+	//
+	//auto* transformation = mWaterSurface.addComponent<G2::TransformComponent>();
+	//transformation->translate(glm::vec3(0.f,-3.5f,0.f));
 }
 
 void

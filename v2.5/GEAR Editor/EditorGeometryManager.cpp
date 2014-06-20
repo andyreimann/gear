@@ -40,7 +40,7 @@ EditorGeometryManager::_setAsSelected(unsigned int entityId)
 	// visualize world space AABBs
 	auto* aabbVis = mSelectedRCVis.addComponent<G2::RenderComponent>();
 	mSelectedRCVis.addComponent<EditorComponent>();
-	aabbVis->allocateVertexArrays(renderComp->worldSpaceAABBs.size());
+	aabbVis->allocateVertexArrays((unsigned int)renderComp->worldSpaceAABBs.size());
 	aabbVis->drawMode = GL_LINES;
 	aabbVis->material.setAmbient(glm::vec4(0.f,1.f,0.f,1.f));
 
@@ -48,7 +48,7 @@ EditorGeometryManager::_setAsSelected(unsigned int entityId)
 	{
 		G2::AABB const& aabb = renderComp->worldSpaceAABBs[i];
 		G2::VertexArrayObject& vao = aabbVis->getVertexArray(i);
-		vao.resize(24);
+		vao.resizeElementCount(24);
 		
 		glm::vec3 const& center = aabb.getCenter();
 		glm::vec3 const& he = aabb.getHalfExtends();
@@ -116,7 +116,7 @@ EditorGeometryManager::_onRenderFrame(G2::FrameInfo const& frameInfo)
 				// prepare vao
 				G2::VertexArrayObject& vao = renderComponent->getVertexArray(0);
 
-				vao.resize(32);
+				vao.resizeElementCount(32);
 
 				glm::vec4 geometry[32];
 				// right frustum plane

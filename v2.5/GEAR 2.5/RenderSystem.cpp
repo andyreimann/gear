@@ -45,7 +45,7 @@ RenderSystem::RenderSystem() :
 	EventDistributer::onViewportResize.hook(this, &RenderSystem::_onViewportResize);
 
 	// setup full screen quad in NDC
-	mFullScreenQuad.resize(4);
+	mFullScreenQuad.resizeElementCount(4);
 	glm::vec3 geometry[4];
 	geometry[0] = glm::vec3(-1.f,-1.f,0.f);
 	geometry[1] = glm::vec3( 1.f,-1.f,0.f);
@@ -604,44 +604,73 @@ RenderSystem::_getPassRenderShader(RenderComponent* component, Pass const* pass)
 void
 RenderSystem::_recalculateAABB(RenderComponent* component, TransformSystem* transformSystem) 
 {
-	component->objectSpaceAABBs.resize(component->getNumVertexArrays());
-	component->worldSpaceAABBs.resize(component->getNumVertexArrays());
+	unsigned int drawCalls = component->getNumDrawCalls();
+	component->objectSpaceAABBs.resize(drawCalls);
+	component->worldSpaceAABBs.resize(drawCalls);
+	unsigned int aabbIndex = 0;
 	for(unsigned int i = 0; i < component->getNumVertexArrays(); ++i)
 	{
 		VertexArrayObject& vao = component->getVertexArray(i);
-		AABB& aabb = component->objectSpaceAABBs[i];
-		aabb.clear();
-		unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
-		if(componentsPerPosition == 3)
+		if(vao.hasIndexBuffers())
 		{
-			glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-			for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+			float* vertexData = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
 			{
-				aabb.merge(vertices[v]);
+				AABB& aabb = component->objectSpaceAABBs[aabbIndex++];
+				aabb.clear();
+				unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+				unsigned int* indices = vao.getIndexPointer(ib);
+				for(unsigned int v = 0; v < vao.getNumIndices(ib); ++v)
+				{
+					if(componentsPerPosition == 3)
+					{
+						aabb.merge(((glm::vec3*)vertexData)[indices[v]]);
+					}
+					else if(componentsPerPosition == 4)
+					{
+						aabb.merge(((glm::vec4*)vertexData)[indices[v]]);
+					}
+				}
+				vao.returnIndexPointer(ib);
 			}
 			vao.returnDataPointer(Semantics::POSITION);
-		}
-		else if(componentsPerPosition == 4)
-		{
-			glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-			for(unsigned int v = 0; v < vao.getNumElements(); ++v)
-			{
-				aabb.merge(glm::vec3(vertices[v]));
-			}
-			vao.returnDataPointer(Semantics::POSITION);
-		}
-		transformSystem->lock();
-		auto* transformComponent = transformSystem->get(component->getEntityId());
-			
-		if(transformComponent != nullptr)
-		{
-			component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
 		}
 		else
 		{
-			component->worldSpaceAABBs[i] = aabb;
+			AABB& aabb = component->objectSpaceAABBs[aabbIndex++];
+			aabb.clear();
+			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+			if(componentsPerPosition == 3)
+			{
+				glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+				{
+					aabb.merge(vertices[v]);
+				}
+				vao.returnDataPointer(Semantics::POSITION);
+			}
+			else if(componentsPerPosition == 4)
+			{
+				glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
+				{
+					aabb.merge(glm::vec3(vertices[v]));
+				}
+				vao.returnDataPointer(Semantics::POSITION);
+			}
+			transformSystem->lock();
+			auto* transformComponent = transformSystem->get(component->getEntityId());
+			
+			if(transformComponent != nullptr)
+			{
+				component->worldSpaceAABBs[i] = std::move(aabb.transform(transformComponent->getWorldSpaceMatrix()));
+			}
+			else
+			{
+				component->worldSpaceAABBs[i] = aabb;
+			}
+			transformSystem->unlock();
 		}
-		transformSystem->unlock();
 	}
 }
 

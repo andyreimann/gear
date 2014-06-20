@@ -140,7 +140,7 @@ FBXMesh::Builder::buildResource()
 	for (unsigned int i = 0; i < meshMetaData.size() ; ++i) 
 	{
 		MeshMetaData const& meshData = meshMetaData[i];
-		renderComponent->getVertexArray(i).resize((unsigned int)meshData.vertices.size())
+		renderComponent->getVertexArray(i).resizeElementCount((unsigned int)meshData.vertices.size())
 			.writeData(Semantics::POSITION, &meshData.vertices[0]);
 		
 		if(meshData.hasNormals)
@@ -153,7 +153,8 @@ FBXMesh::Builder::buildResource()
 		}
 		if(meshData.indices.size() > 0)
 		{
-			renderComponent->getVertexArray(i).writeIndices(&meshData.indices[0], (unsigned int)meshData.indices.size());
+			renderComponent->getVertexArray(i).resizeIndexBufferCount(1);
+			renderComponent->getVertexArray(i).writeIndices(0, &meshData.indices[0], (unsigned int)meshData.indices.size());
 		}
 	}
 	renderComponent->drawMode = GL_TRIANGLES;
