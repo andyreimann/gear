@@ -4,12 +4,14 @@
 
 #include <G2/Logger.h>
 #include <G2/NameComponent.h>
+#include <G2/RenderComponent.h>
 #include <G2Core/ECSManager.h>
 
 using namespace G2::Editor;
 
 EditorUI::EditorUI(RootEditor* editor) 
-	: mEditor(editor)
+	: mEditor(editor),
+	mSelectedEntityId(-1)
 {
 	initCeguiResources();	
 }
@@ -60,13 +62,21 @@ EditorUI::setup()
 	glc->setGridDimensions(2,2);
 	CEGUI::Window* lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
 		"TaharezLook/Label", "TestLable" );
-	lable->setText("My Test");
+	lable->setText("Wireframe");
 	glc->addChild(lable);
 
-	lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/Label", "TestLable2" );
-	lable->setText("My Test 2");
-	glc->addChild(lable);
+	mWireframeModeToggle = static_cast<CEGUI::ToggleButton*>(CEGUI::WindowManager::getSingletonPtr()->createWindow( 
+		"TaharezLook/Checkbox", "WireframeMode" ));
+	
+	mWireframeModeToggle->subscribeEvent(
+		CEGUI::ToggleButton::EventSelectStateChanged,
+		CEGUI::Event::Subscriber(
+			&EditorUI::_onWireframeModeChanged,
+			this
+		)
+	);
+
+	glc->addChild(mWireframeModeToggle);
 
 	lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
 		"TaharezLook/Label", "TestLable3" );
@@ -101,19 +111,50 @@ EditorUI::_onComponentSelectionChanged(const CEGUI::EventArgs &e)
 	{
 		return false;
 	}
-	int entityId = ((ComponentEntryMetaData*)selected->getUserData())->entityId;
+	mSelectedEntityId = ((ComponentEntryMetaData*)selected->getUserData())->entityId;
 
 	// update properties window
-	_updateProperties(entityId);
+	_updateProperties(mSelectedEntityId);
 
-	onComponentSelectionChanged(entityId); // fire for other observers
+	onComponentSelectionChanged(mSelectedEntityId); // fire for other observers
+	return true;
+}
+
+bool
+EditorUI::_onWireframeModeChanged(const CEGUI::EventArgs &e) 
+{
+	if(mSelectedEntityId == -1)
+	{
+		mWireframeModeToggle->setSelected(false);
+	}
+	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()->get(mSelectedEntityId);
+	if(renderComp != nullptr)
+	{
+		if(mWireframeModeToggle->isSelected())
+		{
+			renderComp->setPolygonDrawMode(G2::PolygonDrawMode::LINE);
+		}
+		else
+		{
+			renderComp->setPolygonDrawMode(G2::PolygonDrawMode::FILL);
+		}
+	}
 	return true;
 }
 
 void
 EditorUI::_updateProperties(unsigned int entityId) 
 {
-
+	// initialize all the properties to the state of the currently selected entity
+	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()->get(mSelectedEntityId);
+	if(renderComp != nullptr)
+	{
+		mWireframeModeToggle->setSelected(renderComp->getPolygonDrawMode() == G2::PolygonDrawMode::LINE);
+	}
+	else
+	{
+		mWireframeModeToggle->setSelected(false);
+	}
 }
 
 void

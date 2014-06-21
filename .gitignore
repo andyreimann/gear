@@ -120,3 +120,5 @@ tests/bin/x64/Debug/GEARTerrains.dll
 v2.5/GEAR Terrains/GEAR Terrains.vcxproj.user
 v2.5/lib/x64/Debug/GEARTerrains.dll
 v2.5/lib/x64/Debug/GEARTerrains.lib
+tests/Terrain Test/Terrain Test.vcxproj.andy.nvuser
+tests/Terrain Test/Terrain Test.vcxproj.user

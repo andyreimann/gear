@@ -164,13 +164,13 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data)
 	bytes = sizeof(float) * 2;
 	if(bufferId == GL_INVALID_VALUE)
 	{
-		_bind();
+		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
 		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 2, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
-		_unbind();
+		unbind();
 		// a new semantic was added
 		updateVersion();
 		return *this;
@@ -194,13 +194,13 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data)
 	bytes = sizeof(float) * 3;
 	if(bufferId == GL_INVALID_VALUE)
 	{
-		_bind();
+		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
 		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 3, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
-		_unbind();
+		unbind();
 		// a new semantic was added
 		updateVersion();
 		return *this;
@@ -224,13 +224,13 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
 	if(bufferId == GL_INVALID_VALUE)
 	{
 		bytes = sizeof(float) * 4;
-		_bind();
+		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
 		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 4, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
-		_unbind();
+		unbind();
 		// a new semantic was added
 		updateVersion();
 		return *this;
@@ -298,11 +298,11 @@ VertexArrayObject::writeIndices(unsigned int indexBuffer, unsigned int const* da
 	if(ib.indexBufferId == GL_INVALID_VALUE)
 	{
 		ib.numIndices = numIndices;
-		_bind();
+		bind();
 		GLDEBUG( glGenBuffers(1, &ib.indexBufferId) );
 		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib.indexBufferId) );
 		GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytes * ib.numIndices, data, GL_STATIC_DRAW) );
-		_unbind();
+		unbind();
 		// a new index array was added
 		updateVersion();
 		return *this;
@@ -316,7 +316,7 @@ VertexArrayObject::writeIndices(unsigned int indexBuffer, unsigned int const* da
 }
 
 void
-VertexArrayObject::_bind() 
+VertexArrayObject::bind() 
 {
 	if(!mBound) 
 	{
@@ -326,7 +326,7 @@ VertexArrayObject::_bind()
 }
 
 void
-VertexArrayObject::_unbind() 
+VertexArrayObject::unbind() 
 {
 	if(mBound) 
 	{
@@ -357,7 +357,7 @@ VertexArrayObject::getNumDrawCalls() const
 }
 
 void
-VertexArrayObject::_draw(int glDrawMode, unsigned int drawCall) 
+VertexArrayObject::draw(int glDrawMode, unsigned int drawCall) 
 {
 	if(mBufferIds[Semantics::POSITION] != GL_INVALID_VALUE && mNumElements > 0) 
 	{

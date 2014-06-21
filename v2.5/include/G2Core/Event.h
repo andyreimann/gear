@@ -6,81 +6,21 @@
 #include <vector>
 
 namespace G2
-{
-	template <typename param1, typename param2=void, typename param3=void, typename param4=void>
-	class HandlerBase 
+{	
+	template <typename ... ARGS>
+	class HandlerBase
 	{
 	public:
-		virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3, param4 parameter4) = 0;
-		virtual bool operator==(HandlerBase<param1,param2,param3,param4>& rhs) = 0;
-		virtual bool isSameObject(HandlerBase<param1,param2,param3,param4>& rhs) = 0;
-	};
-	
-	template <typename param1, typename param2, typename param3>
-	class HandlerBase<param1,param2,param3,void>
-	{
-	public:
-		virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3) = 0;
-		virtual bool operator==(HandlerBase<param1,param2,param3>& rhs) = 0;
-		virtual bool isSameObject(HandlerBase<param1,param2,param3>& rhs) = 0;
-	};
-	
-	template <typename param1, typename param2>
-	class HandlerBase<param1,param2,void,void> 
-	{
-	public:
-		virtual void Process(param1 parameter1, param2 parameter2) = 0;
-		virtual bool operator==(HandlerBase<param1,param2>& rhs) = 0;
-		virtual bool isSameObject(HandlerBase<param1,param2>& rhs) = 0;
-	};
-	
-	template <typename param1>
-	class HandlerBase<param1,void,void,void> 
-	{
-	public:
-		virtual void Process(param1 parameter1) = 0;
-		virtual bool operator==(HandlerBase<param1>& rhs) = 0;
-		virtual bool isSameObject(HandlerBase<param1>& rhs) = 0;
+		virtual void Process(ARGS ... args) = 0;
+		virtual bool operator==(HandlerBase<ARGS ...>& rhs) = 0;
+		virtual bool isSameObject(HandlerBase<ARGS ...>& rhs) = 0;
 	};
 
-	template <typename TargetT, typename param1, typename param2=void, typename param3=void, typename param4=void>
-	class Handler : public HandlerBase<param1,param2,param3,param4> 
+	template <typename TargetT, typename ... ARGS>
+	class Handler : public HandlerBase<ARGS ...> 
 	{
 		private:
-			typedef void (TargetT::*method_t)(param1,param2,param3,param4);
-			TargetT* mObject;
-
-		public:
-			method_t mMethod;
-			Handler(TargetT* object, method_t method)
-				: mObject(object), mMethod(method)
-			{ }
-
-			virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3, param4 parameter4)
-			{
-				(mObject->*mMethod)(parameter1,parameter2, parameter3, parameter4);
-			}
-
-			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
-			{
-				Handler<TargetT,param1,param2,param3,param4>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3,param4>*>(&rhs);
-
-				return handler != nullptr && mObject == handler->mObject;
-			}
-
-			virtual bool operator==(HandlerBase<param1,param2,param3,param4>& rhs)
-			{
-				Handler<TargetT,param1,param2,param3,param4>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3,param4>*>(&rhs);
-				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
-				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
-			}
-	};
-
-	template <typename TargetT, typename param1, typename param2, typename param3>
-	class Handler<TargetT, param1, param2, param3, void> : public HandlerBase<param1,param2,param3>
-	{
-		private:
-			typedef void (TargetT::*method_t)(param1, param2, param3);
+			typedef void (TargetT::*method_t)(ARGS ...);
 			TargetT* mObject;
 
 		public:
@@ -89,301 +29,58 @@ namespace G2
 				: mObject(object), mMethod(method) 
 			{ }
 
-			virtual void Process(param1 parameter1, param2 parameter2, param3 parameter3)
+			virtual void Process(ARGS ... args) 
 			{
-				(mObject->*mMethod)(parameter1, parameter2, parameter3);
+				(mObject->*mMethod)(args ...);
 			}
 
-			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
+			virtual bool isSameObject(HandlerBase<ARGS ...>& rhs) 
 			{
-				Handler<TargetT,param1,param2,param3>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3>*>(&rhs);
+				Handler<TargetT,ARGS ...>* handler = dynamic_cast<Handler<TargetT,ARGS ...>*>(&rhs);
 
 				return handler != nullptr && mObject == handler->mObject;
 			}
 
-			virtual bool operator==(HandlerBase<param1,param2,param3>& rhs) 
+			virtual bool operator==(HandlerBase<ARGS ...>& rhs)
 			{
-				Handler<TargetT,param1,param2,param3>* handler = dynamic_cast<Handler<TargetT,param1,param2,param3>*>(&rhs);
+				Handler<TargetT,ARGS ...>* handler = dynamic_cast<Handler<TargetT,ARGS ...>*>(&rhs);
 				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
 				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
 			}
 	};
 
-	template <typename TargetT, typename param1, typename param2>
-	class Handler<TargetT, param1, param2, void, void> : public HandlerBase<param1,param2>
-	{
-		private:
-			typedef void (TargetT::*method_t)(param1,param2);
-			TargetT* mObject;
-
-		public:
-			method_t mMethod;
-			Handler(TargetT* object, method_t method)
-				: mObject(object), mMethod(method)
-			{ }
-
-			virtual void Process(param1 parameter1, param2 parameter2) 
-			{
-				(mObject->*mMethod)(parameter1, parameter2);
-			}
-
-			virtual bool isSameObject(HandlerBase<param1,param2>& rhs) 
-			{
-				Handler<TargetT,param1,param2>* handler = dynamic_cast<Handler<TargetT,param1,param2>*>(&rhs);
-
-				return handler != nullptr && mObject == handler->mObject;
-			}
-
-			virtual bool operator==(HandlerBase<param1,param2>& rhs)
-			{
-				Handler<TargetT,param1,param2>* handler = dynamic_cast<Handler<TargetT,param1,param2>*>(&rhs);
-				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
-				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
-			}
-	};
-
-	template <typename TargetT, typename param1>
-	class Handler<TargetT, param1, void, void, void> : public HandlerBase<param1> 
-	{
-		private:
-			typedef void (TargetT::*method_t)(param1);
-			TargetT* mObject;
-
-		public:
-			method_t mMethod;
-			Handler(TargetT* object, method_t method)
-				: mObject(object), mMethod(method) 
-			{ }
-
-			virtual void Process(param1 parameter1) 
-			{
-				(mObject->*mMethod)(parameter1);
-			}
-
-			virtual bool isSameObject(HandlerBase<param1>& rhs) 
-			{
-				Handler<TargetT,param1>* handler = dynamic_cast<Handler<TargetT,param1>*>(&rhs);
-
-				return handler != nullptr && mObject == handler->mObject;
-			}
-
-			virtual bool operator==(HandlerBase<param1>& rhs)
-			{
-				Handler<TargetT,param1>* handler = dynamic_cast<Handler<TargetT,param1>*>(&rhs);
-				// Important note: For classes with templates, this dynamic cast can fail -> all share same base class
-				return handler != nullptr && mObject == handler->mObject && mMethod == handler->mMethod;
-			}
-	};
-	
-	template <typename param1, typename param2=void, typename param3=void, typename param4=void>
-	class EventReceiver 
-	{ };
-	
-	template <typename param1, typename param2, typename param3>
-	class EventReceiver<param1, param2, param3, void>
-	{ };
-	
-	template <typename param1, typename param2>
-	class EventReceiver<param1, param2, void, void>
+	template <typename ... ARGS>
+	class EventReceiver
 	{ };
 
-	template <typename param1>
-	class EventReceiver<param1, void, void, void>
-	{ };
-
-	template <typename param1, typename param2=void, typename param3=void, typename param4=void>
-	class Event 
-	{
-		public:
-
-			void operator()(param1 parameter1, param2 parameter2, param3 parameter3, param4 parameter4) 
-			{
-				for(int i = 0; i < mEventListeners_.size(); ++i) 
-				{
-					mEventListeners_[i]->Process(parameter1,parameter2,parameter3,parameter4);
-				}
-			}
-			
-			template<typename TargetT>
-			void hook(TargetT* t, void (TargetT::*method)(param1, param2, param3, param4)) 
-			{
-				mEventListeners_.push_back(new Handler<TargetT, param1, param2, param3, param4>(t, method));
-			}
-			
-			template<typename TargetT>
-			void unHook(TargetT* t, void (TargetT::*method)(param1, param2, param3, param4)) 
-			{
-				typename std::vector<HandlerBase<param1,param2,param3,param4>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end()) 
-				{
-					Handler<TargetT, param1, param2, param3, param4> handler(t, method);
-					if((**it) == handler) 
-					{
-						it = mEventListeners_.erase(it);
-						return;
-					}
-					++it;
-				}
-			}
-			
-			template<typename TargetT>
-			void unHookAll(TargetT* t)
-			{
-				typename std::vector<HandlerBase<param1,param2,param3,param4>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end())
-				{
-					Handler<TargetT, param1, param2, param3, param4> handler(t, nullptr);
-					if((**it).isSameObject(handler)) 
-					{
-						it = mEventListeners_.erase(it);
-						continue;
-					}
-					++it;
-				}
-			}
-
-		private:
-			std::vector<HandlerBase<param1,param2,param3,param4>*> mEventListeners_;
-	};
-
-	template <typename param1, typename param2, typename param3>
-	class Event<param1,param2, param3, void> 
-	{
-		public:
-
-			void operator()(param1 parameter1, param2 parameter2, param3 parameter3) 
-			{
-				for(int i = 0; i < mEventListeners_.size(); ++i) 
-				{
-					mEventListeners_[i]->Process(parameter1,parameter2,parameter3);
-				}
-			}
-			
-			template<typename TargetT>
-			void hook(TargetT* t, void (TargetT::*method)(param1, param2, param3)) 
-			{
-				mEventListeners_.push_back(new Handler<TargetT, param1, param2, param3>(t, method));
-			}
-			
-			template<typename TargetT>
-			void unHook(TargetT* t, void (TargetT::*method)(param1, param2, param3)) 
-			{
-				typename std::vector<HandlerBase<param1,param2,param3>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end()) 
-				{
-					Handler<TargetT, param1, param2, param3> handler(t, method);
-					if((**it) == handler)
-					{
-						it = mEventListeners_.erase(it);
-						return;
-					}
-					++it;
-				}
-			}
-			
-			template<typename TargetT>
-			void unHookAll(TargetT* t)
-			{
-				typename std::vector<HandlerBase<param1,param2,param3>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end())
-				{
-					Handler<TargetT, param1, param2, param3> handler(t, nullptr);
-					if((**it).isSameObject(handler)) 
-					{
-						it = mEventListeners_.erase(it);
-						continue;
-					}
-					++it;
-				}
-			}
-
-		private:
-			std::vector<HandlerBase<param1,param2,param3>*> mEventListeners_;
-	};
-	
-	template <typename param1, typename param2>
-	class Event<param1,param2, void, void>
-	{
-		public:
-
-			void operator()(param1 parameter1, param2 parameter2)
-			{
-				for(int i = 0; i < mEventListeners_.size(); ++i) 
-				{
-					mEventListeners_[i]->Process(parameter1,parameter2);
-				}
-			}
-			
-			template<typename TargetT>
-			void hook(TargetT* t, void (TargetT::*method)(param1, param2))
-			{
-				mEventListeners_.push_back(new Handler<TargetT, param1, param2>(t, method));
-			}
-			
-			template<typename TargetT>
-			void unHook(TargetT* t, void (TargetT::*method)(param1, param2))
-			{
-				typename std::vector<HandlerBase<param1,param2>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end())
-				{
-					Handler<TargetT, param1, param2> handler(t, method);
-					if((**it) == handler) 
-					{
-						it = mEventListeners_.erase(it);
-						return;
-					}
-					++it;
-				}
-			}
-			
-			template<typename TargetT>
-			void unHookAll(TargetT* t)
-			{
-				typename std::vector<HandlerBase<param1,param2>*>::iterator it = mEventListeners_.begin();
-				while(it != mEventListeners_.end())
-				{
-					Handler<TargetT, param1, param2> handler(t, nullptr);
-					if((**it).isSameObject(handler)) 
-					{
-						it = mEventListeners_.erase(it);
-						continue;
-					}
-					++it;
-				}
-			}
-
-		private:
-			std::vector<HandlerBase<param1,param2>*> mEventListeners_;
-	};
-
-	template <typename param1>
-	class Event<param1,void, void, void>
+	template <typename ... ARGS>
+	class Event
 	{
 		public:
 
 			Event() {}
 			
-			void operator()(param1 parameter1) 
+			void operator()(ARGS ... args) 
 			{
 				for(int i = 0; i < mEventListeners_.size(); ++i)
 				{
-					mEventListeners_[i]->Process(parameter1);
+					mEventListeners_[i]->Process(args ...);
 				}
 			}
 			
 			template<typename TargetT>
-			void hook(TargetT* t, void (TargetT::*method)(param1))
+			void hook(TargetT* t, void (TargetT::*method)(ARGS ... args))
 			{
-				mEventListeners_.push_back(new Handler<TargetT, param1>(t, method));
+				mEventListeners_.push_back(new Handler<TargetT, ARGS ...>(t, method));
 			}
 			
 			template<typename TargetT>
-			void unHook(TargetT* t, void (TargetT::*method)(param1)) 
+			void unHook(TargetT* t, void (TargetT::*method)(ARGS ... args)) 
 			{
-				typename std::vector<HandlerBase<param1>*>::iterator it = mEventListeners_.begin();
+				typename std::vector<HandlerBase<ARGS ...>*>::iterator it = mEventListeners_.begin();
 				while(it != mEventListeners_.end())
 				{
-					Handler<TargetT, param1> handler(t, nullptr);
+					Handler<TargetT, ARGS ...> handler(t, nullptr);
 					if((**it) == handler) 
 					{
 						it = mEventListeners_.erase(it);
@@ -395,10 +92,10 @@ namespace G2
 			template<typename TargetT>
 			void unHookAll(TargetT* t)
 			{
-				typename std::vector<HandlerBase<param1>*>::iterator it = mEventListeners_.begin();
+				typename std::vector<HandlerBase<ARGS ...>*>::iterator it = mEventListeners_.begin();
 				while(it != mEventListeners_.end())
 				{
-					Handler<TargetT, param1> handler(t, nullptr);
+					Handler<TargetT, ARGS ...> handler(t, nullptr);
 					if((**it).isSameObject(handler)) 
 					{
 						it = mEventListeners_.erase(it);
@@ -409,6 +106,6 @@ namespace G2
 			}
 
 		private:
-			std::vector<HandlerBase<param1>*> mEventListeners_;
+			std::vector<HandlerBase<ARGS ...>*> mEventListeners_;
 	};
 };

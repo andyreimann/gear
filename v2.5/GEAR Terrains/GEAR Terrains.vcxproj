@@ -154,10 +154,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClipmapTerrain.h" />
+    <ClInclude Include="ClipmapTerrainSystem.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClipmapTerrain.cpp" />
+    <ClCompile Include="ClipmapTerrainSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

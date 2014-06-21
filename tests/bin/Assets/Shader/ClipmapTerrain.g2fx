@@ -1,0 +1,55 @@
+Ubershader "Example/Simple" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexcoord ("Tex Coords", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _heightMap ("The shadow texture of a pointlight", sampler2D) = { SAMPLER_6 }
+       _camX ("The camera position x", float)
+       _camZ ("The camera position x", float)
+       _tileSize ("The camera position x", float)
+       _heightmapWidth ("The camera position x", float)
+       _maxHeight ("The camera position x", float)
+       _texScale ("The camera position x", float)
+       _texCoordOffset ("The camera position x", vec2)
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices" // include GEAR default stuff
+ 
+       out Data
+       {
+          vec2 texCoord;
+       } dataOut; 
+
+       void main(void) {
+
+            vec2 texCoordShift = vec2( ((_camX)/_heightmapWidth),
+                                       ((_camZ)/_heightmapWidth) );
+            dataOut.texCoord = (_texCoordOffset + inTexcoord - (texCoordShift)) * _texScale;
+
+            vec4 pos = inPosition;
+            pos.y += _maxHeight * texture( _heightMap, dataOut.texCoord).r;
+            // shift the position of the clipmap vertex to center the clipmaps under the camera
+            pos.x += _camX;
+            pos.z += _camZ;
+
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * pos; // write position of vertex using GEAR default filled matrices
+       }
+     #FRAGMENTPROGRAM
+       #INCLUDE "G2.material" // include GEAR default stuff
+
+       in Data
+       {
+          vec2 texCoord;
+       } dataIn; 
+
+       out vec4 outColor; // here goes the final color
+ 
+       void main() {
+          // just write solid color
+				  outColor = material.ambient + texture(_heightMap,dataIn.texCoord);
+           
+       }
+   }
+ }

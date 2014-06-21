@@ -10,6 +10,7 @@
 #include "RenderStatesGroup.h"
 
 #include <G2Core/BaseComponent.h>
+#include <G2Core/Event.h>
 
 #include <vector>
 
@@ -131,6 +132,16 @@ namespace G2
 			std::vector<AABB>				objectSpaceAABBs;// The object space axis aligned bounding box
 			std::vector<AABB>				worldSpaceAABBs;// The world space axis aligned bounding box (object space aabb transformed)
 			bool							aabbAnimationRecalc; // Flag indicating if the aabb should be recalculated with the animation
+			
+			Event<
+				RenderComponent*,
+				unsigned int,
+				unsigned int,
+				unsigned int&,
+				glm::mat4 const&,
+				std::shared_ptr<Shader> const&,
+				bool&
+			>	renderDrawCallEvent; // 1 = pointer to RenderComponent, 2 = VAO index, 3 = draw call index, 4 = draw mode, 5 = camera space matrix, 6 = bound shader, 7 = render draw call flag
 
 			~RenderComponent();
 		private:

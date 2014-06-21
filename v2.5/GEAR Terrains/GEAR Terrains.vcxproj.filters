@@ -3,8 +3,12 @@
   <ItemGroup>
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="ClipmapTerrainSystem.h" />
+    <ClInclude Include="ClipmapTerrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="ClipmapTerrainSystem.cpp" />
+    <ClCompile Include="ClipmapTerrain.cpp" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics Test - Newton", "Ph
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UI Test - CEGUI", "UI Test - CEGUI\UI Test - CEGUI.vcxproj", "{05FF0636-A65D-4ED3-8D40-D3BB1E405A6F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Terrain Test", "Terrain Test\Terrain Test.vcxproj", "{CF1A9E18-4B30-49C9-935C-57878C22E922}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -53,6 +55,18 @@ Global
 		{05FF0636-A65D-4ED3-8D40-D3BB1E405A6F}.Release|Win32.Build.0 = Release|Win32
 		{05FF0636-A65D-4ED3-8D40-D3BB1E405A6F}.Release|x64.ActiveCfg = Release|x64
 		{05FF0636-A65D-4ED3-8D40-D3BB1E405A6F}.Release|x64.Build.0 = Release|x64
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|Win32.Build.0 = Debug|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|x64.ActiveCfg = Debug|x64
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Debug|x64.Build.0 = Debug|x64
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|Win32.ActiveCfg = Release|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|Win32.Build.0 = Release|Win32
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|x64.ActiveCfg = Release|x64
+		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

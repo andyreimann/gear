@@ -138,6 +138,13 @@ namespace G2
 
 			bool hasIndexBuffers() const { return mIndexBuffer.size() > 0; }
 
+			void bind();
+			/** Draws the VertexArrayObject with the given OpenGL draw mode.
+			 * @param glDrawMode The OpenGL draw mode to use.
+			 */
+			void draw(int glDrawMode, unsigned int drawCall);
+			void unbind();
+
 			~VertexArrayObject();
 		private:
 			/** Resizes the number of index buffers associated with the VertexArrayObject.
@@ -164,14 +171,8 @@ namespace G2
 				unsigned int	numIndices;			// The amount of indices the IndexBufferObject holds
 			};
 
-			void _bind();
-			/** Draws the VertexArrayObject with the given OpenGL draw mode.
-			 * @param glDrawMode The OpenGL draw mode to use.
-			 */
-			void _draw(int glDrawMode, unsigned int drawCall);
 			void _initVAOBuffer();
 			void _deleteBuffers();
-			void _unbind();
 			
 			bool			mBound;					// Flag if the VertexArrayObject is bound or not.
 			unsigned int	mNumElements;			// The number of elements the VertexArrayObject manages

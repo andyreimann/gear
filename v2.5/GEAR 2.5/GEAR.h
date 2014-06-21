@@ -15,6 +15,8 @@
 #include "RenderComponent.h"
 #include "CameraComponent.h"
 #include "LightComponent.h"
+#include "NameComponent.h"
+#include "TransformComponent.h"
 
 // Importer
 #include "TextureImporter.h"

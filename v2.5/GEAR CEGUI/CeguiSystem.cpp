@@ -54,6 +54,7 @@ CeguiSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 		GLDEBUG( glBindTexture(GL_TEXTURE_2D, 0) );
 		GLDEBUG( glUseProgram(0) );
 		GLDEBUG( glActiveTexture(GL_TEXTURE0) );
+		GLDEBUG( glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) );
 		GLDEBUG( glDisable(GL_DEPTH_TEST) );
 		
 		CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();

@@ -31,15 +31,23 @@ namespace G2
 
 			private:
 				bool _onComponentSelectionChanged(const CEGUI::EventArgs &e);
+				bool _onWireframeModeChanged(const CEGUI::EventArgs &e);
+				
+				
 				void _onRenderComponentAdded(unsigned int entityId);
 				void _onRenderComponentRemoved(unsigned int entityId);
 				void _updateProperties(unsigned int entityId);
 
-				RootEditor* mEditor;
-				std::string mEditorAssetsFolder;
+				RootEditor*				mEditor;
+				std::string				mEditorAssetsFolder;
+				unsigned int			mSelectedEntityId;
 				
 				CEGUI::MultiColumnList* mComponentList;
 				CEGUI::ItemListbox*		mPropertiesMainList;
+
+				// Properties UI Elements
+				CEGUI::ToggleButton*	mWireframeModeToggle;
+
 
 		};
 	};

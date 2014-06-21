@@ -176,9 +176,9 @@ RenderSystem::_renderForward(
 		// bind last scene rendering texture
 		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
 		// draw post processing
-		mFullScreenQuad._bind();
-		mFullScreenQuad._draw(GL_QUADS, 0);
-		mFullScreenQuad._unbind();
+		mFullScreenQuad.bind();
+		mFullScreenQuad.draw(GL_QUADS, 0);
+		mFullScreenQuad.unbind();
 		// unbind render target
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
 	}
@@ -217,7 +217,7 @@ RenderSystem::_renderDeferred(
 	// combine everything back using one surface shader
 	// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
 	//mShadingEffect->bind();
-	mFullScreenQuad._draw(GL_QUADS, 0);
+	mFullScreenQuad.draw(GL_QUADS, 0);
 }
 
 void
@@ -451,16 +451,30 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		for (int k = 0; k < component->mVaos.size(); ++k) 
 		{
 			unsigned int drawCalls = component->mVaos[k].getNumDrawCalls();
-			component->mVaos[k]._bind();
+			component->mVaos[k].bind();
 			for (unsigned int drawCall = 0; drawCall < drawCalls; ++drawCall) 
 			{
 				// the real culling with the current frustum is done way earlier
 				if(!component->mVaosFrustumCulled[frustumCulledIndex+drawCall])
 				{
-					component->mVaos[k]._draw(component->drawMode, drawCall);
+					// call any listeners, who plan to modify the draw call
+					bool render = true;
+					component->renderDrawCallEvent(
+						component,
+						k,
+						drawCall,
+						component->drawMode,
+						cameraSpaceMatrix,
+						boundShader,
+						render);
+
+					if(render)
+					{
+						component->mVaos[k].draw(component->drawMode, drawCall);
+					}
 				}
 			}
-			component->mVaos[k]._unbind();
+			component->mVaos[k].unbind();
 			frustumCulledIndex += drawCalls;
 		}
 	}
@@ -468,9 +482,23 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 	{ // only draw given index
 		if(!component->mVaosFrustumCulled[drawCallToDraw->drawCall])
 		{
-			component->mVaos[drawCallToDraw->vaoIndex]._bind();
-			component->mVaos[drawCallToDraw->vaoIndex]._draw(component->drawMode,drawCallToDraw->drawCall);
-			component->mVaos[drawCallToDraw->vaoIndex]._unbind();
+			// call any listeners, who plan to modify the draw call
+			bool render = true;
+			component->renderDrawCallEvent(
+				component,
+				drawCallToDraw->vaoIndex,
+				drawCallToDraw->drawCall,
+				component->drawMode,
+				cameraSpaceMatrix,
+				boundShader,
+				render);
+
+			if(render)
+			{
+				component->mVaos[drawCallToDraw->vaoIndex].bind();
+				component->mVaos[drawCallToDraw->vaoIndex].draw(component->drawMode,drawCallToDraw->drawCall);
+				component->mVaos[drawCallToDraw->vaoIndex].unbind();
+			}
 		}
 	}
 }
