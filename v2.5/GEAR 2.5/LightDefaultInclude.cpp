@@ -70,3 +70,4 @@ LightDefaultInclude::LightDefaultInclude(ShadingLanguage::Name shadingLanguage)
 		mPart = std::string(code);
 	}
 }
+

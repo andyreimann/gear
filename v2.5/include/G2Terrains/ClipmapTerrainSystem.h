@@ -32,7 +32,15 @@ namespace G2
 				 * @param lastCamPos The converted (see function fitPosToGrid) camera position from the last ring i-1. In case of i=1, this variable is meaningless.
 				 * @param camPos The converted  camera position from the ring i.
 				 */
-				void _drawRing(ClipmapTerrain* terrain, int i, glm::vec4 const& lastGridCamPos = glm::vec4(0.f,0.f,0.f,1.f), glm::vec4 const& camPos = glm::vec4(0.f,0.f,0.f,1.f) );
+				void _drawRing(
+					ClipmapTerrain* terrain, 
+					int i,
+					int numRings, 
+					std::shared_ptr<G2::Shader> shader,
+					glm::mat4 const& cameraSpaceMatrix,
+					glm::vec4 const& lastGridCamPos = glm::vec4(0.f,0.f,0.f,1.f), 
+					glm::vec4 const& camPos = glm::vec4(0.f,0.f,0.f,1.f) 
+				);
 			
 
 				
@@ -41,7 +49,11 @@ namespace G2
 				 * @param clipmapLevel The clipmap ring starting with 1 for the first ring.
 				 * @return The converted point.
 				 */
-				glm::vec4 fitPosToGrid(ClipmapTerrain* terrain, glm::vec4 const& pos, int clipmapLevel );
+				glm::vec4 fitPosToGrid(
+					ClipmapTerrain* terrain, 
+					glm::vec4 const& pos, 
+					int clipmapLevel
+				);
 
 		};
 	};

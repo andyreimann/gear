@@ -16,12 +16,16 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 		.rotate(25.f, 0.f)
 		.moveView(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+	mEditorCamera.setInternals(70.f,0.5f,100000.f);
 	
 	// new way of loading shader
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
 	G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setDefaultEffect(effect);
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem,G2::RenderComponent>()
+		->setClearColor(glm::vec4(0.f,0.f,0.f,1.f));
 
 	
 	G2::EventDistributer::onRenderFrame.hook(this, &TerrainTest::onRenderFrame);
@@ -46,7 +50,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 
-	mEditor.start();
+	//mEditor.start();
 
 	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::ClipmapTerrain>();
 	terrain->setup(

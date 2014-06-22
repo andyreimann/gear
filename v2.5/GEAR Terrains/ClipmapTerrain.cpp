@@ -5,7 +5,7 @@
 using namespace G2::Terrain;
 
 ClipmapTerrain::ClipmapTerrain()
-	: mClipmapWidth(50),
+	: mClipmapWidth(16),
 	mTileSize(1.f) // only 1.f works
 {
 	
@@ -76,9 +76,7 @@ ClipmapTerrain::setup(std::shared_ptr<G2::Texture> const& heightMap, std::shared
 	
 	// create the index buffer for the mxm block which starts at [0,0] in world coordinates
 	size = mClipmapWidth;
-	mMMInstanceBlock.numIndices = mViewport.numIndices;
-	//std::vector<unsigned int> indices((size-1) * (size*2 +2) - 2);
-	i = 0;
+	mMMInstanceBlock.numIndices = (size-1) * (size*2 +2) - 2;
 	cnt = 0;
 	startX = 0;
 	startY = 0;
@@ -108,7 +106,179 @@ ClipmapTerrain::setup(std::shared_ptr<G2::Texture> const& heightMap, std::shared
 	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mMMInstanceBlock.numIndices, &indices[0], GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
 	
+	// create the mx3 block for the x-axis instance which starts at [0,0] in world coordinates 
+	int width = mClipmapWidth;
+	int height = 3;
+	mRingFixupX.numIndices = (height-1) * (width*2 +2) - 2;
+	indices.resize(mRingFixupX.numIndices);
+	cnt = 0;
+	startX = 0;
+	startY = 0;
+	for( int y = startY; y < startY+height-1; ++y )
+	{
+		for( int x = startX; x < startX+width; ++x ) 
+		{
+			if( startX == x && startY != y ) {
+				i = x + (y * vdSize);
+				indices[cnt++] = i;
+			}
 
+			i = x + (y * vdSize);
+			indices[cnt++] = i;
+				
+			i = x + ((y+1) * vdSize);
+			indices[cnt++] = i;
+
+			if( startX+width-1 == x && (startY+height-2) != y ) {
+				i = x + ((y+1) * vdSize);
+				indices[cnt++] = i;
+			}
+		}
+	}
+	GLDEBUG( glGenBuffers(1, &mRingFixupX.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRingFixupX.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mRingFixupX.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
+	
+	// create the 3xm block for the z-axis instance which starts at [0,0] in world coordinates 
+	width = 3;
+	height = mClipmapWidth;
+	mRingFixupZ.numIndices = (height-1) * (width*2 +2) - 2;
+	indices.resize(mRingFixupZ.numIndices);
+	cnt = 0;
+	startX = 0;
+	startY = 0;
+	for( int y = startY; y < startY+height-1; ++y )
+	{
+		for( int x = startX; x < startX+width; ++x ) 
+		{
+			if( startX == x && startY != y ) {
+				i = x + (y * vdSize);
+				indices[cnt++] = i;
+			}
+
+			i = x + (y * vdSize);
+			indices[cnt++] = i;
+				
+			i = x + ((y+1) * vdSize);
+			indices[cnt++] = i;
+
+			if( startX+width-1 == x && (startY+height-2) != y ) {
+				i = x + ((y+1) * vdSize);
+				indices[cnt++] = i;
+			}
+		}
+	}
+	GLDEBUG( glGenBuffers(1, &mRingFixupZ.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRingFixupZ.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mRingFixupZ.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
+	
+	// create the interior trim block for the x-axis instance which starts at [0,0] in world coordinates 
+	width = 2 * mClipmapWidth;
+	height = 2;
+	mInteriorTrimX.numIndices = (height-1) * (width*2 +2) - 2;
+	indices.resize(mInteriorTrimX.numIndices);
+	cnt = 0;
+	startX = 0;
+	startY = 0;
+	for( int y = startY; y < startY+height-1; ++y )
+	{
+		for( int x = startX; x < startX+width; ++x ) 
+		{
+			if( startX == x && startY != y ) {
+				i = x + (y * vdSize);
+				indices[cnt++] = i;
+			}
+
+			i = x + (y * vdSize);
+			indices[cnt++] = i;
+				
+			i = x + ((y+1) * vdSize);
+			indices[cnt++] = i;
+
+			if( startX+width-1 == x && (startY+height-2) != y ) {
+				i = x + ((y+1) * vdSize);
+				indices[cnt++] = i;
+			}
+		}
+	}
+	GLDEBUG( glGenBuffers(1, &mInteriorTrimX.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mInteriorTrimX.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mInteriorTrimX.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
+	
+	// create the interior trim block for the z-axis instance which starts at [0,0] in world coordinates 
+	width = 2;
+	height = 2 * mClipmapWidth + 1; // plus one is right here, but not in mInteriorTrimX
+	mInteriorTrimZ.numIndices = (height-1) * (width*2 +2) - 2;
+	indices.resize(mInteriorTrimZ.numIndices);
+	cnt = 0;
+	startX = 0;
+	startY = 0;
+	for( int y = startY; y < startY+height-1; ++y )
+	{
+		for( int x = startX; x < startX+width; ++x ) 
+		{
+			if( startX == x && startY != y ) {
+				i = x + (y * vdSize);
+				indices[cnt++] = i;
+			}
+
+			i = x + (y * vdSize);
+			indices[cnt++] = i;
+				
+			i = x + ((y+1) * vdSize);
+			indices[cnt++] = i;
+
+			if( startX+width-1 == x && (startY+height-2) != y ) {
+				i = x + ((y+1) * vdSize);
+				indices[cnt++] = i;
+			}
+		}
+	}
+	GLDEBUG( glGenBuffers(1, &mInteriorTrimZ.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mInteriorTrimZ.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mInteriorTrimZ.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
+	
+
+
+
+
+
+	
+	
+	// create the outer degenerate
+	startX = 0;
+	startY = 0;
+	mOuterDegenerateX.numIndices = 3 * (2 * mClipmapWidth + 1);
+	indices.clear();
+	indices.resize(mOuterDegenerateX.numIndices);
+	cnt = 0;
+	for( int x = startX; x < startX+(4 * (mClipmapWidth)+1); x+=2 ) {
+		indices[cnt++] = x;
+		indices[cnt++] = x+2;
+		indices[cnt++] = x+1;
+	}
+	GLDEBUG( glGenBuffers(1, &mOuterDegenerateX.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mOuterDegenerateX.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mOuterDegenerateX.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
+	startX = 0;
+	startY = 0;
+	mOuterDegenerateZ.numIndices = 3 * (2 * mClipmapWidth +1 );
+	indices.resize(mOuterDegenerateZ.numIndices);
+	cnt = 0;
+	for(int y = startY; y < startY+(4 * (mClipmapWidth-1)+2); y+=2 ) {
+		indices[cnt++] = y * vdSize;
+		indices[cnt++] = (y+2) * vdSize;
+		indices[cnt++] = (y+1) * vdSize;
+	}
+	GLDEBUG( glGenBuffers(1, &mOuterDegenerateZ.id) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mOuterDegenerateZ.id) );
+	GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mOuterDegenerateZ.numIndices, &indices[0], GL_STATIC_DRAW) );
+	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
 	
 	// init the  Jacobsthal numbers with a_0 = 0 and a_1 = 1
 	mJacobsthalNumbers.push_back(0);
