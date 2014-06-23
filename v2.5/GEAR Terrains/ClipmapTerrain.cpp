@@ -6,7 +6,7 @@ using namespace G2::Terrain;
 
 ClipmapTerrain::ClipmapTerrain()
 	: mClipmapWidth(16),
-	mTileSize(1.f) // only 1.f works
+	mTileSize(1.0f) // only 1.f works
 {
 	
 }
@@ -256,7 +256,7 @@ ClipmapTerrain::setup(std::shared_ptr<G2::Texture> const& heightMap, std::shared
 	indices.clear();
 	indices.resize(mOuterDegenerateX.numIndices);
 	cnt = 0;
-	for( int x = startX; x < startX+(4 * (mClipmapWidth)+1); x+=2 ) {
+	for( unsigned int x = startX; x < startX+(4 * (mClipmapWidth-1)+2); x+=2 ) {
 		indices[cnt++] = x;
 		indices[cnt++] = x+2;
 		indices[cnt++] = x+1;
@@ -270,7 +270,7 @@ ClipmapTerrain::setup(std::shared_ptr<G2::Texture> const& heightMap, std::shared
 	mOuterDegenerateZ.numIndices = 3 * (2 * mClipmapWidth +1 );
 	indices.resize(mOuterDegenerateZ.numIndices);
 	cnt = 0;
-	for(int y = startY; y < startY+(4 * (mClipmapWidth-1)+2); y+=2 ) {
+	for(unsigned int y = startY; y < startY+(4 * (mClipmapWidth-1)+2); y+=2 ) {
 		indices[cnt++] = y * vdSize;
 		indices[cnt++] = (y+2) * vdSize;
 		indices[cnt++] = (y+1) * vdSize;

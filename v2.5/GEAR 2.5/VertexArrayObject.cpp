@@ -152,12 +152,13 @@ VertexArrayObject::_resizeIndexBufferCount(unsigned int numIndexBuffer)
 }
 
 VertexArrayObject&
-VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data)
+VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data, int numElements)
 {
 	if(mNumElements <= 0) 
 	{
 		return *this;
 	}
+	int numElementsToTransfer = numElements == -1 ? mNumElements : numElements;
 	_initVAOBuffer();
 	unsigned int& bufferId = mBufferIds[semantic];
 	unsigned int& bytes = mBytesPerSemantic[semantic];
@@ -167,7 +168,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data)
 		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 2, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
 		unbind();
@@ -176,18 +177,19 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec2 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
 
 VertexArrayObject&
-VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data)
+VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data, int numElements)
 {
 	if(mNumElements <= 0) 
 	{
 		return *this;
 	}
+	int numElementsToTransfer = numElements == -1 ? mNumElements : numElements;
 	_initVAOBuffer();
 	unsigned int& bufferId = mBufferIds[semantic];
 	unsigned int& bytes = mBytesPerSemantic[semantic];
@@ -197,7 +199,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data)
 		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 3, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
 		unbind();
@@ -206,18 +208,19 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec3 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
 
 VertexArrayObject&
-VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
+VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data, int numElements)
 {
 	if(mNumElements <= 0) 
 	{
 		return *this;
 	}
+	int numElementsToTransfer = numElements == -1 ? mNumElements : numElements;
 	_initVAOBuffer();
 	unsigned int& bufferId = mBufferIds[semantic];
 	unsigned int& bytes = mBytesPerSemantic[semantic];
@@ -227,7 +230,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
 		bind();
 		GLDEBUG( glGenBuffers(1, &bufferId) );
 		GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+		GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 		GLDEBUG( glVertexAttribPointer(semantic, 4, GL_FLOAT, GL_FALSE, 0, 0) );
 		GLDEBUG( glEnableVertexAttribArray(semantic) );
 		unbind();
@@ -236,7 +239,7 @@ VertexArrayObject::writeData(Semantics::Name semantic, glm::vec4 const* data)
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, bufferId) );
-	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * mNumElements, data, GL_STATIC_DRAW) );
+	GLDEBUG( glBufferData(GL_ARRAY_BUFFER, bytes * numElementsToTransfer, data, GL_STATIC_DRAW) );
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 	return *this;
 }
@@ -357,13 +360,13 @@ VertexArrayObject::getNumDrawCalls() const
 }
 
 void
-VertexArrayObject::draw(int glDrawMode, unsigned int drawCall) 
+VertexArrayObject::draw(int glDrawMode, unsigned int drawCall, int numVertices) 
 {
 	if(mBufferIds[Semantics::POSITION] != GL_INVALID_VALUE && mNumElements > 0) 
 	{
 		if(mIndexBuffer.size() == 0) 
 		{
-			GLDEBUG( glDrawArrays(glDrawMode, 0, mNumElements) );
+			GLDEBUG( glDrawArrays(glDrawMode, 0, numVertices == -1 ? mNumElements : numVertices) );
 		}
 		else
 		{

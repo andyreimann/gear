@@ -3,12 +3,36 @@
   <ItemGroup>
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="ClipmapTerrainSystem.h" />
-    <ClInclude Include="ClipmapTerrain.h" />
+    <ClInclude Include="ClipmapTerrain.h">
+      <Filter>Clipmapping</Filter>
+    </ClInclude>
+    <ClInclude Include="ClipmapTerrainSystem.h">
+      <Filter>Clipmapping</Filter>
+    </ClInclude>
+    <ClInclude Include="RoamTerrainSystem.h">
+      <Filter>Roam</Filter>
+    </ClInclude>
+    <ClInclude Include="RoamTerrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="ClipmapTerrainSystem.cpp" />
-    <ClCompile Include="ClipmapTerrain.cpp" />
+    <ClCompile Include="ClipmapTerrain.cpp">
+      <Filter>Clipmapping</Filter>
+    </ClCompile>
+    <ClCompile Include="ClipmapTerrainSystem.cpp">
+      <Filter>Clipmapping</Filter>
+    </ClCompile>
+    <ClCompile Include="RoamTerrainSystem.cpp">
+      <Filter>Roam</Filter>
+    </ClCompile>
+    <ClCompile Include="RoamTerrain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Clipmapping">
+      <UniqueIdentifier>{8ec27c6c-39f8-41c0-a9cf-d056dcab983e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Roam">
+      <UniqueIdentifier>{339599d7-3995-4384-9708-73e35051a5e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

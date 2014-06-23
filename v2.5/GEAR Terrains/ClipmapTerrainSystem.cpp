@@ -69,9 +69,10 @@ ClipmapTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& fra
 		
 			
 			shader->setProperty("material.ambient", glm::vec4(1.f,1.f,0.1f,1.f));
+
 			_uploadMatrices(shader, cameraSpaceMatrix, glm::translate(terrain.mClipmapWidth * terrain.mTileSize, 0.0f, terrain.mClipmapWidth * terrain.mTileSize));
-			shader->setProperty( "_texScale", 1.0f );
-			glm::vec2 texCoordOffset = -glm::vec2(((terrain.mClipmapWidth+1.f))/(float)terrain.mHeightMap->getWidth(),((terrain.mClipmapWidth+1.f))/(float)terrain.mHeightMap->getHeight());
+			shader->setProperty( "_texScale", 1.f );
+			glm::vec2 texCoordOffset = -glm::vec2(((terrain.mClipmapWidth + 1.f))/(float)terrain.mHeightMap->getWidth(),((terrain.mClipmapWidth + 1.f))/(float)terrain.mHeightMap->getHeight());
 			shader->setProperty( "_texCoordOffset", texCoordOffset );
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -84,9 +85,10 @@ ClipmapTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& fra
 			for(int i = 1; i <= numRings; ++i)
 			{
 				gridCamPos = fitPosToGrid( &terrain, camPos, i ); // make it move in next coarse grid 
-				float mult = 1.f / std::pow( 2.f, (float)(i-1));
+				float scale = std::pow( 2.0f, (float)(i-1));
+				float mult = 1.f / scale;
 
-				shader->setProperty( "_texScale", std::pow( 2.0f, (float)(i-1)) );
+				shader->setProperty( "_texScale", scale );
 				shader->setProperty( "_camX", gridCamPos.x*mult ); // set scaled camera position
 				shader->setProperty( "_camZ", gridCamPos.z*mult ); // set scaled camera position
 				
@@ -192,6 +194,7 @@ ClipmapTerrainSystem::_drawRing(
 	glm::mat4 cachedModelMatrix = modelMatrix;
 
 	{
+		glDisable( GL_CULL_FACE );
 		// set degenerate color
 		shader->setProperty("material.ambient", glm::vec4(0.2f,(float)i / (float)numRings,0.1f,1.f));
 
@@ -224,6 +227,8 @@ ClipmapTerrainSystem::_drawRing(
 		GLDEBUG( glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, terrain->mOuterDegenerateZ.id ) );
 		GLDEBUG( glDrawElements( GL_TRIANGLES, terrain->mOuterDegenerateZ.numIndices, GL_UNSIGNED_INT, NULL) );
 		GLDEBUG( glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, NULL) );
+
+		glEnable( GL_CULL_FACE );
 	}
 
 	// prepare and render mxm blocks

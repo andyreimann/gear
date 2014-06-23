@@ -95,9 +95,9 @@ namespace G2
 			 */
 			VertexArrayObject& resizeElementCount(unsigned int numElements);
 			
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec2 const* data);
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec3 const* data);
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec4 const* data);
+			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec2 const* data, int numElements = -1);
+			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec3 const* data, int numElements = -1);
+			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec4 const* data, int numElements = -1);
 
 			
 			float* getDataPointer(Semantics::Name semantic, G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
@@ -142,7 +142,7 @@ namespace G2
 			/** Draws the VertexArrayObject with the given OpenGL draw mode.
 			 * @param glDrawMode The OpenGL draw mode to use.
 			 */
-			void draw(int glDrawMode, unsigned int drawCall);
+			void draw(int glDrawMode, unsigned int drawCall, int numVertices = -1);
 			void unbind();
 
 			~VertexArrayObject();

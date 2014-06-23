@@ -62,6 +62,10 @@ namespace G2
 			 * @return The depth of the Texture
 			 */
 			virtual unsigned getDepth() { return 1; }
+			/** This function will return the Channels. 
+			* @return The Channels.
+			*/
+			unsigned const& getChannels() const { return mChannels; }
 			
 			static void		init();
 		private:
