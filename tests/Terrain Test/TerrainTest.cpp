@@ -51,16 +51,18 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 
-	//mEditor.start();
+	mEditor.start();
 
 	//auto* terrain = mTerrainComponent.addComponent<G2::Terrain::ClipmapTerrain>();
 	//terrain->setup(
 	//	mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", GL_LINEAR, GL_LINEAR),
 	//	mEffectImporter.import(ASSET_PATH + "Shader/ClipmapTerrain.g2fx"));
 
-	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>(
+	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>();
+	terrain->setup(
 		mTexImporter.import(ASSET_PATH + "Resources/heightmap2048.png", GL_LINEAR, GL_LINEAR),
 		mEffectImporter.import(ASSET_PATH + "Shader/Simple.g2fx"),
+		25.f,
 		1000000
 	);
 }

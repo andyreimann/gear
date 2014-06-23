@@ -64,7 +64,7 @@ namespace G2
 			TERRAINSDLL_API virtual void Init(RoamTerrain* terrain, int heightX, int heightY, int worldX, int worldY, unsigned char *map);
 			TERRAINSDLL_API virtual void Reset();
 			TERRAINSDLL_API virtual void Tessellate(RoamTerrain* terrain, glm::vec3 const& cameraPosition);
-			TERRAINSDLL_API virtual void Render(RoamTerrain* terrain, std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix);
+			TERRAINSDLL_API virtual void Render(RoamTerrain* terrain, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix);
 			TERRAINSDLL_API virtual void ComputeVariance(RoamTerrain* terrain);
 
 			// The recursive half of the Patch Class
@@ -87,7 +87,9 @@ namespace G2
 				friend class RoamTerrainSystem;
 			public:
 				/// This constructs a new TerrainComponent.
-				TERRAINSDLL_API RoamTerrain(std::shared_ptr<G2::Texture2D>	heightMap, std::shared_ptr<G2::Effect> effect, unsigned int maxTriangles = 100000);
+				TERRAINSDLL_API RoamTerrain();
+
+				TERRAINSDLL_API void setup(std::shared_ptr<G2::Texture2D>	heightMap, std::shared_ptr<G2::Effect> effect, float maxHeight, unsigned int maxTriangles = 100000);
 
 				TERRAINSDLL_API ~RoamTerrain();
 				/** Move constructor to move a TransformComponent.
@@ -100,14 +102,12 @@ namespace G2
 
 				void _reset(glm::vec3 const& cameraPosition, float fovY, float cameraYawAngle);
 				void _tesselate(glm::vec3 const& cameraPosition);
-				void _draw(std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix);
+				void _draw(glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix);
 				
 				TriTreeNode*	_allocateTriange();
 				int getNextTriNode() { return mNextTriNode; }
 				void setNextTriNode( int nNextNode ) { mNextTriNode = nNextNode; }
 				
-
-				std::shared_ptr<G2::Effect>		mEffect;
 				float							mMapSize;			// The size of the entire terrain map
 				float							mPatchSize;			// The size of one patch
 				unsigned int					mNumPatchesPerSide; // the number of patches per side

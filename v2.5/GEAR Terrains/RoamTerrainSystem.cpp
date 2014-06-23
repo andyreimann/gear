@@ -16,7 +16,7 @@ RoamTerrainSystem::RoamTerrainSystem()
 void
 RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo) 
 {
-	if(name == "render")
+	if(name == "postUpdate")
 	{
 		// camera is updated, prepare for rendering of terrain
 
@@ -38,9 +38,6 @@ RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameI
 			cameraPosition = cameraTransformation->getPosition();
 		}
 
-
-		
-		
 		glm::vec4 camPos(0.f,0.f,0.f,1.f);
 			
 		camPos = glm::inverse(cameraSpaceMatrix) * camPos;
@@ -49,12 +46,10 @@ RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameI
 		for(auto i = 0; i < components.size(); ++i) 
 		{
 			RoamTerrain& terrain = components[i];
+			auto* renderComponent = renderSystem->get(terrain.getEntityId());
+			
 
-			auto& shader = terrain.mEffect->getShader();
-			shader->bind();
-			shader->setProperty(std::string("matrices.projection_matrix"), camera->getProjectionMatrix());
 			glm::mat4 modelMatrix = glm::scale(1.f,1.f/10.f,1.f);
-			_uploadMatrices(shader, cameraSpaceMatrix, modelMatrix);
 
 			float yawAngle = 0.f;
 
@@ -64,7 +59,7 @@ RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameI
 
 			_reset(&terrain, glm::vec3(camPos), camera->getFovY(), std::acos(glm::dot(cameraDir, glm::vec4(0.f,0.f,-1.f,0.f) / (glm::length(cameraDir) * glm::length(glm::vec4(0.f,0.f,-1.f,0.f))))));
 			_tesselate(&terrain, glm::vec3(camPos));
-			_draw(&terrain, shader, cameraSpaceMatrix, modelMatrix);
+			_draw(&terrain, cameraSpaceMatrix, modelMatrix);
 		}
 	}
 }
@@ -82,9 +77,9 @@ RoamTerrainSystem::_tesselate(RoamTerrain* terrain, glm::vec3 const& cameraPosit
 }
 
 void
-RoamTerrainSystem::_draw(RoamTerrain* terrain, std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
+RoamTerrainSystem::_draw(RoamTerrain* terrain, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
 {
-	terrain->_draw(shader, cameraSpaceMatrix, modelMatrix);
+	terrain->_draw(cameraSpaceMatrix, modelMatrix);
 }
 
 void

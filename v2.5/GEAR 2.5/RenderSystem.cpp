@@ -80,7 +80,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				this->_recalculateAABB(comp, transformSystem);
 			
-				for (unsigned int k = 0; k < comp->getNumVertexArrays() ; ++k) 
+				for (unsigned int k = 0; k < comp->getNumDrawCalls() ; ++k) 
 				{
 					// TODO Just merging it will may lead to a much bigger AABB for the world as needed over time
 					mWorldAABB.merge(comp->worldSpaceAABBs[k]);

@@ -1,22 +1,28 @@
 #include "RoamTerrain.h"
 
+#include <G2Core/ECSManager.h>
 #include <G2/RenderComponent.h>
+#include <G2/TransformComponent.h>
 #include <G2/Logger.h>
 
 using namespace G2::Terrain;
 
-RoamTerrain::RoamTerrain(std::shared_ptr<G2::Texture2D>	heightMap, std::shared_ptr<G2::Effect> effect, unsigned int maxTriangles)
-	: mHeightMap(heightMap),
-	mEffect(effect),
-	mNumPatchesPerSide(0),
-	mMapSize(heightMap->getWidth()),
+RoamTerrain::RoamTerrain()
+	: mNumPatchesPerSide(0),
+	mMapSize(0),
 	mFrameVariance(50.f), // beginning frame variance (should be high, it will adjust automatically)
 	mNumTrisRendered(0),
 	mDesiredTris(50000)
 {
+}
+
+void
+RoamTerrain::setup(std::shared_ptr<G2::Texture2D>	heightMap, std::shared_ptr<G2::Effect> effect, float maxHeight, unsigned int maxTriangles) 
+{
+	mHeightMap = heightMap;
+	mMapSize = mHeightMap->getWidth();
 	mTriangePool.resize(maxTriangles);
 	mRenderedVertices.resize(maxTriangles*3);
-	mVertexArray.resizeElementCount(maxTriangles*3);
 
 	if(mMapSize == 512)
 	{
@@ -74,6 +80,33 @@ RoamTerrain::RoamTerrain(std::shared_ptr<G2::Texture2D>	heightMap, std::shared_p
 			patch->ComputeVariance(this);
 		}
 	}
+
+	
+
+	// put in some initial vertices
+	mRenderedVertices[0] = glm::vec3(mNumPatchesPerSide * mPatchSize, maxHeight, mNumPatchesPerSide * mPatchSize);
+
+	// setup RenderComponent
+	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
+	auto* renderComponent = renderSystem->get(getEntityId());
+	if(renderComponent == nullptr)
+	{
+		renderComponent = renderSystem->create(getEntityId());
+	}
+	renderComponent->drawMode = GL_TRIANGLES;
+	renderComponent->setEffect(effect);
+	renderComponent->allocateVertexArrays(1);
+	auto& vao = renderComponent->getVertexArray(0);
+	vao.resizeElementCount(maxTriangles*3);
+	vao.writeData(Semantics::POSITION, &mRenderedVertices[0]);
+	// setup TransformComponent
+	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
+	auto* transformComponent = transformSystem->get(getEntityId());
+	if(transformComponent == nullptr)
+	{
+		transformComponent = transformSystem->create(getEntityId());
+	}
+	transformComponent->setScale(glm::vec3(1.f,1.f/255.f*maxHeight,1.f));
 }
 
 RoamTerrain::RoamTerrain(RoamTerrain && rhs) 
@@ -84,7 +117,6 @@ RoamTerrain::RoamTerrain(RoamTerrain && rhs)
 
 RoamTerrain& RoamTerrain::operator=(RoamTerrain && rhs) 
 {
-	mEffect = rhs.mEffect;
 	mMapSize = rhs.mMapSize;
 	mPatchSize = rhs.mPatchSize;
 	mNumPatchesPerSide = rhs.mNumPatchesPerSide;
@@ -199,7 +231,7 @@ RoamTerrain::_tesselate(glm::vec3 const& cameraPosition)
 }
 
 void
-RoamTerrain::_draw(std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
+RoamTerrain::_draw(glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
 {
 
 	// Scale the terrain by the terrain scale specified at compile time.
@@ -209,7 +241,7 @@ RoamTerrain::_draw(std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSp
 		for(unsigned int x = 0; x < mNumPatchesPerSide; ++x)
 		{
 			if (mPatches[y][x].isVisibile())
-				mPatches[y][x].Render(this, shader, cameraSpaceMatrix, modelMatrix);
+				mPatches[y][x].Render(this, cameraSpaceMatrix, modelMatrix);
 		} 
 	}
 
@@ -222,10 +254,18 @@ RoamTerrain::_draw(std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSp
 	if ( mFrameVariance < 0 )
 		mFrameVariance = 0;
 
-	mVertexArray.writeData(G2::Semantics::POSITION, &mRenderedVertices[0], mNumTrisRendered*3);
+	auto* renderComponent = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->get(getEntityId());
+	auto& vao = renderComponent->getVertexArray(0);
+	// this resize effectively does not change the available memory inside of the VAO
+	// since we initially allocated enough memory. It just ensures, that when drawing the VAO
+	// only mNumTrisRendered*3 vertices are drawn!
+	vao.resizeElementCount(mNumTrisRendered*3);
+	vao.writeData(G2::Semantics::POSITION, &mRenderedVertices[0], mNumTrisRendered*3);
+	/*
 	mVertexArray.bind();
 	mVertexArray.draw(GL_TRIANGLES, 0, mNumTrisRendered*3);
 	mVertexArray.unbind();
+	*/
 }
 
 TriTreeNode*
@@ -651,7 +691,7 @@ void Patch::Tessellate(RoamTerrain* terrain, glm::vec3 const& cameraPosition)
 // ---------------------------------------------------------------------
 // Render the mesh.
 //
-void Patch::Render(RoamTerrain* terrain, std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix)
+void Patch::Render(RoamTerrain* terrain, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix)
 {
 	
 	// Translate the patch to the proper world coordinates
