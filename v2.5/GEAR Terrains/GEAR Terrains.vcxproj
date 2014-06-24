@@ -157,6 +157,7 @@
     <ClInclude Include="ClipmapTerrain.h" />
     <ClInclude Include="ClipmapTerrainSystem.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="RoamPatch.h" />
     <ClInclude Include="RoamTerrain.h" />
     <ClInclude Include="RoamTerrainSystem.h" />
     <ClInclude Include="Terrain.h" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="ClipmapTerrain.cpp" />
     <ClCompile Include="ClipmapTerrainSystem.cpp" />
+    <ClCompile Include="RoamPatch.cpp" />
     <ClCompile Include="RoamTerrain.cpp" />
     <ClCompile Include="RoamTerrainSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />

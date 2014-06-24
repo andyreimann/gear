@@ -39,27 +39,26 @@ RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameI
 		}
 
 		glm::vec4 camPos(0.f,0.f,0.f,1.f);
-			
+		
 		camPos = glm::inverse(cameraSpaceMatrix) * camPos;
 		
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		for(auto i = 0; i < components.size(); ++i) 
 		{
 			RoamTerrain& terrain = components[i];
-			auto* renderComponent = renderSystem->get(terrain.getEntityId());
-			
+			if(terrain.mNumRecalculations == 0 || frameInfo.frame%1 == 0)
+			{
+				auto* renderComponent = renderSystem->get(terrain.getEntityId());
 
-			glm::mat4 modelMatrix = glm::scale(1.f,1.f/10.f,1.f);
+				glm::vec4 cameraDir = camera->getInverseCameraRotation() * glm::vec4(0.f,0.f,-1.f,0.f);
+				cameraDir.y = 0.f;
+				cameraDir = glm::normalize(cameraDir);
 
-			float yawAngle = 0.f;
+				_reset(&terrain, glm::vec3(camPos), camera->getFovY(), std::acos(glm::dot(cameraDir, glm::vec4(0.f,0.f,-1.f,0.f) / (glm::length(cameraDir) * glm::length(glm::vec4(0.f,0.f,-1.f,0.f))))));
+				_tesselate(&terrain, glm::vec3(camPos));
+				_draw(&terrain);
 
-			glm::vec4 cameraDir = camera->getInverseCameraRotation() * glm::vec4(0.f,0.f,-1.f,0.f);
-			cameraDir.y = 0.f;
-			cameraDir = glm::normalize(cameraDir);
-
-			_reset(&terrain, glm::vec3(camPos), camera->getFovY(), std::acos(glm::dot(cameraDir, glm::vec4(0.f,0.f,-1.f,0.f) / (glm::length(cameraDir) * glm::length(glm::vec4(0.f,0.f,-1.f,0.f))))));
-			_tesselate(&terrain, glm::vec3(camPos));
-			_draw(&terrain, cameraSpaceMatrix, modelMatrix);
+			}
 		}
 	}
 }
@@ -77,9 +76,9 @@ RoamTerrainSystem::_tesselate(RoamTerrain* terrain, glm::vec3 const& cameraPosit
 }
 
 void
-RoamTerrainSystem::_draw(RoamTerrain* terrain, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
+RoamTerrainSystem::_draw(RoamTerrain* terrain) 
 {
-	terrain->_draw(cameraSpaceMatrix, modelMatrix);
+	terrain->_draw();
 }
 
 void

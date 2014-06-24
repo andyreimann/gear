@@ -30,7 +30,7 @@ namespace G2
 				
 				void _reset(RoamTerrain* terrain, glm::vec3 const& cameraPosition, float fovY, float cameraYawAngle);
 				void _tesselate(RoamTerrain* terrain, glm::vec3 const& cameraPosition);
-				void _draw(RoamTerrain* terrain, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix);
+				void _draw(RoamTerrain* terrain);
 
 				/** This function will upload all the matrices to the shader used for rendering the terrain
 				 * @param shader The shader to upload the matrices to (already bound).

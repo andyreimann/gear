@@ -12,7 +12,12 @@
     <ClInclude Include="RoamTerrainSystem.h">
       <Filter>Roam</Filter>
     </ClInclude>
-    <ClInclude Include="RoamTerrain.h" />
+    <ClInclude Include="RoamTerrain.h">
+      <Filter>Roam</Filter>
+    </ClInclude>
+    <ClInclude Include="RoamPatch.h">
+      <Filter>Roam</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terrain.cpp" />
@@ -25,7 +30,12 @@
     <ClCompile Include="RoamTerrainSystem.cpp">
       <Filter>Roam</Filter>
     </ClCompile>
-    <ClCompile Include="RoamTerrain.cpp" />
+    <ClCompile Include="RoamTerrain.cpp">
+      <Filter>Roam</Filter>
+    </ClCompile>
+    <ClCompile Include="RoamPatch.cpp">
+      <Filter>Roam</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Clipmapping">

@@ -60,10 +60,10 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>();
 	terrain->setup(
-		mTexImporter.import(ASSET_PATH + "Resources/heightmap2048.png", GL_LINEAR, GL_LINEAR),
+		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", GL_LINEAR, GL_LINEAR),
 		mEffectImporter.import(ASSET_PATH + "Shader/Simple.g2fx"),
-		25.f,
-		1000000
+		15.f,
+		100000
 	);
 }
 
