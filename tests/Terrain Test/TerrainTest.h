@@ -36,6 +36,9 @@ class TerrainTest
 
 		void onRenderFrame(G2::FrameInfo const&);
 
+		
+		void generateSpline();
+
 		bool						mExitRendering;
 		G2::SDL::Window&			mWindow;
 		G2Cameras::EditorCamera		mEditorCamera;
@@ -46,6 +49,9 @@ class TerrainTest
 		//G2::Terrain::Terrain		mTerrain;
 
 		G2::Entity					mTerrainComponent;
+		
+		G2::Entity					mSpline;
+		G2::Entity					mSplinePoints;
 		
 		std::shared_ptr<G2::FBXMesh> mLight;
 

@@ -42,31 +42,29 @@ RoamTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& frameI
 		
 		camPos = glm::inverse(cameraSpaceMatrix) * camPos;
 		
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		for(auto i = 0; i < components.size(); ++i) 
 		{
 			RoamTerrain& terrain = components[i];
-			if(terrain.mNumRecalculations == 0 || frameInfo.frame%1 == 0)
+			auto* renderComponent = renderSystem->get(terrain.getEntityId());
+			auto* transformComponent = transformSystem->get(terrain.getEntityId());
+			if(transformComponent != nullptr && transformComponent->updated())
 			{
-				auto* renderComponent = renderSystem->get(terrain.getEntityId());
-
-				glm::vec4 cameraDir = camera->getInverseCameraRotation() * glm::vec4(0.f,0.f,-1.f,0.f);
-				cameraDir.y = 0.f;
-				cameraDir = glm::normalize(cameraDir);
-
-				_reset(&terrain, glm::vec3(camPos), camera->getFovY(), std::acos(glm::dot(cameraDir, glm::vec4(0.f,0.f,-1.f,0.f) / (glm::length(cameraDir) * glm::length(glm::vec4(0.f,0.f,-1.f,0.f))))));
-				_tesselate(&terrain, glm::vec3(camPos));
-				_draw(&terrain);
-
+				// terrain was moved this frame
+				terrain._updatePatchPositions(transformComponent->getWorldSpaceMatrix());
 			}
+
+			// recalculate and render the terrain
+			_reset(&terrain, &camera->getFrustum());
+			_tesselate(&terrain, glm::vec3(camPos));
+			_draw(&terrain);
 		}
 	}
 }
 
 void
-RoamTerrainSystem::_reset(RoamTerrain* terrain, glm::vec3 const& cameraPosition, float fovY, float cameraYawAngle) 
+RoamTerrainSystem::_reset(RoamTerrain* terrain, G2::Frustum const* cameraFrustum) 
 {
-	terrain->_reset(cameraPosition, fovY*2.f, cameraYawAngle * 180.f / (float)M_PI);
+	terrain->_reset(cameraFrustum);
 }
 
 void
@@ -79,13 +77,4 @@ void
 RoamTerrainSystem::_draw(RoamTerrain* terrain) 
 {
 	terrain->_draw();
-}
-
-void
-RoamTerrainSystem::_uploadMatrices(std::shared_ptr<G2::Shader> shader, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& modelMatrix) 
-{
-	shader->setProperty(std::string("matrices.model_matrix"), modelMatrix);
-	shader->setProperty(std::string("matrices.view_matrix"), cameraSpaceMatrix);
-	shader->setProperty(std::string("matrices.modelview_matrix"), cameraSpaceMatrix * modelMatrix);
-	shader->setProperty(std::string("matrices.normal_matrix"), glm::mat3(cameraSpaceMatrix));
 }

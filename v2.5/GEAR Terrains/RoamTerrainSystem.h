@@ -9,12 +9,13 @@
 
 namespace G2 
 {
+	class Frustum;
 	namespace Terrain 
 	{
 		class RoamTerrain;
 
 
-		/** This class defines...
+		/** This ECS-System class will take care of recalculating and rendering each RoamTerrain.
 		 * @created:	2014/06/21
 		 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 		 */
@@ -28,20 +29,9 @@ namespace G2
 
 			private:
 				
-				void _reset(RoamTerrain* terrain, glm::vec3 const& cameraPosition, float fovY, float cameraYawAngle);
+				void _reset(RoamTerrain* terrain, G2::Frustum const* cameraFrustum);
 				void _tesselate(RoamTerrain* terrain, glm::vec3 const& cameraPosition);
 				void _draw(RoamTerrain* terrain);
-
-				/** This function will upload all the matrices to the shader used for rendering the terrain
-				 * @param shader The shader to upload the matrices to (already bound).
-				 * @param cameraSpaceMatrix The camera space matrix to upload.
-				 * @param modelMatrix The model space matrix to upload.
-				 */
-				void _uploadMatrices(
-					std::shared_ptr<G2::Shader> shader,
-					glm::mat4 const& cameraSpaceMatrix,
-					glm::mat4 const& modelMatrix
-				);
 		};
 	};
 };

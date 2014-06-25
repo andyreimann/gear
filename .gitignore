@@ -122,3 +122,6 @@ v2.5/lib/x64/Debug/GEARTerrains.dll
 v2.5/lib/x64/Debug/GEARTerrains.lib
 tests/Terrain Test/Terrain Test.vcxproj.andy.nvuser
 tests/Terrain Test/Terrain Test.vcxproj.user
+tests/bin/x64/Release/GEARTerrains.dll
+v2.5/lib/x64/Release/GEARTerrains.dll
+v2.5/lib/x64/Release/GEARTerrains.lib
