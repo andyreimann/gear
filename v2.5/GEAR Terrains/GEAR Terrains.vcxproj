@@ -160,7 +160,6 @@
     <ClInclude Include="RoamPatch.h" />
     <ClInclude Include="RoamTerrain.h" />
     <ClInclude Include="RoamTerrainSystem.h" />
-    <ClInclude Include="Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClipmapTerrain.cpp" />
@@ -168,7 +167,6 @@
     <ClCompile Include="RoamPatch.cpp" />
     <ClCompile Include="RoamTerrain.cpp" />
     <ClCompile Include="RoamTerrainSystem.cpp" />
-    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

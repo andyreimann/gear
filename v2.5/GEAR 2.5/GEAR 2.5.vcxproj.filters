@@ -281,6 +281,9 @@
     <ClInclude Include="TriangeTools.h">
       <Filter>Tools\Triangles</Filter>
     </ClInclude>
+    <ClInclude Include="NormalMapGenerator.h">
+      <Filter>ImageProcessing\NormalMaps\NormalMapGenerator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -541,6 +544,9 @@
     <ClCompile Include="ZSorter.cpp">
       <Filter>ECS</Filter>
     </ClCompile>
+    <ClCompile Include="NormalMapGenerator.cpp">
+      <Filter>ImageProcessing\NormalMaps\NormalMapGenerator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -734,6 +740,18 @@
     </Filter>
     <Filter Include="Tools\Triangles">
       <UniqueIdentifier>{ab08d07c-33b5-46b0-9068-5ccd2e865f13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer\PixelBuffer">
+      <UniqueIdentifier>{857be368-3e0f-441a-ad54-65834a37ea6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageProcessing">
+      <UniqueIdentifier>{391845ea-c1da-44a6-bf36-6d14489bb9fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageProcessing\NormalMaps">
+      <UniqueIdentifier>{c11c0f93-dce7-47cc-aa91-f4f72e24e442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageProcessing\NormalMaps\NormalMapGenerator">
+      <UniqueIdentifier>{1a1f4f63-982e-4426-a966-9d2d9d899446}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

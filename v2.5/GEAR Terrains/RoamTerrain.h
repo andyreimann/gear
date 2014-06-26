@@ -100,10 +100,6 @@ namespace G2
 				*/
 				void setDesiredTriangleTesselations(unsigned int const& value) { mDesiredTriangleTesselations = value; }
 			private:
-				/** This function will generate a normal texture from the currently loaded 
-				 * heightmap.
-				 */
-				void _generateNormalTexture();
 
 				void _reset(G2::Frustum const* cameraFrustum);
 				void _tesselate(glm::vec3 const& cameraPosition);

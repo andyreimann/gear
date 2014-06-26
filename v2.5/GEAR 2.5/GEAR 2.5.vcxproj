@@ -292,6 +292,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="NameComponent.h" />
     <ClInclude Include="NameSystem.h" />
     <ClInclude Include="NonInstanceable.h" />
+    <ClInclude Include="NormalMapGenerator.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PassBlockParser.h" />
     <ClInclude Include="PassesBlockParser.h" />
@@ -385,6 +386,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="MD5Mesh.cpp" />
     <ClCompile Include="MultipleRenderTarget.cpp" />
     <ClCompile Include="NameSystem.cpp" />
+    <ClCompile Include="NormalMapGenerator.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="PassBlockParser.cpp" />
     <ClCompile Include="PassesBlockParser.cpp" />

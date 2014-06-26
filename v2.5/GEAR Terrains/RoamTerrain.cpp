@@ -6,6 +6,7 @@
 #include <G2/TransformComponent.h>
 #include <G2/Logger.h>
 #include <G2/Frustum.h>
+#include <G2/NormalMapGenerator.h>
 
 #include <glm/gtx/spline.hpp>
 
@@ -161,6 +162,11 @@ RoamTerrain::setup(
 	transformComponent->setScale(glm::vec3(1.f,1.f/255.f*maxHeight,1.f));
 	mIsValid = true;
 	_generateNormalTexture();
+
+	unsigned char* data = &mHeightMapData[(int)mMapSize];
+	mNormalMap = G2::NormalMapGenerator::generateFromHeightMap(data, mMapSize, mMaxHeight);
+	renderComponent->material.setTexture(Sampler::NORMAL, mNormalMap);
+
 	return mIsValid;
 }
 
@@ -316,197 +322,4 @@ void
 RoamTerrain::setFrustumCullingMode(bool mode) 
 {
 	mUseFrustumCulling = mode;
-}
-
-void cubicInterpolation(
-		glm::mat4 const& MatCubic,
-		glm::vec4 const& Geometry,
-		float IP,
-		float& Height,
-		float& Slope) {
-
-	glm::vec4 T = glm::vec4(0.f,0.f,0.f,0.f);
-	glm::vec4 ABCD = glm::vec4(0.f,0.f,0.f,0.f);
-
-	// Calculate Cubic Coefficients
-	ABCD = MatCubic * Geometry;
-	//Vector4.Transform(ref Geometry, ref MatCubic, out ABCD);
-
-	// T Vector
-	T.w = 1;
-	T.z = IP;
-	T.y = T.z * T.z;
-	T.x = T.y * T.z;
-
-	// Solve Cubic for Height
-	Height = glm::dot(T,ABCD);
-	//Vector4.Dot(ref T, ref ABCD, out Height);
-
-	// T Vector for Derivative
-	T.w = 0;
-	T.z = 1;
-	T.y = 2.0f * IP;
-	T.x = 3.0f * IP * IP;
-
-	// Solve Quadratic for Slope
-	Slope = glm::dot(T,ABCD);// / (glm::length(T) * glm::length(ABCD));
-	//Vector4.Dot(ref T, ref ABCD, out Slope);
-}
-
-void
-RoamTerrain::_generateNormalTexture() 
-{
-
-	glm::mat4 catmullRomMatrix = glm::mat4(
-		-0.5f,  1.0f, -0.5f,  0.0f,
-		 1.5f, -2.5f,  0.0f,  1.0f,
-		-1.5f,  2.0f,  0.5f,  0.0f,
-		 0.5f, -0.5f,  0.0f,  0.0f
-	);
-
-	unsigned int upsampling = 4;
-	float sampling = 1.f / (float)upsampling;
-	int size = mMapSize * upsampling;
-	std::vector<unsigned char> normals(size * size * 3);
-	
-	unsigned char* data = &mHeightMapData[(int)mMapSize];
-	for(int y = 0; y < mMapSize; ++y)
-	{
-		for(int x = 0; x < mMapSize; ++x)
-		{
-			int ix0 = y*(int)mMapSize+std::max(0,x-1);
-			int ix1 = y*(int)mMapSize+x;
-			int ix2 = y*(int)mMapSize+x+1;
-			int ix3 = std::min(x+2,size-2);
-			
-			int iy0 = std::max(0,y-1)*(int)mMapSize+x;
-			int iy1 = y*(int)mMapSize+x;
-			int iy2 = (y+1)*(int)mMapSize+x+1;
-			int iy3 = std::min(y+2,size-2);
-			
-			for(int k = 0; k < upsampling; ++k)
-			{
-				if(x < mMapSize-1)
-				{
-					
-					float slopeX = 0.f;
-					float heightX = 0.f;
-
-					cubicInterpolation(
-						catmullRomMatrix, 
-						glm::vec4(
-							((float)data[ix0])/255.f*mMaxHeight,
-							((float)data[ix1])/255.f*mMaxHeight,
-							((float)data[ix2])/255.f*mMaxHeight,
-							((float)data[ix3])/255.f*mMaxHeight
-						), 
-						k*sampling, 
-						heightX, 
-						slopeX
-					);
-					slopeX = std::max(-1.f,std::min(1.f,slopeX));
-					slopeX = -slopeX;			// switch direction
-					slopeX = slopeX*0.5f+0.5f;	// clamp to range [0,1]
-					// just set x and y values
-					normals[(y*upsampling*size+(x*upsampling)+k)*3] = slopeX*255.f;
-					normals[(y*upsampling*size+(x*upsampling)+k)*3+1] = (1.f-slopeX)*255.f;
-
-				}
-				
-				if(y < mMapSize-1)
-				{
-					
-					float slopeY = 0.f;
-					float heightY = 0.f;
-
-					cubicInterpolation(
-						catmullRomMatrix, 
-						glm::vec4(
-							((float)data[iy0])/255.f*mMaxHeight,
-							((float)data[iy1])/255.f*mMaxHeight,
-							((float)data[iy2])/255.f*mMaxHeight,
-							((float)data[iy3])/255.f*mMaxHeight
-						), 
-						k*sampling, 
-						heightY, 
-						slopeY
-					);
-					slopeY = std::max(-1.f,std::min(1.f,slopeY));
-					slopeY = -slopeY;			// switch direction
-					slopeY = slopeY*0.5f+0.5f;	// clamp to range [0,1]
-					// just set y and z values
-					normals[((y*upsampling+k)*size+(x*upsampling))*3+1] = (1.f-slopeY)*255.f;
-					normals[((y*upsampling+k)*size+(x*upsampling))*3+2] = slopeY*255.f;
-				}
-			}
-		}
-	}
-
-
-	/**
-	 *		Up sampled normal texture now looks like 
-	 *		(after we also did it for the Y-Axis, which is still pending :) )
-	 *		X***X***X***X
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		X***X***X***X
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		X***X***X***X
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		*	*	*	*
-	 *		X***X***X***X
-	 *		Where X are the defined pixels from the initial height map
-	 *		and * are the interpolated pixel in between each axis.
-	 *		Now we can use bilinear interpolation to calculate all missing pixels.
-	 *		http://fastcpp.blogspot.de/2011/06/bilinear-pixel-interpolation-using-sse.html
-	 */
-	
-	for(int y = 0; y < size-upsampling; y+=upsampling)
-	{
-		for(int x = 0; x < size-upsampling; x+=upsampling)
-		{
-			 // load the four neighboring known pixels with range [0,1]
-			 //glm::detail::tvec3<unsigned char>& p1 = ((glm::detail::tvec3<unsigned char>*)&normals[3*(y*size+x)])[0];
-			 //glm::detail::tvec3<unsigned char>& p2 = ((glm::detail::tvec3<unsigned char>*)&normals[3*((y+upsampling)*size+x)])[0];
-			 //glm::detail::tvec3<unsigned char>& p3 = ((glm::detail::tvec3<unsigned char>*)&normals[3*(y*size+x+upsampling)])[0];
-			 //glm::detail::tvec3<unsigned char>& p4 = ((glm::detail::tvec3<unsigned char>*)&normals[3*((y+upsampling)*size+x+upsampling)])[0];
-			 
-			 glm::detail::tvec3<unsigned char>& p1 = ((glm::detail::tvec3<unsigned char>*)&normals[3*(y*size+x)])[0];
-			 glm::detail::tvec3<unsigned char>& p3 = ((glm::detail::tvec3<unsigned char>*)&normals[3*((y+upsampling)*size+x)])[0];
-			 glm::detail::tvec3<unsigned char>& p2 = ((glm::detail::tvec3<unsigned char>*)&normals[3*(y*size+x+upsampling)])[0];
-			 glm::detail::tvec3<unsigned char>& p4 = ((glm::detail::tvec3<unsigned char>*)&normals[3*((y+upsampling)*size+x+upsampling)])[0];
-			 
-			for(int subY = y; subY <= y+upsampling; ++subY)
-			{
-				for(int subX = x; subX <= x+upsampling; ++subX)
-				{
-
-					 // Calculate the weights for each pixel
-					 float fx = (subX - x)/(float)upsampling;
-					 float fy = (subY - y)/(float)upsampling;
-					 float fx1 = 1.0f - fx;
-					 float fy1 = 1.0f - fy;
-  
-					 float w1 = fx1 * fy1;
-					 float w2 = fx  * fy1;
-					 float w3 = fx1 * fy ;
-					 float w4 = fx  * fy ;
- 
-					 // Calculate the weighted sum of pixels (for each color channel)
-					 normals[3*(subY*size+subX)]   = (unsigned char)((float)p1.r * w1 + (float)p2.r * w2 + (float)p3.r * w3 + (float)p4.r * w4);
-					 normals[3*(subY*size+subX)+1] = (unsigned char)((float)p1.g * w1 + (float)p2.g * w2 + (float)p3.g * w3 + (float)p4.g * w4);
-					 normals[3*(subY*size+subX)+2] = (unsigned char)((float)p1.b * w1 + (float)p2.b * w2 + (float)p3.b * w3 + (float)p4.b * w4);
-				}
-			}
-		}
-	}
-
-
-	mNormalMap = std::shared_ptr<G2::Texture2D>(new Texture2D(GL_NEAREST, GL_NEAREST, size, size, GL_RGB, G2::WrapMode::CLAMP_TO_EDGE, G2::WrapMode::CLAMP_TO_EDGE, false, &normals[0]));			// The height map to use for this terrain
-	auto* renderComponent = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->get(getEntityId());
-	renderComponent->material.setTexture(Sampler::NORMAL, mNormalMap);
 }
