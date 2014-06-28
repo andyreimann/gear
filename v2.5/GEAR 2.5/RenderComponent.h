@@ -127,7 +127,11 @@ namespace G2
 			* @param value The DestinationFactor.
 			*/
 			void setDestinationBlendFactor(BlendFactor::Name const& value);
-
+			/** Schedules this RenderComponent in the RenderSystem to recalculate the model space
+			 * AABBs for all DrawCalls using a distinct AABBCalculationMode than MANUAL.
+			 * @note Use this function with caution
+			 */
+			void scheduleAABBRecalculation() const;
 			/** Adds the given DrawCall to the end of the current array of DrawCalls.
 			 * @param drawCall the DrawCall to add.
 			 * @warning Due to performance reasons it is not checked if the RenderComponent can provide the referenced VertexArrayObject index 

@@ -28,7 +28,9 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setClearColor(glm::vec4(0.f,0.f,0.f,1.f));
 
-	
+	std::string phases[] = {"preUpdate","update","postUpdate","render","ui"};
+	G2::ECSManager::getShared().setMainThreadPhases(phases, 5);
+
 	G2::EventDistributer::onRenderFrame.hook(this, &TerrainTest::onRenderFrame);
 	G2::EventDistributer::onViewportResize.hook(this, &TerrainTest::onViewportResize);
 	G2::EventDistributer::onKeyUp.hook(this, &TerrainTest::onKeyUp);

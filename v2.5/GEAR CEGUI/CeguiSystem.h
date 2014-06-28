@@ -51,8 +51,12 @@ namespace G2
 				void _init();
 
 				CEGUI::OpenGL3Renderer& mRenderer;		// The OpenGL 3+ renderer for the CEGUI subsystem
+				bool					mMouseCoordsInjected;
 				glm::detail::tvec2<int> mMouseCoords;
 				std::unordered_map<G2::KeyCode,CEGUI::Key::Scan> mSpecialKeyMapping;	// Mapping of gear keycodes for special keys to CEGUI ones
+				
+				glm::detail::tvec2<int> mViewport;
+				
 		};
 	};
 };

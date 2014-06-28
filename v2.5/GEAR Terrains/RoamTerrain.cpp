@@ -162,7 +162,7 @@ RoamTerrain::setup(
 	mIsValid = true;
 
 	unsigned char* data = &mHeightMapData[(int)mMapSize];
-	mNormalMap = G2::NormalMapGenerator::generateFromHeightMap(data, mMapSize, mMaxHeight);
+	mNormalMap = G2::NormalMapGenerator::generateFromHeightMap(data, (int)mMapSize, mMaxHeight);
 	renderComponent->material.setTexture(Sampler::NORMAL, mNormalMap);
 
 	// add one single DrawCall for Terrain

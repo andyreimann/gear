@@ -58,7 +58,7 @@ G2_loopSideThread()
 	do 
 	{
 		frameTimer.start(true);
-		ECSManager::getShared().runOnSideThread("updateSideThread", frameInfo);
+		ECSManager::getShared().runSideThread(frameInfo);
 		++frameInfo.frame;
 		frameInfo.timeSinceLastFrame = frameTimer.getSeconds();
 		frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
@@ -85,10 +85,7 @@ G2_loop(AbstractWindow& window)
 
 		EventDistributer::onRenderFrame(frameInfo);
 
-		ECSManager::getShared().runOnMainThread("preUpdate", frameInfo);
-		ECSManager::getShared().runOnMainThread("update", frameInfo);
-		ECSManager::getShared().runOnMainThread("postUpdate", frameInfo);
-		ECSManager::getShared().runOnMainThread("render", frameInfo);
+		ECSManager::getShared().runMainThread(frameInfo);
 		
 		EventDistributer::onFrameRendered(frameInfo);
 

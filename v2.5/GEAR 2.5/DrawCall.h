@@ -41,7 +41,7 @@ namespace G2
 			 * @note AABBCalculationMode::ANIMATED means the engine will calculate the model space AABB before the RenderComponent is drawn the first time and every time an animation is performed for the RenderComponent.
 			 * @note AABBCalculationMode::MANUAL means the engine will never calculate the model space AABB but will use the given one.
 			 */
-			DrawCall& setAABBCalculationMode(AABBCalculationMode mode) { mAABBCalculationMode = mode; return *this; }
+			DrawCall& setAABBCalculationMode(AABBCalculationMode mode);
 			/** Sets the index of the VertexArrayObject inside of the array of VertexArrayObjects 
 			 * of a RenderComponent to reference.
 			 * @param index The index of the VertexArrayObject to reference.

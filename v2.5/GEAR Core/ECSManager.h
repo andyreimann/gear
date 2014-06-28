@@ -101,16 +101,16 @@ namespace G2
 				return false;
 			}
 
-			/** This function will start a run of a given phase for all managed systems.
-			 * @param name The name of the phase to run.
+			/** This function will run all main thread phases for all managed systems.
+			 * @param frameInfo The current frame info object.
 			 * 
 			 */
-			COREDLL_API void runOnMainThread(std::string const& name, FrameInfo const& frameInfo);
-			/** This function will start a run of a given phase for all managed systems.
-			 * @param name The name of the phase to run.
+			COREDLL_API void runMainThread(FrameInfo const& frameInfo);
+			/** This function will run all side thread phases for all managed systems.
+			 * @param frameInfo The current frame info object.
 			 * 
 			 */
-			COREDLL_API void runOnSideThread(std::string const& name, FrameInfo const& frameInfo);
+			COREDLL_API void runSideThread(FrameInfo const& frameInfo);
 
 			COREDLL_API void deleteComponentsForEntity(unsigned int entityId);
 			/** Get a reference to one single instance.
@@ -121,16 +121,44 @@ namespace G2
 			 */
 			COREDLL_API static void destroy();
 
+			/** Sets the phases to run for the main thread 
+			 * Make sure the default phase "preUpdate","update","postUpdate" and "render" are provided in this order.
+			 * In between you can add whatever you like.
+			 * @param phases a pointer to the phases to use.
+			 * @param numPhases The number of phases contained in 'phases'.
+			 * @return True if the ECS now uses the given phases, false if not.
+			 */
+			COREDLL_API bool setMainThreadPhases(std::string* phases, unsigned int numPhases);
+			/** This function will return the phases to run in the main thread. 
+			 * @return The phases to run in the main thread.
+			 */
+			COREDLL_API std::vector<std::string> const& getMainThreadPhases() const { return mMainThreadPhases; }
+
+			/** Sets the phases to run for the side thread 
+			 * Make sure the default phase "updateSideThread" is provided.
+			 * @param phases a pointer to the phases to use.
+			 * @param numPhases The number of phases contained in 'phases'.
+			 * @return True if the ECS now uses the given phases, false if not.
+			 */
+			COREDLL_API bool setSideThreadPhases(std::string* phases, unsigned int numPhases);
+			/** This function will return the phases to run in the main thread. 
+			 * @return The phases to run in the main thread.
+			 */
+			COREDLL_API std::vector<std::string> const& getSideThreadPhases() const { return mSideThreadPhases; }
+
 		private:
 			// don't allow instances
-			COREDLL_API ECSManager() {}
+			COREDLL_API ECSManager();
 			COREDLL_API ECSManager(ECSManager const&) {}
 			COREDLL_API ECSManager& operator=(ECSManager const&) { return *this; }
 			COREDLL_API ~ECSManager();
 
 			COREDLL_API static ECSManager*				mInstance_;				// The one single instance
 			std::vector<BaseSystemWrapper*>				mRegisteredSystems;		// The registered Systems
-			Event<std::string const&,FrameInfo const&>		mMainThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the main thread
-			Event<std::string const&,FrameInfo const&>		mSideThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the side thread
+			Event<std::string const&,FrameInfo const&>	mMainThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the main thread
+			Event<std::string const&,FrameInfo const&>	mSideThreadUpdateEvent;	// The event used for the updates for all managed Systems running in the side thread
+			std::vector<std::string>					mMainThreadPhases;		// The phases to run in the main thread
+			std::vector<std::string>					mSideThreadPhases;		// The phases to run in the side thread
+
 	};
 };

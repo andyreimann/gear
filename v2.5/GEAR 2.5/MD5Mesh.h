@@ -66,6 +66,6 @@ namespace G2
 
 		private:
 
-			void createVAO(std::vector<Builder::SubMesh> const& meshes);
+			void createMeshData(std::vector<Builder::SubMesh> const& meshes);
 	};
 };

@@ -20,6 +20,14 @@ void ECSManager::destroy()
 		delete mInstance_;
 }
 
+ECSManager::ECSManager() 
+{
+	std::string mainThreadPhases[4] = {"preUpdate","update","postUpdate","render"};
+	setMainThreadPhases(mainThreadPhases, 4);
+	std::string sideThreadPhases[1] = {"updateSideThread"};
+	setSideThreadPhases(sideThreadPhases, 1);
+}
+
 ECSManager::~ECSManager()
 {
 	for(int i = 0; i < mRegisteredSystems.size(); ++i) 
@@ -30,22 +38,87 @@ ECSManager::~ECSManager()
 }
 
 void
-G2::ECSManager::runOnMainThread(std::string const& name, FrameInfo const& frameInfo) 
+ECSManager::runMainThread(FrameInfo const& frameInfo) 
 {
-	mMainThreadUpdateEvent(name, frameInfo);
+	for(size_t i = 0; i < mMainThreadPhases.size(); ++i)
+	{
+		mMainThreadUpdateEvent(mMainThreadPhases[i], frameInfo);
+	}
 }
 
 void
-G2::ECSManager::runOnSideThread(std::string const& name, FrameInfo const& frameInfo) 
+ECSManager::runSideThread(FrameInfo const& frameInfo) 
 {
-	mSideThreadUpdateEvent(name, frameInfo);
+	for(size_t i = 0; i < mSideThreadPhases.size(); ++i)
+	{
+		mSideThreadUpdateEvent(mSideThreadPhases[i], frameInfo);
+	}
 }
 
 void
-G2::ECSManager::deleteComponentsForEntity(unsigned int entityId) 
+ECSManager::deleteComponentsForEntity(unsigned int entityId) 
 {
 	for(size_t i = 0; i < mRegisteredSystems.size(); ++i) 
 	{
 		mRegisteredSystems[i]->deleteComponentsForEntity(entityId);
 	}
+}
+
+bool
+ECSManager::setSideThreadPhases(std::string* phases, unsigned int numPhases) 
+{
+	// check if the default phases are given and the ordering is correct
+	unsigned int defaultsFound = 0;
+	for(unsigned int i = 0; i < numPhases; ++i)
+	{
+		if(defaultsFound == 0 && phases[i] == "updateSideThread")
+		{
+			++defaultsFound;
+		}
+	}
+	if(defaultsFound == 1)
+	{
+		// everything is good
+		mSideThreadPhases.clear();
+		for(unsigned int i = 0; i < numPhases; ++i)
+		{
+			mSideThreadPhases.push_back(phases[i]);
+		}
+	}
+	return defaultsFound == 1;
+}
+bool
+ECSManager::setMainThreadPhases(std::string* phases, unsigned int numPhases) 
+{
+	// check if the default phases are given and the ordering is correct
+	unsigned int defaultsFound = 0;
+	for(unsigned int i = 0; i < numPhases; ++i)
+	{
+		if(defaultsFound == 0 && phases[i] == "preUpdate")
+		{
+			++defaultsFound;
+		}
+		else if(defaultsFound == 1 && phases[i] == "update")
+		{
+			++defaultsFound;
+		}
+		else if(defaultsFound == 2 && phases[i] == "postUpdate")
+		{
+			++defaultsFound;
+		}
+		else if(defaultsFound == 3 && phases[i] == "render")
+		{
+			++defaultsFound;
+		}
+	}
+	if(defaultsFound == 4)
+	{
+		// everything is good
+		mMainThreadPhases.clear();
+		for(unsigned int i = 0; i < numPhases; ++i)
+		{
+			mMainThreadPhases.push_back(phases[i]);
+		}
+	}
+	return defaultsFound == 4;
 }

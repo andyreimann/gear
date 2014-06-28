@@ -8,7 +8,8 @@
 using namespace G2::UI;
 
 CeguiSystem::CeguiSystem() 
-	: mRenderer(CEGUI::OpenGL3Renderer::bootstrapSystem())
+	: mRenderer(CEGUI::OpenGL3Renderer::bootstrapSystem()),
+	mMouseCoordsInjected(false)
 {
 	// initialize the keymapper
 	_init();
@@ -17,7 +18,7 @@ CeguiSystem::CeguiSystem()
 	// This will replace any current root window, although do note that the previous window hierarchy is not actually destroyed 
 	// - it is just detached from the GUIContext - you can easily switch between GUI 'pages' by flipping between them using the GUIContext::setRootWindow function.
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow( wmgr.createWindow( "DefaultWindow", "root" ));
-	 
+	
 
 	// http://static.cegui.org.uk/docs/current/rendering_tutorial.html
 	// Bootstrap CEGUI::System with an OpenGL3Renderer object that uses the
@@ -78,8 +79,19 @@ CeguiSystem::_onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 	int dx = mouseCoords.x - mMouseCoords.x;
 	int dy = mouseCoords.y - mMouseCoords.y;
 	CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
-	//context.injectMouseMove((float)dx, (float)dy);
+	//if(mMouseCoordsInjected)
+	//{
+	//	context.injectMouseMove((float)dx, (float)dy);
+	//}
+	//else
+	//{
+	//	
+	//	mMouseCoordsInjected = true;
+	//}
+
+	//G2::logger << "["<<mouseCoords.x<<":"<<mouseCoords.y<<"] ";
 	context.injectMousePosition((float)mouseCoords.x, (float)mouseCoords.y);
+
 	mMouseCoords = mouseCoords;
 }
 
@@ -153,6 +165,8 @@ void
 CeguiSystem::_onViewportResize(int w, int h)
 {
 	mRenderer.setDisplaySize(CEGUI::Sizef((float)w, (float)h));
+	mViewport.x = w;
+	mViewport.y = h;
 }
 
 CEGUI::WindowManager&

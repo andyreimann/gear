@@ -1,6 +1,9 @@
 #include "DrawCall.h"
 #include "Defines.h"
+#include "RenderComponent.h"
+
 #include <G2Core/Entity.h>
+#include <G2Core/ECSManager.h>
 #include <utility>
 
 using namespace G2;
@@ -68,5 +71,26 @@ DrawCall::operator=(DrawCall && rhs)
 	rhs.mVaoIndex = -1;
 	rhs.mIaoIndex = -1;
 	rhs.mDrawMode = GL_TRIANGLES;
+	return *this;
+}
+
+DrawCall&
+DrawCall::setAABBCalculationMode(AABBCalculationMode mode) 
+{
+	if(mode != mAABBCalculationMode)
+	{
+		mAABBCalculationMode = mode;
+		if(mode != MANUAL && mEntityId != Entity::UNINITIALIZED_ENTITY_ID)
+		{
+			// is linked - inform RenderComponent to schedule AABB recalc
+			auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
+			auto* renderComponent = renderSystem->get(getEntityId());
+			if(renderComponent != nullptr)
+			{
+				renderComponent->scheduleAABBRecalculation();
+			}
+		}
+	}
+
 	return *this;
 }

@@ -54,14 +54,23 @@ RenderComponent::addDrawCall(DrawCall const& drawCall)
 	// set the internal parameters of the DrawCall to link it to this RenderComponent
 	mDrawCalls.back()._setDrawCallIndex((int)mDrawCalls.size()-1);
 	mDrawCalls.back()._setEntityId(getEntityId());
-	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
-	renderSystem->scheduleAABBRecalculation(getEntityId());
+	if(drawCall.getAABBCalculationMode() != MANUAL)
+	{
+		scheduleAABBRecalculation();
+	}
 }
 
 unsigned int
 RenderComponent::getNumDrawCalls() const 
 {
 	return (unsigned int)mDrawCalls.size();
+}
+
+void
+RenderComponent::scheduleAABBRecalculation() const 
+{
+	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
+	renderSystem->scheduleAABBRecalculation(getEntityId());
 }
 
 void
