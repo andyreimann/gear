@@ -42,7 +42,6 @@ VertexArrayObject& VertexArrayObject::operator=(VertexArrayObject const& rhs)
 	mMaxNumElements = rhs.mMaxNumElements;
 	mVertexArrayId = rhs.mVertexArrayId;
 	mBufferIds = rhs.mBufferIds;
-	mIndexBuffer = rhs.mIndexBuffer;
 	mBytesPerSemantic = rhs.mBytesPerSemantic;
 	// copy pointer to shared RefCounter - and increment
 	mReferenceCounter = rhs.mReferenceCounter;
@@ -73,13 +72,11 @@ VertexArrayObject& VertexArrayObject::operator=(VertexArrayObject && rhs)
 	rhs.mNumElements = 0;
 	rhs.mMaxNumElements = 0;
 	mVertexArrayId = rhs.mVertexArrayId;
-	mIndexBuffer = std::move(rhs.mIndexBuffer);
 	mBufferIds = std::move(rhs.mBufferIds);
 	mBytesPerSemantic = std::move(rhs.mBytesPerSemantic);
 	rhs.mBufferIds.fill(GL_INVALID_VALUE);
 	rhs.mBytesPerSemantic.fill(0);
 	rhs.mVertexArrayId = GL_INVALID_VALUE;
-	rhs.mIndexBuffer.clear();
 	rhs.mReferenceCounter.reset();
 
 	// copy and increment the version!
@@ -107,7 +104,6 @@ VertexArrayObject::resizeElementCount(unsigned int numElements)
 	{
 		mMaxNumElements = mNumElements = numElements;
 		// save buffer states
-		std::vector<IndexBuffer> tmpIndexBuffer = mIndexBuffer;
 		std::array<unsigned int,Semantics::NUM_SEMANTICS> tmpBufferIds = mBufferIds;
 		std::array<unsigned int,Semantics::NUM_SEMANTICS> tmpBytesPerSemantic = mBytesPerSemantic;
 
@@ -131,23 +127,7 @@ VertexArrayObject::resizeElementCount(unsigned int numElements)
 				}
 			}
 		}
-		if(tmpIndexBuffer.size() > 0)
-		{
-			_resizeIndexBufferCount((unsigned int)tmpIndexBuffer.size());
-			for (unsigned int i = 0; i < tmpIndexBuffer.size(); ++i) 
-			{
-				writeIndices(i, nullptr, tmpIndexBuffer[i].numIndices);
-			}
-		}
 	}
-	return *this;
-}
-
-VertexArrayObject&
-VertexArrayObject::_resizeIndexBufferCount(unsigned int numIndexBuffer) 
-{
-	// we just resize the vector -> destructor calls to ~IndexBuffer will delete the index buffers
-	mIndexBuffer.resize(numIndexBuffer);
 	return *this;
 }
 
@@ -263,61 +243,6 @@ VertexArrayObject::returnDataPointer(Semantics::Name semantic)
 	GLDEBUG( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 }
 
-unsigned int*
-VertexArrayObject::getIndexPointer(unsigned int indexBuffer, G2::BufferAccessMode::Name mode) 
-{
-	if(mIndexBuffer.size()-1 < indexBuffer)
-	{
-		return nullptr;
-	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[indexBuffer].indexBufferId) );
-	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, mode ) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-	return destination;
-}
-
-void
-VertexArrayObject::returnIndexPointer(unsigned int indexBuffer) 
-{
-	if(mIndexBuffer.size()-1 < indexBuffer)
-	{
-		return;
-	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[indexBuffer].indexBufferId) );
-	GLDEBUG( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-}
-
-VertexArrayObject&
-VertexArrayObject::writeIndices(unsigned int indexBuffer, unsigned int const* data, unsigned int numIndices) 
-{
-	if(mIndexBuffer.size()-1 < indexBuffer) 
-	{ // index buffer was not allocated
-		return *this;
-	}	
-	unsigned int bytes = sizeof(unsigned int);
-	IndexBuffer& ib = mIndexBuffer[indexBuffer];
-
-	if(ib.indexBufferId == GL_INVALID_VALUE)
-	{
-		ib.numIndices = numIndices;
-		bind();
-		GLDEBUG( glGenBuffers(1, &ib.indexBufferId) );
-		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib.indexBufferId) );
-		GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytes * ib.numIndices, data, GL_STATIC_DRAW) );
-		unbind();
-		// a new index array was added
-		updateVersion();
-		return *this;
-	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib.indexBufferId) );
-	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, G2::BufferAccessMode::WRITE_ONLY ) );
-	memcpy(destination, data, bytes * ib.numIndices);
-	GLDEBUG( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-	return *this;
-}
-
 void
 VertexArrayObject::bind() 
 {
@@ -338,45 +263,12 @@ VertexArrayObject::unbind()
 	}
 }
 
-unsigned int
-VertexArrayObject::getNumDrawCalls() const 
-{
-	unsigned int drawCalls = 0;
-	if(mBufferIds[Semantics::POSITION] != GL_INVALID_VALUE && mNumElements > 0) 
-	{
-		if(mIndexBuffer.size() == 0) 
-		{
-			return 1;
-		}
-		for(size_t i = 0; i < mIndexBuffer.size(); ++i)
-		{
-			if(mIndexBuffer[i].indexBufferId != GL_INVALID_VALUE)
-			{
-				++drawCalls;
-			}
-		}
-	}
-	return drawCalls;
-}
-
 void
-VertexArrayObject::draw(int glDrawMode, unsigned int drawCall, int numVertices) 
+VertexArrayObject::draw(int glDrawMode, int numVertices) 
 {
 	if(mBufferIds[Semantics::POSITION] != GL_INVALID_VALUE && mNumElements > 0) 
 	{
-		if(mIndexBuffer.size() == 0) 
-		{
-			GLDEBUG( glDrawArrays(glDrawMode, 0, numVertices == -1 ? mNumElements : numVertices) );
-		}
-		else
-		{
-			if(mIndexBuffer[drawCall].indexBufferId != GL_INVALID_VALUE)
-			{
-				GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[drawCall].indexBufferId) );
-				GLDEBUG( glDrawElements(glDrawMode, mIndexBuffer[drawCall].numIndices, GL_UNSIGNED_INT, 0) );
-				GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL) );
-			}
-		}
+		GLDEBUG( glDrawArrays(glDrawMode, 0, numVertices == -1 ? mNumElements : numVertices) );
 	}
 }
 
@@ -408,32 +300,12 @@ VertexArrayObject::_deleteBuffers()
 		GLDEBUG( glDeleteVertexArrays(1, &mVertexArrayId) );
 		mVertexArrayId = GL_INVALID_VALUE;
 	}
-	mIndexBuffer.clear(); // calls ~IndexBuffer to destroy index buffer objects in OpenGL
-}
-
-
-G2::VertexArrayObject::IndexBuffer::~IndexBuffer() 
-{
-	if(indexBufferId != GL_INVALID_VALUE)
-	{
-		GLDEBUG( glDeleteBuffers(1, &indexBufferId) );
-	}
 }
 
 unsigned int
 VertexArrayObject::getNumBytesBySemantic(Semantics::Name semantic) const 
 {
 	return mBytesPerSemantic[semantic];
-}
-
-unsigned int
-VertexArrayObject::getNumIndices(unsigned int indexBuffer) const 
-{
-	if(mIndexBuffer.size()-1 < indexBuffer)
-	{
-		return 0;
-	}
-	return mIndexBuffer[indexBuffer].numIndices;
 }
 
 Semantics::Name

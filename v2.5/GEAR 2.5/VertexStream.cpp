@@ -83,27 +83,27 @@ VertexStream::writeTriangles(VertexArrayObject& vao)
 	else if(mBytesPerVertex < vao.getNumBytesBySemantic(Semantics::POSITION))
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
-		if(vao.hasIndexBuffers())
-		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-			for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
-			{
-				unsigned int* indices = vao.getIndexPointer(ib, BufferAccessMode::READ_ONLY);
-				for(unsigned int i = 0; i < vao.getNumIndices(ib); ++i)
-				{
-					if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
-					{
-						break;
-					}
-					glm::vec4 pt = ((glm::vec4*)data)[indices[i]];
-					memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
-					mWriteIndex += numComponentsPerVertex;
-				}
-				vao.returnIndexPointer(ib);
-			}
-			vao.returnDataPointer(Semantics::POSITION);
-		}
-		else
+		//if(vao.hasIndexBuffers())
+		//{
+		//	float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+		//	for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
+		//	{
+		//		unsigned int* indices = vao.getIndexPointer(ib, BufferAccessMode::READ_ONLY);
+		//		for(unsigned int i = 0; i < vao.getNumIndices(ib); ++i)
+		//		{
+		//			if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
+		//			{
+		//				break;
+		//			}
+		//			glm::vec4 pt = ((glm::vec4*)data)[indices[i]];
+		//			memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
+		//			mWriteIndex += numComponentsPerVertex;
+		//		}
+		//		vao.returnIndexPointer(ib);
+		//	}
+		//	vao.returnDataPointer(Semantics::POSITION);
+		//}
+		//else
 		{
 			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
 			for(unsigned int i = 0; i < vao.getNumElements(); ++i)
@@ -150,27 +150,27 @@ VertexStream::writeTriangles(VertexArrayObject& vao, glm::mat4 const& transforma
 	else if(mBytesPerVertex < vao.getNumBytesBySemantic(Semantics::POSITION))
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
-		if(vao.hasIndexBuffers())
-		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
-			for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
-			{
-				unsigned int* indices = vao.getIndexPointer(ib, BufferAccessMode::READ_ONLY);
-				for(unsigned int i = 0; i < vao.getNumIndices(ib); ++i)
-				{
-					if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
-					{
-						break;
-					}
-					glm::vec4 pt = transformation * glm::vec4(((glm::vec4*)data)[indices[i]]);
-					memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
-					mWriteIndex += numComponentsPerVertex;
-				}
-				vao.returnIndexPointer(ib);
-			}
-			vao.returnDataPointer(Semantics::POSITION);
-		}
-		else
+		//if(vao.hasIndexBuffers())
+		//{
+		//	float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+		//	for(unsigned int ib = 0; ib < vao.getNumIndexBuffers(); ++ib)
+		//	{
+		//		unsigned int* indices = vao.getIndexPointer(ib, BufferAccessMode::READ_ONLY);
+		//		for(unsigned int i = 0; i < vao.getNumIndices(ib); ++i)
+		//		{
+		//			if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
+		//			{
+		//				break;
+		//			}
+		//			glm::vec4 pt = transformation * glm::vec4(((glm::vec4*)data)[indices[i]]);
+		//			memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
+		//			mWriteIndex += numComponentsPerVertex;
+		//		}
+		//		vao.returnIndexPointer(ib);
+		//	}
+		//	vao.returnDataPointer(Semantics::POSITION);
+		//}
+		//else
 		{
 			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
 			for(unsigned int i = 0; i < vao.getNumElements(); ++i)

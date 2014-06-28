@@ -8,23 +8,7 @@
 namespace G2 
 {
 	class RenderSystem;
-	struct VaoIndexDrawCallPair
-	{
-		VaoIndexDrawCallPair()
-			: vaoIndex(0),
-			drawCall(0) {}
-		VaoIndexDrawCallPair(unsigned int vaoIndex, unsigned int drawCall)
-			: vaoIndex(vaoIndex),
-			drawCall(drawCall) {}
-		G2::VaoIndexDrawCallPair& operator=(G2::VaoIndexDrawCallPair const& rhs)
-		{
-			vaoIndex = rhs.vaoIndex;
-			drawCall = rhs.drawCall;
-			return *this;
-		}
-		unsigned int vaoIndex;
-		unsigned int drawCall;
-	};
+
 	/// This class defines...
 	/// @created:	2014/06/11
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -36,7 +20,7 @@ namespace G2
 				: mCameraPosition(cameraPosition),
 				mRenderSystem(renderSystem) {}
 			
-			bool operator()(std::pair<unsigned int,VaoIndexDrawCallPair> a, std::pair<unsigned int,VaoIndexDrawCallPair> b);
+			bool operator()(std::pair<unsigned int,int> a, std::pair<unsigned int,int> b);
 			
 		private:
 

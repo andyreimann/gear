@@ -173,7 +173,7 @@ namespace G2
 				std::shared_ptr<Shader>& boundShader,
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem,
-				VaoIndexDrawCallPair* drawCallToDraw = nullptr
+				int drawCallToDraw = -1
 			);
 			/** This function will upload the matrices to the given shader.
 			 */
@@ -191,9 +191,11 @@ namespace G2
 			/** This function will upload the material to the given shader.
 			 */
 			void _uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
-			/** This function will recalculate the object space AABBs for the given RenderComponent.
+			/** This function will recalculate the model space AABBs for the given RenderComponent.
 			 */
-			void _recalculateAABB(RenderComponent* component, TransformSystem* transformSystem);
+			void _recalculateModelSpaceAABB(RenderComponent* component, TransformSystem* transformSystem);
+			
+			void _recalculateWorldSpaceAABB(RenderComponent* component, int drawCallIndex, TransformSystem* transformSystem);
 			
 			std::shared_ptr<Shader> _getRenderShader(RenderComponent* component);
 			std::shared_ptr<Shader> _getPassRenderShader(RenderComponent* component, Pass const* pass) const;
@@ -251,7 +253,7 @@ namespace G2
 			std::list<unsigned int>							mRecalcAABBEntityIds;
 			std::unordered_set<unsigned int>				mTransparentEntityIds;			// Entity ids of the RenderComponent objects to treat as transparent while rendering
 			
-			std::vector<std::pair<unsigned int,VaoIndexDrawCallPair>> mZSortedTransparentEntityIdsToVaoDrawCall;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
+			std::vector<std::pair<unsigned int,int>> mZSortedTransparentEntityIdsToDrawCall;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
 
 			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
 	};

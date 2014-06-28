@@ -74,8 +74,6 @@ FrameBuffer::unbind() const
 void
 FrameBuffer::attachTexture(std::shared_ptr<Texture> const& tex, BufferAttachment::Name attachment, int texTarget, int mipLevel, int layer) const
 {
-	bind();
-
 	if(tex->mType == GL_TEXTURE_1D)
 	{
 		GLDEBUG( glFramebufferTexture1D( GL_FRAMEBUFFER, attachment,  texTarget, tex->mId, mipLevel ) );

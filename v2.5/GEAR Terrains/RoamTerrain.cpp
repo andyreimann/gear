@@ -147,7 +147,6 @@ RoamTerrain::setup(
 	{
 		renderComponent = renderSystem->create(getEntityId());
 	}
-	renderComponent->drawMode = GL_TRIANGLES;
 	renderComponent->allocateVertexArrays(1);
 	auto& vao = renderComponent->getVertexArray(0);
 	vao.resizeElementCount(maxTriangles*3);
@@ -161,11 +160,18 @@ RoamTerrain::setup(
 	}
 	transformComponent->setScale(glm::vec3(1.f,1.f/255.f*maxHeight,1.f));
 	mIsValid = true;
-	_generateNormalTexture();
 
 	unsigned char* data = &mHeightMapData[(int)mMapSize];
 	mNormalMap = G2::NormalMapGenerator::generateFromHeightMap(data, mMapSize, mMaxHeight);
 	renderComponent->material.setTexture(Sampler::NORMAL, mNormalMap);
+
+	// add one single DrawCall for Terrain
+	renderComponent->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_TRIANGLES)
+		.setEnabled(true)
+		.setVaoIndex(0)
+		.setAABBCalculationMode(AUTOMATIC)
+	);
 
 	return mIsValid;
 }

@@ -41,7 +41,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	
-	light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
+	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	light->getType();
 	light->diffuse = glm::vec4(1.f,1.f,1.f,1.f);
@@ -114,18 +114,24 @@ TerrainTest::generateSpline()
 	// add a test vertex array
 
 	auto* renderComponent = mSpline.addComponent<G2::RenderComponent>();
-	renderComponent->drawMode = GL_LINE_STRIP;
 	renderComponent->allocateVertexArrays(1);
 	auto& vao = renderComponent->getVertexArray(0);
 	vao.resizeElementCount(geometry.size());
 	vao.writeData(G2::Semantics::POSITION, &geometry[0]);
-	auto* renderComponent2 = mSplinePoints.addComponent<G2::RenderComponent>();
-	renderComponent2->drawMode = GL_POINTS;
-	renderComponent2->allocateVertexArrays(1);
-	auto& vao2 = renderComponent2->getVertexArray(0);
-	vao2.resizeElementCount(size);
-	vao2.writeData(G2::Semantics::POSITION, &heights[0]);
-	renderComponent2->material.setAmbient(glm::vec4(1.f,0.f,0.f,1.f));
+	
+	renderComponent->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_LINE_STRIP)
+		.setEnabled(true)
+		.setAABBCalculationMode(G2::AABBCalculationMode::AUTOMATIC)
+		.setVaoIndex(0)
+		);
+	
+	renderComponent->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_POINTS)
+		.setEnabled(true)
+		.setAABBCalculationMode(G2::AABBCalculationMode::AUTOMATIC)
+		.setVaoIndex(0)
+		);
 }
 
 

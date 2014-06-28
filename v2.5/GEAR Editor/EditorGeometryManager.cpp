@@ -40,13 +40,13 @@ EditorGeometryManager::_setAsSelected(unsigned int entityId)
 	// visualize world space AABBs
 	auto* aabbVis = mSelectedRCVis.addComponent<G2::RenderComponent>();
 	mSelectedRCVis.addComponent<EditorComponent>();
-	aabbVis->allocateVertexArrays((unsigned int)renderComp->worldSpaceAABBs.size());
-	aabbVis->drawMode = GL_LINES;
+	aabbVis->allocateVertexArrays((unsigned int)renderComp->getNumDrawCalls());
+	//aabbVis->drawMode = GL_LINES;
 	aabbVis->material.setAmbient(glm::vec4(0.f,1.f,0.f,1.f));
 
-	for(unsigned int i = 0; i < renderComp->worldSpaceAABBs.size(); ++i)
+	for(unsigned int i = 0; i < renderComp->getNumDrawCalls(); ++i)
 	{
-		G2::AABB const& aabb = renderComp->worldSpaceAABBs[i];
+		G2::AABB const& aabb = renderComp->getDrawCall(i).getWorldSpaceAABB();
 		G2::VertexArrayObject& vao = aabbVis->getVertexArray(i);
 		vao.resizeElementCount(24);
 		
@@ -83,6 +83,14 @@ EditorGeometryManager::_setAsSelected(unsigned int entityId)
 		geometry[23] = center + glm::vec3( he.x,-he.y,-he.z);
 		
 		vao.writeData(G2::Semantics::POSITION, geometry);
+
+		aabbVis->addDrawCall(G2::DrawCall()
+			.setDrawMode(GL_LINES)
+			.setEnabled(true)
+			.setAABBCalculationMode(MANUAL)
+			.setVaoIndex(i)
+			.setModelSpaceAABB(aabb)
+			);
 	}
 	aabbVis->setEffect(
 		mEffectImporter.import(mEditor->getEditorAssetsFolder() + "shader/Solid.g2fx")
@@ -111,7 +119,6 @@ EditorGeometryManager::_onRenderFrame(G2::FrameInfo const& frameInfo)
 				
 				auto* renderComponent = mCameraFrustumEntities[cameras[i].getEntityId()].addComponent<G2::RenderComponent>();
 				renderComponent->allocateVertexArrays(1);
-				renderComponent->drawMode = GL_LINES;
 				renderComponent->material.setAmbient(glm::vec4(1.f,0.8f,0.f,1.f));
 				// prepare vao
 				G2::VertexArrayObject& vao = renderComponent->getVertexArray(0);
@@ -157,6 +164,14 @@ EditorGeometryManager::_onRenderFrame(G2::FrameInfo const& frameInfo)
 				geometry[31] = points[0];
 
 				vao.writeData(G2::Semantics::POSITION, geometry);
+
+				
+				renderComponent->addDrawCall(G2::DrawCall()
+					.setDrawMode(GL_LINES)
+					.setEnabled(true)
+					.setAABBCalculationMode(AUTOMATIC)
+					.setVaoIndex(0)
+					);
 
 				renderComponent->setEffect(
 					mEffectImporter.import(mEditor->getEditorAssetsFolder() + "shader/Solid.g2fx")

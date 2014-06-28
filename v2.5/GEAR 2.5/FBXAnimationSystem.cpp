@@ -505,19 +505,12 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 {
 	int lVertexCount = 0;
 
-	if(component->aabbAnimationRecalc && component->objectSpaceAABBs.size() != component->getNumVertexArrays())
-	{
-		component->objectSpaceAABBs.resize(component->getNumVertexArrays());
-	}
 	if (metaData->allByControlPoint)
 	{
 		lVertexCount = pMesh->GetControlPointsCount();
 		metaData->vertexCache.resize(lVertexCount);
 		metaData->normalCache.resize(lVertexCount);
-		if(component->aabbAnimationRecalc)
-		{
-			component->objectSpaceAABBs[metaData->vaoOffset].clear();
-		}
+		
 		for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
 		{			
 			metaData->vertexCache[lIndex].x = static_cast<float>(pVertices[lIndex][0]);
@@ -528,21 +521,12 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 			metaData->normalCache[lIndex].y = static_cast<float>(pNormals[lIndex][1]);
 			metaData->normalCache[lIndex].z = static_cast<float>(pNormals[lIndex][2]);
 			metaData->normalCache[lIndex] = glm::normalize(metaData->normalCache[lIndex]);
-
-			if(component->aabbAnimationRecalc)
-			{
-				component->objectSpaceAABBs[metaData->vaoOffset].merge(metaData->vertexCache[lIndex]);
-			}
 		}
 	}
 	else
 	{
 		const int lPolygonCount = pMesh->GetPolygonCount();
 		int lVertexCount = 0;
-		if(component->aabbAnimationRecalc)
-		{
-			component->objectSpaceAABBs[metaData->vaoOffset].clear();
-		}
 		for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
 		{
 			for (int lVerticeIndex = 0; lVerticeIndex < 3; ++lVerticeIndex)
@@ -557,11 +541,6 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 				metaData->normalCache[lVertexCount].y = static_cast<float>(pNormals[lControlPointIndex][1]);
 				metaData->normalCache[lVertexCount].z = static_cast<float>(pNormals[lControlPointIndex][2]);
 				metaData->normalCache[lVertexCount] = glm::normalize(metaData->normalCache[lVertexCount]);
-
-				if(component->aabbAnimationRecalc)
-				{
-					component->objectSpaceAABBs[metaData->vaoOffset].merge(glm::vec3(metaData->vertexCache[lVertexCount]));
-				}
 				
 				++lVertexCount;
 			}

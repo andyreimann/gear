@@ -10,6 +10,19 @@ AABB::AABB()
 	this->clear();
 }
 
+AABB::AABB(AABB const& rhs) 
+{
+	// eliminates redundant code
+	*this = rhs;
+}
+
+AABB& AABB::operator=(AABB const& rhs) 
+{
+	mCenter = rhs.mCenter;
+	mHalfExtends = rhs.mHalfExtends;
+	return *this;
+}
+
 AABB::AABB(AABB && rhs) 
 {
 	// eliminates redundant code
@@ -397,7 +410,7 @@ AABB::getDistanceFromCenter(Ray const& ray) const
 }
 
 G2::AABB
-AABB::transform(glm::mat4 const& m) 
+AABB::transform(glm::mat4 const& m) const
 {
 	glm::vec3 min = getMin();
 	glm::vec3 max = getMax();

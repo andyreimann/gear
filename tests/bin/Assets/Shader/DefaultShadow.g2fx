@@ -1,0 +1,186 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inColor ("Vertex Color", vec4) = { COLOR_0 }
+     inNormal ("Vertex Normal", vec3) = { NORMAL }
+   }
+   Properties {
+       _shadowTex ("The shadow texture of a pointlight", samplerCube) = { SHADOW }
+       _csmTex ("The cascade shadow texture of a directional light", sampler2DArrayShadow) = { SAMPLER_6 }
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec3 normal;
+          vec3 eye;
+          vec4 color;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.normal = matrices.normal_matrix * inNormal;
+            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+            dataOut.color = inColor;
+       }
+     #FRAGMENTPROGRAM
+       #extension GL_EXT_texture_array : enable
+       #INCLUDE "G2.material" // include GEAR default stuff
+       #INCLUDE "G2.light" // include GEAR default stuff
+
+        out vec4 outColor; // here goes the final color
+
+        int getCascadeIndex(int lightIndex) 
+        {
+          // find the appropriate depth map to look up in based on the depth of this fragment
+          for(int i = 0; i < light[lightIndex].numCascades; ++i)
+          {
+            if(gl_FragCoord.z < light[lightIndex].zFar[i])
+            {
+              return i;
+            }
+          }
+          return 0;
+        }
+
+        float toTexDepth( vec3 d, float near, float far) 
+        {      
+          float dist = max(max(abs(d.x),abs(d.y)),abs(d.z)); 
+          float fmn = far - near;   
+          dist = ((far+near)/(fmn)) + (1.0/dist)*((-2.0*far*near)/(fmn));   
+          return (dist+1.0)/2.0;   
+        }
+           
+        in Data
+        {
+           vec3 normal;
+           vec3 eye;
+           vec4 color;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          // set the specular term to black
+          vec4 spec = vec4(0.0);
+
+          // normalize both input vectors
+          vec3 n = normalize(dataIn.normal);
+          vec3 e = normalize(dataIn.eye);
+
+          // set color to ambient material term
+          outColor = material.ambient;
+
+          for(int i = 0; i < G2ActiveLights; ++i)
+          {
+            if(light[i].position.w == 0.0)
+            {
+              // directional light
+              float intensity = max(dot(n,light[i].direction), 0.0);
+
+              // if the vertex is lit compute the specular color
+              if (intensity > 0.0) 
+              {
+                float shadowMultiplier = 1.0;
+                if(light[i].type == 0)
+                {
+                  // CSM
+                  int csmIndex = getCascadeIndex(i);
+                  // transform this fragment's position from eye space to scaled light clip space
+                  // such that the xy coordinates are in [0;1]
+                  // note there is no need to divide by w for othogonal light sources
+                  vec4 shadowCoord = light[i].eyeToLightClip[csmIndex]*vec4(-dataIn.eye, 1.0);
+                  // store the depth
+                  shadowCoord.w = shadowCoord.z;
+                
+                  // tell glsl in which layer to do the look up
+                  shadowCoord.z = float(csmIndex);
+
+
+                  shadowMultiplier = shadow2DArray(_csmTex, shadowCoord).x;
+                  float diff = shadowMultiplier - shadowCoord.w;
+                  // smoothen the result a bit, to avoid aliasing at shadow contact point
+                  shadowMultiplier = clamp( diff*250.0 + 1.0, 0.0, 1.0);
+                }
+                // compute the half vector
+                vec3 h = normalize(light[i].direction + e);
+                // compute the specular term into spec
+                float intSpec = max(dot(h,n), 0.0);
+                spec = shadowMultiplier * light[i].specular * material.specular * pow(intSpec,material.shininess);
+                outColor += max(shadowMultiplier * intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              }
+              else
+              {
+                outColor += light[i].ambient;
+              }
+            }
+            else if(light[i].cosCutoff < 1.0)
+            {
+              // spot light
+              float intensity = 0.0;
+              vec4 spec = vec4(0.0);
+           
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              l = normalize(l);
+              vec3 sd = normalize(vec3(-light[i].direction));
+           
+              // inside the cone?
+              if (dot(sd,l) > light[i].cosCutoff) 
+              {
+                intensity = max(dot(n,l), 0.0);
+         
+                if (intensity > 0.0) 
+                {
+                    float att = 1.0 / (light[i].attenuation.x +
+                            light[i].attenuation.y * dist +
+                            light[i].attenuation.z * dist * dist);
+                    vec3 h = normalize(l + e);
+                    float intSpec = max(dot(h,n), 0.0);
+                    spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+                }
+              }
+              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              //outColor = vec4(1.f,0.f,0.f,1.f);
+            }
+            else
+            {
+              // point light
+              vec4 spec = vec4(0.0);
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              // near clip plane, far clip plane used while calculating shadow
+              float texDepth = toTexDepth(l, 0.01, 50.0);
+              l = normalize(l);
+              float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
+
+              if( texDepth >= shadowDepth && texDepth < 1.0 )
+              {
+                // texel in shadow
+                outColor += light[i].ambient; // only ambient light component influences
+              }
+              else
+              {
+
+                float intensity = max(dot(n,l), 0.0);
+                if (intensity > 0.0) 
+                {
+                  float att = 1.0 / (light[i].attenuation.x +
+                          light[i].attenuation.y * dist +
+                          light[i].attenuation.z * dist * dist);
+                  vec3 h = normalize(l + e);
+                  float intSpec = max(dot(h,n), 0.0);
+                  spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+                }
+                outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              }
+
+            }
+          }
+        }
+   }
+ }

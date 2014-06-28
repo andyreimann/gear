@@ -18,6 +18,12 @@ namespace G2
 			/** Creates an AABB, which is in an empty state.
 			 */
 			AABB();
+			/** Copy constructor
+			 */
+			AABB(AABB const& rhs);
+			/** Copy assignment operator to move an AABB.
+			 */
+			AABB& operator=(AABB const& rhs);
 			/** Move constructor
 			 */
 			AABB(AABB && rhs);
@@ -33,7 +39,7 @@ namespace G2
 			/// Transforms the AABB and creates a new one by merging it from all corners of this one.
 			/// @param m The matrix to transform all corners of this AABB with.
 			/// @return A transformed AABB.
-			AABB transform(glm::mat4 const& m);
+			AABB transform(glm::mat4 const& m) const;
 			/** This function will add a Point to the AABBox and will change internal parameters if needed.
 			 * @param pt The Point to add.
 			 * This have to be done, because adding a Point to the AABBox will only change the min and max members of the AABBox.

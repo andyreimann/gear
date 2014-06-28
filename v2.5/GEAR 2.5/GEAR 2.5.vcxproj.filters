@@ -34,10 +34,7 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="VertexArrayObject.h">
-      <Filter>VAO</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>VAO</Filter>
+      <Filter>Buffer\VAO</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Texture</Filter>
@@ -284,6 +281,12 @@
     <ClInclude Include="NormalMapGenerator.h">
       <Filter>ImageProcessing\NormalMaps\NormalMapGenerator</Filter>
     </ClInclude>
+    <ClInclude Include="IndexArrayObject.h">
+      <Filter>Buffer\IAO</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawCall.h">
+      <Filter>ECS\Render\DrawCall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -318,10 +321,7 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="VertexArrayObject.cpp">
-      <Filter>VAO</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexBuffer.cpp">
-      <Filter>VAO</Filter>
+      <Filter>Buffer\VAO</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Texture</Filter>
@@ -547,6 +547,12 @@
     <ClCompile Include="NormalMapGenerator.cpp">
       <Filter>ImageProcessing\NormalMaps\NormalMapGenerator</Filter>
     </ClCompile>
+    <ClCompile Include="IndexArrayObject.cpp">
+      <Filter>Buffer\IAO</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawCall.cpp">
+      <Filter>ECS\Render\DrawCall</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -563,9 +569,6 @@
     </Filter>
     <Filter Include="Timer">
       <UniqueIdentifier>{305f05e1-6dfd-4b0d-9fc1-36b8dfd2a575}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="VAO">
-      <UniqueIdentifier>{39b88ad2-1973-42b7-9b76-10755143bfb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Texture">
       <UniqueIdentifier>{edec893c-abc4-495a-8093-8ca8c722b724}</UniqueIdentifier>
@@ -752,6 +755,15 @@
     </Filter>
     <Filter Include="ImageProcessing\NormalMaps\NormalMapGenerator">
       <UniqueIdentifier>{1a1f4f63-982e-4426-a966-9d2d9d899446}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer\VAO">
+      <UniqueIdentifier>{39b88ad2-1973-42b7-9b76-10755143bfb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer\IAO">
+      <UniqueIdentifier>{59f56d96-e7a3-4350-a232-8e646f4aa47f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Render\DrawCall">
+      <UniqueIdentifier>{0710ac8c-a84e-43b1-bd58-b344e183ed80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

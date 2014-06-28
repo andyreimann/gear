@@ -135,8 +135,20 @@ FBXMesh::Builder::buildResource()
 	// create a RenderComponent with the requested amount of VertexArrayObjects
 	auto* renderComponent = mesh->addComponent<RenderComponent>();
 	renderComponent->allocateVertexArrays((unsigned int)meshMetaData.size());
+	// calculate the number of IndexArrayObjects we need
+	unsigned int numIndexArrays = 0;
+	for (unsigned int i = 0; i < meshMetaData.size() ; ++i) 
+	{
+		MeshMetaData const& meshData = meshMetaData[i];
+		if(meshData.indices.size() > 0)
+		{
+			++numIndexArrays;
+		}
+	}
+	renderComponent->allocateIndexArrays(numIndexArrays);
 
 	// init the VAO
+	unsigned int currentIndexArrayIndex = 0;
 	for (unsigned int i = 0; i < meshMetaData.size() ; ++i) 
 	{
 		MeshMetaData const& meshData = meshMetaData[i];
@@ -153,11 +165,19 @@ FBXMesh::Builder::buildResource()
 		}
 		if(meshData.indices.size() > 0)
 		{
-			renderComponent->allocateIndexArrays(i,1);
-			renderComponent->getVertexArray(i).writeIndices(0, &meshData.indices[0], (unsigned int)meshData.indices.size());
+			IndexArrayObject& iao = renderComponent->getIndexArray(currentIndexArrayIndex);
+			iao.writeIndices(&meshData.indices[0], (unsigned int)meshData.indices.size());
+			
+			++currentIndexArrayIndex;
 		}
+		// add a draw call
+		renderComponent->addDrawCall(DrawCall()
+			.setDrawMode(GL_TRIANGLES)
+			.setEnabled(true)
+			.setVaoIndex(i)
+			.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)
+			.setAABBCalculationMode(AABBCalculationMode::ANIMATED));
 	}
-	renderComponent->drawMode = GL_TRIANGLES;
 #endif
 	
 	auto* nameComponent = mesh->addComponent<NameComponent>();

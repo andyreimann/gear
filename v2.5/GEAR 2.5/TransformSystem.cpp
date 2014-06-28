@@ -28,16 +28,10 @@ TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 			{
 				// update all world space AABBs
 				// TODO Only when transformComponent is really updated!!!!!!!
-				if(renderComponent->objectSpaceAABBs.size() > 0)
+				for(unsigned int c = 0; c < renderComponent->getNumDrawCalls(); ++c)
 				{
-					if(renderComponent->objectSpaceAABBs.size() != renderComponent->worldSpaceAABBs.size())
-					{
-						renderComponent->worldSpaceAABBs.resize(renderComponent->objectSpaceAABBs.size());
-					}
-					for(auto c = 0; c < renderComponent->objectSpaceAABBs.size(); ++c)
-					{
-						renderComponent->worldSpaceAABBs[c] = std::move(renderComponent->objectSpaceAABBs[c].transform(comp.getWorldSpaceMatrix()));
-					}
+					DrawCall& drawCall = renderComponent->getDrawCall(c);
+					drawCall.mWorldSpaceAABB = std::move(drawCall.getModelSpaceAABB().transform(comp.getWorldSpaceMatrix()));
 				}
 			}
 		}

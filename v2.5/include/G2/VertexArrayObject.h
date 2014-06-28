@@ -59,8 +59,7 @@ namespace G2
 		public:
 			
 			/** This constructs a new VertexArrayObject.
-			 * By default no space is allocated and reserved. Make sure to call resize followed
-			 * by at least allocateVertexData!
+			 * By default no space is allocated and reserved. Make sure to call resizeElementCount.
 			 */
 			VertexArrayObject();
 			/** Copy ctor.
@@ -102,74 +101,26 @@ namespace G2
 			
 			float* getDataPointer(Semantics::Name semantic, G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
 			void returnDataPointer(Semantics::Name semantic);
-			unsigned int* getIndexPointer(unsigned int indexBuffer, G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
-			void returnIndexPointer(unsigned int indexBuffer);
-			/** This function will write the given indices into the given index buffer of the VertexArrayObject.
-			 * @param indexBuffer The index of the index buffer to write the indices to.
-			 * @param data The array containing the indices.
-			 * @param numIndices the number of given indices contained in data.
-			 * @return The calling VertexArrayObject instance.
-			 */
-			VertexArrayObject& writeIndices(unsigned int indexBuffer, unsigned int const* data, unsigned int numIndices);
-			
+
 			/** This function will return the NumElements. 
 			* @return The current NumElements.
 			*/
 			unsigned int getNumElements() const { return mNumElements; }
-			/** This function will return the number of indices. 
-			* @return The number of indices.
-			*/
-			unsigned int getNumIndexBuffers() const { return (unsigned int)mIndexBuffer.size(); };
-			/** This function will return the number of indices. 
-			* @return The number of indices.
-			*/
-			unsigned int getNumIndices(unsigned int indexBuffer) const;
-			/** This function will return the number of draw calls, the VertexArrayObject will invoke
-			 * when the draw() function is called.
-			 * @return The  number of draw calls, the VertexArrayObject will invoke
-			 * when the draw() function is called.
-			 */
-			unsigned int getNumDrawCalls() const;
 			/** Returns the number of bytes used by one value in the given semantic.
 			 * @note If the semantic is not used in the VertexArrayObject, 0 is returned.
 			 * @return The number of bytes used by one value in the given semantic.
 			 */
 			unsigned int getNumBytesBySemantic(Semantics::Name semantic) const;
 
-			bool hasIndexBuffers() const { return mIndexBuffer.size() > 0; }
-
 			void bind();
 			/** Draws the VertexArrayObject with the given OpenGL draw mode.
 			 * @param glDrawMode The OpenGL draw mode to use.
 			 */
-			void draw(int glDrawMode, unsigned int drawCall, int numVertices = -1);
+			void draw(int glDrawMode, int numVertices = -1);
 			void unbind();
 
 			~VertexArrayObject();
 		private:
-			/** Resizes the number of index buffers associated with the VertexArrayObject.
-			 * By default a VertexArrayObject does not use an index buffer.
-			 * If you plan to use one or more index buffers for a VertexArrayObject, you can
-			 * allocate them by a call to this function before accessing them.
-			 * Using more than one index buffer for an VAO will result in the same amount of draw calls during rendering.
-			 * @param numIndexBuffer The new amount of index buffers to allocate.
-			 * @note The VertexArrayObject will try to not reallocate the space if possible.
-			 * Therefore it will hold the biggest requested space as long as possible even
-			 * if you later request a resize to a smaller size.
-			 * @warning Previously written data may be lost!
-			 * @return The calling VertexArrayObject instance.
-			 */
-			VertexArrayObject& _resizeIndexBufferCount(unsigned int numIndexBuffer);
-
-			struct IndexBuffer
-			{
-				IndexBuffer()
-					: indexBufferId(GL_INVALID_VALUE),
-					numIndices(0) {}
-				~IndexBuffer();
-				unsigned int	indexBufferId;		// The ID of the OpenGL IndexBufferObject
-				unsigned int	numIndices;			// The amount of indices the IndexBufferObject holds
-			};
 
 			void _initVAOBuffer();
 			void _deleteBuffers();
@@ -180,10 +131,8 @@ namespace G2
 
 			unsigned int	mVertexArrayId;			// The ID of the OpenGL VertexArrayObject
 
-			std::vector<IndexBuffer> mIndexBuffer;	// The index buffer objects associated with this VertexArrayObject
-
 			std::array<unsigned int,Semantics::NUM_SEMANTICS> mBufferIds; // The IDs for the available semantics
 			std::array<unsigned int,Semantics::NUM_SEMANTICS> mBytesPerSemantic; // The number of bytes, the semantic has allocated
-			std::shared_ptr<RefCounter<int>>		mReferenceCounter;
+			std::shared_ptr<RefCounter<int>>		mReferenceCounter; // A reference counter if this instance is shared by copies
 	};
 };

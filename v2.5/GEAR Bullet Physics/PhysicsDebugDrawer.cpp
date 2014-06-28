@@ -135,7 +135,10 @@ DebugDrawer::transport(G2::RenderComponent* target)
 	target->getVertexArray(0).resizeElementCount((unsigned int)mLines.vertices.size())
 				   .writeData(Semantics::POSITION, &mLines.vertices[0])
 				   .writeData(Semantics::COLOR_0, &mLines.colors[0]);
-	target->drawMode = GL_LINES;
+	target->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_LINES)
+		.setVaoIndex(0)
+	);
 
 	mLines.vertices.clear();
 	mLines.colors.clear();

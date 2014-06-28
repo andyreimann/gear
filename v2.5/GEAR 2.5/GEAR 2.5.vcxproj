@@ -251,6 +251,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="clock_win.h" />
     <ClInclude Include="Comparator.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="DrawCall.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectImporter.h" />
     <ClInclude Include="FBXAnimationComponent.h" />
@@ -269,6 +270,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="GlslShader.h" />
     <ClInclude Include="IfElseMacro.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="IndexArrayObject.h" />
     <ClInclude Include="InputEventListener.h" />
     <ClInclude Include="Intersection.h" />
     <ClInclude Include="LightComponent.h" />
@@ -335,7 +337,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="UniformBlock.h" />
     <ClInclude Include="VersionTracker.h" />
     <ClInclude Include="VertexArrayObject.h" />
-    <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexStream.h" />
     <ClInclude Include="ZSorter.h" />
   </ItemGroup>
@@ -349,6 +350,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="clock_linux.cpp" />
     <ClCompile Include="clock_win.cpp" />
     <ClCompile Include="Comparator.cpp" />
+    <ClCompile Include="DrawCall.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectImporter.cpp" />
     <ClCompile Include="FBXAnimationComponent.cpp" />
@@ -367,6 +369,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="GlslShader.cpp" />
     <ClCompile Include="IfElseMacro.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="IndexArrayObject.cpp" />
     <ClCompile Include="InputEventListener.cpp" />
     <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="LightDefaultInclude.cpp" />
@@ -426,7 +429,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="UberShaderParser.cpp" />
     <ClCompile Include="UniformBlock.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexStream.cpp" />
     <ClCompile Include="ZSorter.cpp" />
   </ItemGroup>

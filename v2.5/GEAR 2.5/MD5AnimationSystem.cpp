@@ -109,19 +109,10 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 
 	size_t numMeshes = renderComponent->getNumVertexArrays();
 
-	if(renderComponent->aabbAnimationRecalc && renderComponent->objectSpaceAABBs.size() != numMeshes)
-	{
-		renderComponent->objectSpaceAABBs.resize(numMeshes);
-	}
-
 	for (size_t c = 0; c < numMeshes; ++c) 
 	{
 		MeshAnimationData& meshAnimationData = animationComponent->animationData.meshAnimationData[c];
 		unsigned int numVertices = renderComponent->getVertexArray((unsigned int)c).getNumElements();
-		if(renderComponent->aabbAnimationRecalc)
-		{
-			renderComponent->objectSpaceAABBs[c].clear();
-		}
 
 		if(meshAnimationData.vertexCache.size() == 0)
 		{
@@ -161,10 +152,6 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 						/* The sum of all weight->bias should be 1.0 */
 						meshAnimationData.vertexCache[i] += (joint.position + wv) * weight.bias;
 						meshAnimationData.normalCache[i] += wv * weight.bias;
-						if(renderComponent->aabbAnimationRecalc)
-						{
-							renderComponent->objectSpaceAABBs[c].merge(meshAnimationData.vertexCache[i]);
-						}
 						//normal += wn * weight.bias;
 					}
 					//vertices[i] = vertex;

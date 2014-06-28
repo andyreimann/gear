@@ -28,19 +28,25 @@ MD5Mesh::createVAO(std::vector<Builder::SubMesh> const& meshes)
 {
 	auto* renderComponent = addComponent<RenderComponent>();
 	renderComponent->allocateVertexArrays((unsigned int)meshes.size());
+	renderComponent->allocateIndexArrays((unsigned int)meshes.size());
 
 	for (int i = 0; i < meshes.size() ; ++i) 
 	{
 		Builder::SubMesh const& mesh = meshes[i];
 		VertexArrayObject& vao = renderComponent->getVertexArray((unsigned int)i);
 		vao.resizeElementCount((unsigned int)mesh.vertices.size());
-		renderComponent->allocateIndexArrays(i,1);
 		vao.writeData( Semantics::POSITION, (glm::vec3*)&mesh.vertices[0]);
 		vao.writeData( Semantics::NORMAL, (glm::vec3*)&mesh.normals[0]);
 		vao.writeData( Semantics::TEXCOORD_0, (glm::vec2*)&mesh.uvs[0]);
-		vao.writeIndices( 0, &mesh.indices[0], (unsigned int)mesh.indices.size());
+		IndexArrayObject& iao = renderComponent->getIndexArray((unsigned int)i);
+		iao.writeIndices( &mesh.indices[0], (unsigned int)mesh.indices.size());
+		renderComponent->addDrawCall(DrawCall()
+			.setDrawMode(GL_TRIANGLES)
+			.setEnabled(true)
+			.setVaoIndex(i)
+			.setIaoIndex(i)
+			.setAABBCalculationMode(AABBCalculationMode::ANIMATED));
 	}
-	renderComponent->drawMode = GL_TRIANGLES;
 }
 
 std::shared_ptr<MD5Mesh>

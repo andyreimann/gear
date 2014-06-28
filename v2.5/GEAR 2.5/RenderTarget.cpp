@@ -40,6 +40,7 @@ RenderTarget::RenderTarget(
 		Setting::get("OutputFormat", settings, "RGB").value
 	);
 
+	mFrameBuffer.bind();
 	if(mRenderTargetType == RenderTargetType::RT_CUBE)
 	{
 		// just attach once to check the FBO, although we have to re-attach in each iteration for cube maps
@@ -50,6 +51,7 @@ RenderTarget::RenderTarget(
 
 		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType, 0, 0);
 	}
+	mFrameBuffer.unbind();
 }
 
 RenderTarget::RenderTarget(RenderTarget && rhs) 

@@ -2,12 +2,13 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "RenderSystem.h"
-#include "VertexArrayObject.h"
+#include "IndexArrayObject.h"
 #include "Material.h"
 #include "ShaderCache.h"
 #include "AABB.h"
 #include "ShadowDescriptor.h"
 #include "RenderStatesGroup.h"
+#include "DrawCall.h"
 
 #include <G2Core/BaseComponent.h>
 #include <G2Core/Event.h>
@@ -46,33 +47,35 @@ namespace G2
 			 * @return The number of vertex array objects, this RenderComponent maintains.
 			 */
 			unsigned int getNumVertexArrays() const { return (unsigned int)mVaos.size(); }
-			/** Returns the vertex array object at the given index.
-			 * @param index The index to get the vertex array object for.
+			/** Returns the VertexArrayObject at the given index.
+			 * @param index The index to get the VertexArrayObject for.
 			 * @note Make sure to not request an index, which does not exist!
 			 */
 			VertexArrayObject& getVertexArray(unsigned int index) { return mVaos[(size_t)index]; }
+			/** Returns the IndexArrayObject at the given index.
+			 * @param index The index to get the vertex array object for.
+			 * @note Make sure to not request an index, which does not exist!
+			 */
+			IndexArrayObject& getIndexArray(unsigned int index) { return mIaos[(size_t)index]; }
 			/** This function will calculate the tangent vectors and the binormal vectors for the VertexArrayObjects in the RenderComponents.
 			 * @note It expects and supports only triangle vertex data!
 			 * @param vertexSemantic The semantics to interpret as vertex positions.
 			 * @param texCoordsSemantic The semantics to interpret as texture coordinates.
 			 */
 			void calculateBinormalsAndTangents(Semantics::Name vertexSemantic = Semantics::POSITION, Semantics::Name texCoordsSemantic = Semantics::TEXCOORD_0);
-			/** This function will allocate the given number of vertex array objects for the RenderComponent.
+			/** This function will allocate the given number of VertexArrayObjects for the RenderComponent.
 			 * If the given number is smaller than the current amount, some or all vertex array objects may be deleted.
 			 * @param numVertexArrayObjects The number of vertex array objects to allocate.
-			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
 			 */
 			void allocateVertexArrays(unsigned int numVertexArrayObjects);
-			/** This function will allocate the given number of index arrays in the given VertexArrayObject.
-			 * If the given number is smaller than the current amount, some or all index arrays may be deleted.
-			 * @param vertexArrayIndex The index of the VertexArrayObject to allocate index buffers for.
-			 * @param numIndexArrays The number of index arrays to allocate.
-			 * @note A call to this function will register the RenderComponent to update it's axis aligned bounding boxes in the next "update" phase (even if no resize occured, because size already fits).
+			/** This function will allocate the given number of IndexArrayObjects for the RenderComponent.
+			 * If the given number is smaller than the current amount, some or all IndexArrayObjects may be deleted.
+			 * @param numIndexArrays The number of IndexArrayObjects to allocate.
 			 */
-			void allocateIndexArrays(unsigned int vertexArrayIndex, unsigned int numIndexArrays);
+			void allocateIndexArrays(unsigned int numIndexArrays);
 			/** This function will return the number of draw calls, the VertexArrayObject will invoke
 			 * when the draw() function is called.
-			 * @return The  number of draw calls, the VertexArrayObject will invoke
+			 * @return The number of draw calls, the RenderComponent will invoke
 			 * when the draw() function is called.
 			 */
 			unsigned int getNumDrawCalls() const;
@@ -125,13 +128,18 @@ namespace G2
 			*/
 			void setDestinationBlendFactor(BlendFactor::Name const& value);
 
+			/** Adds the given DrawCall to the end of the current array of DrawCalls.
+			 * @param drawCall the DrawCall to add.
+			 * @warning Due to performance reasons it is not checked if the RenderComponent can provide the referenced VertexArrayObject index 
+			 * as well as the IndexArrayObject index.
+			 */
+			void addDrawCall(DrawCall const& drawCall);
+
+			DrawCall& getDrawCall(int index) {return mDrawCalls[index]; }
+
 			Material						material;		// The Material of the RenderComponent
 			
-			unsigned int					drawMode;		// The OpenGL draw mode to use when rendering
 			bool							billboarding;	// The billboarding mode to use when rendering
-			std::vector<AABB>				objectSpaceAABBs;// The object space axis aligned bounding box
-			std::vector<AABB>				worldSpaceAABBs;// The world space axis aligned bounding box (object space aabb transformed)
-			bool							aabbAnimationRecalc; // Flag indicating if the aabb should be recalculated with the animation
 			
 			Event<
 				RenderComponent*,
@@ -147,15 +155,18 @@ namespace G2
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }
 			/** This function will update the linkage to a RenderStatesGroup for the RenderComponent.
-			 * It will also erase the linbkage to a previous one.
+			 * It will also erase the linkage to a previous one.
 			 * @param newGroup the new RenderStatesGroup the RenderComponent should be linked to.
 			 * @note This function is normally only called from the RenderSystem.
 			 */
 			void _updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup);
 			
 			RenderSystem*					mRenderSystem;
-			std::vector<bool>				mVaosFrustumCulled;		// The frustum culling flag of the vertex array objects of the RenderComponent
-			std::vector<VertexArrayObject>	mVaos;					// The vertex array objects of the RenderComponent
+			
+			std::vector<VertexArrayObject>	mVaos;					// The VertexArrayObject array of the RenderComponent
+			std::vector<IndexArrayObject>	mIaos;					// The IndexArrayObject array of the RenderComponent
+			std::vector<DrawCall>			mDrawCalls;				// The DrawCall array of the RenderComponent
+			
 			std::shared_ptr<G2::Effect>		mEffect;				// The UberShader of the RenderComponent (default is an empty UberShader!)
 			ShaderCache						mShaderCache;			// The cache used for the Shader
 			std::shared_ptr<RenderStatesGroup> mRenderStatesGroup;	// The group of entities sharing the same RenderStates the RenderComponent belongs to (set and maintained by the RenderSystem!)

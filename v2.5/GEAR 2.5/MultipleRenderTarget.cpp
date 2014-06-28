@@ -27,5 +27,7 @@ MultipleRenderTarget::allocateRenderTexture(BufferAttachment::Name attachmentPoi
 			nullptr
 		)
 	);
+	mFrameBuffer.bind();
 	mFrameBuffer.attachTexture(mRenderTextures[attachmentPoint], attachmentPoint, GL_TEXTURE_2D);
+	mFrameBuffer.unbind();
 }
