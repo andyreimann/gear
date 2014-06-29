@@ -10,17 +10,15 @@ using namespace G2;
 void
 TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
-	// nothing
-	//if(name == "render") 
-	//{
-	//	G2::logger << "T in " << frameInfo.frame << G2::endl;
-	//}
 	if(name == "update") 
 	{
 		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
 		for(auto i = 0; i < components.size(); ++i) 
 		{
 			TransformComponent& comp = components[i];
+
+			// step a may assigned spline animation
+
 			// recalculate the local space matrix if not already done this frame
 			comp.updateWorldSpaceMatrix(frameInfo.frame);
 			auto* renderComponent = renderSystem->get(comp.getEntityId());

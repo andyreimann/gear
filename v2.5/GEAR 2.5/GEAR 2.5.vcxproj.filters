@@ -287,6 +287,12 @@
     <ClInclude Include="DrawCall.h">
       <Filter>ECS\Render\DrawCall</Filter>
     </ClInclude>
+    <ClInclude Include="SplineAnimationSystem.h">
+      <Filter>ECS\SplineAnimation</Filter>
+    </ClInclude>
+    <ClInclude Include="SplineAnimation.h">
+      <Filter>ECS\SplineAnimation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -553,6 +559,12 @@
     <ClCompile Include="DrawCall.cpp">
       <Filter>ECS\Render\DrawCall</Filter>
     </ClCompile>
+    <ClCompile Include="SplineAnimation.cpp">
+      <Filter>ECS\SplineAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="SplineAnimationSystem.cpp">
+      <Filter>ECS\SplineAnimation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -764,6 +776,9 @@
     </Filter>
     <Filter Include="ECS\Render\DrawCall">
       <UniqueIdentifier>{0710ac8c-a84e-43b1-bd58-b344e183ed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\SplineAnimation">
+      <UniqueIdentifier>{7fbae2f3-4703-407c-91ad-47b62ec9dc59}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

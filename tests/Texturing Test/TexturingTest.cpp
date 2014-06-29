@@ -34,7 +34,7 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 	G2::EventDistributer::onMouseMove.hook(this, &TexturingTest::onMouseMove);
 	G2::EventDistributer::onMouseDown.hook(this, &TexturingTest::onMouseDown);
 
-	mLight = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
+	mLight = mFbxImporter.import(ASSET_PATH + "Resources/monkey.fbx");
 
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
@@ -45,6 +45,59 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 	 
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f,0.f,0.f));
+
+	
+	// generate animation
+	std::vector<G2::AnimationSample> samples;
+
+	
+	G2::AnimationSample sample;
+	sample.point = glm::vec3(0.f,0.f,0.f);
+	samples.push_back(sample);
+	sample.point = glm::vec3(0.f,4.f,5.f);
+	samples.push_back(sample);
+	sample.point = glm::vec3(5.f,4.f,5.f);
+	samples.push_back(sample);
+	sample.point = glm::vec3(5.f,0.f,0.f);
+	samples.push_back(sample);
+
+
+
+	//G2::AnimationSample sample;
+	//sample.point = glm::vec3(0.f,0.f,0.f);
+	//sample.speed = 0.3;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(0.f,0.f,5.f);
+	//sample.speed = 1.3;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(5.f,0.f,-2.f);
+	//sample.speed = 0.3;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(5.f,0.f,5.f);
+	//sample.speed = 0.7;
+	//samples.push_back(sample);
+	//
+	//sample.point = glm::vec3(0.f,1.f,3.f);
+	//sample.speed = 1.3;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(5.f,1.f,5.f);
+	//sample.speed = 0.7;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(7.f,3.f,0.f);
+	//sample.speed = 0.1;
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(0.f,1.f,5.f);
+	//sample.speed = 0.3;
+	//samples.push_back(sample);
+
+	G2::AnimationDescription desc;
+	desc.loops = true;
+	desc.interpolationType = G2::SplineInterpolationType::CATMULL_ROM;
+	desc.animateOrientation = true;
+	mLight->addComponent<G2::SplineAnimation>(desc, samples);
+
+
+
 
 	mEditor.start();
 

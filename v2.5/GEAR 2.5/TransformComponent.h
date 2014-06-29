@@ -187,7 +187,6 @@ namespace G2
 			void _setDirty();
 			bool _hasCircularDependency(unsigned int initialParentEntityId) const;
 
-
 			TransformMode::Name mMode;			// Default is SRT
 			unsigned int	mParentEntityId;	// The Entity id of the parent TransformComponent
 			bool			mIsDirty;			// Indicates whether something has changed since last recalculation of the local space matrix

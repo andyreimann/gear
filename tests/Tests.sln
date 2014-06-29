@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Terrain Test", "Terrain Tes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Texturing Test", "Texturing Test\Texturing Test.vcxproj", "{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spline Animation Test", "Spline Animation Test\Spline Animation Test.vcxproj", "{11125541-7ADD-417B-9D4D-046FC019B5C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -81,6 +83,18 @@ Global
 		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|Win32.Build.0 = Release|Win32
 		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|x64.ActiveCfg = Release|x64
 		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|x64.Build.0 = Release|x64
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|Win32.Build.0 = Debug|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|x64.ActiveCfg = Debug|x64
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Debug|x64.Build.0 = Debug|x64
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|Win32.ActiveCfg = Release|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|Win32.Build.0 = Release|Win32
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|x64.ActiveCfg = Release|x64
+		{11125541-7ADD-417B-9D4D-046FC019B5C3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -17,6 +17,7 @@
 #include "LightComponent.h"
 #include "NameComponent.h"
 #include "TransformComponent.h"
+#include "SplineAnimation.h"
 
 // Importer
 #include "TextureImporter.h"

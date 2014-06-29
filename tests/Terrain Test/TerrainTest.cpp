@@ -42,6 +42,8 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+
+
 	
 	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 

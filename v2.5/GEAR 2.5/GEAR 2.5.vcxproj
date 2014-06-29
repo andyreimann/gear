@@ -318,6 +318,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="ShaderMetaData.h" />
     <ClInclude Include="ShadowDescriptor.h" />
     <ClInclude Include="SimpleShaderPart.h" />
+    <ClInclude Include="SplineAnimation.h" />
+    <ClInclude Include="SplineAnimationSystem.h" />
     <ClInclude Include="StringTools.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
@@ -411,6 +413,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="ShaderMetaData.cpp" />
     <ClCompile Include="ShadowDescriptor.cpp" />
     <ClCompile Include="SimpleShaderPart.cpp" />
+    <ClCompile Include="SplineAnimation.cpp" />
+    <ClCompile Include="SplineAnimationSystem.cpp" />
     <ClCompile Include="StringTools.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
