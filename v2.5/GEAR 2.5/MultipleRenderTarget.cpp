@@ -21,6 +21,7 @@ MultipleRenderTarget::allocateRenderTexture(BufferAttachment::Name attachmentPoi
 			mWidth, 
 			mHeight, 
 			RGBA,
+			-1,
 			WrapMode::REPEAT,
 			WrapMode::REPEAT, 
 			false,

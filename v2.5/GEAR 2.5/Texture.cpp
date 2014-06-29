@@ -61,11 +61,18 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == RGBA_S || 
 		dstFormat == RGBA_I || 
 		dstFormat == RGBA_UI || 
-		dstFormat == RGBA ) 
+		dstFormat == RGBA || 
+		dstFormat == GL_COMPRESSED_RGBA || 
+		dstFormat == GL_COMPRESSED_SRGB_ALPHA || 
+		dstFormat == GL_COMPRESSED_RGBA_BPTC_UNORM || 
+		dstFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM ) 
 			return 4;
 	else if( dstFormat == RGB || 
 		dstFormat == RGB_UB || 
-		dstFormat == RGB_US) 
+		dstFormat == GL_COMPRESSED_RGB || 
+		dstFormat == GL_COMPRESSED_SRGB || 
+		dstFormat == GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT || 
+		dstFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT) 
 		return 3;
 	else if( dstFormat == ALPHA_UB || 
 		dstFormat == ALPHA_US || 
@@ -88,6 +95,7 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == DEPTH16 || 
 		dstFormat == DEPTH24 || 
 		dstFormat == DEPTH32 || 
+		dstFormat == INTENSITY || 
 		dstFormat == INTENSITY_UB || 
 		dstFormat == INTENSITY_US || 
 		dstFormat == INTENSITY16_F || 
@@ -95,7 +103,11 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == INTENSITY_B || 
 		dstFormat == INTENSITY_S || 
 		dstFormat == INTENSITY_I || 
-		dstFormat == INTENSITY_UI ) {
+		dstFormat == INTENSITY_UI || 
+		dstFormat == RED || 
+		dstFormat == GL_COMPRESSED_RED || 
+		dstFormat == GL_COMPRESSED_RED_RGTC1 || 
+		dstFormat == GL_COMPRESSED_SIGNED_RED_RGTC1 ) {
 			return 1;
 	}
 	else if( dstFormat == LUMINANCE_ALPHA_UB || 
@@ -104,7 +116,11 @@ Texture::numChannelsFromFormat( GLuint dstFormat ) {
 		dstFormat == LUMINANCE_ALPHA_F || 
 		dstFormat == LUMINANCE_ALPHA_B || 
 		dstFormat == LUMINANCE_ALPHA_S || 
-		dstFormat == LUMINANCE_ALPHA_I ) {
+		dstFormat == LUMINANCE_ALPHA_I || 
+		dstFormat == RG || 
+		dstFormat == GL_COMPRESSED_RG || 
+		dstFormat == GL_COMPRESSED_RG_RGTC2 || 
+		dstFormat == GL_COMPRESSED_SIGNED_RG_RGTC2 ) {
 			return 2;
 	}
 	assert(0);
@@ -132,6 +148,12 @@ Texture::convertFormat( GLuint baseFormat, bool compress ) {
 			break;
 		case GL_RGB:
 			return GL_COMPRESSED_RGB;
+			break;
+		case GL_RED:
+			return GL_COMPRESSED_RED;
+			break;
+		case GL_RG:
+			return GL_COMPRESSED_RG;
 			break;
 		case GL_RGBA:
 			return GL_COMPRESSED_RGBA;
@@ -255,6 +277,24 @@ Texture::getFormatByString(std::string const& format)
 	return GL_INVALID_VALUE;
 }
 
+GLuint
+Texture::isCompressedFormat(GLuint baseFormat) 
+{
+	return baseFormat == GL_COMPRESSED_RED ||
+		baseFormat == GL_COMPRESSED_RG ||
+		baseFormat == GL_COMPRESSED_RGB ||
+		baseFormat == GL_COMPRESSED_RGBA ||
+		baseFormat == GL_COMPRESSED_SRGB ||
+		baseFormat == GL_COMPRESSED_SRGB_ALPHA ||
+		baseFormat == GL_COMPRESSED_RED_RGTC1 ||
+		baseFormat == GL_COMPRESSED_SIGNED_RED_RGTC1 ||
+		baseFormat == GL_COMPRESSED_RG_RGTC2 ||
+		baseFormat == GL_COMPRESSED_SIGNED_RG_RGTC2 ||
+		baseFormat == GL_COMPRESSED_RGBA_BPTC_UNORM ||
+		baseFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM ||
+		baseFormat == GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT ||
+		baseFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+}
 WrapMode::Name
 WrapMode::getWrapMode(std::string const& name) 
 {

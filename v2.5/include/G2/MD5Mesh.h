@@ -22,7 +22,7 @@ namespace G2
 		public:
 			struct Builder : public ResourceBuilder<Builder,MD5Mesh>
 			{
-				std::shared_ptr<MD5Mesh> buildResource();
+				std::shared_ptr<MD5Mesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations);
 
 				struct SubMesh 
 				{
@@ -66,6 +66,6 @@ namespace G2
 
 		private:
 
-			void createMeshData(std::vector<Builder::SubMesh> const& meshes);
+			void createMeshData(std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords);
 	};
 };

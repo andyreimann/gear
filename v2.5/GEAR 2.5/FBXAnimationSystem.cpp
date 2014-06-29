@@ -351,15 +351,17 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 	FbxMetaData* metaData = static_cast<FbxMetaData *>(lMesh->GetUserDataPtr());
 #endif
 
-	// If it has some defomer connection, update the vertices position
+	// If it has some deformer connection, update the vertices position
 	const bool lHasVertexCache = lMesh->GetDeformerCount(FbxDeformer::eVertexCache) &&
 		(static_cast<FbxVertexCacheDeformer*>(lMesh->GetDeformer(0, FbxDeformer::eVertexCache)))->IsActive();
 	const bool lHasShape = lMesh->GetShapeCount() > 0;
 	const bool lHasSkin = lMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
 	const bool lHasDeformation = lHasVertexCache || lHasShape || lHasSkin;
+	// check if this instance has imported normal vectors
+	bool hasNormals = component->getVertexArray(metaData->vaoOffset).getNumBytesBySemantic(Semantics::NORMAL) > 0u;
 	
-	FbxVector4* lVertexArray = NULL;
-	FbxArray<FbxVector4>* lNormalArray = NULL;
+	FbxVector4* lVertexArray = nullptr;
+	FbxArray<FbxVector4>* lNormalArray = nullptr;
 #ifndef USE_META_DATA
 	if (!lMeshCache || lHasDeformation)
 #else
@@ -368,34 +370,33 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 	{
 		lVertexArray = new FbxVector4[lVertexCount];
 
-		
-
-		lNormalArray = new FbxArray<FbxVector4>(lVertexCount);
-
-		if(metaData->allByControlPoint)
+		if(hasNormals)
 		{
-			const FbxGeometryElementNormal * lNormalElement = lMesh->GetElementNormal(0);
-
-			
-			FbxVector4 lCurrentNormal;
-			for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
+			// Get the normal vectors we want to animate if the mesh has normals provided
+			lNormalArray = new FbxArray<FbxVector4>(lVertexCount);
+			if(metaData->allByControlPoint)
 			{
-				int lNormalIndex = lIndex;
-				if (lNormalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				const FbxGeometryElementNormal * lNormalElement = lMesh->GetElementNormal(0);
+				FbxVector4 lCurrentNormal;
+				for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
 				{
-					lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
+					int lNormalIndex = lIndex;
+					if (lNormalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+					{
+						lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
+					}
+					lNormalArray->SetAt(lIndex, lNormalElement->GetDirectArray().GetAt(lNormalIndex));
 				}
-				lNormalArray->SetAt(lIndex, lNormalElement->GetDirectArray().GetAt(lNormalIndex));
 			}
-		}
-		else
-		{
-			for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
+			else
 			{
-				for (int lVerticeIndex = 0; lVerticeIndex < 3; ++lVerticeIndex)
+				for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
 				{
-					const int lControlPointIndex = lMesh->GetPolygonVertex(lIndex, lVerticeIndex);
-					lNormalArray->SetAt(lIndex, lMesh->GetControlPoints()[lControlPointIndex]);
+					for (int lVerticeIndex = 0; lVerticeIndex < 3; ++lVerticeIndex)
+					{
+						const int lControlPointIndex = lMesh->GetPolygonVertex(lIndex, lVerticeIndex);
+						lNormalArray->SetAt(lIndex, lMesh->GetControlPoints()[lControlPointIndex]);
+					}
 				}
 			}
 		}
@@ -428,7 +429,7 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 			if (lClusterCount)
 			{
 				// Deform the vertex array with the skin deformer.
-				_computeSkinDeformation(pGlobalPosition, lMesh, pTime, lVertexArray, pPose, lNormalArray->GetArray());
+				_computeSkinDeformation(pGlobalPosition, lMesh, pTime, lVertexArray, pPose, hasNormals ? lNormalArray->GetArray() : nullptr);
 			}
 		}
 #ifndef USE_META_DATA
@@ -437,7 +438,7 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 #else
 		if (metaData) 
 		{
-			_updateVertexPosition(lMesh, lVertexArray, lNormalArray->GetArray(), component, metaData);
+			_updateVertexPosition(lMesh, lVertexArray, hasNormals ? lNormalArray->GetArray() : nullptr, component, metaData);
 		}
 #endif
 	}
@@ -509,18 +510,22 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 	{
 		lVertexCount = pMesh->GetControlPointsCount();
 		metaData->vertexCache.resize(lVertexCount);
-		metaData->normalCache.resize(lVertexCount);
-		
+		if(pNormals != nullptr)
+		{
+			metaData->normalCache.resize(lVertexCount);
+		}
 		for (int lIndex = 0; lIndex < lVertexCount; ++lIndex)
 		{			
 			metaData->vertexCache[lIndex].x = static_cast<float>(pVertices[lIndex][0]);
 			metaData->vertexCache[lIndex].y = static_cast<float>(pVertices[lIndex][1]);
 			metaData->vertexCache[lIndex].z = static_cast<float>(pVertices[lIndex][2]);
-
-			metaData->normalCache[lIndex].x = static_cast<float>(pNormals[lIndex][0]);
-			metaData->normalCache[lIndex].y = static_cast<float>(pNormals[lIndex][1]);
-			metaData->normalCache[lIndex].z = static_cast<float>(pNormals[lIndex][2]);
-			metaData->normalCache[lIndex] = glm::normalize(metaData->normalCache[lIndex]);
+			if(pNormals != nullptr)
+			{
+				metaData->normalCache[lIndex].x = static_cast<float>(pNormals[lIndex][0]);
+				metaData->normalCache[lIndex].y = static_cast<float>(pNormals[lIndex][1]);
+				metaData->normalCache[lIndex].z = static_cast<float>(pNormals[lIndex][2]);
+				metaData->normalCache[lIndex] = glm::normalize(metaData->normalCache[lIndex]);
+			}
 		}
 	}
 	else
@@ -536,18 +541,24 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 				metaData->vertexCache[lVertexCount].x = static_cast<float>(pVertices[lControlPointIndex][0]);
 				metaData->vertexCache[lVertexCount].y = static_cast<float>(pVertices[lControlPointIndex][1]);
 				metaData->vertexCache[lVertexCount].z = static_cast<float>(pVertices[lControlPointIndex][2]);
-
-				metaData->normalCache[lVertexCount].x = static_cast<float>(pNormals[lControlPointIndex][0]);
-				metaData->normalCache[lVertexCount].y = static_cast<float>(pNormals[lControlPointIndex][1]);
-				metaData->normalCache[lVertexCount].z = static_cast<float>(pNormals[lControlPointIndex][2]);
-				metaData->normalCache[lVertexCount] = glm::normalize(metaData->normalCache[lVertexCount]);
 				
+				if(pNormals != nullptr)
+				{
+					metaData->normalCache[lVertexCount].x = static_cast<float>(pNormals[lControlPointIndex][0]);
+					metaData->normalCache[lVertexCount].y = static_cast<float>(pNormals[lControlPointIndex][1]);
+					metaData->normalCache[lVertexCount].z = static_cast<float>(pNormals[lControlPointIndex][2]);
+					metaData->normalCache[lVertexCount] = glm::normalize(metaData->normalCache[lVertexCount]);
+				}
 				++lVertexCount;
 			}
 		}
 	}
+
 	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::POSITION, &metaData->vertexCache[0]);
-	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::NORMAL, &metaData->normalCache[0]);
+	if(pNormals != nullptr)
+	{
+		component->getVertexArray(metaData->vaoOffset).writeData(Semantics::NORMAL, &metaData->normalCache[0]);
+	}
 }
 
 void
@@ -889,9 +900,15 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 	{
 		FbxVector4 lSrcVertex = pVertexArray[i];
 		FbxVector4& lDstVertex = pVertexArray[i];
-		pNormalArray[i].Normalize();
-		FbxVector4 lSrcNormal = pNormalArray[i];
-		FbxVector4& lDstNormal = pNormalArray[i];
+		
+		FbxVector4 lSrcNormal;
+		FbxVector4* lDstNormal;
+		if(pNormalArray != nullptr)
+		{
+			pNormalArray[i].Normalize();
+			lSrcNormal = pNormalArray[i];
+			lDstNormal = &pNormalArray[i];
+		}
 		double lWeight = lClusterWeight[i];
 
 		// Deform the vertex if there was at least a link with an influence on the vertex,
@@ -899,21 +916,30 @@ FBXAnimationSystem::_computeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMe
 		{
 			lDstVertex = lClusterDeformation[i].MultT(lSrcVertex);
 			// use inverse transpose for normals
-			lDstNormal = lClusterDeformation[i].Inverse().Transpose().MultT(lSrcNormal);
-			lDstNormal.Normalize();
+			if(pNormalArray != nullptr)
+			{
+				*lDstNormal = lClusterDeformation[i].Inverse().Transpose().MultT(lSrcNormal);
+				lDstNormal->Normalize();
+			}
 			if (lClusterMode == FbxCluster::eNormalize)
 			{
 				// In the normalized link mode, a vertex is always totally influenced by the links. 
 				lDstVertex /= lWeight;
-				lDstNormal /= lWeight;
+				if(pNormalArray != nullptr)
+				{
+					*lDstNormal /= lWeight;
+				}
 			}
 			else if (lClusterMode == FbxCluster::eTotalOne)
 			{
 				// In the total 1 link mode, a vertex can be partially influenced by the links. 
 				lSrcVertex *= (1.0 - lWeight);
 				lDstVertex += lSrcVertex; 
-				lSrcNormal *= (1.0 - lWeight);
-				lDstNormal += lSrcNormal;
+				if(pNormalArray != nullptr)
+				{
+					lSrcNormal *= (1.0 - lWeight);
+					*lDstNormal += lSrcNormal;
+				}
 			}
 		} 
 	}

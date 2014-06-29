@@ -17,12 +17,15 @@ namespace G2
 			
 			/** This function will load and import the given FBX file
 			 * @note Don't use this function directly, use import() instead!
-			 * @param meshFileName The filename of the FBX-Mesh file to import
-			 * @return a shared pointer pointing to the MD5Mesh or nullptr, if some error occurred.
+			 * @param meshFileName The filename of the FBXMesh file to import
+			 * @param importNormals Flag indicating whether you want the resulting mesh to import normals if available.
+			 * @param importNormals Flag indicating whether you want the resulting mesh to import texture coordinates if available.
+			 * @param importNormals Flag indicating whether you want the resulting mesh to import animations if available.
+			 * @return a shared pointer pointing to the FBXMesh or nullptr, if some error occurred.
 			 * @note Requesting one mesh multiple times will result in cache hits.
 			 */
-			std::shared_ptr<FBXMesh> importResource(std::string const& fileName);
-			std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> produceResourceBuilder(std::string const& fileName);
+			std::shared_ptr<FBXMesh> importResource(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true);
+			std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> produceResourceBuilder(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true);
 
 			~FBXImporter();
 

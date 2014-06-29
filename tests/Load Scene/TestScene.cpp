@@ -445,7 +445,7 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 		std::vector<std::string> animFiles;
 		animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
-		mMd5Meshes.push_back(mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles));
+		mMd5Meshes.push_back(mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", true, true, true, animFiles));
 		if(mMd5Meshes.back().get()) 
 		{
 			
@@ -745,8 +745,4 @@ TestScene::generateGeometryForFrusta()
 		//		.setDiffuse(glm::vec4(0.0,0.0,1.0,0.2));
 		//}
 	}
-
-	// TODO Check if engine renders transparency without this!
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

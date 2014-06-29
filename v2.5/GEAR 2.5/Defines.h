@@ -113,6 +113,10 @@ namespace G2
 	const Bool G2_TRUE	= 1;
 	const Bool G2_FALSE	= 0;
 
+	const unsigned RED          = GL_RED;								//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
+	const unsigned RG			= GL_RG;								//!< Format description: channels: 2, datatype: ubyte, bytes per channel: 1
+	
+
 	const unsigned RGB          = GL_RGB;								//!< Format description: channels: 3, datatype: float, bytes per channel: 4
 	const unsigned RGB_UB       = GL_RGB8;								//!< Format description: channels: 3, datatype: ubyte, bytes per channel: 1
 	const unsigned RGB_US       = GL_RGB16;								//!< Format description: channels: 3, datatype: ushort, bytes per channel: 2

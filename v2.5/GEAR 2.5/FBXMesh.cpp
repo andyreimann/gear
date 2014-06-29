@@ -117,11 +117,11 @@ FBXMesh::operator=(FBXMesh && rhs)
 }
 
 std::shared_ptr<FBXMesh>
-FBXMesh::Builder::buildResource() 
+FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations) 
 {
 	// create mesh
 	std::shared_ptr<FBXMesh> mesh = std::shared_ptr<FBXMesh>(new FBXMesh);
-	if(isAnimated)
+	if(isAnimated && importAnimations)
 	{
 		// prepare animationData
 		FBXAnimationData animData(cacheStart, cacheStop, animStackNameArray, 24.0);
@@ -155,11 +155,11 @@ FBXMesh::Builder::buildResource()
 		renderComponent->getVertexArray(i).resizeElementCount((unsigned int)meshData.vertices.size())
 			.writeData(Semantics::POSITION, &meshData.vertices[0]);
 		
-		if(meshData.hasNormals)
+		if(meshData.hasNormals && importNormals)
 		{
 			renderComponent->getVertexArray(i).writeData(Semantics::NORMAL, &meshData.normals[0]);
 		}
-		if(meshData.hasUvs)
+		if(meshData.hasUvs && importTexCoords)
 		{
 			renderComponent->getVertexArray(i).writeData(Semantics::TEXCOORD_0, &meshData.uvs[0]);
 		}

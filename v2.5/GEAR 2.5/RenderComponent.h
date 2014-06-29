@@ -142,19 +142,8 @@ namespace G2
 			DrawCall& getDrawCall(int index) {return mDrawCalls[index]; }
 
 			Material						material;		// The Material of the RenderComponent
-			
 			bool							billboarding;	// The billboarding mode to use when rendering
 			
-			Event<
-				RenderComponent*,
-				unsigned int,
-				unsigned int,
-				unsigned int&,
-				glm::mat4 const&,
-				std::shared_ptr<Shader> const&,
-				bool&
-			>	renderDrawCallEvent; // 1 = pointer to RenderComponent, 2 = VAO index, 3 = draw call index, 4 = draw mode, 5 = camera space matrix, 6 = bound shader, 7 = render draw call flag
-
 			~RenderComponent();
 		private:
 			ShaderCache& _getShaderCache() { return mShaderCache; }

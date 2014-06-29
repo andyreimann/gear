@@ -24,7 +24,7 @@ MD5Mesh::operator=(MD5Mesh && rhs)
 }
 
 void 
-MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes)
+MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords)
 {
 	auto* renderComponent = addComponent<RenderComponent>();
 	renderComponent->allocateVertexArrays((unsigned int)meshes.size());
@@ -36,8 +36,14 @@ MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes)
 		VertexArrayObject& vao = renderComponent->getVertexArray((unsigned int)i);
 		vao.resizeElementCount((unsigned int)mesh.vertices.size());
 		vao.writeData( Semantics::POSITION, &mesh.vertices[0]);
-		vao.writeData( Semantics::NORMAL, &mesh.normals[0]);
-		vao.writeData( Semantics::TEXCOORD_0, &mesh.uvs[0]);
+		if(importNormals)
+		{
+			vao.writeData( Semantics::NORMAL, &mesh.normals[0]);
+		}
+		if(importTexCoords)
+		{
+			vao.writeData( Semantics::TEXCOORD_0, &mesh.uvs[0]);
+		}
 		IndexArrayObject& iao = renderComponent->getIndexArray((unsigned int)i);
 		iao.writeIndices( &mesh.indices[0], (unsigned int)mesh.indices.size());
 		renderComponent->addDrawCall(DrawCall()
@@ -50,16 +56,16 @@ MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes)
 }
 
 std::shared_ptr<MD5Mesh>
-MD5Mesh::Builder::buildResource() 
+MD5Mesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations) 
 {
 	// create new MD5Mesh
 	std::shared_ptr<MD5Mesh> mesh = std::shared_ptr<MD5Mesh>(new MD5Mesh());
 
 	// create VAO from sub meshes
-	mesh->createMeshData(subMeshes);
+	mesh->createMeshData(subMeshes, importNormals, importTexCoords);
 
 	// attach an animation component and configure it
-	if(animationData.skeletonFrames.frames.size() > 0) 
+	if(animationData.skeletonFrames.frames.size() > 0 && importAnimations) 
 	{
 		auto* animationComponent = mesh->addComponent<MD5AnimationComponent>(animationData.numJoints);
 		animationComponent->animationData = animationData;

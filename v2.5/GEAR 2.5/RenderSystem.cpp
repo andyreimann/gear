@@ -745,6 +745,7 @@ RenderSystem::_onViewportResize(int w, int h)
 					w, 
 					h, 
 					RGBA, 
+					-1,
 					WrapMode::CLAMP_TO_EDGE,
 					WrapMode::CLAMP_TO_EDGE,
 					false,

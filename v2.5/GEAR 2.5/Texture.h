@@ -75,6 +75,7 @@ namespace G2
 
 			static GLuint numChannelsFromFormat( GLuint dstFormat );
 			static GLuint convertFormat( GLuint baseFormat, bool compress );
+			static GLuint isCompressedFormat(GLuint baseFormat);
 			static bool mipMapsRequested(GLuint minFilter, GLuint magFilter);
 			static void checkFilter(GLuint minFilter, GLuint magFilter);
 			/** This function computes the compressed internal format from the corresponding internal base format if requested.

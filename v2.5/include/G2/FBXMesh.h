@@ -62,7 +62,7 @@ namespace G2
 				void unloadCacheRecursive(FbxNode * pNode);
 				~Builder();
 
-				std::shared_ptr<FBXMesh> buildResource();
+				std::shared_ptr<FBXMesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations);
 
 				std::string				name;
 				FbxScene*				fbxScene; // This object holds most objects imported from files.

@@ -7,21 +7,21 @@
 using namespace G2;
 
 std::shared_ptr<FBXMesh>
-FBXImporter::importResource(std::string const& fileName) 
+FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations) 
 {
 	
 	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
-		return it->second->build();
+		return it->second->build(importNormals, importTexCoords, importAnimations);
 	}
 	// should never occur
 	return std::shared_ptr<FBXMesh>();
 }
 
 std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> 
-FBXImporter::produceResourceBuilder(std::string const& meshFileName) 
+FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations) 
 {
 	if(isCached(meshFileName))
 	{

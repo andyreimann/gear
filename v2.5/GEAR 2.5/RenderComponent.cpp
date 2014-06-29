@@ -54,10 +54,7 @@ RenderComponent::addDrawCall(DrawCall const& drawCall)
 	// set the internal parameters of the DrawCall to link it to this RenderComponent
 	mDrawCalls.back()._setDrawCallIndex((int)mDrawCalls.size()-1);
 	mDrawCalls.back()._setEntityId(getEntityId());
-	if(drawCall.getAABBCalculationMode() != MANUAL)
-	{
-		scheduleAABBRecalculation();
-	}
+	scheduleAABBRecalculation();
 }
 
 unsigned int

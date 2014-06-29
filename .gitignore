@@ -125,3 +125,5 @@ tests/Terrain Test/Terrain Test.vcxproj.user
 tests/bin/x64/Release/GEARTerrains.dll
 v2.5/lib/x64/Release/GEARTerrains.dll
 v2.5/lib/x64/Release/GEARTerrains.lib
+tests/blend/unit-cube.blend
+tests/blend/unit-cube.blend1

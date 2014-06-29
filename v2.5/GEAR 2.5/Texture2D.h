@@ -21,7 +21,13 @@ namespace G2
 			struct Builder : public ResourceBuilder<Builder,Texture2D>
 			{
 
-				std::shared_ptr<Texture2D> buildResource(unsigned minFilter, unsigned magFilter, bool compress, WrapMode::Name wrapS, WrapMode::Name wrapT);
+				std::shared_ptr<Texture2D> buildResource(
+					unsigned minFilter, 
+					unsigned magFilter, 
+					bool compress, 
+					WrapMode::Name wrapS, 
+					WrapMode::Name wrapT,
+					int internalFormat);
 				~Builder();
 
 				unsigned id; // The IL image id
@@ -32,16 +38,19 @@ namespace G2
 			 * @param magFilter The mag filter to use.
 			 * @param width The width  to use.
 			 * @param height The height to use.
-			 * @param height The height to use.
+			 * @param format The format of the incoming data.
+			 * @param internalFormat The internal format to interpret it as. Set this value to -1 if you want to choose the same internal format as given in 'format'
 			 * @param compress The compress flag to use.
 			 * @param data The pointer to the initial data or nullptr.
-			 * @param numCascades The actual number of cascades for this texture (so that it actually becomes a texture array)
+			 * @note If you don't want to use the internal compression method, just pass in a compressed internal format.
+			 * If the supplied internal format is already a compressed format, it does not matter what value you set the compressed parameter to!
 			 */
 			Texture2D(unsigned int minFilter, 
 					  unsigned int magFilter, 
 					  unsigned int width,
 					  unsigned int height,
 					  unsigned int format,
+					  int internalFormat,
 					  WrapMode::Name wrapS,
 					  WrapMode::Name wrapT,
 					  bool compress,

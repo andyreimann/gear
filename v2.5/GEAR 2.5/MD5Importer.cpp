@@ -12,6 +12,7 @@ using namespace G2;
 
 std::shared_ptr<MD5Mesh>
 MD5Importer::importResource(std::string const& fileName,
+							bool importNormals, bool importTexCoords, bool importAnimations,
 							std::vector<std::string> const& animationFiles) 
 {
 	
@@ -19,7 +20,7 @@ MD5Importer::importResource(std::string const& fileName,
 	if(it != mCache.end())
 	{
 		// cache hit
-		return it->second->build();
+		return it->second->build(importNormals, importTexCoords, importAnimations);
 	}
 	// should never occur
 	return std::shared_ptr<MD5Mesh>();
@@ -27,6 +28,7 @@ MD5Importer::importResource(std::string const& fileName,
 
 std::pair<std::string,std::shared_ptr<MD5Mesh::Builder>> 
 MD5Importer::produceResourceBuilder(std::string const& meshFileName,
+							bool importNormals, bool importTexCoords, bool importAnimations,
 							std::vector<std::string> const& animationFiles) 
 {
 	if(isCached(meshFileName))

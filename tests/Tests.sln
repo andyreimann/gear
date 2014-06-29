@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UI Test - CEGUI", "UI Test 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Terrain Test", "Terrain Test\Terrain Test.vcxproj", "{CF1A9E18-4B30-49C9-935C-57878C22E922}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Texturing Test", "Texturing Test\Texturing Test.vcxproj", "{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -67,6 +69,18 @@ Global
 		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|Win32.Build.0 = Release|Win32
 		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|x64.ActiveCfg = Release|x64
 		{CF1A9E18-4B30-49C9-935C-57878C22E922}.Release|x64.Build.0 = Release|x64
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|Win32.Build.0 = Debug|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|x64.ActiveCfg = Debug|x64
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Debug|x64.Build.0 = Debug|x64
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|Win32.ActiveCfg = Release|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|Win32.Build.0 = Release|Win32
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|x64.ActiveCfg = Release|x64
+		{F680BD51-0C4F-4283-9FC6-94B737D8EBFF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
