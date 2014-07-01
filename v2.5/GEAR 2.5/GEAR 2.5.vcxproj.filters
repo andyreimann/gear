@@ -293,6 +293,12 @@
     <ClInclude Include="SplineAnimation.h">
       <Filter>ECS\SplineAnimation</Filter>
     </ClInclude>
+    <ClInclude Include="Curve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="CatmullRomCurve.h">
+      <Filter>Curves\CatmullRomCurve</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -565,6 +571,9 @@
     <ClCompile Include="SplineAnimationSystem.cpp">
       <Filter>ECS\SplineAnimation</Filter>
     </ClCompile>
+    <ClCompile Include="CatmullRomCurve.cpp">
+      <Filter>Curves\CatmullRomCurve</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -779,6 +788,12 @@
     </Filter>
     <Filter Include="ECS\SplineAnimation">
       <UniqueIdentifier>{7fbae2f3-4703-407c-91ad-47b62ec9dc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Curves">
+      <UniqueIdentifier>{85c34aa5-e3fe-4f37-9c2a-7586565908c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Curves\CatmullRomCurve">
+      <UniqueIdentifier>{a208a14c-4a9a-4a6a-8015-6c3a7ba1ac09}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

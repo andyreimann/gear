@@ -6,6 +6,7 @@
 #include <G2Core/BaseComponent.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include <memory>
 
 namespace G2 
 {
@@ -18,22 +19,6 @@ namespace G2
 		};
 	};
 
-	struct AnimationDescription
-	{
-		AnimationDescription() : loops(true), interpolationType(SplineInterpolationType::CATMULL_ROM), animateOrientation(false), animatePosition(true) {}
-		bool loops;											// Flag indicating whether the animation should loop.
-		SplineInterpolationType::Name interpolationType;	// The interpolation type to use
-		bool animateOrientation;
-		bool animatePosition;
-	};
-
-	struct AnimationSample
-	{
-		AnimationSample() : speed(1.0) {}
-		glm::vec3 point;			// The point of the animation sample
-		double speed;				// The speed of the animation at this point.
-	};
-
 	struct SplineAnimationState
 	{
 		SplineAnimationState() : sampleIndex(0), interpolationValue(0.f) {}
@@ -41,6 +26,7 @@ namespace G2
 		double	interpolationValue;	// The current interpolation value in the range [0,1]
 	};
 	class TransformComponent;
+	class Curve;
 	/** This class defines the data for an animation using splines.
 	 * @created:	2014/06/29
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -48,12 +34,10 @@ namespace G2
 	class SplineAnimation : public BaseComponent<SplineAnimationSystem> 
 	{
 		public:
-			/** Creates a new SplineAnimation with the given AnimationSamples and a description for the animation.
-			 * @warning Currently only the SplineInterpolationType CATMULL_ROM works as expected!
-			 * @param animationDescription The AnimationDescription containing general animation configuration.
-			 * @param animationSamples The known samples of the animation to generate a SplineAnimation from.
+			/** Creates a new SplineAnimation with the given 
+			 * @param curve The Curve to use for the animation.
 			 */
-			SplineAnimation(AnimationDescription const& animationDescription, std::vector<AnimationSample> const& animationSamples);
+			SplineAnimation(std::shared_ptr<Curve> const& curve);
 			/** This function will step the animation and write the new state into the given TransformComponent
 			 * @param timeSinceLastFrame The step width to step the SplineAnimation.
 			 * @param transformComponent The target TransformComponent to write the current state to.
@@ -66,11 +50,6 @@ namespace G2
 			 */
 			std::vector<glm::vec3> debugSamplePath(float samplingRate);
 		private:
-
-			AnimationDescription			mAnimationDescription;
-			std::vector<AnimationSample>	mAnimationSamples;
-
-			SplineAnimationState			mCurrentState;
-			glm::mat4						mInterpolationMatrix;
+			std::shared_ptr<Curve>	mCurve;
 	};
 };
