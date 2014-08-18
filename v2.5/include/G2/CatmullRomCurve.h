@@ -22,13 +22,5 @@ namespace G2
 			
 			virtual bool usePoints() override;
 			virtual bool useTangents() override;
-		protected:
-
-			static void _catmullRom(
-				glm::vec4 const& geometry,
-				float ip,
-				float& valueOut,
-				float& slopeOut
-			);
 	};
 };

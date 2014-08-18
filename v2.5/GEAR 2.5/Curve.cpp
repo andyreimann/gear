@@ -102,13 +102,10 @@ Curve::getPointsOnCurve(float samplingRate)
 	// sample
 	std::vector<glm::vec3> samples;
 	
-	for(int i = 0; i < mCurveSamples.size(); ++i)
+	for(float s = 0.f; s <= 1.00001f * mCurveSamples.size(); s+=samplingRate)
 	{
-		for(float s = 0.f; s <= 1.00001f; s+=samplingRate)
-		{
-			interpolate(samplingRate);
-			samples.push_back(mCurrentPosition);
-		}
+		interpolate(samplingRate);
+		samples.push_back(mCurrentPosition);
 	}
 
 
@@ -119,4 +116,37 @@ Curve::getPointsOnCurve(float samplingRate)
 	mCurrentRotation = currentRotation;
 
 	return samples;
+}
+
+
+void Curve::_interpolate(
+		glm::mat4 const& matrix,
+		glm::vec4 const& geometry,
+		float ip,
+		float& valueOut,
+		float& slopeOut) {
+
+	glm::vec4 T = glm::vec4(0.f,0.f,0.f,0.f);
+	glm::vec4 ABCD = glm::vec4(0.f,0.f,0.f,0.f);
+
+	// Calculate Cubic Coefficients
+	ABCD = matrix * geometry;
+
+	// T Vector
+	T.w = 1.f;
+	T.z = ip;
+	T.y = T.z * T.z;
+	T.x = T.y * T.z;
+
+	// Solve Cubic for Height
+	valueOut = glm::dot(T,ABCD);
+
+	// T Vector for Derivative
+	T.w = 0.f;
+	T.z = 1.f;
+	T.y = 2.f * ip;
+	T.x = 3.f * ip * ip;
+
+	// Solve Quadratic for Slope
+	slopeOut = glm::dot(T,ABCD);
 }

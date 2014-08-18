@@ -1,6 +1,8 @@
 #include "SplineAnimationTest.h"
 
 #include <G2/CatmullRomCurve.h>
+#include <G2/HermiteCurve.h>
+#include <G2/BezierCurve.h>
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -67,6 +69,34 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 	std::shared_ptr<G2::Curve> curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
 
 	createSpline(curve, "Catmull Rom Spline");
+
+	curveSamples.clear();
+	
+	zOffset = -5.f;
+	sample.point =	 glm::vec3(0.f,-2.f, 0.f+zOffset);
+	sample.tangent = glm::vec3(1.f, 0.f, 0.f);
+	curveSamples.push_back(sample);
+	sample.point =	 glm::vec3(2.f, 0.f, 0.f+zOffset);
+	sample.tangent = glm::vec3(0.f, 1.f, 0.f);
+	curveSamples.push_back(sample);
+	sample.point =	 glm::vec3(0.f, 2.f, 0.f+zOffset);
+	sample.tangent = glm::vec3(-1.f, 0.f, 0.f);
+	curveSamples.push_back(sample);
+	sample.point =	 glm::vec3(-2.f,0.f, 0.f+zOffset);
+	sample.tangent = glm::vec3(0.f,-1.f, 0.f);
+	curveSamples.push_back(sample);
+
+	curve = std::shared_ptr<G2::Curve>(new G2::HermiteCurve(G2::InterpolationDescription(), curveSamples));
+
+	createSpline(curve, "Hermite Spline");
+
+	curve = std::shared_ptr<G2::Curve>(new G2::BezierCurve(G2::InterpolationDescription(), curveSamples));
+
+	createSpline(curve, "Bezier Spline");
+
+	curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
+
+	createSpline(curve, "Catmull Rom Spline 2");
 }
 
 SplineAnimationTest::~SplineAnimationTest(void)

@@ -299,6 +299,12 @@
     <ClInclude Include="CatmullRomCurve.h">
       <Filter>Curves\CatmullRomCurve</Filter>
     </ClInclude>
+    <ClInclude Include="HermiteCurve.h">
+      <Filter>Curves\HermiteCurve</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierCurve.h">
+      <Filter>Curves\BezierCurve</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -577,6 +583,12 @@
     <ClCompile Include="Curve.cpp">
       <Filter>Curves</Filter>
     </ClCompile>
+    <ClCompile Include="HermiteCurve.cpp">
+      <Filter>Curves\HermiteCurve</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierCurve.cpp">
+      <Filter>Curves\BezierCurve</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -797,6 +809,12 @@
     </Filter>
     <Filter Include="Curves\CatmullRomCurve">
       <UniqueIdentifier>{a208a14c-4a9a-4a6a-8015-6c3a7ba1ac09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Curves\HermiteCurve">
+      <UniqueIdentifier>{50e7cbd6-dbfa-4a85-977d-98d759de1d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Curves\BezierCurve">
+      <UniqueIdentifier>{9ad7bccf-9e8a-4caa-938e-eb3b004d1b78}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
