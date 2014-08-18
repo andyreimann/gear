@@ -10,21 +10,6 @@
 
 namespace G2 
 {
-	namespace SplineInterpolationType
-	{
-		enum Name {
-			CATMULL_ROM,
-			BASIS_SPLINE,
-			HERMITE_SPLINE
-		};
-	};
-
-	struct SplineAnimationState
-	{
-		SplineAnimationState() : sampleIndex(0), interpolationValue(0.f) {}
-		int		sampleIndex;			// The index of the currently active AnimationSample
-		double	interpolationValue;	// The current interpolation value in the range [0,1]
-	};
 	class TransformComponent;
 	class Curve;
 	/** This class defines the data for an animation using splines.

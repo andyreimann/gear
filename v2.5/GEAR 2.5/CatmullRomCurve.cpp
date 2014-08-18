@@ -57,86 +57,15 @@ CatmullRomCurve::interpolate(double const& timeStep)
 		return;
 	}
 
-	double i1 = 1.0 - mInterpolationValue;
-	double i2 = mInterpolationValue;
-	CurveSample const* currentSample = &mCurveSamples[mCurrentIndex];
-	CurveSample const* nextSample = &mCurveSamples[std::min((int)mCurveSamples.size()-1,mCurrentIndex+1)];
-	if(mInterpolationDesc.loops && mCurrentIndex+1 > mCurveSamples.size()-1)
-	{
-		nextSample = &mCurveSamples[0];
-	}
-	double delta = ((i1 * currentSample->speed) + (i2 * nextSample->speed)) * timeStep;
-	mInterpolationValue += delta;
-	if(mInterpolationValue > 1.0)
-	{
-		// check if we would step out of range now
-		if(mCurveSamples.size()-1 < mCurrentIndex+1)
-		{
-			// we are out of range
-			if(mInterpolationDesc.loops)
-			{
-				// step back to 0 in case we loop
-				mCurrentIndex = 0;
-			}
-		}
-		else
-		{
-			++mCurrentIndex;
-		}
-		mInterpolationValue -= 1.f;
-	}
+	Curve::interpolate(timeStep);
 
-	// calculate where the sampling points are depending on the animation mode to use
-	CurveSample const* s0 = nullptr;
-	CurveSample const* s1 = &mCurveSamples[mCurrentIndex];
-	CurveSample const* s2 = nullptr;
-	CurveSample const* s3 = nullptr;
-	if(mInterpolationDesc.loops)
-	{
-		if(mCurrentIndex-1 < 0)
-		{
-			s0 = &mCurveSamples[mCurveSamples.size()-1];
-		}
-		else 
-		{
-			s0 = &mCurveSamples[mCurrentIndex-1];
-		}
-		if(mCurrentIndex+1 >= mCurveSamples.size())
-		{
-			s2 = &mCurveSamples[0];
-		}
-		else
-		{
-			s2 = &mCurveSamples[mCurrentIndex+1];
-		}
-		if(mCurrentIndex+2 >= mCurveSamples.size())
-		{
-			if(mCurrentIndex+1 >= mCurveSamples.size())
-			{
-				s3 = &mCurveSamples[std::min(1,(int)mCurveSamples.size())];
-			}
-			else
-			{
-				s3 = &mCurveSamples[0];
-			}
-		}
-		else
-		{
-			s3 = &mCurveSamples[mCurrentIndex+2];
-		}
-	}
-	else
-	{
-		s0 = &mCurveSamples[std::max(0,mCurrentIndex-1)];
-		s2 = &mCurveSamples[std::min((int)mCurveSamples.size()-1,mCurrentIndex+1)];
-		s3 = &mCurveSamples[std::min((int)mCurveSamples.size()-1,mCurrentIndex+2)];
-	}
+	
 
 	// do the interpolation
 	float slopeX, slopeY, slopeZ;
-	_catmullRom(glm::vec4(s0->point.x, s1->point.x, s2->point.x, s3->point.x), (float)mInterpolationValue, mCurrentPosition.x, slopeX);
-	_catmullRom(glm::vec4(s0->point.y, s1->point.y, s2->point.y, s3->point.y), (float)mInterpolationValue, mCurrentPosition.y, slopeY);
-	_catmullRom(glm::vec4(s0->point.z, s1->point.z, s2->point.z, s3->point.z), (float)mInterpolationValue, mCurrentPosition.z, slopeZ);
+	_catmullRom(glm::vec4(mSample0->point.x, mSample1->point.x, mSample2->point.x, mSample3->point.x), (float)mInterpolationValue, mCurrentPosition.x, slopeX);
+	_catmullRom(glm::vec4(mSample0->point.y, mSample1->point.y, mSample2->point.y, mSample3->point.y), (float)mInterpolationValue, mCurrentPosition.y, slopeY);
+	_catmullRom(glm::vec4(mSample0->point.z, mSample1->point.z, mSample2->point.z, mSample3->point.z), (float)mInterpolationValue, mCurrentPosition.z, slopeZ);
 	mCurrentRotation = glm::lookAt(glm::vec3(), glm::vec3(slopeZ+0.000001f, slopeY, slopeX+0.000001f), glm::vec3(0.f,1.f,0.f));
 }
 

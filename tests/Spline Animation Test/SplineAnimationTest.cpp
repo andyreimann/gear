@@ -46,34 +46,10 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f,0.f,0.f));
 
 	mEditor.start();
-	
-	createSpline(G2::SplineInterpolationType::CATMULL_ROM, "Catmull Rom Spline", 0.f);
-	createSpline(G2::SplineInterpolationType::BASIS_SPLINE, "Basis Spline", -4.f);
-	createSpline(G2::SplineInterpolationType::HERMITE_SPLINE, "Hermite Spline", -8.f);
-}
-
-SplineAnimationTest::~SplineAnimationTest(void)
-{
-	G2::EventDistributer::onRenderFrame.unHook(this, &SplineAnimationTest::onRenderFrame);
-	G2::EventDistributer::onViewportResize.unHook(this, &SplineAnimationTest::onViewportResize);
-	G2::EventDistributer::onKeyUp.unHook(this, &SplineAnimationTest::onKeyUp);
-	G2::EventDistributer::onKeyDown.unHook(this, &SplineAnimationTest::onKeyDown);
-	G2::EventDistributer::onMouseMove.unHook(this, &SplineAnimationTest::onMouseMove);
-	G2::EventDistributer::onMouseDown.unHook(this, &SplineAnimationTest::onMouseDown);
-}
-
-void
-SplineAnimationTest::createSpline(G2::SplineInterpolationType::Name type, std::string const& name, float zOffset) 
-{
-	mSplines.push_back(mFbxImporter.import(ASSET_PATH + "Resources/monkey.fbx"));
-
-
-	G2::InterpolationDescription desc;
-	desc.animatePosition = true;
-	desc.loops = true;
 
 	std::vector<G2::CurveSample> curveSamples;
 	
+	float zOffset = 0.f;
 	G2::CurveSample sample;
 	sample.point = glm::vec3(-5.0f,-2.5f,-10.f+zOffset);
 	curveSamples.push_back(sample);
@@ -87,32 +63,57 @@ SplineAnimationTest::createSpline(G2::SplineInterpolationType::Name type, std::s
 	curveSamples.push_back(sample);
 	sample.point = glm::vec3(-7.5f, 0.0f,-8.f+zOffset);
 	curveSamples.push_back(sample);
+	
+	std::shared_ptr<G2::Curve> curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
+
+	createSpline(curve, "Catmull Rom Spline");
+}
+
+SplineAnimationTest::~SplineAnimationTest(void)
+{
+	G2::EventDistributer::onRenderFrame.unHook(this, &SplineAnimationTest::onRenderFrame);
+	G2::EventDistributer::onViewportResize.unHook(this, &SplineAnimationTest::onViewportResize);
+	G2::EventDistributer::onKeyUp.unHook(this, &SplineAnimationTest::onKeyUp);
+	G2::EventDistributer::onKeyDown.unHook(this, &SplineAnimationTest::onKeyDown);
+	G2::EventDistributer::onMouseMove.unHook(this, &SplineAnimationTest::onMouseMove);
+	G2::EventDistributer::onMouseDown.unHook(this, &SplineAnimationTest::onMouseDown);
+}
+
+void
+SplineAnimationTest::createSpline(std::shared_ptr<G2::Curve> curve, std::string const& name) 
+{
+	mSplines.push_back(mFbxImporter.import(ASSET_PATH + "Resources/monkey.fbx"));
 
 
-	auto* splineAnimation = mSplines.back()->addComponent<G2::SplineAnimation>(std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(desc, curveSamples)));
+	G2::InterpolationDescription desc;
+	desc.animatePosition = true;
+	desc.loops = true;
+
+
+	auto* splineAnimation = mSplines.back()->addComponent<G2::SplineAnimation>(curve);
 	
 	
 	std::vector<glm::vec3> geometry = splineAnimation->debugSamplePath(0.05f);
 
-	//mSplineVis.push_back(G2::Entity());
-	//auto* renderComponent = mSplineVis.back().addComponent<G2::RenderComponent>();
-	//auto* nameComp = mSplineVis.back().addComponent<G2::NameComponent>();
-	//nameComp->name = name;
-	//renderComponent->allocateVertexArrays(1);	
-	//G2::VertexArrayObject& vao = renderComponent->getVertexArray(0);
-	//vao.resizeElementCount((unsigned int)geometry.size());
-	//vao.writeData(G2::Semantics::POSITION, &geometry[0]);
-	//
-	//renderComponent->addDrawCall(G2::DrawCall()
-	//	.setDrawMode(GL_LINE_STRIP)
-	//	.setVaoIndex(renderComponent->getNumVertexArrays()-1)
-	//	.setEnabled(true)
-	//);
-	//renderComponent->addDrawCall(G2::DrawCall()
-	//	.setDrawMode(GL_POINTS)
-	//	.setVaoIndex(renderComponent->getNumVertexArrays()-1)
-	//	.setEnabled(true)
-	//);
+	mSplineVis.push_back(G2::Entity());
+	auto* renderComponent = mSplineVis.back().addComponent<G2::RenderComponent>();
+	auto* nameComp = mSplineVis.back().addComponent<G2::NameComponent>();
+	nameComp->name = name;
+	renderComponent->allocateVertexArrays(1);	
+	G2::VertexArrayObject& vao = renderComponent->getVertexArray(0);
+	vao.resizeElementCount((unsigned int)geometry.size());
+	vao.writeData(G2::Semantics::POSITION, &geometry[0]);
+	
+	renderComponent->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_LINE_STRIP)
+		.setVaoIndex(renderComponent->getNumVertexArrays()-1)
+		.setEnabled(true)
+	);
+	renderComponent->addDrawCall(G2::DrawCall()
+		.setDrawMode(GL_POINTS)
+		.setVaoIndex(renderComponent->getNumVertexArrays()-1)
+		.setEnabled(true)
+	);
 }
 
 void

@@ -37,11 +37,22 @@ namespace G2
 				: mInterpolationDesc(interpolationDescription),
 				mCurveSamples(curveSamples), 
 				mCurrentIndex(0), 
-				mInterpolationValue(0.0) {}
+				mInterpolationValue(0.),
+				mSample0(nullptr),
+				mSample1(nullptr),
+				mSample2(nullptr),
+				mSample3(nullptr) {}
 
-			virtual void interpolate(double const& timeStep) = 0;
+			virtual void interpolate(double const& timeStep);
 			virtual bool usePoints() = 0;
 			virtual bool useTangents() = 0;
+
+			/** This function will sample the complete curve with the given sampling rate and write all sampled points into 
+			 * a returned vector.
+			 * @param samplingRate The sampling rate to sample the curve with.
+			 * @return The sampled points from the spline.
+			 */
+			std::vector<glm::vec3> getPointsOnCurve(float samplingRate);
 
 			CurveSample const* getCurrentSample() const { return &mCurveSamples[mCurrentIndex]; }
 			glm::vec3 const& getPosition() const { return mCurrentPosition; }
@@ -51,7 +62,11 @@ namespace G2
 
 			InterpolationDescription			mInterpolationDesc;		// The description of the interpolation to perform
 			std::vector<CurveSample>			mCurveSamples;			// The samples of this curve
-
+			
+			CurveSample const*					mSample0;
+			CurveSample const*					mSample1;
+			CurveSample const*					mSample2;
+			CurveSample const*					mSample3;
 			
 			int									mCurrentIndex;			// The current index of the animation
 			double								mInterpolationValue;	// The current interpolation value of the animation [0.0,1.0]

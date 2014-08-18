@@ -355,6 +355,7 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="clock_linux.cpp" />
     <ClCompile Include="clock_win.cpp" />
     <ClCompile Include="Comparator.cpp" />
+    <ClCompile Include="Curve.cpp" />
     <ClCompile Include="DrawCall.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="EffectImporter.cpp" />

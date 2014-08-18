@@ -574,6 +574,9 @@
     <ClCompile Include="CatmullRomCurve.cpp">
       <Filter>Curves\CatmullRomCurve</Filter>
     </ClCompile>
+    <ClCompile Include="Curve.cpp">
+      <Filter>Curves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">

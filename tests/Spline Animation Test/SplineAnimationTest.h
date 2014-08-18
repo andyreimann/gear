@@ -34,7 +34,7 @@ class SplineAnimationTest
 
 		void onRenderFrame(G2::FrameInfo const&);
 
-		void createSpline(G2::SplineInterpolationType::Name type, std::string const& name, float zOffset);
+		void createSpline(std::shared_ptr<G2::Curve> curve, std::string const& name);
 		
 		bool						mExitRendering;
 		G2::SDL::Window&			mWindow;
