@@ -49,4 +49,6 @@ class SplineAnimationTest
 		
 		std::vector<std::shared_ptr<G2::FBXMesh>>	mSplines;
 		std::vector<G2::Entity>						mSplineVis;
+
+		bool						mCameraSplineEnabled;
 };

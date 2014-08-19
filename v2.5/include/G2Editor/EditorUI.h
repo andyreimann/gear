@@ -5,6 +5,7 @@
 
 namespace G2 
 {
+	class Texture;
 	namespace Editor 
 	{
 		class RootEditor;
@@ -48,6 +49,7 @@ namespace G2
 				// Properties UI Elements
 				CEGUI::ToggleButton*	mWireframeModeToggle;
 
+				std::shared_ptr<G2::Texture> dTestTex;
 
 		};
 	};

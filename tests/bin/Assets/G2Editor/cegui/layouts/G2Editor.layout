@@ -7,7 +7,7 @@
             <Property name="Text" value="Components" />
 	        <Window type="TaharezLook/MultiColumnList" name="ComponentsList">
 	            <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
-	            <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }" />
+	            <Property name="Size" value="{ {1.0, 0}, {0.4, 0} }" />
 	            <Property name="Text" value="MultiColumnList" />
 	        </Window>
         </Window>
@@ -15,11 +15,79 @@
             <Property name="Position" value="{ {0.8, 0}, {0.0, 0} }" />
             <Property name="Size" value="{ {0.2, 0}, {1.0, 0} }" />
             <Property name="Text" value="Properties" />
-	        <Window type="TaharezLook/ItemListbox" name="PropertiesMainList">
-	            <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
-	            <Property name="Size" value="{ {1.0, 0}, {1.0, 0} }" />
-	            <Property name="Text" value="Components" />
-	        </Window>
+            <Window type="TaharezLook/ItemListbox" name="PropertiesMainList">
+                <Property name="Position" value="{ {0.0, 0}, {0.0, 0} }" />
+                <Property name="Size" value="{ {1.0, 0}, {0.2, 0} }" />
+                <Property name="Text" value="Components" />
+            </Window>
+            <Window type="TaharezLook/StaticImage" name="TestImage">
+                <Property name="Position" value="{ {0.0, 0}, {0.2, 0} }" />
+                <Property name="Size" value="{ {1.0, 0}, {0.3, 0} }" />
+                <Property name="TooltipText" value="Sooo fancy!" />
+            </Window>
+            <Window type="TaharezLook/Button" name="TestButton">
+                <Property name="Position" value="{ {0.0, 10}, {0.5, 10} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.05, -20} }" />
+                <Property name="Text" value="Confirm" />
+            </Window>
+            <Window type="TaharezLook/Slider" name="TestSlider">
+                <Property name="Position" value="{ {0.0, 0}, {0.55, 0} }" />
+                <Property name="Size" value="{ {0.0, 20}, {0.45, 0} }" />
+            </Window>
+            <Window type="TaharezLook/Editbox" name="TestEditbox">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 0} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 30} }" />
+                <Property name="Text" value="I'm a single line edit box...edit me :)" />
+            </Window>
+            <Window type="TaharezLook/MultiLineEditbox" name="TestMultiLineEditbox">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 30} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 60} }" />
+                <Property name="Text">I'm a multi line edit box...
+edit me :)
+if you can!
+if you can!
+if you can!
+if you can!
+if you can!
+if you can!
+                </Property>
+            </Window>
+            <Window type="TaharezLook/AlternateProgressBar" name="TestAlternateProgressBar">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 90} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 20} }" />
+                <Property name="Text" value="Loading 1.0" />
+            </Window>
+            <Window type="TaharezLook/ProgressBar" name="TestProgressBar">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 110} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 20} }" />
+                <Property name="Text" value="Loading 1.0" />
+            </Window>
+            <Window type="TaharezLook/TabControl" name="TestTabControl">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 130} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 70} }" />
+
+                <Window type="TaharezLook/TabContentPane" name="TestTab1">
+                    <Property name="Text" value="Tab 1" />
+                </Window>
+                <Window type="TaharezLook/TabContentPane" name="TestTab2">
+                    <Property name="Text" value="Tab 2" />
+                </Window>
+                <Window type="TaharezLook/TabContentPane" name="TestTabWSE">
+                    <Property name="Text" value="Tab ..." />
+                </Window>
+                <Window type="TaharezLook/TabContentPane" name="TestTabN">
+                    <Property name="Text" value="Tab 10000" />
+                </Window>
+            </Window>
+            <Window type="TaharezLook/Combobox" name="TestCombobox">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 200} }" />
+                <Property name="Size" value="{ {1.0, -20}, {0.0, 130} }" />
+                <!-- REMEMBER: Combobox-Size includes drop down area! -->
+            </Window>
+            <Window type="TaharezLook/Spinner" name="TestVUMeter">
+                <Property name="Position" value="{ {0.0, 20}, {0.55, 230} }" />
+                <Property name="Size" value="{ {0.0, 50}, {0.0, 50} }" />
+            </Window>
         </Window>
     </Window>
 </GUILayout>

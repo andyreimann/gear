@@ -39,6 +39,8 @@ namespace G2
 				UICEGUIDLL_API CEGUI::Window* getRootWindow() const;
 
 				UICEGUIDLL_API CEGUI::WindowManager& getWindowManager();
+
+				UICEGUIDLL_API CEGUI::OpenGL3Renderer& getRenderer();
 			private:
 				void _onMouseMove(glm::detail::tvec2<int> const& mouseCoords);
 				void _onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mouseCoords);

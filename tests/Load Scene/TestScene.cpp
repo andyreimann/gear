@@ -96,7 +96,7 @@ TestScene::TestScene(G2::SDL::Window& window)
 	}
 	
 	for (int k = 0; k < 0; ++k) 
-	{
+	{ 
 		for (int i = 0; i < 1; ++i) 
 		{
 			mFbxMeshes.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/humanoid.fbx"));

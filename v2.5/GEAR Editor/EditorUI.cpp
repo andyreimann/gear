@@ -5,7 +5,15 @@
 #include <G2/Logger.h>
 #include <G2/NameComponent.h>
 #include <G2/RenderComponent.h>
+
+#include <G2/TextureImporter.h>
+#include <G2/Texture.h>
+
 #include <G2Core/ECSManager.h>
+#include <G2Cegui/CeguiComponent.h>
+
+#include <CEGUI/RendererModules/OpenGL/RendererBase.h>
+
 
 using namespace G2::Editor;
 
@@ -59,7 +67,7 @@ EditorUI::setup()
 
 	CEGUI::GridLayoutContainer* glc = ( CEGUI::GridLayoutContainer *)CEGUI::WindowManager::getSingletonPtr()->createWindow( 
 		"GridLayoutContainer", "GLC" );
-	glc->setGridDimensions(2,2);
+	glc->setGridDimensions(2,3);
 	CEGUI::Window* lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
 		"TaharezLook/Label", "TestLable" );
 	lable->setText("Wireframe");
@@ -77,9 +85,13 @@ EditorUI::setup()
 	);
 
 	glc->addChild(mWireframeModeToggle);
+	 
+
+
+
 
 	lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/Label", "TestLable3" );
+		"TaharezLook/RadioButton", "TestLable3" );
 	lable->setText("My Test 3");
 	glc->addChild(lable);
 
@@ -88,7 +100,35 @@ EditorUI::setup()
 	lable->setText("My Test 4");
 	glc->addChild(lable);
 
+
+
+	
 	mPropertiesMainList->addChild(glc);
+	
+	
+	dTestTex = G2::TextureImporter().import(mEditor->getEditorAssetsFolder() + "cegui/imagesets/TaharezLook.png", G2::LINEAR, G2::LINEAR);
+
+	// We create a CEGUI Texture using the renderer you use:
+	CEGUI::Texture& texture = G2::ECSManager::getShared().getSystem<G2::UI::CeguiSystem,G2::UI::CeguiComponent>()->getRenderer().createTexture("Tex", dTestTex->getId(), CEGUI::Sizef(dTestTex->getWidth(), dTestTex->getHeight()));	
+
+	CEGUI::BasicImage* image = static_cast<CEGUI::BasicImage*>(&CEGUI::ImageManager::getSingleton().create("BasicImage", "MyImageGroup/MyImageName"));
+	image->setTexture(&texture);
+	image->setArea(CEGUI::Rectf(0, 0, dTestTex->getWidth(), dTestTex->getHeight()));
+	image->setAutoScaled(CEGUI::AutoScaledMode::ASM_Both);
+
+	
+	ceguiComponent->getWindow()->getChild("G2EditorProperties/TestImage")->setProperty("Image", "MyImageGroup/MyImageName");
+	((CEGUI::ProgressBar*)ceguiComponent->getWindow()->getChild("G2EditorProperties/TestAlternateProgressBar"))->setProgress(0.75f);
+	((CEGUI::ProgressBar*)ceguiComponent->getWindow()->getChild("G2EditorProperties/TestProgressBar"))->setProgress(0.25f);
+	CEGUI::TabControl* tabControl = ((CEGUI::TabControl*)ceguiComponent->getWindow()->getChild("G2EditorProperties/TestTabControl"));
+	CEGUI::Combobox* combobox = ((CEGUI::Combobox*)ceguiComponent->getWindow()->getChild("G2EditorProperties/TestCombobox"));
+	
+	CEGUI::ListboxTextItem* itemCombobox = new CEGUI::ListboxTextItem("Value 1", 0);
+	//itemCombobox->setSelectionBrushImage("TaharezLook", "MultiListSelectionBrush");
+	combobox->addItem(itemCombobox);
+	itemCombobox = new CEGUI::ListboxTextItem("Value 2", 1);
+	//itemCombobox->setSelectionBrushImage("TaharezLook", "MultiListSelectionBrush");
+	combobox->addItem(itemCombobox);
 
 }
 

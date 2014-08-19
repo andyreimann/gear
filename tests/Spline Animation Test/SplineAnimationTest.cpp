@@ -10,7 +10,8 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 	: mExitRendering(false),
 	mWindow(window),
 	mEditorCamera(&window),
-	mEditor(&window, ASSET_PATH + "G2Editor/")
+	mEditor(&window, ASSET_PATH + "G2Editor/"),
+	mCameraSplineEnabled(false)
 {
 	mEditorCamera
 		.pan(0.f,10.f)
@@ -83,7 +84,8 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 	sample.tangent = glm::vec3(-1.f, 0.f, 0.f);
 	curveSamples.push_back(sample);
 	sample.point =	 glm::vec3(-2.f,0.f, 0.f+zOffset);
-	sample.tangent = glm::vec3(0.f,-1.f, 0.f);
+	sample.tangent = glm::vec3(0.f,-10.f, 0.f);
+	sample.speed = 0.1f;
 	curveSamples.push_back(sample);
 
 	curve = std::shared_ptr<G2::Curve>(new G2::HermiteCurve(G2::InterpolationDescription(), curveSamples));
@@ -161,7 +163,37 @@ SplineAnimationTest::onKeyUp(G2::KeyCode keyCode)
 void
 SplineAnimationTest::onKeyDown(G2::KeyCode keyCode) 
 {
-
+	if(keyCode == G2::KC_R)
+	{
+		mCameraSplineEnabled = !mCameraSplineEnabled;
+		if(mCameraSplineEnabled)
+		{ 
+			std::vector<G2::CurveSample> curveSamples;
+	
+			float zOffset = -10.f;
+			G2::CurveSample sample;
+			sample.point = glm::vec3(-5.0f,-2.5f,-10.f+zOffset);
+			curveSamples.push_back(sample);
+			sample.point = glm::vec3( 5.0f, 2.5f,-10.f+zOffset);
+			curveSamples.push_back(sample);
+			sample.point = glm::vec3( 7.5f, 0.0f,-12.f+zOffset);
+			curveSamples.push_back(sample);
+			sample.point = glm::vec3(5.f,-2.5f,-10.f+zOffset);
+			curveSamples.push_back(sample);
+			sample.point = glm::vec3(-5.0f, 2.5f,-10.f+zOffset);
+			curveSamples.push_back(sample);
+			sample.point = glm::vec3(-7.5f, 0.0f,-8.f+zOffset);
+			curveSamples.push_back(sample);
+	
+			std::shared_ptr<G2::Curve> curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
+			
+			mEditor.getCamera()->addComponent<G2::SplineAnimation>(curve);
+		}
+		else
+		{
+			mEditor.getCamera()->removeComponent<G2::SplineAnimation>();
+		}
+	}
 }
 
 void

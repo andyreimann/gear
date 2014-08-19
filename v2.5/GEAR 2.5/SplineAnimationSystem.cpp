@@ -14,6 +14,10 @@ SplineAnimationSystem::runPhase(std::string const& name, FrameInfo const& frameI
 		for(auto i = 0; i < components.size(); ++i) 
 		{
 			SplineAnimation& comp = components[i];
+			if(comp.isPaused())
+			{
+				continue;
+			}
 			transformSystem->lock();
 			auto* transformComponent = transformSystem->get(comp.getEntityId());
 			if(transformComponent == nullptr)

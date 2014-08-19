@@ -28,6 +28,12 @@ namespace G2
 			 * @param transformComponent The target TransformComponent to write the current state to.
 			 */
 			void animate(double const& timeSinceLastFrame, TransformComponent* transformComponent);
+			
+			void pause() { mPaused = true; }
+
+			void unpause() { mPaused = false; }
+
+			bool isPaused() const { return mPaused; }
 			/** This function will sample the complete spline with the given sampling rate and write all sampled points into 
 			 * a returned vector.
 			 * @param samplingRate The sampling rate to sample the spline with.
@@ -36,5 +42,6 @@ namespace G2
 			std::vector<glm::vec3> debugSamplePath(float samplingRate);
 		private:
 			std::shared_ptr<Curve>	mCurve;
+			bool					mPaused;
 	};
 };

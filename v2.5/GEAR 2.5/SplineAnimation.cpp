@@ -43,7 +43,8 @@ const static glm::mat4 hermiteMatrix = glm::mat4(
 	*/
 
 SplineAnimation::SplineAnimation(std::shared_ptr<Curve> const& curve)
-	: mCurve(curve)
+	: mCurve(curve),
+	mPaused(false)
 {
 }
 

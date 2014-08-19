@@ -64,6 +64,10 @@ namespace G2
 			 * @return The depth of the Texture
 			 */
 			virtual unsigned getDepth() = 0;
+			/** This function will return the id of the Texture. 
+			* @return The Id of the Texture.
+			*/
+			unsigned int getId() const { return mId; }
 
 			/** normal destructor
 			 */

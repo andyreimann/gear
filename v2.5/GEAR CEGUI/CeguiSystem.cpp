@@ -175,6 +175,12 @@ CeguiSystem::getWindowManager()
 	return CEGUI::WindowManager::getSingleton();
 }
 
+CEGUI::OpenGL3Renderer&
+CeguiSystem::getRenderer() 
+{
+	return mRenderer;
+}
+
 CEGUI::Window*
 CeguiSystem::getRootWindow() const 
 {

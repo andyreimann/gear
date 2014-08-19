@@ -101,11 +101,11 @@ Curve::getPointsOnCurve(float samplingRate)
 
 	// sample
 	std::vector<glm::vec3> samples;
-	
-	for(float s = 0.f; s <= 1.00001f * mCurveSamples.size(); s+=samplingRate)
+	for(float s = 0.f; s <= 1.00001f * mCurveSamples.size(); )
 	{
 		interpolate(samplingRate);
 		samples.push_back(mCurrentPosition);
+		s = s + (samplingRate*(float)((1.0 - mInterpolationValue) * mSample1->speed)) + (samplingRate*(float)mInterpolationValue * (float)mSample2->speed);
 	}
 
 
