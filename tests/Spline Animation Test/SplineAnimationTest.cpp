@@ -2,7 +2,7 @@
 
 #include <G2/CatmullRomCurve.h>
 #include <G2/HermiteCurve.h>
-#include <G2/BezierCurve.h>
+#include <G2/BSplineCurve.h>
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -92,9 +92,9 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 
 	createSpline(curve, "Hermite Spline");
 
-	curve = std::shared_ptr<G2::Curve>(new G2::BezierCurve(G2::InterpolationDescription(), curveSamples));
+	curve = std::shared_ptr<G2::Curve>(new G2::BSplineCurve(G2::InterpolationDescription(), curveSamples));
 
-	createSpline(curve, "Bezier Spline");
+	createSpline(curve, "B-Spline");
 
 	curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
 

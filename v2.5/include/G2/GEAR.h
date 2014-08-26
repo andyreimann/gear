@@ -49,6 +49,16 @@
 extern "C" {
 
 	void G2_init();
+
+	void G2_startSideThread();
+
+	void G2_stopSideThread();
+
+	/** This function manages to render one single frame using an AbstractWindow instance
+	 * @param window The AbstractWindow to render one frame for.
+	 * @param frameInfo The current frame information.
+	 */
+	void G2_singleFrame(G2::AbstractWindow& window, G2::FrameInfo& frameInfo);
 	/** This function manages the render loop using an AbstractWindow instance
 	 * @param window The AbstractWindow to manage the render loop for.
 	 */

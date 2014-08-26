@@ -65,12 +65,62 @@ G2_loopSideThread()
 	} while (mainThreadRunning);
 }
 
+static std::thread* gSideThread = nullptr;
+
+void G2_startSideThread()
+{
+	if(gSideThread == nullptr)
+	{
+		gSideThread = new std::thread(G2_loopSideThread);
+	}
+}
+
+void G2_stopSideThread()
+{
+	if(gSideThread != nullptr)
+	{
+		gSideThread->join();
+		delete gSideThread;
+		gSideThread = nullptr;
+	}
+}
+
+void 
+G2_singleFrame(AbstractWindow& window, FrameInfo& frameInfo)
+{
+	TimeTracker	frameTimer;
+	frameTimer.start(true);
+		
+	window.processEvents(frameInfo.frame);
+
+	glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
+	GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
+	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+
+	EventDistributer::onRenderFrame(frameInfo);
+
+	ECSManager::getShared().runMainThread(frameInfo);
+		
+	EventDistributer::onFrameRendered(frameInfo);
+
+	window.swapBuffer();
+
+	++frameInfo.frame;
+	frameInfo.timeSinceLastFrame = frameTimer.getSeconds();
+	frameInfo.timeSinceRenderStart += frameInfo.timeSinceLastFrame;
+
+	if(frameInfo.frame%100 == 0)
+	{
+		G2::logger << "fps=" << (1.f / frameInfo.timeSinceLastFrame) << G2::endl;
+	}
+}
+
 void
 G2_loop(AbstractWindow& window) 
 {
 	mainThreadRunning = true;
 
-	std::thread sideThread(G2_loopSideThread);
+	G2_startSideThread();
 	
 	TimeTracker	frameTimer;
 	FrameInfo frameInfo;
@@ -103,7 +153,7 @@ G2_loop(AbstractWindow& window)
 	} while(!frameInfo.stopRenderingAfterThisFrame);
 
 	mainThreadRunning = false;
-	sideThread.join();
+	G2_stopSideThread();
 }
 
 void

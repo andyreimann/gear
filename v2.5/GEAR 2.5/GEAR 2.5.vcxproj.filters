@@ -302,8 +302,8 @@
     <ClInclude Include="HermiteCurve.h">
       <Filter>Curves\HermiteCurve</Filter>
     </ClInclude>
-    <ClInclude Include="BezierCurve.h">
-      <Filter>Curves\BezierCurve</Filter>
+    <ClInclude Include="BSplineCurve.h">
+      <Filter>Curves\BSplineCurve</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -586,8 +586,8 @@
     <ClCompile Include="HermiteCurve.cpp">
       <Filter>Curves\HermiteCurve</Filter>
     </ClCompile>
-    <ClCompile Include="BezierCurve.cpp">
-      <Filter>Curves\BezierCurve</Filter>
+    <ClCompile Include="BSplineCurve.cpp">
+      <Filter>Curves\BSplineCurve</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -813,7 +813,7 @@
     <Filter Include="Curves\HermiteCurve">
       <UniqueIdentifier>{50e7cbd6-dbfa-4a85-977d-98d759de1d3b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Curves\BezierCurve">
+    <Filter Include="Curves\BSplineCurve">
       <UniqueIdentifier>{9ad7bccf-9e8a-4caa-938e-eb3b004d1b78}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

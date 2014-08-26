@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout version="4" >
+    <Window type="DefaultWindow" name="G2Editor" >
+        <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+        <Window type="TaharezLook/FrameWindow" name="SceneWindow" >
+            <Property name="Area" value="{{0,0},{0,0},{0.2,0},{0.8,0}}" />
+            <Property name="Text" value="Scene" />
+            <Property name="AutoRenderingSurface" value="true" />
+            <AutoWindow namePath="__auto_titlebar__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="false" />
+            </AutoWindow>
+            <AutoWindow namePath="__auto_closebutton__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="true" />
+            </AutoWindow>
+            <Window type="TaharezLook/MultiColumnList" name="ComponentsList" >
+                <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+                <Property name="Text" value="Wireframe" />
+                <Property name="ColumnsMovable" value="false" />
+                <Property name="ForceVertScrollbar" value="true" />
+                <AutoWindow namePath="__auto_listheader__" >
+                    <Property name="ColumnsMovable" value="false" />
+                    <Property name="MouseInputPropagationEnabled" value="true" />
+                </AutoWindow>
+                <AutoWindow namePath="__auto_hscrollbar__" >
+                    <AutoWindow namePath="__auto_thumb__" >
+                        <Property name="MouseInputPropagationEnabled" value="true" />
+                    </AutoWindow>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_vscrollbar__" >
+                    <Property name="VerticalScrollbar" value="true" />
+                    <AutoWindow namePath="__auto_thumb__" >
+                        <Property name="MouseInputPropagationEnabled" value="true" />
+                    </AutoWindow>
+                </AutoWindow>
+            </Window>
+        </Window>
+        <Window type="TaharezLook/FrameWindow" name="PropertiesWindow" >
+            <Property name="Area" value="{{0,0},{0,0},{0.2,0},{0.8,0}}" />
+            <Property name="Text" value="Properties" />
+            <Property name="HorizontalAlignment" value="Right" />
+            <Property name="AutoRenderingSurface" value="true" />
+            <AutoWindow namePath="__auto_titlebar__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="false" />
+            </AutoWindow>
+            <AutoWindow namePath="__auto_closebutton__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="true" />
+            </AutoWindow>
+            <Window type="VerticalLayoutContainer" name="Rendering" >
+                <Property name="Area" value="{{0,10},{0,0},{1,0},{0,66}}" />
+                <Window type="TaharezLook/Checkbox" name="CBWireframe" >
+                    <Property name="Area" value="{{0,0},{0,2},{0,128},{0,34}}" />
+                    <Property name="Text" value="Wireframe" />
+                </Window>
+                <Window type="TaharezLook/Checkbox" name="CBSomething" >
+                    <Property name="Area" value="{{0,0},{0,34},{0,128},{0,66}}" />
+                    <Property name="Text" value="Whatever" />
+                </Window>
+            </Window>
+        </Window>
+        <Window type="TaharezLook/FrameWindow" name="LoggingWindow" >
+            <Property name="Area" value="{{0,0},{0,0},{1,0},{0.2,0}}" />
+            <Property name="Text" value="Logging" />
+            <Property name="VerticalAlignment" value="Bottom" />
+            <Property name="AutoRenderingSurface" value="true" />
+            <AutoWindow namePath="__auto_titlebar__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="false" />
+            </AutoWindow>
+            <AutoWindow namePath="__auto_closebutton__" >
+                <Property name="NonClient" value="true" />
+                <Property name="AlwaysOnTop" value="true" />
+            </AutoWindow>
+        </Window>
+    </Window>
+</GUILayout>

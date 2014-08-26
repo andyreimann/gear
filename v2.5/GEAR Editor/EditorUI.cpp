@@ -15,6 +15,7 @@
 #include <CEGUI/RendererModules/OpenGL/RendererBase.h>
 
 
+
 using namespace G2::Editor;
 
 EditorUI::EditorUI(RootEditor* editor) 
@@ -35,26 +36,32 @@ EditorUI::setup()
 {
 	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentAdded.hook(this, &EditorUI::_onRenderComponentAdded);
 	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentRemoved.hook(this, &EditorUI::_onRenderComponentRemoved);
-	// create (load) the TaharezLook scheme file
-	// (this auto-loads the TaharezLook looknfeel and imageset files)
+	// create (load) the scheme file
+	// (this auto-loads the looknfeel and imageset files automatically)
 	CEGUI::SchemeManager::getSingleton().createFromFile( "TaharezLook.scheme" );
 	CEGUI::SchemeManager::getSingleton().createFromFile( "G2EditorProperties.scheme" );
 
+	// set the mouse arrow
 	CEGUI::System::getSingleton().getDefaultGUIContext().
 	getMouseCursor().setDefaultImage( "TaharezLook/MouseArrow" );
 
+
+	// set the default tooltip type
 	CEGUI::System::getSingleton().getDefaultGUIContext().
 	setDefaultTooltipType( "TaharezLook/Tooltip" );
 
-	auto* ceguiComponent = addComponent<G2::UI::CeguiComponent>("G2Editor.layout");
+	// DEBUG START
+	auto* ceguiComponent = addComponent<G2::UI::CeguiComponent>("CEEDTest.layout");
 	ceguiComponent->attachToRootWindow();
+	// DEBUG END
+	//auto* ceguiComponent = addComponent<G2::UI::CeguiComponent>("G2Editor.layout");
+	//ceguiComponent->attachToRootWindow();
 
-	mComponentList = static_cast<CEGUI::MultiColumnList*>(ceguiComponent->getWindow()->getChild("G2EditorComponents/ComponentsList"));
+	mComponentList = static_cast<CEGUI::MultiColumnList*>(ceguiComponent->getWindow()->getChild("SceneWindow/ComponentsList"));
 	mComponentList->addColumn("ID", 0, CEGUI::UDim(0.2f,0.f));
-	mComponentList->addColumn("Name", 1, CEGUI::UDim(0.8f,0.f));
-
+	mComponentList->addColumn("Name", 1, CEGUI::UDim(0.8f,-16.f));
 	// Set the users selection ability
-	mComponentList->setSelectionMode(CEGUI::MultiColumnList::SelectionMode::RowMultiple);
+	//mComponentList->setSelectionMode(CEGUI::MultiColumnList::SelectionMode::RowMultiple);
 
 	mComponentList->subscribeEvent(
 		CEGUI::MultiColumnList::EventSelectionChanged,
@@ -63,18 +70,8 @@ EditorUI::setup()
 			this
 		)
 	);
-	mPropertiesMainList = static_cast<CEGUI::ItemListbox*>(ceguiComponent->getWindow()->getChild("G2EditorProperties/PropertiesMainList"));
-
-	CEGUI::GridLayoutContainer* glc = ( CEGUI::GridLayoutContainer *)CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"GridLayoutContainer", "GLC" );
-	glc->setGridDimensions(2,3);
-	CEGUI::Window* lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/Label", "TestLable" );
-	lable->setText("Wireframe");
-	glc->addChild(lable);
-
-	mWireframeModeToggle = static_cast<CEGUI::ToggleButton*>(CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/Checkbox", "WireframeMode" ));
+	
+	mWireframeModeToggle = static_cast<CEGUI::ToggleButton*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/CBWireframe"));
 	
 	mWireframeModeToggle->subscribeEvent(
 		CEGUI::ToggleButton::EventSelectStateChanged,
@@ -84,28 +81,7 @@ EditorUI::setup()
 		)
 	);
 
-	glc->addChild(mWireframeModeToggle);
-	 
-
-
-
-
-	lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/RadioButton", "TestLable3" );
-	lable->setText("My Test 3");
-	glc->addChild(lable);
-
-	lable = CEGUI::WindowManager::getSingletonPtr()->createWindow( 
-		"TaharezLook/Label", "TestLable4" );
-	lable->setText("My Test 4");
-	glc->addChild(lable);
-
-
-
-	
-	mPropertiesMainList->addChild(glc);
-	
-	
+	/*
 	dTestTex = G2::TextureImporter().import(mEditor->getEditorAssetsFolder() + "cegui/imagesets/TaharezLook.png", G2::LINEAR, G2::LINEAR);
 
 	// We create a CEGUI Texture using the renderer you use:
@@ -129,6 +105,7 @@ EditorUI::setup()
 	itemCombobox = new CEGUI::ListboxTextItem("Value 2", 1);
 	//itemCombobox->setSelectionBrushImage("TaharezLook", "MultiListSelectionBrush");
 	combobox->addItem(itemCombobox);
+	*/
 
 }
 
@@ -146,6 +123,9 @@ EditorUI::_onComponentSelectionChanged(const CEGUI::EventArgs &e)
 	CEGUI::MultiColumnList* componentsList = static_cast<CEGUI::MultiColumnList*>(args->window);
 
 	CEGUI::ListboxItem* selected = componentsList->getFirstSelectedItem();
+	//selected->setSelectionColours(CEGUI::Colour (1, 0, 0));
+	//selected->setSelectionBrushImage();
+
 	// get user data to map to the ECS
 	if(selected->getUserData() == nullptr)
 	{
