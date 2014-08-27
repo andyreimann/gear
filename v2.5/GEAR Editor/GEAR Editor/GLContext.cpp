@@ -13,6 +13,10 @@ GLContext::GLContext(QWidget *parent)
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 	timer->start(10);
+
+	setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+	initKeyMap();
 }
 
 void GLContext::initializeGL() 
@@ -20,6 +24,7 @@ void GLContext::initializeGL()
 	G2_init();
 
 	setMouseTracking(true);
+	
 	
 	mEditorCamera
 		.pan(0.f,5.f)
@@ -102,23 +107,71 @@ GLContext::wheelEvent(QWheelEvent* event)
 		//scrollWithDegrees(numSteps);
 		G2::EventDistributer::onMouseWheel(numSteps.y());
 	}
-
 	event->accept();
 }
 
 void GLContext::keyPressEvent(QKeyEvent* event) 
 {
-	switch(event->key()) 
+	int key = event->key();
+	auto keyIter = mKeyMap.find((Qt::Key)key);
+	if(keyIter != mKeyMap.end())
 	{
-		case Qt::Key_Escape:
-			close();
-			break;
-		default:
-			event->ignore();
-			break;
+		key = keyIter->second;
 	}
+	G2::EventDistributer::onKeyDown(static_cast<G2::KeyCode>(key));
 }
 
+void GLContext::keyReleaseEvent(QKeyEvent* event) 
+{
+	int key = event->key();
+	auto keyIter = mKeyMap.find((Qt::Key)key);
+	if(keyIter != mKeyMap.end())
+	{
+		key = keyIter->second;
+	}
+	G2::EventDistributer::onKeyUp(static_cast<G2::KeyCode>(key));
+}
+
+void
+GLContext::initKeyMap() 
+{
+	mKeyMap.insert(std::make_pair(Qt::Key_Return,G2::KC_RETURN));
+	mKeyMap.insert(std::make_pair(Qt::Key_Escape,G2::KC_ESCAPE));
+	
+	mKeyMap.insert(std::make_pair(Qt::Key_Backspace,G2::KC_BACKSPACE));
+	mKeyMap.insert(std::make_pair(Qt::Key_Tab,G2::KC_TAB));
+	mKeyMap.insert(std::make_pair(Qt::Key_Space,G2::KC_SPACE));
+	mKeyMap.insert(std::make_pair(Qt::Key_Exclam,G2::KC_EXCLAM));
+	mKeyMap.insert(std::make_pair(Qt::Key_QuoteDbl,G2::KC_QUOTEDBL));
+	mKeyMap.insert(std::make_pair(Qt::Key_Percent,G2::KC_PERCENT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Dollar,G2::KC_DOLLAR));
+	mKeyMap.insert(std::make_pair(Qt::Key_Ampersand,G2::KC_AMPERSAND));
+	mKeyMap.insert(std::make_pair(Qt::Key_QuoteLeft,G2::KC_QUOTE));
+	mKeyMap.insert(std::make_pair(Qt::Key_ParenLeft,G2::KC_LEFTPAREN));
+	mKeyMap.insert(std::make_pair(Qt::Key_ParenRight,G2::KC_RIGHTPAREN));
+	mKeyMap.insert(std::make_pair(Qt::Key_Asterisk,G2::KC_ASTERISK));
+	mKeyMap.insert(std::make_pair(Qt::Key_Plus,G2::KC_PLUS));
+	mKeyMap.insert(std::make_pair(Qt::Key_Comma,G2::KC_COMMA));
+	mKeyMap.insert(std::make_pair(Qt::Key_Minus,G2::KC_MINUS));
+	mKeyMap.insert(std::make_pair(Qt::Key_Period,G2::KC_PERIOD));
+	mKeyMap.insert(std::make_pair(Qt::Key_Slash,G2::KC_SLASH));
+	mKeyMap.insert(std::make_pair(Qt::Key_F1,G2::KC_F1));
+	mKeyMap.insert(std::make_pair(Qt::Key_F2,G2::KC_F2));
+	mKeyMap.insert(std::make_pair(Qt::Key_F3,G2::KC_F3));
+	mKeyMap.insert(std::make_pair(Qt::Key_F4,G2::KC_F4));
+	mKeyMap.insert(std::make_pair(Qt::Key_F5,G2::KC_F5));
+	mKeyMap.insert(std::make_pair(Qt::Key_F6,G2::KC_F6));
+	mKeyMap.insert(std::make_pair(Qt::Key_F7,G2::KC_F7));
+	mKeyMap.insert(std::make_pair(Qt::Key_F8,G2::KC_F8));
+	mKeyMap.insert(std::make_pair(Qt::Key_F9,G2::KC_F9));
+	mKeyMap.insert(std::make_pair(Qt::Key_F10,G2::KC_F10));
+	mKeyMap.insert(std::make_pair(Qt::Key_F11,G2::KC_F11));
+	mKeyMap.insert(std::make_pair(Qt::Key_F12,G2::KC_F12));
+	mKeyMap.insert(std::make_pair(Qt::Key_Left,G2::KC_LEFT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Right,G2::KC_RIGHT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Up,G2::KC_UP));
+	mKeyMap.insert(std::make_pair(Qt::Key_Down,G2::KC_DOWN));
+}
 
 GLContext::~GLContext() 
 {

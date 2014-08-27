@@ -28,6 +28,15 @@
     <Filter Include="GLContext">
       <UniqueIdentifier>{62339728-4ac0-44e1-b22a-fd11e8609dfa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ComponentList">
+      <UniqueIdentifier>{417bd5f1-0814-43b6-a9f2-ee81c48d297f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentList\Model">
+      <UniqueIdentifier>{b8ee7feb-0baa-4aac-b985-9a315183198d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentList\View">
+      <UniqueIdentifier>{94e1bdf5-6887-4722-99c8-4e51bfc4e338}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_GearEditor.cpp">
@@ -50,6 +59,24 @@
     <ClCompile Include="GLContext.cpp">
       <Filter>GLContext</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ComponentListItemModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ComponentListItemModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentListItemModel.cpp">
+      <Filter>ComponentList\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentListView.cpp">
+      <Filter>ComponentList\View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ComponentListView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ComponentListView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geareditor.ui">
@@ -60,7 +87,13 @@
     </CustomBuild>
     <CustomBuild Include="GearEditor.h" />
     <CustomBuild Include="GLContext.h">
-      <Filter>Generated Files</Filter>
+      <Filter>GLContext</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ComponentListItemModel.h">
+      <Filter>ComponentList\Model</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ComponentListView.h">
+      <Filter>ComponentList\View</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

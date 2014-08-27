@@ -23,10 +23,10 @@ EditorSystem::~EditorSystem()
 void
 EditorSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo) 
 {
-	if(mEditor == nullptr)
-	{
-		return;
-	}
+	//if(mEditor == nullptr)
+	//{
+	//	return;
+	//}
 	if(name == "update")
 	{
 		// reset all seen render components

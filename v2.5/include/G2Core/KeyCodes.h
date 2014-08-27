@@ -387,7 +387,7 @@ namespace G2
 		KC_BACKSPACE = '\b',
 		KC_TAB = '\t',
 		KC_SPACE = ' ',
-		KC_EXCLAIM = '!',
+		KC_EXCLAM = '!',
 		KC_QUOTEDBL = '"',
 		KC_HASH = '#',
 		KC_PERCENT = '%',

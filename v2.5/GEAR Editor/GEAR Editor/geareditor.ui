@@ -83,16 +83,9 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_15">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QListView" name="ComponentsList">
-       <property name="gridSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="ComponentListView" name="componentListView"/>
      </item>
     </layout>
    </widget>
@@ -131,6 +124,11 @@
    <extends>QWidget</extends>
    <header>glcontext.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ComponentListView</class>
+   <extends>QListView</extends>
+   <header>ComponentListView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

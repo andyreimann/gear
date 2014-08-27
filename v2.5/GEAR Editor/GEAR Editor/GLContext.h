@@ -22,13 +22,17 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		void mouseReleaseEvent(QMouseEvent *event);
 		void mouseMoveEvent(QMouseEvent *event);
 		void wheelEvent(QWheelEvent* event);
-
+		
 		void keyPressEvent(QKeyEvent *event);
+		void keyReleaseEvent(QKeyEvent *event);
 
 		
 		virtual void processEvents(int frame) { }
 		virtual void swapBuffer() { }
 		virtual void setHideMouseMode(bool mode) { }
+
+	private:
+		void initKeyMap();
 
 		G2::FrameInfo				mFrameInfo;
 		std::shared_ptr<G2::FBXMesh> mLight;
@@ -36,5 +40,6 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		G2::FBXImporter				mFbxImporter;
 		G2Cameras::EditorCamera		mEditorCamera;
 		std::unordered_map<Qt::MouseButton,G2::MouseButton> mMouseButtonMapping;
+		std::unordered_map<Qt::Key,int>						mKeyMap;
 };
 
