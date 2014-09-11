@@ -24,6 +24,10 @@
     <ClInclude Include="EventDistributer.h">
       <Filter>Event</Filter>
     </ClInclude>
+    <ClInclude Include="GfxDevice.h">
+      <Filter>GfxDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="G2Core.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSManager.cpp">
@@ -35,6 +39,7 @@
     <ClCompile Include="EventDistributer.cpp">
       <Filter>Event</Filter>
     </ClCompile>
+    <ClCompile Include="G2Core.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -45,6 +50,9 @@
     </Filter>
     <Filter Include="Event">
       <UniqueIdentifier>{645b48d5-05b2-4e5b-8f33-25ed99249e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GfxDevice">
+      <UniqueIdentifier>{d7ab0d8a-7b5e-45ea-b763-ad4dc4e9e435}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

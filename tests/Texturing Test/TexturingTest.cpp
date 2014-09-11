@@ -48,18 +48,18 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 
 	
 	// generate animation
-	std::vector<G2::AnimationSample> samples;
+	//std::vector<G2::AnimationSample> samples;
 
-	
-	G2::AnimationSample sample;
-	sample.point = glm::vec3(0.f,0.f,0.f);
-	samples.push_back(sample);
-	sample.point = glm::vec3(0.f,4.f,5.f);
-	samples.push_back(sample);
-	sample.point = glm::vec3(5.f,4.f,5.f);
-	samples.push_back(sample);
-	sample.point = glm::vec3(5.f,0.f,0.f);
-	samples.push_back(sample);
+	//
+	//G2::AnimationSample sample;
+	//sample.point = glm::vec3(0.f,0.f,0.f);
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(0.f,4.f,5.f);
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(5.f,4.f,5.f);
+	//samples.push_back(sample);
+	//sample.point = glm::vec3(5.f,0.f,0.f);
+	//samples.push_back(sample);
 
 
 
@@ -90,11 +90,11 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 	//sample.speed = 0.3;
 	//samples.push_back(sample);
 
-	G2::AnimationDescription desc;
-	desc.loops = true;
-	desc.interpolationType = G2::SplineInterpolationType::CATMULL_ROM;
-	desc.animateOrientation = true;
-	mLight->addComponent<G2::SplineAnimation>(desc, samples);
+	//G2::AnimationDescription desc;
+	//desc.loops = true;
+	//desc.interpolationType = G2::SplineInterpolationType::CATMULL_ROM;
+	//desc.animateOrientation = true;
+	//mLight->addComponent<G2::SplineAnimation>(desc, samples);
 
 
 

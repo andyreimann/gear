@@ -11,8 +11,14 @@
 
 using namespace G2;
 
-void G2_init() 
+
+static GfxDevice* gGfxDevice = nullptr;
+
+void G2_init(G2::GfxDevice* gfxDevice) 
 {
+	gGfxDevice = gfxDevice;
+	assert(gGfxDevice != nullptr);
+
 	GLenum GlewInitResult;
 
 	glewExperimental = GL_TRUE;
@@ -84,7 +90,7 @@ void G2_stopSideThread()
 		gSideThread = nullptr;
 	}
 }
-
+ 
 void 
 G2_singleFrame(AbstractWindow& window, FrameInfo& frameInfo)
 {
@@ -94,7 +100,8 @@ G2_singleFrame(AbstractWindow& window, FrameInfo& frameInfo)
 	window.processEvents(frameInfo.frame);
 
 	glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
-	GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
+	//GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
+	G2_gfxDevice()->clearColor(clearColor);
 	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
 	EventDistributer::onRenderFrame(frameInfo);
@@ -130,7 +137,8 @@ G2_loop(AbstractWindow& window)
 		window.processEvents(frameInfo.frame);
 
 		glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
-		GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
+		//GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
+		G2_gfxDevice()->clearColor(clearColor);
 		GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
 		EventDistributer::onRenderFrame(frameInfo);
@@ -156,8 +164,20 @@ G2_loop(AbstractWindow& window)
 	G2_stopSideThread();
 }
 
+G2::GfxDevice* G2_gfxDevice()
+{
+	return gGfxDevice;
+}
+
+void G2_gfxDeviceDestroy()
+{
+	delete gGfxDevice;
+	gGfxDevice = nullptr;
+}
+
 void
 G2_shutdown() 
 {
+	G2_gfxDeviceDestroy();
 	ECSManager::destroy();
 }

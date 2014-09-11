@@ -54,6 +54,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR Terrains", "GEAR Terra
 		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR GFX OpenGL", "GEAR OpenGL\GEAR OpenGL.vcxproj", "{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR GFX DX 11", "GEAR DX 11\GEAR DX 11.vcxproj", "{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -172,6 +176,28 @@ Global
 		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|Win32.Build.0 = Release|Win32
 		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|x64.ActiveCfg = Release|x64
 		{4B9C8D0C-4869-4775-81F7-C084E321B807}.Release|x64.Build.0 = Release|x64
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|Win32.Build.0 = Debug|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|x64.ActiveCfg = Debug|x64
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Debug|x64.Build.0 = Debug|x64
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Release|Win32.ActiveCfg = Release|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Release|Win32.Build.0 = Release|Win32
+		{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}.Release|x64.ActiveCfg = Release|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|Win32.Build.0 = Debug|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|x64.ActiveCfg = Debug|x64
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Debug|x64.Build.0 = Debug|x64
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Release|Win32.ActiveCfg = Release|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Release|Win32.Build.0 = Release|Win32
+		{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -84,6 +84,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>GEARGL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,7 +96,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEAREditor.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEAREditor.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -113,6 +114,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>GEARGL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,7 +131,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEAREditor.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEAREditor.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

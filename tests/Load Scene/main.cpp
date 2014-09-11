@@ -3,6 +3,9 @@
 #include <G2/GEAR.h>
 #include <G2/Logger.h>
 
+#include <G2GL/GlGfxDevice.h>
+
+
 #ifdef _WIN32
 	// in SDLmain.lib is an SDL_main entry point
 	// we have to disable it
@@ -14,10 +17,9 @@ int main(int argc, char *argv[])
 {
 	
 	G2::SDL::Window window("Engine Test",1600,768,false);
-	
-	G2_init();
+
+	G2_init(new G2::GlGfxDevice());
 	{
-		
 		TestScene testScene(window);
 
 		G2_loop(window);
