@@ -45,12 +45,6 @@
     <ClInclude Include="Texture2D.h">
       <Filter>Texture\2D</Filter>
     </ClInclude>
-    <ClInclude Include="CgShader.h">
-      <Filter>Importer\Effect\UberShader\Shader\Cg</Filter>
-    </ClInclude>
-    <ClInclude Include="GlslShader.h">
-      <Filter>Importer\Effect\UberShader\Shader\Glsl</Filter>
-    </ClInclude>
     <ClInclude Include="IfElseMacro.h">
       <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
     </ClInclude>
@@ -349,12 +343,6 @@
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
       <Filter>Texture\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="CgShader.cpp">
-      <Filter>Importer\Effect\UberShader\Shader\Cg</Filter>
-    </ClCompile>
-    <ClCompile Include="GlslShader.cpp">
-      <Filter>Importer\Effect\UberShader\Shader\Glsl</Filter>
     </ClCompile>
     <ClCompile Include="IfElseMacro.cpp">
       <Filter>Importer\Effect\UberShader\ShaderParts</Filter>
@@ -710,12 +698,6 @@
     </Filter>
     <Filter Include="Importer\Effect\UberShader\Shader">
       <UniqueIdentifier>{3bd8be38-63ba-4441-9b6d-60572c894cf2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Importer\Effect\UberShader\Shader\Glsl">
-      <UniqueIdentifier>{55d74d12-afc1-456f-bf6d-5905a4d0a8f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Importer\Effect\UberShader\Shader\Cg">
-      <UniqueIdentifier>{a6493d53-4c90-425f-bd56-8456a2408ef2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Importer\Effect\UberShader\ShaderParts">
       <UniqueIdentifier>{5dc11829-45a9-42fe-b070-557f46bcf50f}</UniqueIdentifier>

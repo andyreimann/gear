@@ -48,14 +48,9 @@
 
 #include "AbstractWindow.h"
 
-
-
-extern "C" {
-}
-
 extern "C" {
 
-	void G2_init(G2::GfxDevice* gfxDevice);
+	void G2_init();
 
 	void G2_startSideThread();
 
@@ -73,6 +68,4 @@ extern "C" {
 	/** This function releases all engine related resources.
 	 */
 	void G2_shutdown();
-	
-	G2::GfxDevice* G2_gfxDevice();
 }

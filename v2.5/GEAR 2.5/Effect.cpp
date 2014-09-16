@@ -1,9 +1,9 @@
 #include "Effect.h"
 #include "Shader.h"
-#include "GlslShader.h"
-#include "CgShader.h"
 #include "Logger.h"
 #include "Shader.h"
+
+#include <G2Core/GfxDevice.h>
 
 using namespace G2;
 
@@ -71,27 +71,21 @@ Effect::Builder::buildResource()
 	return effect;
 }
 
-Effect::Builder::Builder() 
-	: shadingLanguage(ShadingLanguage::UNKNOWN) 
+Effect::Builder::Builder()
+	: shadingLanguage("") 
 {
 }
 
 void
 Effect::Builder::setShadingLanguage(std::string const& shadingLanguage) 
 {
-	if(shadingLanguage == "GLSL") 
+	if(!G2_gfxDevice()->supportsShadingLanguage(shadingLanguage))
 	{
-		this->shadingLanguage = ShadingLanguage::GLSL;
-		logger << "[Effect::Builder] -> Use Shading Language GLSL" << endl;
+		logger << "[Effect::Builder] -> Error: Shading Language '" << shadingLanguage << "' not supported by current GfxDevice!" << endl;
+		return;
 	}
-	else if(shadingLanguage == "CG")
-	{
-		this->shadingLanguage = ShadingLanguage::CG;
-		logger << "[Effect::Builder] -> Use Shading Language CG" << endl;
-	}
-	else {
-		logger << "[Effect::Builder] -> Error: Unknown Shading Language '" << shadingLanguage << "' given in Shader block!" << endl;
-	}
+	logger << "[Effect::Builder] -> Use Shading Language " << shadingLanguage << endl;
+	this->shadingLanguage = shadingLanguage;
 }
 
 void
@@ -122,7 +116,7 @@ Effect::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShad
 }
 
 void _compile(
-	ShadingLanguage::Name shadingLanguage,
+	std::string const& shadingLanguage,
 	std::vector<LocationBinding> const& locationBindings,
 	std::vector<Property> const& properties,
 	std::vector<std::shared_ptr<AbstractShaderPart>> const& vertexShaderParts,
@@ -132,7 +126,7 @@ void _compile(
 	std::vector<std::shared_ptr<Shader>>& target
 	)
 {
-	if(shadingLanguage == ShadingLanguage::UNKNOWN)
+	if(!G2_gfxDevice()->supportsShadingLanguage(shadingLanguage))
 	{
 		return;
 	}
@@ -141,7 +135,7 @@ void _compile(
 	std::string vertexShaderHeader = "", geometryShaderHeader = "", fragmentShaderHeader = "";
 
 	
-	if(shadingLanguage == ShadingLanguage::GLSL) 
+	if(shadingLanguage == "GLSL") 
 	{
 		vertexShaderHeader = fragmentShaderHeader = "#version 330\n\n";
 		if(geometryShaderParts.size() > 0)
@@ -288,35 +282,21 @@ void _compile(
 		//}
 		//logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
 		
-		if(shadingLanguage == ShadingLanguage::GLSL) {
-		
-			auto shader = std::shared_ptr<Shader>(new GlslShader());
-			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
-			{
-				// attach a list of conditions
-				// to the shader, which are used for the decision making process
-				shader->setConditions(shaderConditions);
-				target.push_back(shader);
-			}
-		}
-		else if(shadingLanguage == ShadingLanguage::CG) {
-		
-			auto shader = std::shared_ptr<Shader>(new CgShader());
-			if(Effect::Builder::compileAndApplyMetaData(vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
-			{
-				// attach a list of conditions
-				// to the shader, which are used for the decision making process
-				shader->setConditions(shaderConditions);
-				target.push_back(shader);
-			}
+		auto shader = std::shared_ptr<Shader>(new Shader());
+		if(Effect::Builder::compileAndApplyMetaData(shadingLanguage,vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
+		{
+			// attach a list of conditions
+			// to the shader, which are used for the decision making process
+			shader->setConditions(shaderConditions);
+			target.push_back(shader);
 		}
 	}
 }
 
 bool
-Effect::Builder::compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
+Effect::Builder::compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
 {
-	bool compiled = shader->compile(vertexShaderCode,geometryShaderCode,fragmentShaderCode);
+	bool compiled = shader->compile(shadingLanguage, vertexShaderCode,geometryShaderCode,fragmentShaderCode);
 	if(compiled)
 	{
 		// preset samplers and uniforms

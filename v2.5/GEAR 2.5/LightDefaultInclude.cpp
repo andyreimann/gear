@@ -5,9 +5,9 @@
 
 using namespace G2;
 
-LightDefaultInclude::LightDefaultInclude(ShadingLanguage::Name shadingLanguage)
+LightDefaultInclude::LightDefaultInclude(std::string const& shadingLanguage)
 {
-	if(shadingLanguage == ShadingLanguage::GLSL) 
+	if(shadingLanguage == "GLSL") 
 	{
 		const char* code =
 		{
@@ -38,7 +38,7 @@ LightDefaultInclude::LightDefaultInclude(ShadingLanguage::Name shadingLanguage)
 		};
 		mPart = std::string(code);
 	}
-	else if(shadingLanguage == ShadingLanguage::CG) 
+	else if(shadingLanguage == "CG") 
 	{
 		const char* code =
 		{

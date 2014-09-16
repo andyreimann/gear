@@ -15,10 +15,12 @@
 
 int main(int argc, char *argv[])
 {
-	
+	G2_loadGfxDevice("GEARGL.dll");
+
 	G2::SDL::Window window("Engine Test",1600,768,false);
 
-	G2_init(new G2::GlGfxDevice());
+	G2_gfxDevice()->init(nullptr);
+	G2_init();
 	{
 		TestScene testScene(window);
 

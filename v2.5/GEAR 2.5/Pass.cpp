@@ -5,6 +5,8 @@
 #include "TextureArray.h"
 #include "TextureCube.h"
 
+#include <G2Core/GfxDevice.h>
+
 using namespace G2;
 
 Pass::Pass(
@@ -142,6 +144,7 @@ Pass::preRender() const
 	// called from RenderSystem when rendering the pass 
 	GLDEBUG( glEnable(GL_POLYGON_OFFSET_FILL) );
 	GLDEBUG( glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits ) );
+	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mRenderTarget.getRenderTexture()->getWidth(),mRenderTarget.getRenderTexture()->getHeight()));
 	GLDEBUG( glViewport(0,0,mRenderTarget.getRenderTexture()->getWidth(),mRenderTarget.getRenderTexture()->getHeight()));
 }
 

@@ -4,6 +4,7 @@
 #include "RenderComponent.h"
 
 #include <G2Core/ECSManager.h>
+#include <G2Core/GfxDevice.h>
 
 using namespace G2;
 
@@ -97,14 +98,14 @@ RenderTarget::bind(int renderIterationIndex) const
 	
 	if(mUseClearColor)
 	{
-		GLDEBUG( glClearColor(mClearColor.r,mClearColor.g,mClearColor.b,mClearColor.a) );
+		G2_gfxDevice()->clearColor(mClearColor);
 	}
 	else
 	{
-		glm::vec4 const& clearColor = mRenderSystem->getClearColor();
-		GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,mClearColor.a) );
+		G2_gfxDevice()->clearColor(mRenderSystem->getClearColor());
 	}
-	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+	// TODO maybe later we have to pass a valid GfxResource here fopr the rendertarget!
+	G2_gfxDevice()->clearBuffers(G2Core::Buffer::COLOR | G2Core::Buffer::DEPTH, nullptr);
 }
 
 void

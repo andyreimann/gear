@@ -75,6 +75,7 @@ x; \
 
 #define BUFFER_OFFSET(i) ((char *)NULL+(i)) //!< Hint to simply set the offset i of a generic opengl buffer
 
+
 namespace G2 
 {
 	const float EPSILON = FLT_MIN;

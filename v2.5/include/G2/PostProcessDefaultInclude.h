@@ -18,6 +18,6 @@ namespace G2
 		public:
 			/** This constructs a new LightDefaultInclude.
 			 */
-			PostProcessDefaultInclude(ShadingLanguage::Name shadingLanguage);
+			PostProcessDefaultInclude(std::string const& shadingLanguage);
 	};
 };

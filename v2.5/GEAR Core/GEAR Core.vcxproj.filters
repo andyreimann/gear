@@ -40,6 +40,9 @@
       <Filter>Event</Filter>
     </ClCompile>
     <ClCompile Include="G2Core.cpp" />
+    <ClCompile Include="GfxDevice.cpp">
+      <Filter>GfxDevice</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">

@@ -8,16 +8,6 @@
 
 namespace G2 
 {
-	namespace ShadingLanguage
-	{
-		enum Name
-		{
-			GLSL = 1,
-			CG,
-			UNKNOWN
-		};
-	};
-
 	class Shader;
 	/// This class holds all informations needed to describe and use an
 	/// effect.
@@ -68,9 +58,9 @@ namespace G2
 					 */
 					Effect::Builder& buildAndCompile();
 
-					static bool compileAndApplyMetaData(std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
+					static bool compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
 			
-					ShadingLanguage::Name								shadingLanguage;	// The shading language to use.
+					std::string											shadingLanguage;	// The shading language to use.
 					std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 					std::vector<Property>								properties;			// The available Properties used by all Shader
 			

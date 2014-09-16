@@ -5,9 +5,9 @@
 
 using namespace G2;
 
-MatricesDefaultInclude::MatricesDefaultInclude(ShadingLanguage::Name shadingLanguage)
+MatricesDefaultInclude::MatricesDefaultInclude(std::string const& shadingLanguage)
 {
-	if(shadingLanguage == ShadingLanguage::GLSL) 
+	if(shadingLanguage == "GLSL") 
 	{
 		const char* code =
 		{
@@ -23,7 +23,7 @@ MatricesDefaultInclude::MatricesDefaultInclude(ShadingLanguage::Name shadingLang
 		};
 		mPart = std::string(code);
 	}
-	else if(shadingLanguage == ShadingLanguage::CG) 
+	else if(shadingLanguage == "CG") 
 	{
 		const char* code =
 		{

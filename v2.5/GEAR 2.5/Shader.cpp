@@ -4,12 +4,15 @@
 
 using namespace G2;
 
+#include <G2Core/GfxDevice.h>
+
 Shader::Shader() 
 {
 }
 
 Shader::~Shader() 
 {
+	G2_gfxDevice()->freeGfxResource(mGfxHandle);
 }
 
 void
@@ -31,4 +34,62 @@ Shader::initWithMetaData(ShaderMetaData const& metaData)
 			setProperty(std::move(samplerMetaData.name),samplerMetaData.samplerSlot);
 		}
 	}
+}
+
+
+
+void
+Shader::bind() 
+{
+	G2_gfxDevice()->bindShader(mGfxHandle);
+}
+
+void
+Shader::setProperty(std::string const& property, glm::mat4 const& value) 
+{
+	G2_gfxDevice()->setShaderUniformMat4(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, glm::mat3 const& value) 
+{
+	G2_gfxDevice()->setShaderUniformMat3(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, glm::vec4 const& value) 
+{
+	G2_gfxDevice()->setShaderUniformVec4(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, glm::vec3 const& value) 
+{
+	G2_gfxDevice()->setShaderUniformVec3(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, glm::vec2 const& value) 
+{
+	G2_gfxDevice()->setShaderUniformVec2(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, float value) 
+{
+	G2_gfxDevice()->setShaderUniformFloat(mGfxHandle,property,value);
+}
+
+void
+Shader::setProperty(std::string const& property, int value) 
+{
+	G2_gfxDevice()->setShaderUniformInt(mGfxHandle,property,value);
+}
+
+bool
+Shader::compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) 
+{
+	
+	mGfxHandle = G2_gfxDevice()->compileShader(shadingLanguage,vertexCode,geometryCode,fragmentCode);
+	return mGfxHandle->valid;
 }

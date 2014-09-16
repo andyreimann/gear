@@ -6,49 +6,17 @@
 #include "RenderComponent.h"
 
 #include <G2Core/ECSManager.h>
+#include <G2Core/GfxDevice.h>
 
 #include <thread>
 
 using namespace G2;
 
 
-static GfxDevice* gGfxDevice = nullptr;
-
-void G2_init(G2::GfxDevice* gfxDevice) 
+void G2_init() 
 {
-	gGfxDevice = gfxDevice;
-	assert(gGfxDevice != nullptr);
 
-	GLenum GlewInitResult;
 
-	glewExperimental = GL_TRUE;
-	GlewInitResult = glewInit();
-
-	if (GLEW_OK != GlewInitResult)
-	{
-		logger << "ERROR: " << glewGetErrorString(GlewInitResult) << endl;
-	}
-		
-	GLDEBUG( logger << "INFO: OpenGL Version: " << glGetString(GL_VERSION) << endl );
-
-	// enable transparency and so on
-	GLDEBUG( glEnable(GL_BLEND) );
-	GLDEBUG( glEnable(GL_DEPTH_TEST) );
-	GLDEBUG( glEnable(GL_MULTISAMPLE) );
-	GLDEBUG( glEnable(GL_CULL_FACE) );
-	GLDEBUG( glEnable(GL_BLEND) );
-	int max;
-	GLDEBUG( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
-	logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << endl;
-	
-		
-
-	GLint bufs;
-	GLint samples;
-	glGetIntegerv(GL_SAMPLE_BUFFERS, &bufs);
-	glGetIntegerv(GL_SAMPLES, &samples);
-
-	GLDEBUG( logger << "Have " << bufs << " buffers and " << samples << " samples" << endl );
 }
 
 bool mainThreadRunning;
@@ -100,10 +68,9 @@ G2_singleFrame(AbstractWindow& window, FrameInfo& frameInfo)
 	window.processEvents(frameInfo.frame);
 
 	glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
-	//GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
 	G2_gfxDevice()->clearColor(clearColor);
-	GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-
+	G2_gfxDevice()->clearBuffers(G2Core::Buffer::COLOR | G2Core::Buffer::DEPTH, nullptr);
+	
 	EventDistributer::onRenderFrame(frameInfo);
 
 	ECSManager::getShared().runMainThread(frameInfo);
@@ -137,10 +104,9 @@ G2_loop(AbstractWindow& window)
 		window.processEvents(frameInfo.frame);
 
 		glm::vec4 const& clearColor = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>()->getClearColor();
-		//GLDEBUG( glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a) );
 		G2_gfxDevice()->clearColor(clearColor);
-		GLDEBUG( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-
+		G2_gfxDevice()->clearBuffers(G2Core::Buffer::COLOR | G2Core::Buffer::DEPTH, nullptr);
+		
 		EventDistributer::onRenderFrame(frameInfo);
 
 		ECSManager::getShared().runMainThread(frameInfo);
@@ -162,17 +128,6 @@ G2_loop(AbstractWindow& window)
 
 	mainThreadRunning = false;
 	G2_stopSideThread();
-}
-
-G2::GfxDevice* G2_gfxDevice()
-{
-	return gGfxDevice;
-}
-
-void G2_gfxDeviceDestroy()
-{
-	delete gGfxDevice;
-	gGfxDevice = nullptr;
 }
 
 void

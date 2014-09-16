@@ -55,8 +55,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR Terrains", "GEAR Terra
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR GFX OpenGL", "GEAR OpenGL\GEAR OpenGL.vcxproj", "{ED103A60-17D6-4D3A-ABDD-64C217E00D0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GEAR GFX DX 11", "GEAR DX 11\GEAR DX 11.vcxproj", "{9B5B7DB8-E197-4FC7-B5D0-F5A457682EAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A7A3FB9-B6DC-4562-BAF1-423A543708E5} = {7A7A3FB9-B6DC-4562-BAF1-423A543708E5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

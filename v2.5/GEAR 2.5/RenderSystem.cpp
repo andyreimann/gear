@@ -18,6 +18,7 @@
 
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
+#include <G2Core/GfxDevice.h>
 
 #include <glm/ext.hpp>
 #include <algorithm>
@@ -151,7 +152,8 @@ RenderSystem::_renderForward(
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
 	}
 	
-	GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	//GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
 	
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
@@ -199,7 +201,8 @@ RenderSystem::_renderDeferred(
 	mDeferredShadingPass = DeferredShadingPass::ATTRIBUTES_PASS;
 	mDeferredShadingTarget->bind();
 	//mGBufferEffect->bind();
-	GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
+	//GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
 	
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);

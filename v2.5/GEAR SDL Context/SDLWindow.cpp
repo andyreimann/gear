@@ -6,6 +6,7 @@
 
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
+#include <G2Core/GfxDevice.h>
 
 #include <iostream>
 #include <unordered_map>
@@ -86,7 +87,7 @@ Window::Window(std::string const& title, unsigned int width, unsigned int height
 
 	initHideMouseState();
 
-	GLDEBUG( glViewport(0, 0, mWidth, mHeight) );
+	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mWidth, mHeight));
 }
 
 Window::~Window() 
@@ -161,6 +162,7 @@ Window::processEvents(int frame)
 					printf("[SDLWindow] : Window %d resized to %dx%d\n",
 							e.window.windowID, e.window.data1,
 							e.window.data2);
+					G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,e.window.data1, e.window.data2));
 					GLDEBUG( glViewport(0, 0, e.window.data1, e.window.data2) );
 					G2::EventDistributer::onViewportResize(e.window.data1,e.window.data2);
 					break;

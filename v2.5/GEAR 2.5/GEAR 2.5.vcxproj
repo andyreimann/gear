@@ -248,7 +248,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CatmullRomCurve.h" />
-    <ClInclude Include="CgShader.h" />
     <ClInclude Include="clock_linux.h" />
     <ClInclude Include="clock_win.h" />
     <ClInclude Include="Comparator.h" />
@@ -269,7 +268,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GEAR.h" />
-    <ClInclude Include="GlslShader.h" />
     <ClInclude Include="HermiteCurve.h" />
     <ClInclude Include="IfElseMacro.h" />
     <ClInclude Include="Importer.h" />
@@ -354,7 +352,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CatmullRomCurve.cpp" />
-    <ClCompile Include="CgShader.cpp" />
     <ClCompile Include="clock_linux.cpp" />
     <ClCompile Include="clock_win.cpp" />
     <ClCompile Include="Comparator.cpp" />
@@ -375,7 +372,6 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GEAR.cpp" />
-    <ClCompile Include="GlslShader.cpp" />
     <ClCompile Include="HermiteCurve.cpp" />
     <ClCompile Include="IfElseMacro.cpp" />
     <ClCompile Include="Importer.cpp" />

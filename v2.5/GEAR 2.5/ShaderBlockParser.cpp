@@ -242,14 +242,7 @@ ShaderBlockParser::getInclude(std::string const& resource) const
 	if(!name.compare(0,defaultResourcePrexif.size(), defaultResourcePrexif)) 
 	{
 		// append shading language shortcut to include name
-		if(mBuilder->shadingLanguage== ShadingLanguage::GLSL)
-		{
-			name.append(".GLSL");
-		}
-		if(mBuilder->shadingLanguage == ShadingLanguage::CG)
-		{
-			name.append(".CG");
-		}
+		name.append(".").append(mBuilder->shadingLanguage);
 	}
 	auto it = gDefaultIncludes.find(name);
 	if(it != gDefaultIncludes.end()) {
@@ -265,22 +258,22 @@ ShaderBlockParser::initDefaultIncludes()
 	std::unordered_map<std::string,std::shared_ptr<AbstractShaderPart>> defaultIncludes;
 	
 	defaultIncludes.insert(
-		std::make_pair("G2.matrices.GLSL", std::shared_ptr<AbstractShaderPart>(new MatricesDefaultInclude(ShadingLanguage::GLSL))));
+		std::make_pair("G2.matrices.GLSL", std::shared_ptr<AbstractShaderPart>(new MatricesDefaultInclude("GLSL"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.material.GLSL", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude(ShadingLanguage::GLSL))));
+		std::make_pair("G2.material.GLSL", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude("GLSL"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.light.GLSL", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude(ShadingLanguage::GLSL))));
+		std::make_pair("G2.light.GLSL", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude("GLSL"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.postprocess.GLSL", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude(ShadingLanguage::GLSL))));
+		std::make_pair("G2.postprocess.GLSL", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude("GLSL"))));
 
 	defaultIncludes.insert(
-		std::make_pair("G2.matrices.CG", std::shared_ptr<AbstractShaderPart>(new MatricesDefaultInclude(ShadingLanguage::CG))));
+		std::make_pair("G2.matrices.CG", std::shared_ptr<AbstractShaderPart>(new MatricesDefaultInclude("CG"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.material.CG", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude(ShadingLanguage::CG))));
+		std::make_pair("G2.material.CG", std::shared_ptr<AbstractShaderPart>(new MaterialDefaultInclude("CG"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.light.CG", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude(ShadingLanguage::CG))));
+		std::make_pair("G2.light.CG", std::shared_ptr<AbstractShaderPart>(new LightDefaultInclude("CG"))));
 	defaultIncludes.insert(
-		std::make_pair("G2.postprocess.CG", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude(ShadingLanguage::CG))));
+		std::make_pair("G2.postprocess.CG", std::shared_ptr<AbstractShaderPart>(new PostProcessDefaultInclude("CG"))));
 	return defaultIncludes;
 }
 

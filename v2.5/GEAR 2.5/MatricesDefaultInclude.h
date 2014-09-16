@@ -2,7 +2,6 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "SimpleShaderPart.h"
-#include "Effect.h"
 
 #include <string>
 
@@ -18,7 +17,7 @@ namespace G2
 		public:
 			/** This constructs a new MatricesDefaultInclude.
 			 */
-			MatricesDefaultInclude(ShadingLanguage::Name shadingLanguage);
+			MatricesDefaultInclude(std::string const& shadingLanguage);
 
 	};
 };

@@ -2,7 +2,6 @@
 // (c) 2014 GEAR 2.5
 #pragma once
 #include "SimpleShaderPart.h"
-#include "Effect.h"
 
 #include <string>
 
@@ -18,6 +17,6 @@ namespace G2
 		public:
 			/** This constructs a new LightDefaultInclude.
 			 */
-			LightDefaultInclude(ShadingLanguage::Name shadingLanguage);
+			LightDefaultInclude(std::string const& shadingLanguage);
 	};
 };

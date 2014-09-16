@@ -152,6 +152,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\GEAR DX 11\Defines.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorComponent.h" />

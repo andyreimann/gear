@@ -2,9 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="GlGfxDevice.h" />
+    <ClInclude Include="GlGfxApi.h" />
+    <ClInclude Include="GlGfxData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GlGfxDevice.cpp" />
+    <ClCompile Include="GlGfxGeneral.cpp" />
+    <ClCompile Include="GlGfxShader.cpp" />
   </ItemGroup>
 </Project>

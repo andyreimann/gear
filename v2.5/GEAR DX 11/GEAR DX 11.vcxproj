@@ -139,11 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Defines.h" />
-    <ClInclude Include="DX11GfxDevice.h" />
+    <ClCompile Include="DX11GfxGeneral.cpp" />
+    <ClCompile Include="DX11GfxShader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DX11GfxDevice.cpp" />
+    <ClInclude Include="DX11GfxApi.h" />
+    <ClInclude Include="DX11GfxData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

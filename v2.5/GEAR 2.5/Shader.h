@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <G2Core/Defines.h>
 
 namespace G2 
 {
@@ -30,46 +31,46 @@ namespace G2
 			/** This function returns the bindable state of the Shader.
 			 * @return True if the Shader is ready for usage, false if not.
 			 */
-			bool isBindable() { return mCompiled; }
+			bool isBindable() { return mGfxHandle->valid; }
 			/** This function will try to bind the given Shader.
 			 * @note Make sure to only bind Shaders, which are bindable!
 			 */
-			virtual void bind() = 0;
+			void bind();
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, glm::mat4 const& value) = 0;
+			void setProperty(std::string const& property, glm::mat4 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, glm::mat3 const& value) = 0;
+			void setProperty(std::string const& property, glm::mat3 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, glm::vec4 const& value) = 0;
+			void setProperty(std::string const& property, glm::vec4 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, glm::vec3 const& value) = 0;
+			void setProperty(std::string const& property, glm::vec3 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, glm::vec2 const& value) = 0;
+			void setProperty(std::string const& property, glm::vec2 const& value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, float value) = 0;
+			virtual void setProperty(std::string const& property, float value);
 			/** This function will set the given Property on the Shader to the given value.
 			 * @param property The Property to set
 			 * @param value The value to set the Property to.
 			 */
-			virtual void setProperty(std::string const& property, int value) = 0;
+			void setProperty(std::string const& property, int value);
 			/** This function will set the MacroConditions, which are checked at runtime
 			 * to find the Shader, which is best for rendering an Object.
 			 * @param conditions A vector containing all MacroConditions.
@@ -81,7 +82,7 @@ namespace G2
 			std::vector<MacroCondition> const& getConditions() const { return mConditions; }
 			/** normal destructor
 			 */
-			virtual ~Shader();
+			~Shader();
 		protected:
 			/** This function will initialize all shader data, which can
 			 * be initialized using the given ShaderMetaData.
@@ -90,13 +91,15 @@ namespace G2
 			void initWithMetaData(ShaderMetaData const& metaData);
 			
 			/** This function will compile a new Shader from the given shader code.
+			 * @param shadingLanguage The shading language to use, e.g. GLSL, CG.
 			 * @param vertexCode The Vertex-Shader code to use
 			 * @param geometryCode The Geometry-Shader code to use or an empty string if no geometry shader should be used.
 			 * @param fragmentCode The Fragment-Shader code to use
 			 * @return True if the Shader compiled successfully, false if not.
 			 */
-			virtual bool compile(std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) = 0;
+			bool compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
 
+			G2Core::GfxResource*		mGfxHandle;		// The shader handle in the gfx device
 			bool						mCompiled;		// True if the Shader is compiled, false if not.
 			std::vector<MacroCondition>	mConditions;	// The conditions to pass to use this Shader 
 	};
