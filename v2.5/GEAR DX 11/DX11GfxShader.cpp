@@ -29,15 +29,20 @@ void _cgErrorHandler(CGcontext context, CGerror error, void* appData)
 	}
 }
 
-void _initCgRuntime()
+void _initCgRuntime(ID3D11Device* device)
 {
 	if(gCgContext == nullptr) {
-		G2::logger << "[CgRuntime] Initialize Cg-Runtime-OpenGL" << G2::endl;
+		G2::logger << "[CgRuntime] Initialize Cg-Runtime-DirectX 11" << G2::endl;
 		//qDebug("[Cg] Initialize Cg");
 		// register the error handler
 		cgSetErrorHandler( &_cgErrorHandler, NULL);
 		// create a new Cg Context
 		gCgContext = cgCreateContext();
+
+		HRESULT hr = cgD3D11SetDevice( gCgContext, device);
+	
+		if( hr != S_OK )
+			return;
 
 		// Register the default state assignment for OpenGL
 		cgD3D11RegisterStates(gCgContext);
@@ -110,6 +115,7 @@ G2Core::GfxResource* CompileShader(std::string const& shadingLanguage, std::stri
 		resource->vertexShaderId = vertexShaderId;
 		resource->geometryShaderId = geometryShaderId;
 		resource->fragmentShaderId = fragmentShaderId;
+		resource->valid = vertexShaderId != nullptr && fragmentShaderId != nullptr;
 		return _setupShaderFunctionPointers(resource);
 	}
 	return error();
@@ -128,7 +134,6 @@ void _bindShaderCg(G2Core::GfxResource const* shaderResource)
 	{
 		cgD3D11BindProgram(cgRes->geometryShaderId);
 	}
-
 	cgD3D11BindProgram(cgRes->vertexShaderId);
 	cgD3D11BindProgram(cgRes->fragmentShaderId);
 }
