@@ -73,7 +73,7 @@ CollisionShapeDescriptor::convexHull(std::vector<G2::VertexArrayObject>& vaos)
 	
 	for(int i = 0; i < vaos.size(); ++i)
 	{
-		desc.mVertexStream.write(vaos[i],Semantics::POSITION);
+		desc.mVertexStream.write(vaos[i],G2Core::Semantics::POSITION);
 	}
 	return std::move(desc);
 }

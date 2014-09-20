@@ -85,9 +85,9 @@ LocationBindingsBlockParser::parse()
                 semantic = Tools::String::trim(line.substr(startPos+1, endPos-startPos-1));
             }
 
-            Semantics::Name parsedSemantic = Semantics::getSemantic(semantic);
+            G2Core::Semantics::Name parsedSemantic = G2Core::Semantics::parse(semantic);
 
-            if(parsedSemantic == Semantics::SEMANTIC_INVALID)
+            if(parsedSemantic == G2Core::Semantics::SEMANTIC_INVALID)
             {
 
                 logger << "[LocationBindingsBlockParser] -> Warning: LocationBinding '" << name << "' has no valid semantic value given! Valid values are: POSITION,BLENDWEIGHT,NORMAL,COLOR_0,COLOR_1,FOGCOORD,PSIZE,BLENDINDICES,TANGENT,BINORMAL,TEXCOORD_0-TEXCOORD_7\n";

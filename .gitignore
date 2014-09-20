@@ -155,3 +155,12 @@ v2.5/GEAR Editor/GEAR Editor/GeneratedFiles/Debug/moc_GLContext.cpp
 v2.5/GEAR Editor/GEAR Editor/GeneratedFiles/Debug/moc_GearEditor.cpp
 v2.5/GEAR Editor/GEAR Editor/GeneratedFiles/qrc_geareditor.cpp
 v2.5/GEAR Editor/GEAR Editor/GeneratedFiles/ui_geareditor.h
+tests/bin/x64/Debug/GEARDX11.dll
+tests/bin/x64/Debug/GEARGL.dll
+v2.5/lib/x64/Debug/GEARDX11.dll
+v2.5/lib/x64/Debug/GEARDX11.lib
+v2.5/lib/x64/Debug/GEARGL.dll
+v2.5/lib/x64/Debug/GEARGL.lib
+v2.5/x64/Debug/GEARDX11.dll
+v2.5/x64/Debug/GEARDX11.lib
+tests/bin/Assets/Resources/heightmap2048.png

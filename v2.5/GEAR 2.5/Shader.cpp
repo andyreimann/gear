@@ -87,9 +87,9 @@ Shader::setProperty(std::string const& property, int value)
 }
 
 bool
-Shader::compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode) 
+Shader::compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode, G2Core::VertexInputLayout const& vertexInputLayout) 
 {
-	
-	mGfxHandle = G2_gfxDevice()->compileShader(shadingLanguage,vertexCode,geometryCode,fragmentCode);
+	mVertexInputLayout = vertexInputLayout;
+	mGfxHandle = G2_gfxDevice()->compileShader(vertexInputLayout,shadingLanguage,vertexCode,geometryCode,fragmentCode);
 	return mGfxHandle->valid;
 }

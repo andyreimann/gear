@@ -3,9 +3,11 @@
   <ItemGroup>
     <ClCompile Include="DX11GfxShader.cpp" />
     <ClCompile Include="DX11GfxGeneral.cpp" />
+    <ClCompile Include="DX11GfxVao.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX11GfxApi.h" />
     <ClInclude Include="DX11GfxData.h" />
+    <ClInclude Include="DX11Globals.h" />
   </ItemGroup>
 </Project>

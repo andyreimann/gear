@@ -28,6 +28,9 @@
       <Filter>GfxDevice</Filter>
     </ClInclude>
     <ClInclude Include="G2Core.h" />
+    <ClInclude Include="VertexInputLayout.h">
+      <Filter>VertexInputLayout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSManager.cpp">
@@ -43,6 +46,7 @@
     <ClCompile Include="GfxDevice.cpp">
       <Filter>GfxDevice</Filter>
     </ClCompile>
+    <ClCompile Include="Defines.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -56,6 +60,9 @@
     </Filter>
     <Filter Include="GfxDevice">
       <UniqueIdentifier>{d7ab0d8a-7b5e-45ea-b763-ad4dc4e9e435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VertexInputLayout">
+      <UniqueIdentifier>{6855542f-bb2a-465a-845e-d37f59845937}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

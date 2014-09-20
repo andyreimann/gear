@@ -153,15 +153,15 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 	{
 		MeshMetaData const& meshData = meshMetaData[i];
 		renderComponent->getVertexArray(i).resizeElementCount((unsigned int)meshData.vertices.size())
-			.writeData(Semantics::POSITION, &meshData.vertices[0]);
+			.writeData(G2Core::Semantics::POSITION, &meshData.vertices[0]);
 		
 		if(meshData.hasNormals && importNormals)
 		{
-			renderComponent->getVertexArray(i).writeData(Semantics::NORMAL, &meshData.normals[0]);
+			renderComponent->getVertexArray(i).writeData(G2Core::Semantics::NORMAL, &meshData.normals[0]);
 		}
 		if(meshData.hasUvs && importTexCoords)
 		{
-			renderComponent->getVertexArray(i).writeData(Semantics::TEXCOORD_0, &meshData.uvs[0]);
+			renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &meshData.uvs[0]);
 		}
 		if(meshData.indices.size() > 0)
 		{
@@ -172,7 +172,7 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 		}
 		// add a draw call
 		renderComponent->addDrawCall(DrawCall()
-			.setDrawMode(GL_TRIANGLES)
+			.setDrawMode(G2Core::DrawMode::TRIANGLES)
 			.setEnabled(true)
 			.setVaoIndex(i)
 			.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)

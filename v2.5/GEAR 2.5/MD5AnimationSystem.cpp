@@ -163,8 +163,8 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 		});
 		handles.push_back(handle);
 #else
-			renderComponent->getVertexArray((unsigned int)c).writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
-								.writeData(Semantics::NORMAL, &meshAnimationData.normalCache[0]);
+			renderComponent->getVertexArray((unsigned int)c).writeData(G2Core::Semantics::POSITION, &meshAnimationData.vertexCache[0])
+								.writeData(G2Core::Semantics::NORMAL, &meshAnimationData.normalCache[0]);
 		
 #endif
 	}
@@ -177,8 +177,8 @@ MD5AnimationSystem::updatePose(MD5AnimationComponent* animationComponent, Render
 		// write cached data
 		MeshAnimationData& meshAnimationData = animationComponent->animationData.meshAnimationData[i];
 		
-		renderComponent->mVaos[i].writeData(Semantics::POSITION, &meshAnimationData.vertexCache[0])
-								.writeData(Semantics::NORMAL, &meshAnimationData.normalCache[0]);
+		renderComponent->mVaos[i].writeData(G2Core::Semantics::POSITION, &meshAnimationData.vertexCache[0])
+								.writeData(G2Core::Semantics::NORMAL, &meshAnimationData.normalCache[0]);
 	}
 #endif
 }

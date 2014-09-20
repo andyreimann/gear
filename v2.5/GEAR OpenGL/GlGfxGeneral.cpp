@@ -1,5 +1,6 @@
 #include "GlGfxApi.h"
 #include "GlGfxData.h"
+#include "GlGfxMappings.h"
 
 #include <G2/Logger.h>
 
@@ -31,6 +32,9 @@ void release(G2Core::GfxResource* resource)
 bool
 Init(void* data) 
 {
+	// ensure that all mappings of the GL Gfx API are initialized before doing anything!
+	_initMappings();
+
 	GLenum GlewInitResult;
 
 	glewExperimental = GL_TRUE;

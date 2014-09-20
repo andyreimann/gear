@@ -150,7 +150,7 @@ RoamTerrain::setup(
 	renderComponent->allocateVertexArrays(1);
 	auto& vao = renderComponent->getVertexArray(0);
 	vao.resizeElementCount(maxTriangles*3);
-	vao.writeData(Semantics::POSITION, &mRenderedVertices[0]);
+	vao.writeData(G2Core::Semantics::POSITION, &mRenderedVertices[0]);
 	// setup TransformComponent
 	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 	auto* transformComponent = transformSystem->get(getEntityId());
@@ -163,11 +163,11 @@ RoamTerrain::setup(
 
 	unsigned char* data = &mHeightMapData[(int)mMapSize];
 	mNormalMap = G2::NormalMapGenerator::generateFromHeightMap(data, (int)mMapSize, mMaxHeight);
-	renderComponent->material.setTexture(Sampler::NORMAL, mNormalMap);
+	renderComponent->material.setTexture(G2::Sampler::NORMAL, mNormalMap);
 
 	// add one single DrawCall for Terrain
 	renderComponent->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_TRIANGLES)
+		.setDrawMode(G2Core::DrawMode::TRIANGLES)
 		.setEnabled(true)
 		.setVaoIndex(0)
 		.setAABBCalculationMode(AUTOMATIC)
@@ -290,8 +290,8 @@ RoamTerrain::_draw()
 	// since we initially allocated enough memory. It just ensures, that when drawing the VAO
 	// only mNumTrisRendered*3 vertices are drawn!
 	vao.resizeElementCount(mNumTrisRendered*3);
-	vao.writeData(G2::Semantics::POSITION, &mRenderedVertices[0], mNumTrisRendered*3);
-	vao.writeData(G2::Semantics::TEXCOORD_0, &mRenderedTexCoords[0], mNumTrisRendered*3);
+	vao.writeData(G2Core::Semantics::POSITION, &mRenderedVertices[0], mNumTrisRendered*3);
+	vao.writeData(G2Core::Semantics::TEXCOORD_0, &mRenderedTexCoords[0], mNumTrisRendered*3);
 }
 
 TriTreeNode*

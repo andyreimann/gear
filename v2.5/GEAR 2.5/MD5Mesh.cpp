@@ -35,19 +35,19 @@ MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes, bool import
 		Builder::SubMesh const& mesh = meshes[i];
 		VertexArrayObject& vao = renderComponent->getVertexArray((unsigned int)i);
 		vao.resizeElementCount((unsigned int)mesh.vertices.size());
-		vao.writeData( Semantics::POSITION, &mesh.vertices[0]);
+		vao.writeData( G2Core::Semantics::POSITION, &mesh.vertices[0]);
 		if(importNormals)
 		{
-			vao.writeData( Semantics::NORMAL, &mesh.normals[0]);
+			vao.writeData( G2Core::Semantics::NORMAL, &mesh.normals[0]);
 		}
 		if(importTexCoords)
 		{
-			vao.writeData( Semantics::TEXCOORD_0, &mesh.uvs[0]);
+			vao.writeData( G2Core::Semantics::TEXCOORD_0, &mesh.uvs[0]);
 		}
 		IndexArrayObject& iao = renderComponent->getIndexArray((unsigned int)i);
 		iao.writeIndices( &mesh.indices[0], (unsigned int)mesh.indices.size());
 		renderComponent->addDrawCall(DrawCall()
-			.setDrawMode(GL_TRIANGLES)
+			.setDrawMode(G2Core::DrawMode::TRIANGLES)
 			.setEnabled(true)
 			.setVaoIndex(i)
 			.setIaoIndex(i)

@@ -74,9 +74,49 @@ void _initCgRuntime(ID3D11Device* device)
 	}
 }
 
+
+
+LPCSTR
+toSemanticString(G2Core::Semantics::Name semantic) 
+{
+	if(semantic == G2Core::Semantics::POSITION) 
+		return "POSITION";
+	else if(semantic == G2Core::Semantics::BLENDWEIGHT) 
+		return "BLENDWEIGHT";
+	else if(semantic == G2Core::Semantics::NORMAL) 
+		return "NORMAL";
+	else if(semantic == G2Core::Semantics::COLOR_0) 
+		return "COLOR0";
+	else if(semantic == G2Core::Semantics::COLOR_1) 
+		return "COLOR1";
+	else if(semantic == G2Core::Semantics::FOGCOORD) 
+		return "FOG";
+	else if(semantic == G2Core::Semantics::PSIZE) 
+		return "PSIZE";
+	else if(semantic == G2Core::Semantics::BLENDINDICES) 
+		return "BLENDINDICES";
+	else if(semantic == G2Core::Semantics::TEXCOORD_0) 
+		return "TEXCOORD0";
+	else if(semantic == G2Core::Semantics::TEXCOORD_1) 
+		return "TEXCOORD1";
+	else if(semantic == G2Core::Semantics::TEXCOORD_2) 
+		return "TEXCOORD2";
+	else if(semantic == G2Core::Semantics::TEXCOORD_3) 
+		return "TEXCOORD3";
+	else if(semantic == G2Core::Semantics::TEXCOORD_4) 
+		return "TEXCOORD4";
+	else if(semantic == G2Core::Semantics::TEXCOORD_5) 
+		return "TEXCOORD5";
+	else if(semantic == G2Core::Semantics::TANGENT) 
+		return "TANGENT";
+	else if(semantic == G2Core::Semantics::BINORMAL) 
+		return "BINORMAL";
+	return "SEMANTIC_INVALID";
+}
+
 G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res);
 
-G2Core::GfxResource* CompileShader(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode)
+G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode)
 {
 	if(shadingLanguage == "HLSL")
 	{
@@ -105,13 +145,36 @@ G2Core::GfxResource* CompileShader(std::string const& shadingLanguage, std::stri
 			cgD3D11LoadProgram(geometryShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
 		}
 		sourcePtr = fragmentCode.c_str();
+		
+		/*std::vector<D3D11_INPUT_ELEMENT_DESC> layout;
+		
+		for(int i = 0; i < vertexInputLayout.elements.size(); ++i)
+		{
+			D3D11_INPUT_ELEMENT_DESC element;
+			element.SemanticName = toSemanticString(vertexInputLayout.elements[i].semantic);
+			element.SemanticIndex = 0;
+			element.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			element.InputSlot = i;
+			element.AlignedByteOffset = 0;
+			element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			element.InstanceDataStepRate = 0;
+
+			layout.push_back(std::move(element));
+		}*/
+
 		CGprogram fragmentShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgFragmentShaderProfile, "main", 0);
 
 		cgD3D11LoadProgram(vertexShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
 		cgD3D11LoadProgram(fragmentShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
 
-		// create client resource
-		G2DX11::CgShaderResource* resource = new G2DX11::CgShaderResource;
+		G2DX11::InputLayoutShaderFragment inputLayoutShaderFragment;
+		for(int i = 0; i < vertexInputLayout.elements.size(); ++i)
+		{
+			inputLayoutShaderFragment.semantics.push_back(vertexInputLayout.elements[i].semantic);
+			inputLayoutShaderFragment.semanticNames.push_back(toSemanticString(vertexInputLayout.elements[i].semantic));
+		}
+
+		G2DX11::CgShaderResource* resource = new G2DX11::CgShaderResource(cgD3D11GetCompiledProgram(vertexShaderId),inputLayoutShaderFragment);
 		resource->vertexShaderId = vertexShaderId;
 		resource->geometryShaderId = geometryShaderId;
 		resource->fragmentShaderId = fragmentShaderId;

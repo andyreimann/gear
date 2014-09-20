@@ -150,7 +150,7 @@ RenderComponent::setDestinationBlendFactor(BlendFactor::Name const& value)
 }
 
 void
-RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, Semantics::Name texCoordsSemantic) 
+RenderComponent::calculateBinormalsAndTangents(G2Core::Semantics::Name vertexSemantic, G2Core::Semantics::Name texCoordsSemantic) 
 {
 	logger << "RenderComponent has " << mVaos.size() << " VAOs\n";
 	for(size_t v = 0; v < mVaos.size(); ++v)
@@ -163,8 +163,8 @@ RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, S
 		unsigned int vertexComponents = vao.getNumBytesBySemantic(vertexSemantic) / sizeof(float);
 		unsigned int texCoordsComponents = vao.getNumBytesBySemantic(texCoordsSemantic) / sizeof(float);
 		// transfer data from GPU to CPU
-		float* vertices = vao.getDataPointer(vertexSemantic,BufferAccessMode::READ_ONLY);
-		float* texCoords = vao.getDataPointer(texCoordsSemantic,BufferAccessMode::READ_ONLY);
+		float* vertices = vao.getDataPointer(vertexSemantic,G2Core::BufferAccessMode::READ_ONLY);
+		float* texCoords = vao.getDataPointer(texCoordsSemantic,G2Core::BufferAccessMode::READ_ONLY);
 		//if(!vao.hasIndexBuffers())
 		{ // interpret as continuous vertex data for triangles
 			for(unsigned int i = 0; i < vao.getNumElements()-2; i+=2)
@@ -214,7 +214,7 @@ RenderComponent::calculateBinormalsAndTangents(Semantics::Name vertexSemantic, S
 		vao.returnDataPointer(texCoordsSemantic);
 		vao.returnDataPointer(vertexSemantic);
 		// transmit data
-		vao.writeData(Semantics::BINORMAL, &binormals[0]);
-		vao.writeData(Semantics::TANGENT, &tangents[0]);
+		vao.writeData(G2Core::Semantics::BINORMAL, &binormals[0]);
+		vao.writeData(G2Core::Semantics::TANGENT, &tangents[0]);
 	}
 }

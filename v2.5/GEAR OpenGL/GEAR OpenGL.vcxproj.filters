@@ -4,9 +4,12 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="GlGfxApi.h" />
     <ClInclude Include="GlGfxData.h" />
+    <ClInclude Include="GlGfxMappings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlGfxGeneral.cpp" />
     <ClCompile Include="GlGfxShader.cpp" />
+    <ClCompile Include="GlGfxVao.cpp" />
+    <ClCompile Include="GlGfxMappings.cpp" />
   </ItemGroup>
 </Project>

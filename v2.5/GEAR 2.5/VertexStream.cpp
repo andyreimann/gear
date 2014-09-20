@@ -33,7 +33,7 @@ VertexStream::operator=(VertexStream && rhs)
 }
 
 void
-VertexStream::write(VertexArrayObject& vao, Semantics::Name semantic) 
+VertexStream::write(VertexArrayObject& vao, G2Core::Semantics::Name semantic) 
 {
 	if(vao.getNumBytesBySemantic(semantic) == mBytesPerVertex && mBytesPerVertex != 0)
 	{
@@ -41,7 +41,7 @@ VertexStream::write(VertexArrayObject& vao, Semantics::Name semantic)
 		unsigned int numComponentsToWrite = std::min<unsigned int>(vao.getNumElements() * numComponentsPerVertex, (unsigned int)mVertexStream.size()-mWriteIndex);
 		if(numComponentsToWrite > 0)
 		{
-			float* data = vao.getDataPointer(semantic, BufferAccessMode::READ_ONLY);
+			float* data = vao.getDataPointer(semantic, G2Core::BufferAccessMode::READ_ONLY);
 			memcpy(&mVertexStream[mWriteIndex], data, numComponentsToWrite*sizeof(float));
 			vao.returnDataPointer(semantic);
 		}
@@ -50,7 +50,7 @@ VertexStream::write(VertexArrayObject& vao, Semantics::Name semantic)
 	else if(mBytesPerVertex < vao.getNumBytesBySemantic(semantic))
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
-		float* data = vao.getDataPointer(semantic, BufferAccessMode::READ_ONLY);
+		float* data = vao.getDataPointer(semantic, G2Core::BufferAccessMode::READ_ONLY);
 		for(unsigned int i = 0; i < vao.getNumElements(); ++i)
 		{
 			if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
@@ -68,19 +68,19 @@ VertexStream::write(VertexArrayObject& vao, Semantics::Name semantic)
 void
 VertexStream::writeTriangles(VertexArrayObject& vao) 
 {
-	if(vao.getNumBytesBySemantic(Semantics::POSITION) == mBytesPerVertex && mBytesPerVertex != 0)
+	if(vao.getNumBytesBySemantic(G2Core::Semantics::POSITION) == mBytesPerVertex && mBytesPerVertex != 0)
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
 		unsigned int numComponentsToWrite = std::min<unsigned int>(vao.getNumElements() * numComponentsPerVertex, (unsigned int)mVertexStream.size()-mWriteIndex);
 		if(numComponentsToWrite > 0)
 		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			float* data = vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 			memcpy(&mVertexStream[mWriteIndex], data, numComponentsToWrite*sizeof(float));
-			vao.returnDataPointer(Semantics::POSITION);
+			vao.returnDataPointer(G2Core::Semantics::POSITION);
 		}
 		mWriteIndex += numComponentsToWrite;
 	}
-	else if(mBytesPerVertex < vao.getNumBytesBySemantic(Semantics::POSITION))
+	else if(mBytesPerVertex < vao.getNumBytesBySemantic(G2Core::Semantics::POSITION))
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
 		//if(vao.hasIndexBuffers())
@@ -105,7 +105,7 @@ VertexStream::writeTriangles(VertexArrayObject& vao)
 		//}
 		//else
 		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			float* data = vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 			for(unsigned int i = 0; i < vao.getNumElements(); ++i)
 			{
 				if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
@@ -116,7 +116,7 @@ VertexStream::writeTriangles(VertexArrayObject& vao)
 				memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
 				mWriteIndex += numComponentsPerVertex;
 			}
-			vao.returnDataPointer(Semantics::POSITION);
+			vao.returnDataPointer(G2Core::Semantics::POSITION);
 		}
 	}
 }
@@ -124,13 +124,13 @@ VertexStream::writeTriangles(VertexArrayObject& vao)
 void
 VertexStream::writeTriangles(VertexArrayObject& vao, glm::mat4 const& transformation) 
 {
-	if(vao.getNumBytesBySemantic(Semantics::POSITION) == mBytesPerVertex && mBytesPerVertex != 0)
+	if(vao.getNumBytesBySemantic(G2Core::Semantics::POSITION) == mBytesPerVertex && mBytesPerVertex != 0)
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
 		unsigned int numComponentsToWrite = std::min<unsigned int>(vao.getNumElements() * numComponentsPerVertex, (unsigned int)mVertexStream.size()-mWriteIndex);
 		if(numComponentsToWrite > 0)
 		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			float* data = vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 			for(unsigned int i = 0; i < vao.getNumElements(); ++i)
 			{
 				if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
@@ -143,11 +143,11 @@ VertexStream::writeTriangles(VertexArrayObject& vao, glm::mat4 const& transforma
 				memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
 				mWriteIndex += numComponentsPerVertex;
 			}
-			vao.returnDataPointer(Semantics::POSITION);
+			vao.returnDataPointer(G2Core::Semantics::POSITION);
 		}
 		mWriteIndex += numComponentsToWrite;
 	}
-	else if(mBytesPerVertex < vao.getNumBytesBySemantic(Semantics::POSITION))
+	else if(mBytesPerVertex < vao.getNumBytesBySemantic(G2Core::Semantics::POSITION))
 	{
 		unsigned int numComponentsPerVertex = mBytesPerVertex / sizeof(float);
 		//if(vao.hasIndexBuffers())
@@ -172,7 +172,7 @@ VertexStream::writeTriangles(VertexArrayObject& vao, glm::mat4 const& transforma
 		//}
 		//else
 		{
-			float* data = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			float* data = vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 			for(unsigned int i = 0; i < vao.getNumElements(); ++i)
 			{
 				if(mWriteIndex+numComponentsPerVertex > mVertexStream.size())
@@ -184,7 +184,7 @@ VertexStream::writeTriangles(VertexArrayObject& vao, glm::mat4 const& transforma
 				memcpy(&mVertexStream[mWriteIndex], &pt, mBytesPerVertex);
 				mWriteIndex += numComponentsPerVertex;
 			}
-			vao.returnDataPointer(Semantics::POSITION);
+			vao.returnDataPointer(G2Core::Semantics::POSITION);
 		}
 	}
 }

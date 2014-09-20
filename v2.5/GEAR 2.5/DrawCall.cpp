@@ -16,7 +16,7 @@ DrawCall::DrawCall()
 	mVaoIndex(-1),
 	mIaoIndex(-1),
 	mEntityId(Entity::UNINITIALIZED_ENTITY_ID),
-	mDrawMode(GL_TRIANGLES),
+	mDrawMode(G2Core::DrawMode::TRIANGLES),
 	mWasFrustumCulled(false)
 {
 }
@@ -70,7 +70,7 @@ DrawCall::operator=(DrawCall && rhs)
 	rhs.mEntityId = Entity::UNINITIALIZED_ENTITY_ID;
 	rhs.mVaoIndex = -1;
 	rhs.mIaoIndex = -1;
-	rhs.mDrawMode = GL_TRIANGLES;
+	rhs.mDrawMode = G2Core::DrawMode::TRIANGLES;
 	return *this;
 }
 

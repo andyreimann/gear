@@ -51,13 +51,13 @@ RenderSystem::RenderSystem() :
 	geometry[1] = glm::vec3( 1.f,-1.f,0.f);
 	geometry[2] = glm::vec3( 1.f, 1.f,0.f);
 	geometry[3] = glm::vec3(-1.f, 1.f,0.f);
-	mFullScreenQuad.writeData(G2::Semantics::POSITION, geometry);
+	mFullScreenQuad.writeData(G2Core::Semantics::POSITION, geometry);
 	glm::vec2 texCoord[4];
 	texCoord[0] = glm::vec2(0.f,0.f);
 	texCoord[1] = glm::vec2(1.f,0.f);
 	texCoord[2] = glm::vec2(1.f,1.f);
 	texCoord[3] = glm::vec2(0.f,1.f);
-	mFullScreenQuad.writeData(G2::Semantics::TEXCOORD_0, texCoord);
+	mFullScreenQuad.writeData(G2Core::Semantics::TEXCOORD_0, texCoord);
 }
 
 RenderSystem::~RenderSystem() 
@@ -181,7 +181,7 @@ RenderSystem::_renderForward(
 		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
 		// draw post processing
 		mFullScreenQuad.bind();
-		mFullScreenQuad.draw(GL_QUADS, 0);
+		mFullScreenQuad.draw(mPostProcessingEffects[i]->getShader(), G2Core::DrawMode::QUADS, 0);
 		mFullScreenQuad.unbind();
 		// unbind render target
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
@@ -222,7 +222,8 @@ RenderSystem::_renderDeferred(
 	// combine everything back using one surface shader
 	// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
 	//mShadingEffect->bind();
-	mFullScreenQuad.draw(GL_QUADS, 0);
+	//mFullScreenQuad.draw(GL_QUADS, 0);
+	assert(false);
 }
 
 void
@@ -472,7 +473,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 			}
 			else
 			{
-				vao.draw(drawCall.getDrawMode());
+				vao.draw(boundShader, drawCall.getDrawMode());
 			}
 			vao.unbind();
 		}
@@ -498,7 +499,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		}
 		else
 		{
-			vao.draw(drawCall.getDrawMode());
+			vao.draw(boundShader, drawCall.getDrawMode());
 		}
 		vao.unbind();
 	}
@@ -659,10 +660,10 @@ RenderSystem::_recalculateModelSpaceAABB(RenderComponent* component, TransformSy
 		if(drawCall.getIaoIndex() != -1)
 		{
 			IndexArrayObject& iao = component->getIndexArray(drawCall.getIaoIndex());
-			float* vertexData = vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+			float* vertexData = vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 			
 			aabb.clear();
-			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(G2Core::Semantics::POSITION) / sizeof(float);
 			unsigned int* indices = iao.getIndexPointer();
 			for(unsigned int v = 0; v < iao.getNumElements(); ++v)
 			{
@@ -676,28 +677,28 @@ RenderSystem::_recalculateModelSpaceAABB(RenderComponent* component, TransformSy
 				}
 			}
 			iao.returnIndexPointer();
-			vao.returnDataPointer(Semantics::POSITION);
+			vao.returnDataPointer(G2Core::Semantics::POSITION);
 		}
 		else
 		{
-			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(Semantics::POSITION) / sizeof(float);
+			unsigned int componentsPerPosition = vao.getNumBytesBySemantic(G2Core::Semantics::POSITION) / sizeof(float);
 			if(componentsPerPosition == 3)
 			{
-				glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				glm::vec3* vertices = (glm::vec3*)vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
 				{
 					aabb.merge(vertices[v]);
 				}
-				vao.returnDataPointer(Semantics::POSITION);
+				vao.returnDataPointer(G2Core::Semantics::POSITION);
 			}
 			else if(componentsPerPosition == 4)
 			{
-				glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(Semantics::POSITION, BufferAccessMode::READ_ONLY);
+				glm::vec4* vertices = (glm::vec4*)vao.getDataPointer(G2Core::Semantics::POSITION, G2Core::BufferAccessMode::READ_ONLY);
 				for(unsigned int v = 0; v < vao.getNumElements(); ++v)
 				{
 					aabb.merge(glm::vec3(vertices[v]));
 				}
-				vao.returnDataPointer(Semantics::POSITION);
+				vao.returnDataPointer(G2Core::Semantics::POSITION);
 			}
 		}
 		// 

@@ -46,7 +46,7 @@ namespace G2
 			 */
 			IndexArrayObject& resizeElementCount(unsigned int numElements);
 
-			unsigned int* getIndexPointer(G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
+			unsigned int* getIndexPointer(G2Core::BufferAccessMode::Name mode = G2Core::BufferAccessMode::WRITE_ONLY);
 			void returnIndexPointer();
 			
 

@@ -22,7 +22,7 @@ namespace G2
 			/// This will write all available vertices from the given vao in the given
 			/// semantic to the VertexStream.
 			/// If the VertexSteam is full, it will silently stop writing data.
-			void write(VertexArrayObject& vao, Semantics::Name semantic);
+			void write(VertexArrayObject& vao, G2Core::Semantics::Name semantic);
 			/// This will write all available triangles from the given vao.
 			/// If the VertexSteam is full, it will silently stop writing data.
 			void writeTriangles(VertexArrayObject& vao);

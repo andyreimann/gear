@@ -6,6 +6,8 @@
 #include "ShaderMetaData.h"
 #include "Pass.h"
 
+#include <G2Core/VertexInputLayout.h>
+
 namespace G2 
 {
 	class Shader;
@@ -58,7 +60,7 @@ namespace G2
 					 */
 					Effect::Builder& buildAndCompile();
 
-					static bool compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader);
+					static bool compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, G2Core::VertexInputLayout const& vertexInputLayout, std::shared_ptr<Shader> const& shader);
 			
 					std::string											shadingLanguage;	// The shading language to use.
 					std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader

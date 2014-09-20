@@ -154,8 +154,10 @@
     <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="MouseButton.h" />
     <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="VertexInputLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Defines.cpp" />
     <ClCompile Include="ECSManager.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EventDistributer.cpp" />

@@ -46,6 +46,19 @@ GfxDevice::loadFunctionPointers()
 	setShaderUniformFloat = (SetShaderUniformFloat)loadFunctionPointer("SetShaderUniformFloat");
 	setShaderUniformInt = (SetShaderUniformInt)loadFunctionPointer("SetShaderUniformInt");
 	freeGfxResource = (FreeGfxResource)loadFunctionPointer("FreeGfxResource");
+
+	// VAO
+	createVAO = (CreateVAO)loadFunctionPointer("CreateVAO");
+	updateVAOVertexBufferVec4 = (UpdateVAOVertexBufferVec4)loadFunctionPointer("UpdateVAOVertexBufferVec4");
+	updateVAOVertexBufferVec3 = (UpdateVAOVertexBufferVec3)loadFunctionPointer("UpdateVAOVertexBufferVec3");
+	updateVAOVertexBufferVec2 = (UpdateVAOVertexBufferVec2)loadFunctionPointer("UpdateVAOVertexBufferVec2");
+	bindVAO = (BindVAO)loadFunctionPointer("BindVAO");
+	unbindVAO = (UnbindVAO)loadFunctionPointer("UnbindVAO");
+	getVaoDataPointer = (GetVaoDataPointer)loadFunctionPointer("GetVaoDataPointer");
+	returnVaoDataPointer = (ReturnVaoDataPointer)loadFunctionPointer("ReturnVaoDataPointer");
+
+	// Drawing
+	drawVAO = (DrawVAO)loadFunctionPointer("DrawVAO");
 }
 
 FARPROC

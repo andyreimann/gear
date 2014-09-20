@@ -121,7 +121,7 @@ IndexArrayObject::writeIndices(unsigned int const* data, unsigned int numIndices
 		return *this;
 	}
 	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) )
-	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, G2::BufferAccessMode::WRITE_ONLY ) );
+	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, G2Core::BufferAccessMode::WRITE_ONLY ) );
 	memcpy(destination, data, bytes * numIndices);
 	GLDEBUG( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
 	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) )
@@ -177,7 +177,7 @@ IndexArrayObject::_initIAOBuffer()
 }
 
 unsigned int*
-IndexArrayObject::getIndexPointer(G2::BufferAccessMode::Name mode /*= BufferAccessMode::WRITE_ONLY*/) 
+IndexArrayObject::getIndexPointer(G2Core::BufferAccessMode::Name mode /*= BufferAccessMode::WRITE_ONLY*/) 
 {
 	if(mIndexArrayId == GL_INVALID_VALUE)
 	{

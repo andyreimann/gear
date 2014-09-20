@@ -144,13 +144,28 @@ void _compile(
 		}
 	}
 
+	G2Core::VertexInputLayout vertexInputLayout;
+
 	// create code for location bindings in vertex shader
 	for (int i = 0; i < locationBindings.size() ; ++i) 
 	{
-		vertexShaderHeader.append(locationBindings[i].getShaderCode());
+		G2Core::VertexInputElement vertexInputElement = locationBindings[i].getVertexInputElement();
+		if(vertexInputElement.semantic != G2Core::Semantics::SEMANTIC_INVALID &&
+		   vertexInputElement.format != G2Core::SemanticDataTypes::SEMANTIC_DATATYPE_INVALID)
+		{
+			vertexInputLayout.elements.push_back(vertexInputElement);
+		}
+		// TODO REMOVE!
+		if(shadingLanguage == "GLSL") 
+		{
+			vertexShaderHeader.append(locationBindings[i].getShaderCode());
+			vertexShaderHeader.append("\n");
+		}
+	}
+	if(shadingLanguage == "GLSL") 
+	{
 		vertexShaderHeader.append("\n");
 	}
-	vertexShaderHeader.append("\n");
 	
 	// create code for properties/uniforms in vertex shader
 	for (int i = 0; i < properties.size() ; ++i) 
@@ -283,7 +298,7 @@ void _compile(
 		//logger << "[Effect::Builder] -> FragmentShaderCode:\n" << fragmentShaderCode;
 		
 		auto shader = std::shared_ptr<Shader>(new Shader());
-		if(Effect::Builder::compileAndApplyMetaData(shadingLanguage,vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, shader))
+		if(Effect::Builder::compileAndApplyMetaData(shadingLanguage,vertexShaderCode, geometryShaderCode, fragmentShaderCode, shaderMetaData, vertexInputLayout, shader))
 		{
 			// attach a list of conditions
 			// to the shader, which are used for the decision making process
@@ -294,9 +309,9 @@ void _compile(
 }
 
 bool
-Effect::Builder::compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, std::shared_ptr<Shader> const& shader) 
+Effect::Builder::compileAndApplyMetaData(std::string const& shadingLanguage, std::string const& vertexShaderCode, std::string const& geometryShaderCode, std::string const& fragmentShaderCode, ShaderMetaData const& shaderMetaData, G2Core::VertexInputLayout const& vertexInputLayout, std::shared_ptr<Shader> const& shader) 
 {
-	bool compiled = shader->compile(shadingLanguage, vertexShaderCode,geometryShaderCode,fragmentShaderCode);
+	bool compiled = shader->compile(shadingLanguage, vertexShaderCode,geometryShaderCode,fragmentShaderCode,vertexInputLayout);
 	if(compiled)
 	{
 		// preset samplers and uniforms

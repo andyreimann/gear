@@ -14,6 +14,8 @@ namespace G2GL
 		INVALID_RESOURCE = 0,
 		GLSL_SHADER,
 		CG_SHADER,
+		VAO,
+		VBO,
 	};
 	struct GlResource : G2Core::GfxResource
 	{
@@ -136,6 +138,49 @@ namespace G2GL
 		int			fragmentShaderId;	// The fragment shader id
 		int			programId;			// The program id
 		std::unordered_map<std::string,int> uniformCache; // The cache of all uniform locations
+	};
+
+	struct VertexBufferObjectResource : GlResource
+	{
+		VertexBufferObjectResource(unsigned int vboId) 
+			: vboId(vboId), 
+			GlResource(G2GL::VBO) {}
+
+		~VertexBufferObjectResource()
+		{
+			if(vboId != GL_INVALID_VALUE)
+			{
+				GLCHECK( glDeleteBuffers(1, &vboId) );
+			}
+		}
+
+		unsigned int vboId;
+	};
+
+	struct VertexArrayObjectResource : GlResource
+	{
+		VertexArrayObjectResource(unsigned int vaoId) 
+			: vaoId(vaoId), 
+			GlResource(G2GL::VAO) {}
+
+		~VertexArrayObjectResource()
+		{
+			for(auto it = vbos.begin(); it != vbos.end(); ++it)
+			{
+				if(it->second != nullptr)
+				{
+					delete it->second;
+				}
+			}
+			if(vaoId != GL_INVALID_VALUE)
+			{
+				GLCHECK( glDeleteVertexArrays(1, &vaoId) );
+			}
+		}
+
+		unsigned int vaoId;
+		std::unordered_map<G2Core::Semantics::Name,VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
+
 	};
 
 };

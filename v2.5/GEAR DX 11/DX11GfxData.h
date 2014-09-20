@@ -6,6 +6,7 @@
 #include <G2Core/GfxDevice.h>
 
 #include <unordered_map>
+#include <vector>
 
 namespace G2DX11
 {
@@ -21,6 +22,14 @@ namespace G2DX11
 		Type type;
 	};
 
+	struct InputLayoutShaderFragment
+	{
+		// This struct holds all data for the final InputLayout 
+		// Which is known at the shader compilation time
+		std::vector<G2Core::Semantics::Name> semantics; // All semantics this shader requests
+		std::vector<LPCSTR> semanticNames;			// All semantics this shader requests in the requested string format
+	};
+
 	typedef void (*BindShader)(G2Core::GfxResource const* shaderResource);
 	typedef void (*SetShaderUniformMat4)(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat4 const& value);
 	typedef void (*SetShaderUniformMat3)(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat3 const& value);
@@ -33,7 +42,10 @@ namespace G2DX11
 
 	struct ShaderResource : DX11Resource
 	{
-		ShaderResource(Type type) : DX11Resource(type) {}
+		ShaderResource(Type type,ID3D10Blob* vertexShaderBlob, InputLayoutShaderFragment const& inputLayoutShaderFragment) 
+			: DX11Resource(type),
+			vertexShaderBlob(vertexShaderBlob),
+			inputLayoutShaderFragment(inputLayoutShaderFragment) {}
 
 		BindShader bindShader;
 		SetShaderUniformMat4 setShaderUniformMat4;
@@ -44,15 +56,18 @@ namespace G2DX11
 		SetShaderUniformFloat setShaderUniformFloat;
 		SetShaderUniformInt setShaderUniformInt;
 		FreeGfxResource freeGfxResource;
+
+		ID3D10Blob* vertexShaderBlob;
+		InputLayoutShaderFragment inputLayoutShaderFragment;
 	};
 
 	struct CgShaderResource : ShaderResource
 	{
-		CgShaderResource()
+		CgShaderResource(ID3D10Blob* vertexShaderBlob, InputLayoutShaderFragment const& inputLayoutShaderFragment)
 			: vertexShaderId(nullptr),
 			geometryShaderId(nullptr),
 			fragmentShaderId(nullptr),
-			ShaderResource(G2DX11::CG_SHADER) {}
+			ShaderResource(G2DX11::CG_SHADER,vertexShaderBlob, inputLayoutShaderFragment) {}
 		~CgShaderResource()
 		{
 			cgDestroyProgram(vertexShaderId);

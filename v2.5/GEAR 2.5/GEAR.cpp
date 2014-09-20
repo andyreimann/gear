@@ -133,6 +133,6 @@ G2_loop(AbstractWindow& window)
 void
 G2_shutdown() 
 {
-	G2_gfxDeviceDestroy();
 	ECSManager::destroy();
+	G2_gfxDeviceDestroy();
 }

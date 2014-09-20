@@ -62,7 +62,7 @@ namespace G2
 			 * @param vertexSemantic The semantics to interpret as vertex positions.
 			 * @param texCoordsSemantic The semantics to interpret as texture coordinates.
 			 */
-			void calculateBinormalsAndTangents(Semantics::Name vertexSemantic = Semantics::POSITION, Semantics::Name texCoordsSemantic = Semantics::TEXCOORD_0);
+			void calculateBinormalsAndTangents(G2Core::Semantics::Name vertexSemantic = G2Core::Semantics::POSITION, G2Core::Semantics::Name texCoordsSemantic = G2Core::Semantics::TEXCOORD_0);
 			/** This function will allocate the given number of VertexArrayObjects for the RenderComponent.
 			 * If the given number is smaller than the current amount, some or all vertex array objects may be deleted.
 			 * @param numVertexArrayObjects The number of vertex array objects to allocate.

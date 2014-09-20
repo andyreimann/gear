@@ -1,6 +1,8 @@
 #pragma once
 #include "AABB.h"
 
+#include <G2Core/Defines.h>
+
 namespace G2 
 {
 
@@ -62,7 +64,7 @@ namespace G2
 			/** Updates the draw mode to use when invoking this DrawCall.
 			 * @param drawMode The new draw mode to use.
 			 */
-			DrawCall& setDrawMode(unsigned int drawMode) { mDrawMode = drawMode; return *this; }
+			DrawCall& setDrawMode(G2Core::DrawMode::Name drawMode) { mDrawMode = drawMode; return *this; }
 			/** Enables this DrawCall.
 			 */
 			DrawCall& enable() { mEnabled = true; return *this; }
@@ -108,10 +110,10 @@ namespace G2
 			 * @return The ID of the Entity this DrawCall is attached to or Entity::UNINITIALIZED_ENTITY_ID if the DrawCall is not attached to any Entity.
 			 */
 			unsigned int getEntityId() const { return mEntityId; }
-			/** Returns the OpenGL draw mode to use when invoking this DrawCall.
-			 * @return The OpenGL draw mode to use when invoking this DrawCall.
+			/** Returns the draw mode to use when invoking this DrawCall.
+			 * @return The draw mode to use when invoking this DrawCall.
 			 */
-			unsigned int getDrawMode() const { return mDrawMode; }
+			G2Core::DrawMode::Name getDrawMode() const { return mDrawMode; }
 			/** Returns whether the DrawCall was frustum culled from the last frustum culling check.
 			 * @return True if the DrawCall was frustum culled from the last frustum culling check, false if not.
 			 */
@@ -135,7 +137,7 @@ namespace G2
 			int                 mVaoIndex;              // The index of the VertexArrayObject, this draw call references
 			int                 mIaoIndex;				// The index of the IndexArrayObject, this draw call references or -1, if it does not reference any IndexBufferObject
 			unsigned int        mEntityId;              // The Entity-ID the DrawCall is attached to - filled in automatically when adding a draw call to a RenderComponent
-			unsigned int		mDrawMode;				// The OpenGL draw mode to use when rendering
+			G2Core::DrawMode::Name	mDrawMode;				// The draw mode to use when rendering
 			bool				mWasFrustumCulled;		// Set from the engine while rendering and indicating whether this DrawCall was culled by the frustum in the last frame, this DrawCall was rendered.
 	};
 };

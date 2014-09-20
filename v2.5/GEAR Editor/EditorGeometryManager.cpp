@@ -82,10 +82,10 @@ EditorGeometryManager::_setAsSelected(unsigned int entityId)
 		geometry[22] = center + glm::vec3( he.x, he.y,-he.z);
 		geometry[23] = center + glm::vec3( he.x,-he.y,-he.z);
 		
-		vao.writeData(G2::Semantics::POSITION, geometry);
+		vao.writeData(G2Core::Semantics::POSITION, geometry);
 
 		aabbVis->addDrawCall(G2::DrawCall()
-			.setDrawMode(GL_LINES)
+			.setDrawMode(G2Core::DrawMode::LINES)
 			.setEnabled(true)
 			.setAABBCalculationMode(MANUAL)
 			.setVaoIndex(i)
@@ -163,11 +163,11 @@ EditorGeometryManager::_onRenderFrame(G2::FrameInfo const& frameInfo)
 				geometry[30] = points[3];
 				geometry[31] = points[0];
 
-				vao.writeData(G2::Semantics::POSITION, geometry);
+				vao.writeData(G2Core::Semantics::POSITION, geometry);
 
 				
 				renderComponent->addDrawCall(G2::DrawCall()
-					.setDrawMode(GL_LINES)
+					.setDrawMode(G2Core::DrawMode::LINES)
 					.setEnabled(true)
 					.setAABBCalculationMode(AUTOMATIC)
 					.setVaoIndex(0)

@@ -5,6 +5,8 @@
 #include "RefCounter.h"
 #include "VersionTracker.h"
 
+#include <G2Core/Defines.h>
+
 #include <glm/glm.hpp>
 #include <memory>
 #include <array>
@@ -12,41 +14,7 @@
 
 namespace G2
 {
-	namespace Semantics {
-		enum Name {
-			POSITION = 0,
-			BLENDWEIGHT,
-			NORMAL,
-			COLOR_0,
-			COLOR_1,
-			FOGCOORD,
-			PSIZE,
-			BLENDINDICES,
-			TEXCOORD_0,
-			TEXCOORD_1,
-			TEXCOORD_2,
-			TEXCOORD_3,
-			TEXCOORD_4,
-			TEXCOORD_5,
-			BINORMAL,
-			TANGENT,
-			NUM_SEMANTICS,
-			SEMANTIC_INVALID
-		};
-		/** This function will parse the given string to the appropriate
-		 * Semantic enum value.
-		 * @param name The name to parse.
-		 * @return The parsed Semantic enum value.
-		 */
-		Semantics::Name getSemantic(std::string const& name);
-	}
-	namespace BufferAccessMode {
-		enum Name {
-			READ_ONLY = GL_READ_ONLY,
-			WRITE_ONLY = GL_WRITE_ONLY,
-			READ_WRITE = GL_READ_WRITE,
-		};
-	}
+	class Shader;
 	/** This class defines a VertexArrayObject, combining buffers for 
 	 * vertices, normals and user defined data.
 	 * @created:	2014/01/22
@@ -94,13 +62,13 @@ namespace G2
 			 */
 			VertexArrayObject& resizeElementCount(unsigned int numElements);
 			
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec2 const* data, int numElements = -1);
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec3 const* data, int numElements = -1);
-			VertexArrayObject& writeData(Semantics::Name semantic, glm::vec4 const* data, int numElements = -1);
+			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec2 const* data, int numElements = -1);
+			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec3 const* data, int numElements = -1);
+			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements = -1);
 
 			
-			float* getDataPointer(Semantics::Name semantic, G2::BufferAccessMode::Name mode = BufferAccessMode::WRITE_ONLY);
-			void returnDataPointer(Semantics::Name semantic);
+			float* getDataPointer(G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode = G2Core::BufferAccessMode::WRITE_ONLY);
+			void returnDataPointer(G2Core::Semantics::Name semantic);
 
 			/** This function will return the NumElements. 
 			* @return The current NumElements.
@@ -110,13 +78,13 @@ namespace G2
 			 * @note If the semantic is not used in the VertexArrayObject, 0 is returned.
 			 * @return The number of bytes used by one value in the given semantic.
 			 */
-			unsigned int getNumBytesBySemantic(Semantics::Name semantic) const;
+			unsigned int getNumBytesBySemantic(G2Core::Semantics::Name semantic) const;
 
 			void bind();
 			/** Draws the VertexArrayObject with the given OpenGL draw mode.
-			 * @param glDrawMode The OpenGL draw mode to use.
+			 * @param drawMode The draw mode to use.
 			 */
-			void draw(int glDrawMode, int numVertices = -1);
+			void draw(std::shared_ptr<G2::Shader> boundShader, G2Core::DrawMode::Name drawMode, int numVertices = -1);
 			void unbind();
 
 			~VertexArrayObject();
@@ -125,14 +93,11 @@ namespace G2
 			void _initVAOBuffer();
 			void _deleteBuffers();
 			
-			bool			mBound;					// Flag if the VertexArrayObject is bound or not.
 			unsigned int	mNumElements;			// The number of elements the VertexArrayObject manages
 			unsigned int	mMaxNumElements;		// The maximum number of elements the VertexArrayObject can manage
 
-			unsigned int	mVertexArrayId;			// The ID of the OpenGL VertexArrayObject
-
-			std::array<unsigned int,Semantics::NUM_SEMANTICS> mBufferIds; // The IDs for the available semantics
-			std::array<unsigned int,Semantics::NUM_SEMANTICS> mBytesPerSemantic; // The number of bytes, the semantic has allocated
+			G2Core::GfxResource* mVertexArrayResource; // The resource handle in the GfxContext
+			std::array<unsigned int,G2Core::Semantics::NUM_SEMANTICS> mBytesPerSemantic; // The number of bytes, the semantic has allocated
 			std::shared_ptr<RefCounter<int>>		mReferenceCounter; // A reference counter if this instance is shared by copies
 	};
 };

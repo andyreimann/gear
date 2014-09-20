@@ -1,5 +1,6 @@
 #pragma once
 #include "Defines.h"
+#include "VertexInputLayout.h"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -20,7 +21,7 @@ namespace G2
 	typedef void (*ClearBuffers)(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
 
 	// Shader
-	typedef G2Core::GfxResource* (*CompileShader)(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
+	typedef G2Core::GfxResource* (*CompileShader)(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
 	typedef void (*BindShader)(G2Core::GfxResource const* shaderResource);
 	typedef void (*SetShaderUniformMat4)(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat4 const& value);
 	typedef void (*SetShaderUniformMat3)(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat3 const& value);
@@ -30,6 +31,21 @@ namespace G2
 	typedef void (*SetShaderUniformFloat)(G2Core::GfxResource* shaderResource, std::string const& property, float value);
 	typedef void (*SetShaderUniformInt)(G2Core::GfxResource* shaderResource, std::string const& property, int value);
 	typedef void (*FreeGfxResource)(G2Core::GfxResource* shaderResource);
+
+	// VAO
+	typedef G2Core::GfxResource* (*CreateVAO)();
+	typedef void (*UpdateVAOVertexBufferVec4)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements);
+	typedef void (*UpdateVAOVertexBufferVec3)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec3 const* data, int numElements);
+	typedef void (*UpdateVAOVertexBufferVec2)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec2 const* data, int numElements);
+	typedef void (*BindVAO)(G2Core::GfxResource* vao);
+	typedef void (*UnbindVAO)(G2Core::GfxResource* vao);
+	typedef void* (*GetVaoDataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode);
+	typedef void (*ReturnVaoDataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic);
+	
+	
+	// Drawing
+	typedef void (*DrawVAO)(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader, G2Core::DrawMode::Name drawMode, int numVertices);
+	
 
 	/** This class declares the interface of a graphics device.
 	 * @created:	2014/09/11
@@ -65,6 +81,19 @@ namespace G2
 			SetShaderUniformFloat setShaderUniformFloat;
 			SetShaderUniformInt setShaderUniformInt;
 			FreeGfxResource freeGfxResource;
+
+			// VAO
+			CreateVAO createVAO;
+			UpdateVAOVertexBufferVec4 updateVAOVertexBufferVec4;
+			UpdateVAOVertexBufferVec3 updateVAOVertexBufferVec3;
+			UpdateVAOVertexBufferVec2 updateVAOVertexBufferVec2;
+			BindVAO bindVAO;
+			UnbindVAO unbindVAO;
+			GetVaoDataPointer getVaoDataPointer;
+			ReturnVaoDataPointer returnVaoDataPointer;
+
+			// Drawing
+			DrawVAO drawVAO;
 
 			// END GFX LIB FUNCTION POINTERS
 		private:

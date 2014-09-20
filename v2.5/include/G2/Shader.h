@@ -10,6 +10,7 @@
 
 #include <glm/glm.hpp>
 #include <G2Core/Defines.h>
+#include <G2Core/VertexInputLayout.h>
 
 namespace G2 
 {
@@ -21,6 +22,7 @@ namespace G2
 	 */
 	class Shader 
 	{
+		friend class VertexArrayObject;
 		friend struct Effect::Builder; // only the UberShader is able to set and compile Shaders
 
 		public:
@@ -95,10 +97,12 @@ namespace G2
 			 * @param vertexCode The Vertex-Shader code to use
 			 * @param geometryCode The Geometry-Shader code to use or an empty string if no geometry shader should be used.
 			 * @param fragmentCode The Fragment-Shader code to use
+			 * @param VertexInputLayout The Vertex input layout of the shader.
 			 * @return True if the Shader compiled successfully, false if not.
 			 */
-			bool compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
+			bool compile(std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode, G2Core::VertexInputLayout const& vertexInputLayout);
 
+			G2Core::VertexInputLayout	mVertexInputLayout;
 			G2Core::GfxResource*		mGfxHandle;		// The shader handle in the gfx device
 			bool						mCompiled;		// True if the Shader is compiled, false if not.
 			std::vector<MacroCondition>	mConditions;	// The conditions to pass to use this Shader 

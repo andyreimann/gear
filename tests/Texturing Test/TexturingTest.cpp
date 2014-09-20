@@ -177,14 +177,14 @@ TexturingTest::createTexturedPlane(glm::vec3 const& center, float width, float h
 	planeGeometry[2] = center + glm::vec3(width,0.f,height);
 	planeGeometry[3] = center + glm::vec3(-width,0.f,height);
 
-	vao.writeData(G2::Semantics::POSITION, planeGeometry);
+	vao.writeData(G2Core::Semantics::POSITION, planeGeometry);
 
 	glm::vec2 tex[4];
 	tex[0] = glm::vec2(0.f,0.f);
 	tex[1] = glm::vec2(1.f,0.f);
 	tex[2] = glm::vec2(1.f,1.f);
 	tex[3] = glm::vec2(0.f,1.f);
-	vao.writeData(G2::Semantics::TEXCOORD_0, tex);
+	vao.writeData(G2Core::Semantics::TEXCOORD_0, tex);
 
 	// build indices
 	G2::IndexArrayObject& iao = plane->getIndexArray(0);

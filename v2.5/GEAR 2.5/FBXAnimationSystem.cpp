@@ -358,7 +358,7 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 	const bool lHasSkin = lMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
 	const bool lHasDeformation = lHasVertexCache || lHasShape || lHasSkin;
 	// check if this instance has imported normal vectors
-	bool hasNormals = component->getVertexArray(metaData->vaoOffset).getNumBytesBySemantic(Semantics::NORMAL) > 0u;
+	bool hasNormals = component->getVertexArray(metaData->vaoOffset).getNumBytesBySemantic(G2Core::Semantics::NORMAL) > 0u;
 	
 	FbxVector4* lVertexArray = nullptr;
 	FbxArray<FbxVector4>* lNormalArray = nullptr;
@@ -554,10 +554,10 @@ FBXAnimationSystem::_updateVertexPosition(const FbxMesh * pMesh,
 		}
 	}
 
-	component->getVertexArray(metaData->vaoOffset).writeData(Semantics::POSITION, &metaData->vertexCache[0]);
+	component->getVertexArray(metaData->vaoOffset).writeData(G2Core::Semantics::POSITION, &metaData->vertexCache[0]);
 	if(pNormals != nullptr)
 	{
-		component->getVertexArray(metaData->vaoOffset).writeData(Semantics::NORMAL, &metaData->normalCache[0]);
+		component->getVertexArray(metaData->vaoOffset).writeData(G2Core::Semantics::NORMAL, &metaData->normalCache[0]);
 	}
 }
 

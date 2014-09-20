@@ -3,6 +3,8 @@
 #pragma once
 #include "VertexArrayObject.h"
 
+#include <G2Core/VertexInputLayout.h>
+
 #include <string>
 
 namespace G2 
@@ -24,17 +26,26 @@ namespace G2
 			 * @param niceName The human readable name of the location binding variable (not used in final shader code)
 			 * @param dataType The datatype of the location binding.
 			 */
-			LocationBinding(Semantics::Name semantic, std::string const& name, std::string const& niceName, std::string const& dataType);
+			LocationBinding(G2Core::Semantics::Name semantic, std::string const& name, std::string const& niceName, std::string const& dataType);
 			/** This function will return the shader code produced by this LocationBinding object.
 			 * @return The shader code produced by this LocationBinding object.
 			 */
 			std::string const& getShaderCode() const { return mShaderCode; };
+			/** Calculates the VertexInputElement of this LocationBinding object.
+			 * This is always needed when rendering a VertexBuffer together with a Shader.
+			 @return The VertexInputElement of this LocationBinding object.
+			 */
+			G2Core::VertexInputElement getVertexInputElement() const;
+
+			/** Calculates the G2Core::SemanticDataTypes::Name object by the give LocationBinding datatype.
+			 */
+			static G2Core::SemanticDataTypes::Name getSemanticDataTypeByLocationBindingDataType(std::string const& locationBindingDataType);
 		private:
 
-			Semantics::Name mSemantic;		// The location of the location binding
-			std::string		mName;			// The name of the location binding variable
-			std::string		mNiceName;		// The human readable name of the location binding variable (not used in final shader code)
-			std::string		mDataType;		// The datatype of the location binding
-			std::string		mShaderCode;	// The shader code produced by this LocationBinding object
+			G2Core::Semantics::Name mSemantic;	// The location of the location binding
+			std::string		mName;				// The name of the location binding variable
+			std::string		mNiceName;			// The human readable name of the location binding variable (not used in final shader code)
+			std::string		mDataType;			// The datatype of the location binding
+			std::string		mShaderCode;		// The shader code produced by this LocationBinding object
 	};
 };

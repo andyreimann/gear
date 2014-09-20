@@ -37,8 +37,8 @@ ClipmapTerrain::setup(std::shared_ptr<G2::Texture> const& heightMap, std::shared
 			texCoord.t = y / (float)mHeightMap->getHeight();
 		}
 	}
-	mVertexArray.writeData(G2::Semantics::POSITION, &geometry[0]);
-	mVertexArray.writeData(G2::Semantics::TEXCOORD_0, &texCoords[0]);
+	mVertexArray.writeData(G2Core::Semantics::POSITION, &geometry[0]);
+	mVertexArray.writeData(G2Core::Semantics::TEXCOORD_0, &texCoords[0]);
 
 	// create the index buffer for the viewport mesh in the middle (8x8 Block)
 	int size = 2 * mClipmapWidth + 1;
