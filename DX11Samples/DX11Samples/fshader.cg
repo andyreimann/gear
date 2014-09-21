@@ -1,0 +1,18 @@
+// Vertex to Fragment Shader Data
+struct V2FData
+{
+	float4 position : POSITION;
+	float4 color : COLOR;
+};
+
+struct Data 
+{
+	float4 color : COLOR;
+};
+
+Data main(V2FData dataIn)
+{
+	Data dataOut;
+	dataOut.color = dataIn.color;
+	return dataOut;
+}
