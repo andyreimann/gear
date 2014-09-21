@@ -72,7 +72,7 @@ namespace G2
 			std::shared_ptr<Texture>	mRenderTexture;			// The texture to render to
 			RenderTargetType::Name		mRenderTargetType;		// The type of render target
 			FrameBuffer					mFrameBuffer;			// The framebuffer, the render texture is attached to
-			BufferAttachment::Name		mRenderTargetAttachmentPoint; // The attachment point, the Texture is attached to the FrameBuffer
+			G2Core::FrameBufferAttachmentPoint::Name mRenderTargetAttachmentPoint; // The attachment point, the Texture is attached to the FrameBuffer
 			int							mNumCascades;			// The number of cascades, the render texture has
 			
 			glm::vec4					mClearColor;

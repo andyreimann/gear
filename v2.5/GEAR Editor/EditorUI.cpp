@@ -152,11 +152,11 @@ EditorUI::_onWireframeModeChanged(const CEGUI::EventArgs &e)
 	{
 		if(mWireframeModeToggle->isSelected())
 		{
-			renderComp->setPolygonDrawMode(G2::PolygonDrawMode::LINE);
+			renderComp->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
 		}
 		else
 		{
-			renderComp->setPolygonDrawMode(G2::PolygonDrawMode::FILL);
+			renderComp->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
 		}
 	}
 	return true;
@@ -169,7 +169,7 @@ EditorUI::_updateProperties(unsigned int entityId)
 	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()->get(mSelectedEntityId);
 	if(renderComp != nullptr)
 	{
-		mWireframeModeToggle->setSelected(renderComp->getPolygonDrawMode() == G2::PolygonDrawMode::LINE);
+		mWireframeModeToggle->setSelected(renderComp->getPolygonDrawMode() == G2Core::PolygonDrawMode::LINE);
 	}
 	else
 	{

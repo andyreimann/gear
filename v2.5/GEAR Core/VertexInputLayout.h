@@ -7,11 +7,11 @@ namespace G2Core
 {
 	struct VertexInputElement
 	{
-		Semantics::Name semantic;
-		//unsigned int semanticIndex;
-		SemanticDataTypes::Name format;
-		//unsigned int inputSlot;
-		//unsigned int alignedByteOffset;
+		Semantics::Name semantic;		// defined by shader
+		unsigned int semanticIndex;		// defined by vertex array
+		SemanticDataTypes::Name format; // defined by vertex array
+		unsigned int inputSlot;			// defined by vertex array
+		unsigned int alignedByteOffset; // defined by vertex array
 	};
 
 	struct VertexInputLayout

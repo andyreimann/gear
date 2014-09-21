@@ -135,7 +135,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec2 const* 
 	_initVAOBuffer();
 	if(mBytesPerSemantic[semantic] == 0)
 	{
-		bind();
+		bind(std::shared_ptr<G2::Shader>());
 		G2_gfxDevice()->updateVAOVertexBufferVec2(mVertexArrayResource, semantic, data, numElementsToTransfer);
 		unbind();
 		// a new semantic was added
@@ -159,7 +159,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec3 const* 
 	_initVAOBuffer();
 	if(mBytesPerSemantic[semantic] == 0)
 	{
-		bind();
+		bind(std::shared_ptr<G2::Shader>());
 		G2_gfxDevice()->updateVAOVertexBufferVec3(mVertexArrayResource, semantic, data, numElementsToTransfer);
 		unbind();
 		// a new semantic was added
@@ -183,7 +183,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec4 const* 
 	_initVAOBuffer();
 	if(mBytesPerSemantic[semantic] == 0)
 	{
-		bind();
+		bind(std::shared_ptr<G2::Shader>());
 		G2_gfxDevice()->updateVAOVertexBufferVec4(mVertexArrayResource, semantic, data, numElementsToTransfer);
 		unbind();
 		// a new semantic was added
@@ -198,19 +198,19 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec4 const* 
 float*
 VertexArrayObject::getDataPointer(G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode) 
 {
-	return (float*)G2_gfxDevice()->getVaoDataPointer(mVertexArrayResource, semantic, mode);
+	return (float*)G2_gfxDevice()->getVAODataPointer(mVertexArrayResource, semantic, mode);
 }
 
 void
 VertexArrayObject::returnDataPointer(G2Core::Semantics::Name semantic) 
 {
-	G2_gfxDevice()->returnVaoDataPointer(mVertexArrayResource, semantic);
+	G2_gfxDevice()->returnVAODataPointer(mVertexArrayResource, semantic);
 }
 
 void
-VertexArrayObject::bind() 
+VertexArrayObject::bind(std::shared_ptr<G2::Shader> boundShader) 
 {
-	G2_gfxDevice()->bindVAO(mVertexArrayResource);
+	G2_gfxDevice()->bindVAO(mVertexArrayResource, boundShader.get() == nullptr ? nullptr : boundShader->mGfxHandle);
 }
 
 void
@@ -220,9 +220,9 @@ VertexArrayObject::unbind()
 }
 
 void
-VertexArrayObject::draw(std::shared_ptr<G2::Shader> boundShader, G2Core::DrawMode::Name drawMode, int numVertices) 
+VertexArrayObject::draw(G2Core::DrawMode::Name drawMode, int numVertices) 
 {
-	G2_gfxDevice()->drawVAO(mVertexArrayResource, boundShader->mGfxHandle, drawMode, numVertices == -1 ? mNumElements : numVertices);
+	G2_gfxDevice()->drawVAO(mVertexArrayResource, drawMode, numVertices == -1 ? mNumElements : numVertices);
 }
 
 void

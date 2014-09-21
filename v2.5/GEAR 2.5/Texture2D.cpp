@@ -2,64 +2,38 @@
 // (c) 2014 GEAR 2.5
 #include "Texture2D.h"
 
+#include <G2Core/GfxDevice.h>
+
 #include <IL/il.h>
 
 using namespace G2;
 
-Texture2D::Texture2D(unsigned int minFilter, 
-					 unsigned int magFilter, 
+Texture2D::Texture2D(G2Core::FilterMode::Name minFilter, 
+					 G2Core::FilterMode::Name magFilter, 
 					 unsigned int width,
 					 unsigned int height,
-					 unsigned int format,
-					 int internalFormat,
-					 WrapMode::Name wrapS,
-					 WrapMode::Name wrapT,
+					 G2Core::DataFormat::Name format,
+					 G2Core::DataFormat::Name internalFormat,
+					 G2Core::WrapMode::Name wrapS,
+					 G2Core::WrapMode::Name wrapT,
 					 bool compress,
 					 unsigned char * data)
-	: Texture(GL_TEXTURE_2D),
-	mMinFilter(minFilter),
-	mMagFilter(magFilter),
-	mUseMipMaps(mipMapsRequested(minFilter,magFilter)),
+	: Texture(G2Core::TextureFormat::TEXTURE_2D, internalFormat, minFilter, magFilter),
 	mWidth(width),
 	mHeight(height),
-	mChannels(internalFormat == -1 ? numChannelsFromFormat(format) : numChannelsFromFormat(internalFormat)),
+	mChannels(internalFormat == G2Core::DataFormat::UNKNOWN ? numChannelsFromFormat(format) : numChannelsFromFormat(internalFormat)),
 	mCompressed(compress),
 	mBytes(0)
 {
 	init();
 
-	if(isCompressedFormat(internalFormat))
-	{
-		mCompressed = true; // if user gives an already compressed format, adjust compressed flag
-	}
-
-	mWrapModeS = wrapS;
-	mWrapModeT = wrapT;
-	//checkFilter(mMinFilter, mMagFilter);
-	GLDEBUG( glGenTextures(1, &mId) );
-	GLDEBUG( glBindTexture(mType, mId) );
-	GLDEBUG( glTexImage2D(
-		mType, 
-		0, 
-		internalFormat == -1 ? baseFormatToCompressedFormat(format, mCompressed) : baseFormatToCompressedFormat(internalFormat, mCompressed), 
-		mWidth, 
-		mHeight, 
-		0, 
-		format, 
-		GL_UNSIGNED_BYTE, 
-		data) );
-	if(mUseMipMaps)
-	{
-		GLDEBUG( glGenerateMipmap(GL_TEXTURE_2D) ); // generates mipmaps now!
-	}
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_S, mWrapModeS) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_WRAP_T, mWrapModeT) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, mMinFilter) );
-	GLDEBUG( glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, mMagFilter) );
-	
-	GLint compFlag;
-	GLDEBUG( glGetTexLevelParameteriv(mType, 0, GL_TEXTURE_COMPRESSED, &compFlag) );
-	GLDEBUG( glBindTexture(mType, 0) );
+	mTexResource = G2_gfxDevice()->createTexture2D(
+		mWidth, mHeight,
+		format,internalFormat == G2Core::DataFormat::UNKNOWN ? format : internalFormat,
+		mMinFilter,mMagFilter,
+		wrapS,wrapT,
+		data
+	);
 }
 
 Texture2D::Texture2D(Texture2D && rhs) 
@@ -70,15 +44,12 @@ Texture2D::Texture2D(Texture2D && rhs)
 
 Texture2D& Texture2D::operator=(Texture2D && rhs) 
 {
-	mMinFilter = rhs.mMinFilter;
-	mMagFilter = rhs.mMagFilter;
 	mWidth = rhs.mWidth;
 	mHeight = rhs.mHeight;
 	mChannels = rhs.mChannels;
 	mBytes = rhs.mBytes;
 	mTextureMatrix = std::move(rhs.mTextureMatrix);
 	mCompressed = rhs.mCompressed;
-	mUseMipMaps = rhs.mUseMipMaps;
 	
 	return static_cast<Texture2D&>(Texture::operator=(std::move(rhs)));
 }
@@ -92,19 +63,18 @@ Texture2D::init()
 	if(!gInitialized) 
 	{
 		ilInit();
-		glEnable(GL_TEXTURE_2D);
 		gInitialized = true;
 	}
 }
 
 std::shared_ptr<Texture2D>
 Texture2D::Builder::buildResource(
-	unsigned minFilter, 
-	unsigned magFilter, 
+	G2Core::FilterMode::Name minFilter, 
+	G2Core::FilterMode::Name magFilter, 
 	bool compress,
-	WrapMode::Name wrapS, 
-	WrapMode::Name wrapT,
-	int internalFormat) 
+	G2Core::WrapMode::Name wrapS, 
+	G2Core::WrapMode::Name wrapT,
+	G2Core::DataFormat::Name internalFormat) 
 {
 	ilBindImage(id);		// bind ID as current Texture
 
@@ -116,8 +86,20 @@ Texture2D::Builder::buildResource(
 	unsigned width		= ilGetInteger( IL_IMAGE_WIDTH );
 	unsigned height		= ilGetInteger( IL_IMAGE_HEIGHT );	
 	unsigned format		= ilGetInteger( IL_IMAGE_FORMAT );
+
+	G2Core::DataFormat::Name parsedFormat = G2Core::DataFormat::UNKNOWN;
+	switch(format)
+	{
+		case IL_RGB:			parsedFormat = G2Core::DataFormat::RGB; break;
+		case IL_RGBA:			parsedFormat = G2Core::DataFormat::RGBA; break;
+		case IL_LUMINANCE:			parsedFormat = G2Core::DataFormat::LUMINANCE; break;
+		case IL_BGR:			parsedFormat = G2Core::DataFormat::BGR; break;
+		case IL_BGRA:			parsedFormat = G2Core::DataFormat::BGRA; break;
+	}
+	assert(parsedFormat != G2Core::DataFormat::UNKNOWN);
+
 	// build texture
-	std::shared_ptr<Texture2D> tex(new Texture2D(minFilter, magFilter, width, height, format, internalFormat, wrapS, wrapT, compress, data));
+	std::shared_ptr<Texture2D> tex(new Texture2D(minFilter, magFilter, width, height, parsedFormat, internalFormat, wrapS, wrapT, compress, data));
 	ilBindImage(0);
 	return tex;
 }

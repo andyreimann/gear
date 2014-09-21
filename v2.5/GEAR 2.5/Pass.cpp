@@ -20,21 +20,21 @@ Pass::Pass(
 				  // TODO implement case RT_1D here as well!
 				  renderTargetType == RenderTargetType::RT_2D ?
 					  std::shared_ptr<Texture>(new Texture2D(
-							NEAREST, 
-							NEAREST, 
+							G2Core::FilterMode::NEAREST, 
+							G2Core::FilterMode::NEAREST, 
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
-							-1,
-							WrapMode::getWrapMode(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
-							WrapMode::getWrapMode(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value), 
+							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
+							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
+							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value), 
 							false,
 							nullptr))
 				  : (
 					  renderTargetType == RenderTargetType::RT_2D_ARRAY ?
 						  std::shared_ptr<Texture>(new TextureArray(
-								NEAREST, 
-								NEAREST, 
+								G2Core::FilterMode::NEAREST, 
+								G2Core::FilterMode::NEAREST, 
 								(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 								(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 								(unsigned)Setting::get("RenderTargetDepth", mSettings, "2").toInt(), 
@@ -44,8 +44,8 @@ Pass::Pass(
 					  : (
 					  // RT_CUBE
 					  std::shared_ptr<Texture>(new TextureCube(
-							NEAREST, 
-							NEAREST, 
+							G2Core::FilterMode::NEAREST, 
+							G2Core::FilterMode::NEAREST, 
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 

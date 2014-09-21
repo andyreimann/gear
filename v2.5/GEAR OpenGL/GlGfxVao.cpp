@@ -81,7 +81,7 @@ void UpdateVAOVertexBufferVec2(G2Core::GfxResource* vao, G2Core::Semantics::Name
 	GLCHECK( glBindBuffer(GL_ARRAY_BUFFER, 0) );
 }
 
-void BindVAO(G2Core::GfxResource* vao)
+void BindVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader)
 {
 	GLCHECK( glBindVertexArray(static_cast<G2GL::VertexArrayObjectResource*>(vao)->vaoId) );
 }
@@ -91,14 +91,14 @@ void UnbindVAO(G2Core::GfxResource* vao)
 	GLCHECK( glBindVertexArray(0) );
 }
 
-void DrawVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader, G2Core::DrawMode::Name drawMode, int numVertices)
+void DrawVAO(G2Core::GfxResource* vao, G2Core::DrawMode::Name drawMode, int numVertices)
 {
-	GLCHECK( glDrawArrays(drawMode, 0, numVertices) );
+	GLCHECK( glDrawArrays(toGlDrawMode(drawMode), 0, numVertices) );
 }
 
 
 	
-void* GetVaoDataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode)
+void* GetVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode)
 {
 	G2GL::VertexArrayObjectResource* vaoPtr = static_cast<G2GL::VertexArrayObjectResource*>(vao);
 	
@@ -114,7 +114,7 @@ void* GetVaoDataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semant
 	return dest;
 }
 
-void ReturnVaoDataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic)
+void ReturnVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic)
 {
 	G2GL::VertexArrayObjectResource* vaoPtr = static_cast<G2GL::VertexArrayObjectResource*>(vao);
 	

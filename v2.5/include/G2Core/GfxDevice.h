@@ -19,6 +19,7 @@ namespace G2
 	typedef void (*ClearColor)(glm::vec4 const& color);
 	typedef void (*SetViewport)(G2::rect const& viewport);
 	typedef void (*ClearBuffers)(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
+	typedef void (*UpdateRenderStates)(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
 
 	// Shader
 	typedef G2Core::GfxResource* (*CompileShader)(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
@@ -37,14 +38,36 @@ namespace G2
 	typedef void (*UpdateVAOVertexBufferVec4)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements);
 	typedef void (*UpdateVAOVertexBufferVec3)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec3 const* data, int numElements);
 	typedef void (*UpdateVAOVertexBufferVec2)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec2 const* data, int numElements);
-	typedef void (*BindVAO)(G2Core::GfxResource* vao);
+	typedef void (*BindVAO)(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader);
 	typedef void (*UnbindVAO)(G2Core::GfxResource* vao);
-	typedef void* (*GetVaoDataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode);
-	typedef void (*ReturnVaoDataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic);
+	typedef void* (*GetVAODataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode);
+	typedef void (*ReturnVAODataPointer)(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic);
 	
+	// IndexBufferObject
+	typedef G2Core::GfxResource* (*CreateIBO)();
+	typedef void (*UpdateIBOIndices)(G2Core::GfxResource* ibo, unsigned int const* data, int numElements);
+	typedef void (*BindIBO)(G2Core::GfxResource* ibo);
+	typedef void (*UnbindIBO)(G2Core::GfxResource* ibo);
+	typedef unsigned int* (*GetIBODataPointer)(G2Core::GfxResource* ibo, G2Core::BufferAccessMode::Name mode);
+	typedef void (*ReturnIBODataPointer)(G2Core::GfxResource* ibo);
 	
 	// Drawing
-	typedef void (*DrawVAO)(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader, G2Core::DrawMode::Name drawMode, int numVertices);
+	typedef void (*DrawVAO)(G2Core::GfxResource* vao, G2Core::DrawMode::Name drawMode, int numVertices);
+	typedef void (*DrawIBO)(G2Core::GfxResource* ibo, G2Core::DrawMode::Name drawMode, int numIndices);
+	
+	// RenderTarget
+	typedef G2Core::GfxResource* (*CreateRenderTarget)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
+	typedef void (*AttachTextureToRenderTarget)(G2Core::GfxResource* renderTarget, G2Core::GfxResource* texture, G2Core::FrameBufferAttachmentPoint::Name attachment, G2Core::TextureFormat::Name texTarget, int mipmapLevel, int layer);
+	typedef void (*BindRenderTarget)(G2Core::GfxResource* renderTarget);
+	typedef void (*UnbindRenderTarget)(G2Core::GfxResource* renderTarget);	
+
+	// Texture
+	typedef G2Core::GfxResource* (*CreateTexture2D)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
+	typedef G2Core::GfxResource* (*CreateTexture2DArray)(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
+	typedef G2Core::GfxResource* (*CreateTextureCube)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT);
+	typedef G2Core::GfxResource* (*CreateTexture3D)(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::WrapMode::Name wrapR, unsigned char * data);
+	typedef void (*BindTexture)(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
+	typedef void (*UnbindTexture)(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
 	
 
 	/** This class declares the interface of a graphics device.
@@ -69,6 +92,7 @@ namespace G2
 			ClearColor clearColor;
 			SetViewport setViewport;
 			ClearBuffers clearBuffers;
+			UpdateRenderStates updateRenderStates;
 
 			// Shader
 			CompileShader compileShader;
@@ -89,11 +113,34 @@ namespace G2
 			UpdateVAOVertexBufferVec2 updateVAOVertexBufferVec2;
 			BindVAO bindVAO;
 			UnbindVAO unbindVAO;
-			GetVaoDataPointer getVaoDataPointer;
-			ReturnVaoDataPointer returnVaoDataPointer;
+			GetVAODataPointer getVAODataPointer;
+			ReturnVAODataPointer returnVAODataPointer;
+
+			// IndexBufferObject
+			CreateIBO createIBO;
+			UpdateIBOIndices updateIBOIndices;
+			BindIBO bindIBO;
+			UnbindIBO unbindIBO;
+			GetIBODataPointer getIBODataPointer;
+			ReturnIBODataPointer returnIBODataPointer;
 
 			// Drawing
 			DrawVAO drawVAO;
+			DrawIBO drawIBO;
+
+			// RenderTarget
+			CreateRenderTarget createRenderTarget;
+			AttachTextureToRenderTarget attachTextureToRenderTarget;
+			BindRenderTarget bindRenderTarget;
+			UnbindRenderTarget unbindRenderTarget;
+
+			// Texture
+			CreateTexture2D createTexture2D;
+			CreateTexture2DArray createTexture2DArray;
+			CreateTextureCube createTextureCube;
+			CreateTexture3D createTexture3D;
+			BindTexture bindTexture;
+			UnbindTexture unbindTexture;
 
 			// END GFX LIB FUNCTION POINTERS
 		private:

@@ -12,25 +12,25 @@ namespace G2
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class MultipleRenderTarget 
 	{
-			typedef std::unordered_map<BufferAttachment::Name,std::shared_ptr<Texture>> RenderTextureMap;
+			typedef std::unordered_map<G2Core::FrameBufferAttachmentPoint::Name,std::shared_ptr<Texture>> RenderTextureMap;
 		public:
 			/// This constructs a new MultipleRenderTarget.
-			MultipleRenderTarget(unsigned int width, unsigned int height);
+			MultipleRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
 			/** This function will allocate a new Texture and attach it to the given
 			 * attachment point.
 			 * @param attachmentPoint The attachment point to attach it to.
 			 */
-			void allocateRenderTexture(BufferAttachment::Name attachment = BufferAttachment::COLOR_0);
+			void allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::Name attachment = G2Core::FrameBufferAttachmentPoint::COLOR_0);
 			
 			void bind() const { mFrameBuffer.bind(); }
 			void unbind() const { mFrameBuffer.unbind(); }
 
-			std::shared_ptr<Texture> getRenderTexture(BufferAttachment::Name attachment) { return mRenderTextures[attachment]; }
+			std::shared_ptr<Texture> getRenderTexture(G2Core::FrameBufferAttachmentPoint::Name attachment) { return mRenderTextures[attachment]; }
 		private:
 			unsigned int		mWidth;
 			unsigned int		mHeight;
 			FrameBuffer			mFrameBuffer;		// The framebuffer, the render textures are attached to
 			RenderTextureMap	mRenderTextures;	// The attached render textures
-
+			G2Core::DataFormat::Name mDataFormat;	
 	};
 };

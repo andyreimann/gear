@@ -48,8 +48,8 @@ ClipmapTerrainSystem::runPhase(std::string const& name, G2::FrameInfo const& fra
 			ClipmapTerrain& terrain = components[i];
 			auto shader = terrain.mEffect->getShader();
 			shader->bind();
-			terrain.mHeightMap->bind(G2::TEX_SLOT1 + G2::Sampler::SAMPLER_6);
-			terrain.mVertexArray.bind();
+			terrain.mHeightMap->bind(static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1 + G2::Sampler::SAMPLER_6));
+			terrain.mVertexArray.bind(shader);
 
 			shader->setProperty(std::string("matrices.projection_matrix"), camera->getProjectionMatrix());
 

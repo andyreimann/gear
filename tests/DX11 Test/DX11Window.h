@@ -40,17 +40,14 @@ private:
 	/** This function receives callbacks from the EventDistributer::onKeyUp Event
 		* @note It only receives callbacks if the EditableScene is prepared for editing.
 		*/
-	void onKeyUp(G2::KeyCode keyCode);
+	void onKeyUp(G2::KeyCode keyCode); 
 	/** This function receives callbacks from the EventDistributer::onKeyDown Event
 		* @note It only receives callbacks if the EditableScene is prepared for editing.
 		*/
 	void onKeyDown(G2::KeyCode keyCode);
 
 	glm::detail::tvec2<int>	mMousePosition;
-	
-	G2Cameras::EditorCamera mEditorCamera;
-	
-		G2::EffectImporter  mEffectImporter;
+
 	HWND hWnd;					// The handle of the window
 	HINSTANCE hInstance;		// The application handle
 };

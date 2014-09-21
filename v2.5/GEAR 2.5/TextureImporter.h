@@ -28,20 +28,20 @@ namespace G2
 			 */
 			std::shared_ptr<Texture2D> importResource(
 				std::string const& fileName, 
-				unsigned minFilter, 
-				unsigned magFilter, 
+				G2Core::FilterMode::Name minFilter, 
+				G2Core::FilterMode::Name magFilter, 
 				bool compress = false, 
-				WrapMode::Name wrapS = WrapMode::REPEAT, 
-				WrapMode::Name wrapT = WrapMode::REPEAT,
-				int internalFormat = -1);
+				G2Core::WrapMode::Name wrapS = G2Core::WrapMode::REPEAT, 
+				G2Core::WrapMode::Name wrapT = G2Core::WrapMode::REPEAT,
+				G2Core::DataFormat::Name internalFormat = G2Core::DataFormat::UNKNOWN);
 
 			std::pair<std::string,std::shared_ptr<Texture2D::Builder>> produceResourceBuilder(
 				std::string const& fileName, 
-				unsigned minFilter, 
-				unsigned magFilter, 
+				G2Core::FilterMode::Name minFilter, 
+				G2Core::FilterMode::Name magFilter, 
 				bool compress = false, 
-				WrapMode::Name wrapS = WrapMode::REPEAT,
-				WrapMode::Name wrapT = WrapMode::REPEAT,
-				int internalFormat = -1);
+				G2Core::WrapMode::Name wrapS = G2Core::WrapMode::REPEAT,
+				G2Core::WrapMode::Name wrapT = G2Core::WrapMode::REPEAT,
+				G2Core::DataFormat::Name internalFormat = G2Core::DataFormat::UNKNOWN);
 	};
 };

@@ -1,5 +1,5 @@
-#include "GlGfxApi.h"
-#include "GlGfxData.h"
+#include "DX11GfxApi.h"
+#include "DX11GfxData.h"
 
 #include <G2/Logger.h>
 
@@ -11,10 +11,12 @@ std::unordered_map<G2Core::FrameBufferAttachmentPoint::Name,unsigned int> frameB
 std::unordered_map<G2Core::TextureFormat::Name,unsigned int> textureFormatMapping;
 std::unordered_map<G2Core::FilterMode::Name,unsigned int> filterModeMapping;
 std::unordered_map<G2Core::WrapMode::Name,unsigned int> wrapModeMapping;
-std::unordered_map<G2Core::DrawMode::Name,unsigned int> drawModeMapping;
+std::unordered_map<G2Core::Semantics::Name,LPCSTR> semanticMapping;
+std::unordered_map<G2Core::DrawMode::Name,D3D11_PRIMITIVE_TOPOLOGY > drawModeMapping;
 
 void _initMappings()
 {
+	/*
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_ONLY]	= GL_READ_ONLY;
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_WRITE]	= GL_READ_WRITE;
 	bufferAccessMapping[G2Core::BufferAccessMode::WRITE_ONLY]	= GL_WRITE_ONLY;
@@ -118,15 +120,33 @@ void _initMappings()
 	filterModeMapping[G2Core::FilterMode::LINEAR_MIPMAP_NEAREST]	= GL_LINEAR_MIPMAP_NEAREST;
 	filterModeMapping[G2Core::FilterMode::NEAREST_MIPMAP_LINEAR]	= GL_NEAREST_MIPMAP_LINEAR;
 	filterModeMapping[G2Core::FilterMode::LINEAR_MIPMAP_LINEAR]		= GL_LINEAR_MIPMAP_LINEAR;
+	*/
+		
+	semanticMapping[G2Core::Semantics::POSITION] = "POSITION";
+	semanticMapping[G2Core::Semantics::BLENDWEIGHT] = "BLENDWEIGHT";
+	semanticMapping[G2Core::Semantics::NORMAL] = "NORMAL";
+	semanticMapping[G2Core::Semantics::COLOR_0] = "COLOR0";
+	semanticMapping[G2Core::Semantics::COLOR_1] = "COLOR1";
+	semanticMapping[G2Core::Semantics::FOGCOORD] = "FOG";
+	semanticMapping[G2Core::Semantics::PSIZE] = "PSIZE";
+	semanticMapping[G2Core::Semantics::BLENDINDICES] = "BLENDINDICES";
+	semanticMapping[G2Core::Semantics::TEXCOORD_0] = "TEXCOORD0";
+	semanticMapping[G2Core::Semantics::TEXCOORD_1] = "TEXCOORD1";
+	semanticMapping[G2Core::Semantics::TEXCOORD_2] = "TEXCOORD2";
+	semanticMapping[G2Core::Semantics::TEXCOORD_3] = "TEXCOORD3";
+	semanticMapping[G2Core::Semantics::TEXCOORD_4] = "TEXCOORD4";
+	semanticMapping[G2Core::Semantics::TEXCOORD_5] = "TEXCOORD5";
+	semanticMapping[G2Core::Semantics::TANGENT] = "TANGENT";
+	semanticMapping[G2Core::Semantics::BINORMAL] = "BINORMAL";
 
-	drawModeMapping[G2Core::DrawMode::POINTS]			= GL_POINTS;
-	drawModeMapping[G2Core::DrawMode::LINE_STRIP]		= GL_LINE_STRIP;
-	drawModeMapping[G2Core::DrawMode::LINE_LOOP]		=	GL_LINE_LOOP;
-	drawModeMapping[G2Core::DrawMode::LINES]			= GL_LINES;
-	drawModeMapping[G2Core::DrawMode::TRIANGLE_STRIP]	= GL_TRIANGLE_STRIP;
-	drawModeMapping[G2Core::DrawMode::TRIANGLE_FAN]		=	GL_TRIANGLE_FAN;
-	drawModeMapping[G2Core::DrawMode::TRIANGLES]		= GL_TRIANGLES;
-	drawModeMapping[G2Core::DrawMode::QUADS]			=	GL_QUADS;
+	drawModeMapping[G2Core::DrawMode::POINTS]			= D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+	drawModeMapping[G2Core::DrawMode::LINE_STRIP]		= D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+	drawModeMapping[G2Core::DrawMode::LINE_LOOP]		=	D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	drawModeMapping[G2Core::DrawMode::LINES]			= D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+	drawModeMapping[G2Core::DrawMode::TRIANGLE_STRIP]	= D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+	drawModeMapping[G2Core::DrawMode::TRIANGLE_FAN]		=	D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	drawModeMapping[G2Core::DrawMode::TRIANGLES]		= D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	drawModeMapping[G2Core::DrawMode::QUADS]			=	D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 }
 
 unsigned int toGlBufferAccessMode(G2Core::BufferAccessMode::Name mode)
@@ -159,7 +179,12 @@ unsigned int toGlFilterMode(G2Core::FilterMode::Name filterMode)
 	return filterModeMapping[filterMode];
 }
 
-unsigned int toGlDrawMode(G2Core::DrawMode::Name drawMode)
+LPCSTR toD3DSemanticString(G2Core::Semantics::Name semantic) 
+{
+	return semanticMapping[semantic];
+}
+
+D3D11_PRIMITIVE_TOPOLOGY toD3DDrawMode(G2Core::DrawMode::Name drawMode)
 {
 	return drawModeMapping[drawMode];
 }

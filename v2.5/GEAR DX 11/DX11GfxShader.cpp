@@ -1,5 +1,6 @@
 #include "DX11GfxApi.h"
 #include "DX11GfxData.h"
+#include "DX11GfxMappings.h"
 
 #include <G2/Logger.h>
 
@@ -74,50 +75,11 @@ void _initCgRuntime(ID3D11Device* device)
 	}
 }
 
-
-
-LPCSTR
-toSemanticString(G2Core::Semantics::Name semantic) 
-{
-	if(semantic == G2Core::Semantics::POSITION) 
-		return "POSITION";
-	else if(semantic == G2Core::Semantics::BLENDWEIGHT) 
-		return "BLENDWEIGHT";
-	else if(semantic == G2Core::Semantics::NORMAL) 
-		return "NORMAL";
-	else if(semantic == G2Core::Semantics::COLOR_0) 
-		return "COLOR0";
-	else if(semantic == G2Core::Semantics::COLOR_1) 
-		return "COLOR1";
-	else if(semantic == G2Core::Semantics::FOGCOORD) 
-		return "FOG";
-	else if(semantic == G2Core::Semantics::PSIZE) 
-		return "PSIZE";
-	else if(semantic == G2Core::Semantics::BLENDINDICES) 
-		return "BLENDINDICES";
-	else if(semantic == G2Core::Semantics::TEXCOORD_0) 
-		return "TEXCOORD0";
-	else if(semantic == G2Core::Semantics::TEXCOORD_1) 
-		return "TEXCOORD1";
-	else if(semantic == G2Core::Semantics::TEXCOORD_2) 
-		return "TEXCOORD2";
-	else if(semantic == G2Core::Semantics::TEXCOORD_3) 
-		return "TEXCOORD3";
-	else if(semantic == G2Core::Semantics::TEXCOORD_4) 
-		return "TEXCOORD4";
-	else if(semantic == G2Core::Semantics::TEXCOORD_5) 
-		return "TEXCOORD5";
-	else if(semantic == G2Core::Semantics::TANGENT) 
-		return "TANGENT";
-	else if(semantic == G2Core::Semantics::BINORMAL) 
-		return "BINORMAL";
-	return "SEMANTIC_INVALID";
-}
-
 G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res);
 
 G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode)
 {
+	assert(vertexInputLayout.elements.size() > 0);
 	if(shadingLanguage == "HLSL")
 	{
 		assert(false);	
@@ -171,7 +133,7 @@ G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputL
 		for(int i = 0; i < vertexInputLayout.elements.size(); ++i)
 		{
 			inputLayoutShaderFragment.semantics.push_back(vertexInputLayout.elements[i].semantic);
-			inputLayoutShaderFragment.semanticNames.push_back(toSemanticString(vertexInputLayout.elements[i].semantic));
+			inputLayoutShaderFragment.semanticNames.push_back(toD3DSemanticString(vertexInputLayout.elements[i].semantic));
 		}
 
 		G2DX11::CgShaderResource* resource = new G2DX11::CgShaderResource(cgD3D11GetCompiledProgram(vertexShaderId),inputLayoutShaderFragment);

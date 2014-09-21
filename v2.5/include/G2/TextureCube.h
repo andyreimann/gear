@@ -13,11 +13,11 @@ namespace G2
 		public:
 			/** This constructs a new Texture2D from the given data.
 			 */
-			TextureCube(unsigned int minFilter, 
-						unsigned int magFilter, 
+			TextureCube(G2Core::FilterMode::Name minFilter, 
+						G2Core::FilterMode::Name magFilter, 
 						unsigned int width,
 						unsigned int height,
-						unsigned int format,
+						G2Core::DataFormat::Name format,
 						bool compress,
 						unsigned char * data = nullptr);
 			/// Move ctor.
@@ -38,18 +38,12 @@ namespace G2
 			virtual unsigned getDepth() { return 1; }
 		private:
 			TextureCube() {}
-			static void		init();
-			
-			static bool		gInitialized;
 
-			unsigned int	mMinFilter;		// The type of min filter, the texture uses
-			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
 			unsigned		mChannels;		// The number of channels of the Texture
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture
 			bool			mCompressed;	// Indicates whether the Texture is compressed or not
-			bool			mUseMipMaps;	// If true mipmaps are applied to the texture
 	};
 };

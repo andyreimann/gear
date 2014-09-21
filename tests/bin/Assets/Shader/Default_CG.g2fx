@@ -1,4 +1,8 @@
 Ubershader "GEAR/Default" {
+   LocationBindings {
+     position ("Vertex Position", vec4) = { POSITION }
+     normal ("Vertex Normal", vec3) = { NORMAL }
+   }
    Shader "CG" {
       #VERTEXPROGRAM
       #INCLUDE "G2.matrices"

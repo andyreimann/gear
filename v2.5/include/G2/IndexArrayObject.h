@@ -63,21 +63,19 @@ namespace G2
 
 			void bind();
 			/** Draws the IndexArrayObject with the given OpenGL draw mode.
-			 * @param glDrawMode The OpenGL draw mode to use.
+			 * @param drawMode The draw mode to use.
 			 * @param numIndices The number of indices to draw or -1 = default if you just want to draw all indices.
 			 * @note Make sure to bind a VertexArrayObject as well as the IndexBufferObject before calling the draw function.
 			 */
-			void draw(int glDrawMode, int numIndices = -1);
+			void draw(G2Core::DrawMode::Name drawMode, int numIndices = -1);
 			void unbind();
 		private:
-			void _initIAOBuffer();
+			void _initIBOBuffer();
 			void _deleteBuffer();
 			
-			bool								mBound;				// Flag if the IndexArrayObject is bound or not.
-			unsigned int						mNumElements;		// The number of elements the IndexArrayObject manages
-			unsigned int						mMaxNumElements;	// The maximum number of elements the IndexArrayObject can manage
-
-			unsigned int						mIndexArrayId;		// The ID of the OpenGL IndexArrayObject
-			std::shared_ptr<RefCounter<int>>	mReferenceCounter;  // A reference counter if this instance is shared by copies 
+			G2Core::GfxResource*				mIndexArrayResource;	// The resource handle in the GfxContext
+			unsigned int						mNumElements;			// The number of elements the IndexArrayObject manages
+			unsigned int						mMaxNumElements;		// The maximum number of elements the IndexArrayObject can manage
+			std::shared_ptr<RefCounter<int>>	mReferenceCounter;		// A reference counter if this instance is shared by copies 
 	};
 };

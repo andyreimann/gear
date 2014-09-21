@@ -16,6 +16,12 @@ namespace G2GL
 		CG_SHADER,
 		VAO,
 		VBO,
+		IBO,
+		FBO,
+		TEX_2D,
+		TEX_2D_ARRAY,
+		TEX_CUBE,
+		TEX_3D,
 	};
 	struct GlResource : G2Core::GfxResource
 	{
@@ -181,6 +187,142 @@ namespace G2GL
 		unsigned int vaoId;
 		std::unordered_map<G2Core::Semantics::Name,VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
 
+	};
+
+	struct IndexBufferObjectResource : GlResource
+	{
+		IndexBufferObjectResource(unsigned int iboId) 
+			: iboId(iboId), 
+			GlResource(G2GL::IBO) {}
+
+		~IndexBufferObjectResource()
+		{
+			if(iboId != GL_INVALID_VALUE)
+			{
+				GLCHECK( glDeleteBuffers(1, &iboId) );
+			}
+		}
+
+		unsigned int iboId;
+	};
+
+	struct RenderTargetResource : GlResource
+	{
+		RenderTargetResource(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, unsigned int fboId, unsigned int renderBufferId) 
+			: GlResource(FBO),
+			width(width),
+			height(height),
+			format(format),
+			fboId(fboId),
+			renderBufferId(renderBufferId) {}
+
+		~RenderTargetResource()
+		{
+			GLCHECK( glDeleteFramebuffers( 1, &fboId ) );
+			if(renderBufferId != GL_INVALID_VALUE)
+			{
+				GLCHECK( glDeleteRenderbuffers( 1, &renderBufferId ) );
+			}
+		}
+
+		unsigned int width;
+		unsigned int height;
+		G2Core::DataFormat::Name format;
+		unsigned int fboId;
+		unsigned int renderBufferId;
+	};
+
+	struct TextureResource : GlResource
+	{
+		TextureResource(Type type, unsigned int texId, unsigned int texType, unsigned int dataFormat, unsigned int minFilter, unsigned int magFilter) 
+			: GlResource(type),
+			texId(texId),
+			texType(texType),
+			dataFormat(dataFormat),
+			minFilter(minFilter),
+			magFilter(magFilter) {}
+
+		~TextureResource()
+		{
+			GLCHECK( glDeleteTextures( 1, &texId ) );
+		}
+		
+		unsigned int texId;
+		unsigned int texType;
+		unsigned int dataFormat;
+		unsigned int minFilter;
+		unsigned int magFilter;
+	};
+
+	struct Texture2DResource : TextureResource
+	{
+		Texture2DResource(
+			unsigned int texId,
+			unsigned int dataFormat, 
+			unsigned int minFilter, 
+			unsigned int magFilter, 
+			unsigned int wrapS, 
+			unsigned int wrapT) 
+			: TextureResource(TEX_2D,texId,GL_TEXTURE_2D,dataFormat,minFilter,magFilter),
+			wrapS(wrapS),
+			wrapT(wrapT) {}
+		
+		unsigned int wrapS;
+		unsigned int wrapT;
+	};
+
+	struct Texture2DArrayResource : TextureResource
+	{
+		Texture2DArrayResource(
+			unsigned int texId,
+			unsigned int dataFormat, 
+			unsigned int minFilter, 
+			unsigned int magFilter, 
+			unsigned int wrapS, 
+			unsigned int wrapT) 
+			: TextureResource(TEX_2D_ARRAY,texId,GL_TEXTURE_2D_ARRAY,dataFormat,minFilter,magFilter),
+			wrapS(wrapS),
+			wrapT(wrapT) {}
+		
+		unsigned int wrapS;
+		unsigned int wrapT;
+	};
+
+	struct TextureCubeResource : TextureResource
+	{
+		TextureCubeResource(
+			unsigned int texId,
+			unsigned int dataFormat, 
+			unsigned int minFilter, 
+			unsigned int magFilter, 
+			unsigned int wrapS, 
+			unsigned int wrapT) 
+			: TextureResource(TEX_CUBE,texId,GL_TEXTURE_CUBE_MAP,dataFormat,minFilter,magFilter),
+			wrapS(wrapS),
+			wrapT(wrapT) {}
+		
+		unsigned int wrapS;
+		unsigned int wrapT;
+	};
+
+	struct Texture3DResource : TextureResource
+	{
+		Texture3DResource(
+			unsigned int texId,
+			unsigned int dataFormat, 
+			unsigned int minFilter, 
+			unsigned int magFilter, 
+			unsigned int wrapS, 
+			unsigned int wrapT, 
+			unsigned int wrapR) 
+			: TextureResource(TEX_3D,texId,GL_TEXTURE_3D,dataFormat,minFilter,magFilter),
+			wrapS(wrapS),
+			wrapT(wrapT),
+			wrapR(wrapR) {}
+		
+		unsigned int wrapS;
+		unsigned int wrapT;
+		unsigned int wrapR;
 	};
 
 };

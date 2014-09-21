@@ -1,32 +1,31 @@
 #include "IndexArrayObject.h"
 #include <utility>
 
+#include <G2Core/GfxDevice.h>
+
 using namespace G2;
 
 IndexArrayObject::IndexArrayObject() 
-	: mBound(false),
-	mNumElements(0),
+	: mNumElements(0),
 	mMaxNumElements(0),
-	mIndexArrayId(GL_INVALID_VALUE),
+	mIndexArrayResource(nullptr),
 	mReferenceCounter(new RefCounter<int>())
 {
 }
 
 IndexArrayObject::IndexArrayObject(unsigned int numElements) 
-	: mBound(false),
-	mNumElements(numElements),
+	: mNumElements(numElements),
 	mMaxNumElements(numElements),
-	mIndexArrayId(GL_INVALID_VALUE),
+	mIndexArrayResource(nullptr),
 	mReferenceCounter(new RefCounter<int>())
 {
 	writeIndices(nullptr, numElements);
 }
 
 IndexArrayObject::IndexArrayObject(IndexArrayObject const& rhs) 
-	: mBound(false),
-	mNumElements(0),
+	: mNumElements(0),
 	mMaxNumElements(0),
-	mIndexArrayId(GL_INVALID_VALUE),
+	mIndexArrayResource(nullptr),
 	mReferenceCounter(new RefCounter<int>())
 {
 	// eliminates redundant code
@@ -43,10 +42,9 @@ IndexArrayObject&
 IndexArrayObject::operator=(IndexArrayObject const& rhs) 
 {
 	// copy
-	mBound = rhs.mBound;
 	mNumElements = rhs.mNumElements;
 	mMaxNumElements = rhs.mMaxNumElements;
-	mIndexArrayId = rhs.mIndexArrayId;
+	mIndexArrayResource = rhs.mIndexArrayResource;
 	// copy pointer to shared RefCounter - and increment
 	mReferenceCounter = rhs.mReferenceCounter;
 	mReferenceCounter->incr();
@@ -62,16 +60,14 @@ IndexArrayObject::operator=(IndexArrayObject && rhs)
 	// 1. Stage: delete maybe allocated resources on target type
 	// nothing here
 	// 2. Stage: transfer data from src to target
-	mBound = rhs.mBound;
+	mIndexArrayResource = rhs.mIndexArrayResource;
 	mNumElements = rhs.mNumElements;
 	mMaxNumElements = rhs.mMaxNumElements;
 	mReferenceCounter = std::move(rhs.mReferenceCounter);
 	// 3. Stage: modify src to a well defined state
-	rhs.mBound = false;
 	rhs.mNumElements = 0;
 	rhs.mMaxNumElements = 0;
-	mIndexArrayId = rhs.mIndexArrayId;
-	rhs.mIndexArrayId = GL_INVALID_VALUE;
+	rhs.mIndexArrayResource = nullptr;
 
 	// copy and increment the version!
 	setVersion(rhs.getVersion()+1);
@@ -99,7 +95,7 @@ IndexArrayObject::resizeElementCount(unsigned int numElements)
 		mMaxNumElements = mNumElements = numElements;
 
 		_deleteBuffer();
-		_initIAOBuffer();
+		_initIBOBuffer();
 		writeIndices(nullptr, numElements);
 	}
 	return *this;
@@ -109,94 +105,61 @@ IndexArrayObject&
 IndexArrayObject::writeIndices(unsigned int const* data, unsigned int numIndices) 
 {
 	unsigned int bytes = sizeof(unsigned int);
-	if(mIndexArrayId == GL_INVALID_VALUE)
+	if(mIndexArrayResource == nullptr)
 	{
 		mNumElements = mMaxNumElements = numIndices;
-		_initIAOBuffer();
-		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) );
-		GLDEBUG( glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytes * numIndices, data, GL_STATIC_DRAW) );
-		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+		_initIBOBuffer();
 		// a new index array was added
 		updateVersion();
-		return *this;
 	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) )
-	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, G2Core::BufferAccessMode::WRITE_ONLY ) );
-	memcpy(destination, data, bytes * numIndices);
-	GLDEBUG( glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) )
+	G2_gfxDevice()->updateIBOIndices(mIndexArrayResource, data, mNumElements);
 	return *this;
 }
 
 void
 IndexArrayObject::bind() 
 {
-	if(!mBound) 
-	{
-		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) );
-		mBound = true;
-	}
+	G2_gfxDevice()->bindIBO(mIndexArrayResource);
 }
 
 void
-IndexArrayObject::draw(int glDrawMode, int numIndices) 
+IndexArrayObject::draw(G2Core::DrawMode::Name drawMode, int numIndices) 
 {
-	if(mIndexArrayId != GL_INVALID_VALUE)
-	{
-		GLDEBUG( glDrawElements(glDrawMode, numIndices == -1 ? mNumElements : numIndices, GL_UNSIGNED_INT, 0) );
-	}
+	G2_gfxDevice()->drawIBO(mIndexArrayResource, drawMode, numIndices == -1 ? mNumElements : numIndices);
 }
 
 void
 IndexArrayObject::unbind() 
 {
-	if(mBound) 
-	{
-		GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) );
-		mBound = false;
-	}
+	G2_gfxDevice()->unbindIBO(mIndexArrayResource);
 }
 
 void
 IndexArrayObject::_deleteBuffer()
 {
-	if(mIndexArrayId != GL_INVALID_VALUE) 
+	if(mIndexArrayResource != nullptr) 
 	{
-		GLDEBUG( glDeleteBuffers(1, &mIndexArrayId) );
-		mIndexArrayId = GL_INVALID_VALUE;
+		G2_gfxDevice()->freeGfxResource(mIndexArrayResource);
 	}
 }
 
 void
-IndexArrayObject::_initIAOBuffer() 
+IndexArrayObject::_initIBOBuffer() 
 {
-	if(mIndexArrayId == GL_INVALID_VALUE) 
+	if(mIndexArrayResource == nullptr) 
 	{
-		GLDEBUG( glGenBuffers(1, &mIndexArrayId) );
+		mIndexArrayResource = G2_gfxDevice()->createIBO();
 	}
 }
 
 unsigned int*
 IndexArrayObject::getIndexPointer(G2Core::BufferAccessMode::Name mode /*= BufferAccessMode::WRITE_ONLY*/) 
 {
-	if(mIndexArrayId == GL_INVALID_VALUE)
-	{
-		return nullptr;
-	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) );
-	GLDEBUG( unsigned int* destination = (unsigned int*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, mode) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
-	return destination;
+	return G2_gfxDevice()->getIBODataPointer(mIndexArrayResource,mode);
 }
 
 void
 IndexArrayObject::returnIndexPointer() 
 {
-	if(mIndexArrayId == GL_INVALID_VALUE)
-	{
-		return;
-	}
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexArrayId) );
-	GLDEBUG( glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER) );
-	GLDEBUG( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) );
+	G2_gfxDevice()->returnIBODataPointer(mIndexArrayResource);
 }

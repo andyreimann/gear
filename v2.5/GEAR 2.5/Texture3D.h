@@ -17,12 +17,12 @@ namespace G2
 		public:
 			/** This constructs a new Texture3D.
 			 */
-			Texture3D(unsigned int minFilter, 
-					  unsigned int magFilter, 
+			Texture3D(G2Core::FilterMode::Name minFilter, 
+					  G2Core::FilterMode::Name magFilter, 
 					  unsigned int width,
 					  unsigned int height,
 					  unsigned int depth,
-					  unsigned int format,
+					  G2Core::DataFormat::Name format,
 					  bool compress,
 					  unsigned char * data);
 			/// Move ctor.
@@ -48,9 +48,7 @@ namespace G2
 
 			static bool		gInitialized;
 			static void		init();
-
-			unsigned int	mMinFilter;		// The type of min filter, the texture uses
-			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
+	
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
 			unsigned		mDepth;			// The depth of the Texture.
@@ -58,6 +56,5 @@ namespace G2
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture
 			bool			mCompressed;	// Indicates whether the Texture is compressed or not
-			bool			mUseMipMaps;	// If true mipmaps are applied to the texture
 	};
 };

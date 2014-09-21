@@ -98,35 +98,35 @@ namespace G2
 			/** This function will return the PolygonDrawMode. 
 			* @return The PolygonDrawMode.
 			*/
-			PolygonDrawMode::Name const& getPolygonDrawMode() const { return mRenderStatesGroup->getRenderStates().getPolygonDrawMode(); }
+			G2Core::PolygonDrawMode::Name const& getPolygonDrawMode() const { return mRenderStatesGroup->getRenderStates().getPolygonDrawMode(); }
 			/** This function will set the PolygonDrawMode to the given value.
 			* @param value The PolygonDrawMode.
 			*/
-			void setPolygonDrawMode(PolygonDrawMode::Name const& value);
+			void setPolygonDrawMode(G2Core::PolygonDrawMode::Name const& value);
 			/** This function will return the FaceCulling. 
 			* @return The FaceCulling.
 			*/
-			FaceCulling::Name const& getFaceCulling() const { return mRenderStatesGroup->getRenderStates().getFaceCulling(); }
+			G2Core::FaceCulling::Name const& getFaceCulling() const { return mRenderStatesGroup->getRenderStates().getFaceCulling(); }
 			/** This function will set the FaceCulling to the given value.
 			* @param value The FaceCulling.
 			*/
-			void setFaceCulling(FaceCulling::Name const& value);
+			void setFaceCulling(G2Core::FaceCulling::Name const& value);
 			/** This function will return the SourceFactor. 
 			* @return The SourceFactor.
 			*/
-			BlendFactor::Name const& getSourceBlendFactor() const { return mRenderStatesGroup->getRenderStates().getSourceFactor(); }
+			G2Core::BlendFactor::Name const& getSourceBlendFactor() const { return mRenderStatesGroup->getRenderStates().getSourceFactor(); }
 			/** This function will set the SourceFactor to the given value.
 			* @param value The SourceFactor.
 			*/
-			void setSourceBlendFactor(BlendFactor::Name const& value);
+			void setSourceBlendFactor(G2Core::BlendFactor::Name const& value);
 			/** This function will return the DestinationFactor. 
 			* @return The DestinationFactor.
 			*/
-			BlendFactor::Name const& getDestinationBlendFactor() const { return mRenderStatesGroup->getRenderStates().getDestinationFactor(); }
+			G2Core::BlendFactor::Name const& getDestinationBlendFactor() const { return mRenderStatesGroup->getRenderStates().getDestinationFactor(); }
 			/** This function will set the DestinationFactor to the given value.
 			* @param value The DestinationFactor.
 			*/
-			void setDestinationBlendFactor(BlendFactor::Name const& value);
+			void setDestinationBlendFactor(G2Core::BlendFactor::Name const& value);
 			/** Schedules this RenderComponent in the RenderSystem to recalculate the model space
 			 * AABBs for all DrawCalls using a distinct AABBCalculationMode than MANUAL.
 			 * @note Use this function with caution

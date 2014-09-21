@@ -3,26 +3,10 @@
 #pragma once
 #include "Defines.h"
 
+#include <G2Core/Defines.h>
+
 namespace G2 
 {
-	namespace WrapMode
-	{
-		enum Name {
-			CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
-			CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-			MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
-			MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
-			REPEAT = GL_REPEAT,
-			NUM_WRAP_MODES,
-			WRAP_MODE_INVALID = GL_INVALID_VALUE,
-		};
-		/** This function will parse the given string to the appropriate
-		 * WrapMode enum value.
-		 * @param name The name to parse.
-		 * @return The parsed WrapMode enum value.
-		 */
-		WrapMode::Name getWrapMode(std::string const& name);
-	};
 	/** This class defines...
 	 * @created:	2014/02/12
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -34,7 +18,10 @@ namespace G2
 		public:
 			/** This constructs a new Texture.
 			 */
-			Texture(int type);
+			Texture(G2Core::TextureFormat::Name type, 
+				    G2Core::DataFormat::Name dataFormat,
+					G2Core::FilterMode::Name minFilter, 
+					G2Core::FilterMode::Name magFilter);
 			/// Move ctor.
 			Texture(Texture && rhs);
 			/// Move ctor.
@@ -43,15 +30,13 @@ namespace G2
 			/** This function binds the Texture into a specific Texture slot.
 			 * @param textureSlot The TextureSlot to bind the Texture to. 
 			 * @warning If you bind a Texture into a specific slot, be sure to unbind it from the same slot.
-			 * Valid Slots are GEAR2::TEX_SLOT1, GEAR2::TEX_SLOT2, GEAR2::TEX_SLOT3, GEAR2::TEX_SLOT4, GEAR2::TEX_SLOT5, GEAR2::TEX_SLOT6, GEAR2::TEX_SLOT7, GEAR2::TEX_SLOT8
 			 */
-			virtual void bind( unsigned textureSlot ) const;
+			virtual void bind( G2Core::TexSlot::Name textureSlot ) const;
 			/** This function unbinds the Texture from a specific Texture slot.
 			 * @param textureSlot The TextureSlot to bind the Texture to.
 			 * @warning If you bind a Texture into a specific slot, be sure to unbind it from the same slot.
-			 * Valid Slots are GEAR2::TEX_SLOT1, GEAR2::TEX_SLOT2, GEAR2::TEX_SLOT3, GEAR2::TEX_SLOT4, GEAR2::TEX_SLOT5, GEAR2::TEX_SLOT6, GEAR2::TEX_SLOT7, GEAR2::TEX_SLOT8
 			 */
-			virtual void unbind( unsigned textureSlot ) const;
+			virtual void unbind( G2Core::TexSlot::Name textureSlot ) const;
 			/** Returns the width of the Texture
 			 * @return The width of the Texture
 			 */
@@ -64,37 +49,43 @@ namespace G2
 			 * @return The depth of the Texture
 			 */
 			virtual unsigned getDepth() = 0;
-			/** This function will return the id of the Texture. 
-			* @return The Id of the Texture.
-			*/
-			unsigned int getId() const { return mId; }
+			/** Returns the type of the Texture
+			 * @return The type of the Texture
+			 */
+			G2Core::TextureFormat::Name getType() { return mType; }
+			/** Returns the format of the internal data contained in the texture.
+			 * @return The format of the internal data contained in the texture.
+			 */
+			G2Core::DataFormat::Name getDataFormat() { return mDataFormat; }
 
 			/** normal destructor
 			 */
 			virtual ~Texture() = 0;
 
-			static unsigned getFormatByString(std::string const& format);
+			static G2Core::DataFormat::Name getFormatByString(std::string const& format);
 		protected:
 			Texture() {}
 
-			static GLuint numChannelsFromFormat( GLuint dstFormat );
-			static GLuint convertFormat( GLuint baseFormat, bool compress );
-			static GLuint isCompressedFormat(GLuint baseFormat);
-			static bool mipMapsRequested(GLuint minFilter, GLuint magFilter);
-			static void checkFilter(GLuint minFilter, GLuint magFilter);
+			static unsigned int numChannelsFromFormat(G2Core::DataFormat::Name dstFormat );
+			static unsigned int convertFormat( G2Core::DataFormat::Name baseFormat, bool compress );
+			static bool isCompressedFormat(G2Core::DataFormat::Name baseFormat);
+			static bool mipMapsRequested(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter);
+			static void checkFilter(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter);
 			/** This function computes the compressed internal format from the corresponding internal base format if requested.
 			 * @param baseFormat The requested base format.
 			 * @param compress A flag indicating whether compression should be done or not.
-			 * @return The corresponding compressed format if availavble and requested, the base format if compression is not requested or the corresponding compressed internal format is not available.
+			 * @return The corresponding compressed format if available and requested, the base format if compression is not requested or the corresponding compressed internal format is not available.
 			 */
-			static unsigned baseFormatToCompressedFormat( unsigned baseFormat, bool compress );
+			static unsigned baseFormatToCompressedFormat( G2Core::DataFormat::Name baseFormat, bool compress );
 			
 
-			unsigned int	mId;			// The OpenGL texture ID
-			int				mType;			// The OpenGL texture type
+			G2Core::GfxResource* mTexResource;
+
+			G2Core::TextureFormat::Name	mType;			// The texture type
+			G2Core::DataFormat::Name	mDataFormat;	// The format of the internal data contained in the texture
 			
-			WrapMode::Name  mWrapModeS;		// The textures wrap mode for s coordinates
-			WrapMode::Name  mWrapModeT;		// The textures wrap mode for s coordinates
-			WrapMode::Name  mWrapModeR;		// The textures wrap mode for s coordinates
+			G2Core::FilterMode::Name mMinFilter;		// The type of min filter, the texture uses
+			G2Core::FilterMode::Name mMagFilter;		// The type of mag filter, the texture uses			
+			bool					 mUseMipMaps;		// If true mip maps are applied to the texture
 	};
 };

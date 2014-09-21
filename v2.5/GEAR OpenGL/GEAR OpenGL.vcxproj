@@ -155,8 +155,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlGfxGeneral.cpp" />
+    <ClCompile Include="GlGfxIbo.cpp" />
     <ClCompile Include="GlGfxMappings.cpp" />
+    <ClCompile Include="GlGfxRenderTarget.cpp" />
     <ClCompile Include="GlGfxShader.cpp" />
+    <ClCompile Include="GlGfxTexture.cpp" />
     <ClCompile Include="GlGfxVao.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

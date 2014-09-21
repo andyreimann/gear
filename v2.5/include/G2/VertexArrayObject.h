@@ -79,12 +79,15 @@ namespace G2
 			 * @return The number of bytes used by one value in the given semantic.
 			 */
 			unsigned int getNumBytesBySemantic(G2Core::Semantics::Name semantic) const;
-
-			void bind();
+			/** This function will bind the VertexArrayObject.
+			 * @param boundShader The shader, which is currently bound or a nullPtr, if you do not plan to draw the VertexArrayObject after binding it.
+			 * @warning When you plan to draw the VertexArrayObject, you have to pass the shader you want to use for rendering!
+			 */
+			void bind(std::shared_ptr<G2::Shader> boundShader);
 			/** Draws the VertexArrayObject with the given OpenGL draw mode.
 			 * @param drawMode The draw mode to use.
 			 */
-			void draw(std::shared_ptr<G2::Shader> boundShader, G2Core::DrawMode::Name drawMode, int numVertices = -1);
+			void draw(G2Core::DrawMode::Name drawMode, int numVertices = -1);
 			void unbind();
 
 			~VertexArrayObject();

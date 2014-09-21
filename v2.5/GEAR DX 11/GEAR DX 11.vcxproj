@@ -144,12 +144,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX11GfxGeneral.cpp" />
+    <ClCompile Include="DX11GfxMappings.cpp" />
+    <ClCompile Include="DX11GfxRenderTarget.cpp" />
     <ClCompile Include="DX11GfxShader.cpp" />
+    <ClCompile Include="DX11GfxTexture.cpp" />
     <ClCompile Include="DX11GfxVao.cpp" />
+    <ClCompile Include="DX11GfxIbo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX11GfxApi.h" />
     <ClInclude Include="DX11GfxData.h" />
+    <ClInclude Include="DX11GfxMappings.h" />
     <ClInclude Include="DX11Globals.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

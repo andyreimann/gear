@@ -1,5 +1,6 @@
 #include "DX11GfxApi.h"
 #include "DX11Globals.h"
+#include "DX11GfxMappings.h"
 
 #include <glm/ext.hpp>
 
@@ -17,6 +18,21 @@ ID3D11DeviceContext*	gDeviceContext; // the pointer to our Direct3D device conte
 ID3D11RenderTargetView*	gBackbuffer;    // The back buffer
 ID3D11DepthStencilView* gBackbufferDepthStencilView;
 ID3D11Texture2D*		gBackbufferDepthStencilBuffer;
+
+// The rasterizer
+D3D11_RASTERIZER_DESC gRasterizerStateDesc;
+ID3D11RasterizerState* gRasterizerState;
+
+D3D11_RASTERIZER_DESC& gGetRasterizerStateDescr()
+{
+	return gRasterizerStateDesc;
+}
+
+void gUpdateRasterizer()
+{
+	gDevice->CreateRasterizerState( &gRasterizerStateDesc, &gRasterizerState );
+	gDeviceContext->RSSetState(gRasterizerState);
+}
 
 ID3D11Device* gDevicePtr()
 {
@@ -54,6 +70,7 @@ void release(G2Core::GfxResource* resource)
 bool
 Init(void* data) 
 {
+	_initMappings();
 	D3DGlobals* globals = (D3DGlobals*)data;
 	gHwnd = globals->hwnd;
 	gSwapChain = globals->swapChain;
@@ -63,10 +80,34 @@ Init(void* data)
 	gBackbufferDepthStencilView = globals->backbufferDepthStencilView;
 	gBackbufferDepthStencilBuffer = globals->backbufferDepthStencilBuffer;
 
+	gRasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
+	gRasterizerStateDesc.CullMode = D3D11_CULL_FRONT;
+	gRasterizerStateDesc.FrontCounterClockwise = true;
+	gRasterizerStateDesc.DepthBias = false;
+	gRasterizerStateDesc.DepthBiasClamp = 0;
+	gRasterizerStateDesc.SlopeScaledDepthBias = 0;
+	gRasterizerStateDesc.DepthClipEnable = true;
+	gRasterizerStateDesc.ScissorEnable = true;
+	gRasterizerStateDesc.MultisampleEnable = false;
+	gRasterizerStateDesc.AntialiasedLineEnable = false;
+
+	gUpdateRasterizer();
+
+	gDeviceContext->RSSetState(gRasterizerState);
 	// init CG Runtime
 	_initCgRuntime(gDevice);
 
 	return true;
+}
+
+void test()
+{
+	
+
+		/*ID3D11RasterizerState* ras;
+		gDeviceContextPtr()->RSGetState(&ras);
+		ras->GetDesc();
+		ras->*/
 }
 
 void Shutdown()
@@ -127,18 +168,12 @@ void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer)
 	}
 }
 
+void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor)
+{
+	// not implemented
+}
+
 void FreeGfxResource(G2Core::GfxResource* resource)
 {
 	delete resource;
 }
-
-//void
-//DX11GfxDevice::draw(void* vbo, int drawMode, int startVertex, int numVertices, unsigned int strideBytes, unsigned int offsetBytes) 
-//{
-//	ID3D11Buffer* vertexBuffer = static_cast<ID3D11Buffer*>(vbo);
-//	
-//	mDeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &strideBytes, &offsetBytes);
-//	mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	assert(false); // FIX DRAWMODE!
-//	mDeviceContext->Draw(numVertices, startVertex);    // draw 3 vertices, starting from vertex 0
-//}

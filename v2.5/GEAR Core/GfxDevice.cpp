@@ -34,6 +34,7 @@ GfxDevice::loadFunctionPointers()
 	clearColor = (ClearColor)loadFunctionPointer("ClearColor");
 	setViewport = (SetViewport)loadFunctionPointer("SetViewport");
 	clearBuffers = (ClearBuffers)loadFunctionPointer("ClearBuffers");
+	updateRenderStates = (UpdateRenderStates)loadFunctionPointer("UpdateRenderStates");
 
 	// Shader
 	compileShader = (CompileShader)loadFunctionPointer("CompileShader");
@@ -54,11 +55,35 @@ GfxDevice::loadFunctionPointers()
 	updateVAOVertexBufferVec2 = (UpdateVAOVertexBufferVec2)loadFunctionPointer("UpdateVAOVertexBufferVec2");
 	bindVAO = (BindVAO)loadFunctionPointer("BindVAO");
 	unbindVAO = (UnbindVAO)loadFunctionPointer("UnbindVAO");
-	getVaoDataPointer = (GetVaoDataPointer)loadFunctionPointer("GetVaoDataPointer");
-	returnVaoDataPointer = (ReturnVaoDataPointer)loadFunctionPointer("ReturnVaoDataPointer");
+	getVAODataPointer = (GetVAODataPointer)loadFunctionPointer("GetVAODataPointer");
+	returnVAODataPointer = (ReturnVAODataPointer)loadFunctionPointer("ReturnVAODataPointer");
+
+	// IndexBufferObject
+	createIBO = (CreateIBO)loadFunctionPointer("CreateIBO");
+	updateIBOIndices = (UpdateIBOIndices)loadFunctionPointer("UpdateIBOIndices");
+	bindIBO = (BindIBO)loadFunctionPointer("BindIBO");
+	unbindIBO = (UnbindIBO)loadFunctionPointer("UnbindIBO");
+	getIBODataPointer = (GetIBODataPointer)loadFunctionPointer("GetIBODataPointer");
+	returnIBODataPointer = (ReturnIBODataPointer)loadFunctionPointer("ReturnIBODataPointer");
 
 	// Drawing
 	drawVAO = (DrawVAO)loadFunctionPointer("DrawVAO");
+	drawIBO = (DrawIBO)loadFunctionPointer("DrawIBO");
+	
+	// RenderTarget
+	createRenderTarget = (CreateRenderTarget)loadFunctionPointer("CreateRenderTarget");
+	attachTextureToRenderTarget = (AttachTextureToRenderTarget)loadFunctionPointer("AttachTextureToRenderTarget");
+	bindRenderTarget = (BindRenderTarget)loadFunctionPointer("BindRenderTarget");
+	unbindRenderTarget = (UnbindRenderTarget)loadFunctionPointer("UnbindRenderTarget");
+
+	// Texture
+	createTexture2D = (CreateTexture2D)loadFunctionPointer("CreateTexture2D");
+	createTexture2DArray = (CreateTexture2DArray)loadFunctionPointer("CreateTexture2DArray");
+	createTextureCube = (CreateTextureCube)loadFunctionPointer("CreateTextureCube");
+	createTexture3D = (CreateTexture3D)loadFunctionPointer("CreateTexture3D");
+	bindTexture = (BindTexture)loadFunctionPointer("BindTexture");
+	unbindTexture = (UnbindTexture)loadFunctionPointer("UnbindTexture");
+
 }
 
 FARPROC

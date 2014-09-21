@@ -178,10 +178,12 @@ RenderSystem::_renderForward(
 			mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
 		}
 		// bind last scene rendering texture
-		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler());
+		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(
+			static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler())
+		);
 		// draw post processing
-		mFullScreenQuad.bind();
-		mFullScreenQuad.draw(mPostProcessingEffects[i]->getShader(), G2Core::DrawMode::QUADS, 0);
+		mFullScreenQuad.bind(mPostProcessingEffects[i]->getShader());
+		mFullScreenQuad.draw(G2Core::DrawMode::QUADS, 0);
 		mFullScreenQuad.unbind();
 		// unbind render target
 		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
@@ -215,9 +217,9 @@ RenderSystem::_renderDeferred(
 	// TODO render to full screen quad -> possible user defined shading shader
 	// Need to find solution of how to get a Shader from an Effect without a material
 			
-	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_0)->bind(TEX_SLOT1);	// diffuse
-	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_1)->bind(TEX_SLOT1+1);	// normals
-	mDeferredShadingTarget->getRenderTexture(BufferAttachment::COLOR_2)->bind(TEX_SLOT1+2);	// positions
+	mDeferredShadingTarget->getRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_0)->bind(G2Core::TexSlot::TEX_SLOT1);	// diffuse
+	mDeferredShadingTarget->getRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_1)->bind(G2Core::TexSlot::TEX_SLOT2);	// normals
+	mDeferredShadingTarget->getRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_2)->bind(G2Core::TexSlot::TEX_SLOT3);	// positions
 			
 	// combine everything back using one surface shader
 	// here the POST PROCESSING can take place:  Glow, Distortion, Edge-Smoothing, Fog, ...
@@ -324,7 +326,9 @@ RenderSystem::_renderPasses(
 					it->getRenderTarget().unbind();
 				}
 				// bind result of pass
-				it->getRenderTarget().getRenderTexture()->bind(TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler());
+				it->getRenderTarget().getRenderTexture()->bind(
+					static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1+(int)it->getRenderTarget().getRenderTextureSampler())
+				);
 				it->postRender();
 			}
 		}
@@ -443,7 +447,9 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		if(it->second.get() != nullptr)
 		{
 			// tex slots are continuous numbers and samplers start at 0 -> simple calculation
-			it->second->bind(TEX_SLOT1+(int)it->first);
+			it->second->bind(
+				static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1+(int)it->first)
+			);
 		}
 	}
 
@@ -462,7 +468,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 			}
 			// get the referenced VertexArrayObject of this DrawCall
 			auto& vao = component->mVaos[drawCall.getVaoIndex()];
-			vao.bind();
+			vao.bind(boundShader);
 			if(drawCall.getIaoIndex() != -1)
 			{
 				// DrawCall references an IndexArrayObject as well
@@ -473,7 +479,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 			}
 			else
 			{
-				vao.draw(boundShader, drawCall.getDrawMode());
+				vao.draw(drawCall.getDrawMode());
 			}
 			vao.unbind();
 		}
@@ -488,7 +494,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		}
 		// get the referenced VertexArrayObject of this DrawCall
 		auto& vao = component->mVaos[drawCall.getVaoIndex()];
-		vao.bind();
+		vao.bind(boundShader);
 		if(drawCall.getIaoIndex() != -1)
 		{
 			// DrawCall references an IndexArrayObject as well
@@ -499,7 +505,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		}
 		else
 		{
-			vao.draw(boundShader, drawCall.getDrawMode());
+			vao.draw(drawCall.getDrawMode());
 		}
 		vao.unbind();
 	}
@@ -731,10 +737,10 @@ RenderSystem::_onViewportResize(int w, int h)
 	if(mRenderType == RenderType::DEFERRED_SHADING)
 	{
 		// setup render target for deferred rendering 
-		mDeferredShadingTarget = std::shared_ptr<MultipleRenderTarget>(new MultipleRenderTarget(w,h));
-		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_0);	// diffuse texture
-		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_1);	// normals texture
-		mDeferredShadingTarget->allocateRenderTexture(BufferAttachment::COLOR_2);	// positions texture
+		mDeferredShadingTarget = std::shared_ptr<MultipleRenderTarget>(new MultipleRenderTarget(w,h,G2Core::DataFormat::RGBA));
+		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_0);	// diffuse texture
+		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_1);	// normals texture
+		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_2);	// positions texture
 	}
 
 	// Setup render targets for post processing
@@ -744,14 +750,14 @@ RenderSystem::_onViewportResize(int w, int h)
 			new RenderTarget(
 				Sampler::DIFFUSE,
 				std::shared_ptr<Texture>(new Texture2D(
-					NEAREST, 
-					NEAREST, 
+					G2Core::FilterMode::NEAREST, 
+					G2Core::FilterMode::NEAREST, 
 					w, 
 					h, 
-					RGBA, 
-					-1,
-					WrapMode::CLAMP_TO_EDGE,
-					WrapMode::CLAMP_TO_EDGE,
+					G2Core::DataFormat::RGBA, 
+					G2Core::DataFormat::RGBA,
+					G2Core::WrapMode::CLAMP_TO_EDGE,
+					G2Core::WrapMode::CLAMP_TO_EDGE,
 					false,
 					nullptr
 				)), 

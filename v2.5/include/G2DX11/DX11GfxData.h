@@ -15,6 +15,14 @@ namespace G2DX11
 		INVALID_RESOURCE = 0,
 		HLSL_SHADER,
 		CG_SHADER,
+		VAO,
+		VBO,
+		IBO,
+		RENDERTARGET,
+		TEX_2D,
+		TEX_2D_ARRAY,
+		TEX_CUBE,
+		TEX_3D,
 	};
 	struct DX11Resource : G2Core::GfxResource
 	{
@@ -28,6 +36,22 @@ namespace G2DX11
 		// Which is known at the shader compilation time
 		std::vector<G2Core::Semantics::Name> semantics; // All semantics this shader requests
 		std::vector<LPCSTR> semanticNames;			// All semantics this shader requests in the requested string format
+	};
+
+	struct InputLayoutVertexBufferFragment
+	{
+		InputLayoutVertexBufferFragment(
+			D3D11_INPUT_ELEMENT_DESC vertexLayout,
+			unsigned int stride,
+			unsigned int offset
+		) : vertexLayout(vertexLayout),
+		stride(stride),
+		offset(offset)
+		{}
+
+		D3D11_INPUT_ELEMENT_DESC vertexLayout;
+		unsigned int stride;
+		unsigned int offset;
 	};
 
 	typedef void (*BindShader)(G2Core::GfxResource const* shaderResource);
@@ -107,6 +131,86 @@ namespace G2DX11
 		CGprogram geometryShaderId;
 		CGprogram fragmentShaderId;
 		std::unordered_map<std::string,std::pair<CGparameter,CGprogram>> uniformCache;	// The cache for the uniform locations
+	};
+
+	struct VertexBufferObjectResource : DX11Resource
+	{
+		VertexBufferObjectResource(ID3D11Buffer* vbo, std::vector<InputLayoutVertexBufferFragment> const& vertexLayout) 
+			: DX11Resource(VBO),
+			vbo(vbo),
+			vertexLayout(std::move(vertexLayout)) {}
+
+		~VertexBufferObjectResource()
+		{
+			if(vbo != nullptr)
+			{
+				vbo->Release();
+			}
+		}
+
+		std::vector<InputLayoutVertexBufferFragment> vertexLayout;
+		ID3D11Buffer* vbo;
+	};
+
+	struct VertexArrayObjectResource : DX11Resource
+	{
+		VertexArrayObjectResource() 
+			: DX11Resource(VAO) {}
+		std::unordered_map<G2Core::Semantics::Name,VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
+	};
+
+	struct IndexBufferObjectResource : DX11Resource
+	{
+		IndexBufferObjectResource(ID3D11Buffer* ibo) 
+			: ibo(ibo), 
+			DX11Resource(IBO) {}
+
+		~IndexBufferObjectResource()
+		{
+			if(ibo != nullptr)
+			{
+				ibo->Release();
+			}
+		}
+
+		ID3D11Buffer* ibo;
+	};
+
+	struct RenderTargetResource : DX11Resource
+	{
+		RenderTargetResource() 
+			: DX11Resource(RENDERTARGET) {}
+	};
+
+	struct TextureResource : DX11Resource
+	{
+		TextureResource(Type type) 
+			: DX11Resource(type) {}
+	};
+
+	struct Texture2DResource : TextureResource
+	{
+		Texture2DResource() 
+			: TextureResource(TEX_2D) {}
+	};
+
+	struct Texture2DArrayResource : TextureResource
+	{
+		Texture2DArrayResource() 
+			: TextureResource(TEX_2D_ARRAY) {}
+		
+	};
+
+	struct TextureCubeResource : TextureResource
+	{
+		TextureCubeResource() 
+			: TextureResource(TEX_CUBE) {}
+	};
+
+	struct Texture3DResource : TextureResource
+	{
+		Texture3DResource() 
+			: TextureResource(TEX_3D) {}
 	};
 
 };

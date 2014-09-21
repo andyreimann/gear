@@ -136,7 +136,7 @@ DebugDrawer::transport(G2::RenderComponent* target)
 				   .writeData(G2Core::Semantics::POSITION, &mLines.vertices[0])
 				   .writeData(G2Core::Semantics::COLOR_0, &mLines.colors[0]);
 	target->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_LINES)
+		.setDrawMode(G2Core::DrawMode::LINES)
 		.setVaoIndex(0)
 	);
 

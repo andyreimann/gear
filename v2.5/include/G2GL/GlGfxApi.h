@@ -22,6 +22,7 @@ extern "C"
 	GEAROPENGLDLL_API void SetViewport(G2::rect const& viewport);
 	GEAROPENGLDLL_API void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
 	GEAROPENGLDLL_API void FreeGfxResource(G2Core::GfxResource* resource);
+	GEAROPENGLDLL_API void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
 
 	// ShaderAPI
 	GEAROPENGLDLL_API G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
@@ -39,12 +40,35 @@ extern "C"
 	GEAROPENGLDLL_API void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements);
 	GEAROPENGLDLL_API void UpdateVAOVertexBufferVec3(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec3 const* data, int numElements);
 	GEAROPENGLDLL_API void UpdateVAOVertexBufferVec2(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec2 const* data, int numElements);
-	GEAROPENGLDLL_API void BindVAO(G2Core::GfxResource* vao);
+	GEAROPENGLDLL_API void BindVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader);
 	GEAROPENGLDLL_API void UnbindVAO(G2Core::GfxResource* vao);
+	GEAROPENGLDLL_API void* GetVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode);
+	GEAROPENGLDLL_API void ReturnVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic);
 	
-	GEAROPENGLDLL_API void* GetVaoDataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode);
-	GEAROPENGLDLL_API void ReturnVaoDataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic);
-
+	// IndexBufferObject
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateIBO();
+	GEAROPENGLDLL_API void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int numElements);
+	GEAROPENGLDLL_API void BindIBO(G2Core::GfxResource* ibo);
+	GEAROPENGLDLL_API void UnbindIBO(G2Core::GfxResource* ibo);
+	GEAROPENGLDLL_API unsigned int* GetIBODataPointer(G2Core::GfxResource* ibo, G2Core::BufferAccessMode::Name mode);
+	GEAROPENGLDLL_API void ReturnIBODataPointer(G2Core::GfxResource* ibo);
+	
 	// Drawing
-	GEAROPENGLDLL_API void DrawVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader, G2Core::DrawMode::Name drawMode, int numVertices);
+	GEAROPENGLDLL_API void DrawVAO(G2Core::GfxResource* vao, G2Core::DrawMode::Name drawMode, int numVertices);
+	GEAROPENGLDLL_API void DrawIBO(G2Core::GfxResource* ibo, G2Core::DrawMode::Name drawMode, int numIndices);
+
+	// RenderTarget
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
+	GEAROPENGLDLL_API void AttachTextureToRenderTarget(G2Core::GfxResource* renderTarget, G2Core::GfxResource* texture, G2Core::FrameBufferAttachmentPoint::Name attachment, G2Core::TextureFormat::Name texTarget, int mipmapLevel, int layer);
+	GEAROPENGLDLL_API void BindRenderTarget(G2Core::GfxResource* renderTarget);
+	GEAROPENGLDLL_API void UnbindRenderTarget(G2Core::GfxResource* renderTarget);	
+
+	// Texture
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2D(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2DArray(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTextureCube(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::WrapMode::Name wrapR, unsigned char * data);
+	GEAROPENGLDLL_API void BindTexture(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
+	GEAROPENGLDLL_API void UnbindTexture(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
+	
 };

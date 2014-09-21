@@ -32,8 +32,7 @@ DX11Window::DX11Window(std::string const& title, unsigned int width, unsigned in
 	: G2::AbstractWindow(title,width,height,hideMouse),
 	mMousePosition(0,0),
 	hWnd(nullptr),
-	hInstance(GetModuleHandle(NULL)),
-	mEditorCamera(this)
+	hInstance(GetModuleHandle(NULL))
 {
 
 
@@ -86,7 +85,8 @@ DX11Window::DX11Window(std::string const& title, unsigned int width, unsigned in
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // how swap chain is to be used
 	scd.OutputWindow = hWnd;                                // the window to be used
-	scd.SampleDesc.Count = 4;                               // how many multisamples
+	scd.SampleDesc.Count = 1;                               // how many multisamples
+	scd.SampleDesc.Quality = 0;                               
 	scd.Windowed = TRUE;                                    // windowed/full-screen mode
 	//scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;     // allow full-screen switching
 	
@@ -166,20 +166,6 @@ DX11Window::DX11Window(std::string const& title, unsigned int width, unsigned in
 	G2_gfxDevice()->init(&globals);
 
 	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mWidth, mHeight));
-
-	
-
-	mEditorCamera 
-		.pan(0.f,10.f)
-		.rotate(25.f, 0.f)
-		.moveView(-15.f)
-		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
-
-	// new way of loading shader
-	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default_CG.g2fx");
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem,G2::RenderComponent>()
-		->setDefaultEffect(effect);
 }
 
 DX11Window::~DX11Window() 

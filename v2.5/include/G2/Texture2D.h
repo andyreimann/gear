@@ -22,12 +22,12 @@ namespace G2
 			{
 
 				std::shared_ptr<Texture2D> buildResource(
-					unsigned minFilter, 
-					unsigned magFilter, 
+					G2Core::FilterMode::Name minFilter, 
+					G2Core::FilterMode::Name magFilter, 
 					bool compress, 
-					WrapMode::Name wrapS, 
-					WrapMode::Name wrapT,
-					int internalFormat);
+					G2Core::WrapMode::Name wrapS, 
+					G2Core::WrapMode::Name wrapT,
+					G2Core::DataFormat::Name internalFormat);
 				~Builder();
 
 				unsigned id; // The IL image id
@@ -45,14 +45,14 @@ namespace G2
 			 * @note If you don't want to use the internal compression method, just pass in a compressed internal format.
 			 * If the supplied internal format is already a compressed format, it does not matter what value you set the compressed parameter to!
 			 */
-			Texture2D(unsigned int minFilter, 
-					  unsigned int magFilter, 
+			Texture2D(G2Core::FilterMode::Name minFilter, 
+					  G2Core::FilterMode::Name magFilter, 
 					  unsigned int width,
 					  unsigned int height,
-					  unsigned int format,
-					  int internalFormat,
-					  WrapMode::Name wrapS,
-					  WrapMode::Name wrapT,
+					  G2Core::DataFormat::Name format,
+					  G2Core::DataFormat::Name internalFormat,
+					  G2Core::WrapMode::Name wrapS,
+					  G2Core::WrapMode::Name wrapT,
 					  bool compress,
 					  unsigned char * data = nullptr);
 			/// Move ctor.
@@ -82,14 +82,12 @@ namespace G2
 			
 			static bool		gInitialized;
 
-			unsigned int	mMinFilter;		// The type of min filter, the texture uses
-			unsigned int	mMagFilter;		// The type of mag filter, the texture uses			
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
 			unsigned		mChannels;		// The number of channels of the Texture
 			int				mBytes;			// The memory usage of the texture in bytes
 			glm::mat4		mTextureMatrix;	// The Texture Matrix to use for the Texture
 			bool			mCompressed;	// Indicates whether the Texture is compressed or not
-			bool			mUseMipMaps;	// If true mip maps are applied to the texture
+
 	};
 };

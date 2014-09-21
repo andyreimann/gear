@@ -118,7 +118,7 @@ RenderComponent::setPolygonOffsetFactor(float const& value)
 }
 
 void
-RenderComponent::setPolygonDrawMode(PolygonDrawMode::Name const& value) 
+RenderComponent::setPolygonDrawMode(G2Core::PolygonDrawMode::Name const& value) 
 {
 	RenderStates copy(mRenderStatesGroup->getRenderStates());
 	copy.setPolygonDrawMode(value);
@@ -126,7 +126,7 @@ RenderComponent::setPolygonDrawMode(PolygonDrawMode::Name const& value)
 }
 
 void
-RenderComponent::setFaceCulling(FaceCulling::Name const& value) 
+RenderComponent::setFaceCulling(G2Core::FaceCulling::Name const& value) 
 {
 	RenderStates copy(mRenderStatesGroup->getRenderStates());
 	copy.setFaceCulling(value);
@@ -134,7 +134,7 @@ RenderComponent::setFaceCulling(FaceCulling::Name const& value)
 }
 
 void
-RenderComponent::setSourceBlendFactor(BlendFactor::Name const& value) 
+RenderComponent::setSourceBlendFactor(G2Core::BlendFactor::Name const& value) 
 {
 	RenderStates copy(mRenderStatesGroup->getRenderStates());
 	copy.setSourceFactor(value);
@@ -142,7 +142,7 @@ RenderComponent::setSourceBlendFactor(BlendFactor::Name const& value)
 }
 
 void
-RenderComponent::setDestinationBlendFactor(BlendFactor::Name const& value) 
+RenderComponent::setDestinationBlendFactor(G2Core::BlendFactor::Name const& value) 
 {
 	RenderStates copy(mRenderStatesGroup->getRenderStates());
 	copy.setDestinationFactor(value);

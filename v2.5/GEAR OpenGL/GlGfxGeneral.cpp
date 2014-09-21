@@ -54,6 +54,8 @@ Init(void* data)
 	GLCHECK( glEnable(GL_MULTISAMPLE) );
 	GLCHECK( glEnable(GL_CULL_FACE) );
 	GLCHECK( glEnable(GL_BLEND) );
+	GLCHECK( glEnable(GL_TEXTURE_2D) );
+	GLCHECK( glEnable(GL_TEXTURE_CUBE_MAP) );
 	int max;
 	GLCHECK( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
 	G2::logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << G2::endl;
@@ -96,8 +98,7 @@ bool SupportsShadingLanguage(std::string const& shadingLanguage)
 	return shadingLanguage == "GLSL" || shadingLanguage == "CG";
 }
 
-void
-ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer) 
+void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer) 
 {
 	if(buffer != nullptr)
 	{
@@ -108,6 +109,18 @@ ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer)
 	glFlags |= (flags & G2Core::Buffer::DEPTH) == G2Core::Buffer::DEPTH ? GL_DEPTH_BUFFER_BIT : 0;
 	glFlags |= (flags & G2Core::Buffer::STENCIL) == G2Core::Buffer::STENCIL ? GL_STENCIL_BUFFER_BIT : 0;
 	GLCHECK( glClear(glFlags) );
+}
+
+void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor)
+{
+	GLCHECK( glCullFace(cullFaceState) );
+	GLCHECK( glPolygonMode(cullFaceState, polygonDrawMode) );
+	if(polygonOffsetFactor >= 0.f && polygonOffsetUnits >= 0.f)
+	{
+		// sometimes we have to skip this!
+		GLCHECK( glPolygonOffset(polygonOffsetFactor,polygonOffsetUnits) );
+	}
+	GLCHECK( glBlendFunc(blendFuncSourceFactor, blendFuncDestinationFactor) );
 }
 
 void FreeGfxResource(G2Core::GfxResource* resource)

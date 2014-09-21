@@ -108,7 +108,7 @@ RoamTerrain::setup(
 		mPatches[y].resize(mNumPatchesPerSide);
 	}
 
-	mHeightMap->bind(G2::TEX_SLOT1);
+	mHeightMap->bind(G2Core::TexSlot::TEX_SLOT1);
 	// Optimization:  Add an extra row above and below the height map.
 	//   - The extra top row contains a copy of the last row in the height map.
 	//   - The extra bottom row contains a copy of the first row in the height map.
@@ -118,7 +118,7 @@ RoamTerrain::setup(
 	// Give the rest of the application a pointer to the actual start of the height map.
 	unsigned char* dest = mHeightMapData + mHeightMap->getWidth();
 	glGetTexImage(GL_TEXTURE_2D, 0,G2::LUMINANCE, GL_UNSIGNED_BYTE, dest);
-	mHeightMap->unbind(G2::TEX_SLOT1);
+	mHeightMap->unbind(G2Core::TexSlot::TEX_SLOT1);
 
 	// Copy the last row of the height map into the extra first row.
 	memcpy( mHeightMapData, mHeightMapData + mHeightMap->getWidth() * mHeightMap->getWidth(), mHeightMap->getWidth() );

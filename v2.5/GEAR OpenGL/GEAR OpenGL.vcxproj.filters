@@ -11,5 +11,8 @@
     <ClCompile Include="GlGfxShader.cpp" />
     <ClCompile Include="GlGfxVao.cpp" />
     <ClCompile Include="GlGfxMappings.cpp" />
+    <ClCompile Include="GlGfxRenderTarget.cpp" />
+    <ClCompile Include="GlGfxTexture.cpp" />
+    <ClCompile Include="GlGfxIbo.cpp" />
   </ItemGroup>
 </Project>

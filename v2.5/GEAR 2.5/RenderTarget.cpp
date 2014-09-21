@@ -8,13 +8,13 @@
 
 using namespace G2;
 
-const int CubeMapAttachmentPoints[6] = {
-	G2::CUBE_MAP_POS_X,
-	G2::CUBE_MAP_NEG_X,
-	G2::CUBE_MAP_POS_Y,
-	G2::CUBE_MAP_NEG_Y,
-	G2::CUBE_MAP_POS_Z,
-	G2::CUBE_MAP_NEG_Z
+const G2Core::TextureFormat::Name CubeMapAttachmentPoints[6] = {
+	G2Core::TextureFormat::CUBE_MAP_POS_X,
+	G2Core::TextureFormat::CUBE_MAP_NEG_X,
+	G2Core::TextureFormat::CUBE_MAP_POS_Y,
+	G2Core::TextureFormat::CUBE_MAP_NEG_Y,
+	G2Core::TextureFormat::CUBE_MAP_POS_Z,
+	G2Core::TextureFormat::CUBE_MAP_NEG_Z
 };
 
 RenderTarget::RenderTarget(
@@ -25,7 +25,7 @@ RenderTarget::RenderTarget(
 	: mRenderTextureSampler(targetSampler), 
 	mRenderTexture(renderTexture),
 	mRenderTargetType(renderTargetType),
-	mFrameBuffer(renderTexture->getWidth(),renderTexture->getHeight()),
+	mFrameBuffer(renderTexture->getWidth(),renderTexture->getHeight(), renderTexture->getDataFormat()),
 	mUseClearColor(false),
 	mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
 {
@@ -37,7 +37,7 @@ RenderTarget::RenderTarget(
 	}
 	// Get the buffer attachment point depending
 	// on the requested output format
-	mRenderTargetAttachmentPoint = BufferAttachment::getByOutputFormat(
+	mRenderTargetAttachmentPoint = G2Core::FrameBufferAttachmentPoint::getByDataFormat(
 		Setting::get("OutputFormat", settings, "RGB").value
 	);
 
@@ -50,7 +50,7 @@ RenderTarget::RenderTarget(
 	else
 	{
 
-		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->mType, 0, 0);
+		mFrameBuffer.attachTexture(mRenderTexture, mRenderTargetAttachmentPoint, mRenderTexture->getType(), 0, 0);
 	}
 	mFrameBuffer.unbind();
 }
@@ -77,7 +77,7 @@ RenderTarget& RenderTarget::operator=(RenderTarget && rhs)
 	// 3. Stage: modify src to a well defined state
 	rhs.mRenderTextureSampler = Sampler::SAMPLER_INVALID;
 	rhs.mRenderTargetType = RenderTargetType::RT_INVALID;
-	rhs.mRenderTargetAttachmentPoint = BufferAttachment::ATTACHMENT_INVALID;
+	rhs.mRenderTargetAttachmentPoint = G2Core::FrameBufferAttachmentPoint::ATTACHMENT_INVALID;
 	return *this;
 }
 
@@ -104,8 +104,8 @@ RenderTarget::bind(int renderIterationIndex) const
 	{
 		G2_gfxDevice()->clearColor(mRenderSystem->getClearColor());
 	}
-	// TODO maybe later we have to pass a valid GfxResource here fopr the rendertarget!
-	G2_gfxDevice()->clearBuffers(G2Core::Buffer::COLOR | G2Core::Buffer::DEPTH, nullptr);
+	// TODO maybe later we have to pass a valid GfxResource here for the rendertarget!
+	G2_gfxDevice()->clearBuffers(G2Core::Buffer::COLOR | G2Core::Buffer::DEPTH, mFrameBuffer.mRenderTargetResource);
 }
 
 void
