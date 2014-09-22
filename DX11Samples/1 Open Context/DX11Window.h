@@ -33,9 +33,9 @@ class DXWindow
 
 		// global declarations
 		IDXGISwapChain*			mSwapchain;             // the pointer to the swap chain interface
-		ID3D11Device*			mDevice;                     // the pointer to our Direct3D device interface
-		ID3D11DeviceContext*	mDeviceContext;           // the pointer to our Direct3D device context
-
+		ID3D11Device*			mDevice;                // the pointer to our Direct3D device interface
+		ID3D11DeviceContext*	mDeviceContext;         // the pointer to our Direct3D device context
+		ID3D11RenderTargetView* mBackbuffer;			// the pointer to out backbuffer
 
 };
 

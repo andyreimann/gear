@@ -301,11 +301,11 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 	}
 	if(keyCode == G2::KC_G && !mEditorOn)
 	{
-		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2::PolygonDrawMode::LINE);
+		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
 	}
 	if(keyCode == G2::KC_H && !mEditorOn)
 	{
-		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2::PolygonDrawMode::FILL);
+		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
 	}
 	else if(keyCode == G2::KC_U && !mEditorOn) 
 	{ 

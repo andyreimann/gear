@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CG", "CG\CG.vcxproj", "{CE9
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1 Open Context", "1 Open Context\1 Open Context.vcxproj", "{D511D691-4F43-4C9F-8852-7D8FD69861AB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2 Drawing a Triangle", "2 Drawing a Triangle\2 Drawing a Triangle.vcxproj", "{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3 Drawing a Triangle with CG Shader", "3 Drawing a Triangle with CG Shader\3 Drawing a Triangle with CG Shader.vcxproj", "{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -50,6 +54,28 @@ Global
 		{D511D691-4F43-4C9F-8852-7D8FD69861AB}.Release|Win32.ActiveCfg = Release|Win32
 		{D511D691-4F43-4C9F-8852-7D8FD69861AB}.Release|Win32.Build.0 = Release|Win32
 		{D511D691-4F43-4C9F-8852-7D8FD69861AB}.Release|x64.ActiveCfg = Release|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|Win32.Build.0 = Debug|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|x64.ActiveCfg = Debug|x64
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Debug|x64.Build.0 = Debug|x64
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Release|Win32.ActiveCfg = Release|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Release|Win32.Build.0 = Release|Win32
+		{21B12910-AB8C-4E42-B7BE-1DC3BF0D15A2}.Release|x64.ActiveCfg = Release|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|Win32.Build.0 = Debug|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|x64.ActiveCfg = Debug|x64
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Debug|x64.Build.0 = Debug|x64
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Release|Win32.ActiveCfg = Release|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Release|Win32.Build.0 = Release|Win32
+		{7E01E7AB-7CF1-4B52-B045-DF7A796267F1}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

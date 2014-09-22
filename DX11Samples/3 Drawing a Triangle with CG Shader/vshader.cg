@@ -1,0 +1,21 @@
+	// Application to Vertex Shader Data
+	struct A2VData
+	{
+	  float4 position : POSITION;
+	  float4 color    : COLOR;
+	};
+	// Vertex to Fragment Shader Data
+	struct V2FData
+	{
+		float4 position : POSITION;
+		float4 color : COLOR;
+	};
+
+
+	V2FData main(A2VData dataIn, uniform float4 ambient) 
+	{
+		V2FData dataOut;
+		dataOut.position = dataIn.position;
+		dataOut.color = dataIn.color;
+		return dataOut;
+	}

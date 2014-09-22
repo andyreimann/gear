@@ -1,6 +1,7 @@
 #include "NormalMapGenerator.h"
 
 #include <vector>
+#include <algorithm>
 
 using namespace G2;
 

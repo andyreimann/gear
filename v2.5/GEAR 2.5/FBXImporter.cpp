@@ -388,7 +388,7 @@ FBXImporter::_preparePointCacheData(FbxScene* pScene, FbxTime &pCache_Start, Fbx
 				if( !lCache ) continue;
 
 				// Process the point cache data only if the constraint is active
-				if (lDeformer->IsActive())
+				if (lDeformer->Active)
 				{
 					if (lCache->GetCacheFileFormat() == FbxCache::eMaxPointCacheV2)
 					{
@@ -424,7 +424,7 @@ FBXImporter::_preparePointCacheData(FbxScene* pScene, FbxTime &pCache_Start, Fbx
 						FbxString lTheErrorIs = lStatus.GetErrorString();
 
 						// Set the deformer inactive so we don't play it back
-						lDeformer->SetActive(false);
+						lDeformer->Active = false;
 					}
 					else
 					{

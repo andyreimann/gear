@@ -8,6 +8,8 @@
 #include <OIS/OISInputManager.h>
 #include <OIS/OISException.h>
 
+#include <algorithm>
+
 using namespace G2;
 
 const char *g_DeviceType[6] = {"OISUnknown", "OISKeyboard", "OISMouse", "OISJoyStick",

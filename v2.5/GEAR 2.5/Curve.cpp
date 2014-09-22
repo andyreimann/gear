@@ -1,4 +1,5 @@
 #include "Curve.h"
+#include <algorithm>
 
 using namespace G2;
 

@@ -353,7 +353,7 @@ FBXAnimationSystem::_animateMesh(FbxNode* pNode,
 
 	// If it has some deformer connection, update the vertices position
 	const bool lHasVertexCache = lMesh->GetDeformerCount(FbxDeformer::eVertexCache) &&
-		(static_cast<FbxVertexCacheDeformer*>(lMesh->GetDeformer(0, FbxDeformer::eVertexCache)))->IsActive();
+		(static_cast<FbxVertexCacheDeformer*>(lMesh->GetDeformer(0, FbxDeformer::eVertexCache)))->Active;
 	const bool lHasShape = lMesh->GetShapeCount() > 0;
 	const bool lHasSkin = lMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
 	const bool lHasDeformation = lHasVertexCache || lHasShape || lHasSkin;
@@ -573,7 +573,7 @@ FBXAnimationSystem::_readVertexCacheData(FbxMesh* pMesh, FbxTime& pTime, FbxVect
 
 	if (lCache->GetCacheFileFormat() == FbxCache::eMayaCache)
 	{
-		if ((lChannelIndex = lCache->GetChannelIndex(lDeformer->GetCacheChannel())) > -1)
+		if ((lChannelIndex = lCache->GetChannelIndex(lDeformer->Channel.GetName())) > -1)
 		{
 			lReadSucceed = lCache->Read(lChannelIndex, pTime, lReadBuf, lVertexCount);
 		}

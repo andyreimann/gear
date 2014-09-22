@@ -2,6 +2,7 @@
 // (c) 2014 GEAR 2.5
 #include "AABB.h"
 #include <limits>
+#include <algorithm>
 
 using namespace G2;
 

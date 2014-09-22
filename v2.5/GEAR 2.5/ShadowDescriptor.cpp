@@ -1,4 +1,5 @@
 #include "ShadowDescriptor.h"
+#include <algorithm>
 
 using namespace G2;
 

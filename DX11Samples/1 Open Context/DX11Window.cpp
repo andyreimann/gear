@@ -30,7 +30,7 @@ DXWindow::DXWindow(void)
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	//wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	wc.lpszClassName = "WindowClass1";
 
 	// register the window class
@@ -63,6 +63,7 @@ DXWindow::DXWindow(void)
 void
 DXWindow::initD3D() 
 {
+	HRESULT hr;
 	//Describe our SwapChain Buffer
 	DXGI_MODE_DESC bufferDesc;
 
@@ -90,23 +91,71 @@ DXWindow::initD3D()
 	swapChainDesc.OutputWindow = hWnd; 
 	swapChainDesc.Windowed = TRUE; 
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;     // allow full-screen switching by Alt+Enter
 
 	// create a device, device context and swap chain using the information in the scd struct
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL,
-								  D3D_DRIVER_TYPE_HARDWARE,
-								  NULL,
-								  NULL,
-								  NULL,
-								  NULL,
-								  D3D11_SDK_VERSION,
-								  &swapChainDesc,
-								  &mSwapchain,
-								  &mDevice,
-								  NULL,
-								  &mDeviceContext);
+	hr = D3D11CreateDeviceAndSwapChain(	  NULL,
+										  D3D_DRIVER_TYPE_HARDWARE,
+										  NULL,
+										  NULL,
+										  NULL,
+										  NULL,
+										  D3D11_SDK_VERSION,
+										  &swapChainDesc,
+										  &mSwapchain,
+										  &mDevice,
+										  NULL,
+										  &mDeviceContext);
 
 	if( SUCCEEDED( hr ) )
-		std::cout << "Opened D3D HARDWARE Context!";
+	{
+		std::cout << "Opened D3D HARDWARE Context!\n";
+	}
+	else
+	{
+		std::cout << "Could not open D3D HARDWARE Context!\n";
+		exit(-1);
+	}
+
+	
+	// SET RENDER TARGET
+	{
+		// get the address of the back buffer
+		ID3D11Texture2D *pBackBuffer;
+		mSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+
+		// use the back buffer address to create the render target
+		hr = mDevice->CreateRenderTargetView(pBackBuffer, NULL, &mBackbuffer);
+		
+		if( SUCCEEDED( hr ) )
+		{
+			std::cout << "Created back buffer!\n";
+		}
+		else
+		{
+			std::cout << "Could not create back buffer!\n";
+			exit(-1);
+		}
+		pBackBuffer->Release();
+
+		// set the render target as the back buffer
+		mDeviceContext->OMSetRenderTargets(1, &mBackbuffer, NULL);
+	}
+
+	// SET VIEWPORT
+	{
+		// Set the viewport
+		D3D11_VIEWPORT viewport;
+		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.Width = mWidth;
+		viewport.Height = mHeight;
+
+		mDeviceContext->RSSetViewports(1, &viewport);
+	}
+	
 }
 
 // this is the main message handler for the program
@@ -131,6 +180,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 void
 DXWindow::startFrame() 
 {
+    // clear the back buffer to a deep blue
+    mDeviceContext->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	// this struct holds Windows event messages
 	MSG msg;
 	// wait for the next message in the queue, store the result in 'msg'
@@ -147,12 +198,17 @@ DXWindow::startFrame()
 void
 DXWindow::endFrame() 
 {
+    // switch the back buffer and the front buffer
+    mSwapchain->Present(0, 0);
 }
 
 DXWindow::~DXWindow() 
 {
+	mSwapchain->SetFullscreenState(FALSE, NULL);    // switch to windowed mode
 	// close and release all existing COM objects
 	mSwapchain->Release();
+    mBackbuffer->Release();
+
 	mDevice->Release();
 	mDeviceContext->Release();
 }
