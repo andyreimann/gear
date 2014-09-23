@@ -30,23 +30,23 @@ static void checkForCgError( const char * situation, CGcontext myCgContext, bool
 		if( _exit )
 			exit(1);
 	}
-	}
+}
 
-	void _cgErrorHandler(CGcontext context, CGerror error, void* appData) 
+void _cgErrorHandler(CGcontext context, CGerror error, void* appData) 
+{
+	if(error != CG_NO_ERROR)
 	{
-		if(error != CG_NO_ERROR)
-		{
-			const char* strPtr = cgGetErrorString(error);
-			std::cout << "[CgRuntime] Cg Error: \n" << strPtr != nullptr ? strPtr : "";
+		const char* strPtr = cgGetErrorString(error);
+		std::cout << "[CgRuntime] Cg Error: \n" << (strPtr != nullptr ? strPtr : "");
 		
-			if(error == CG_COMPILER_ERROR)
-			{
-				strPtr = cgGetLastListing(context);
-				std::cout << strPtr != nullptr ? strPtr : "";
-			}
-			std::cout << std::endl;
+		if(error == CG_COMPILER_ERROR)
+		{
+			strPtr = cgGetLastListing(context);
+			std::cout << (strPtr != nullptr ? strPtr : "");
 		}
+		std::cout << std::endl;
 	}
+}
 
 std::string
 read(std::string const& file) 
@@ -253,7 +253,7 @@ void DXWindow::initPipeline()
 		// This will allow the Cg runtime to manage texture binding
 		//cgD3D11SetManageTextureParameters(gCgContext, CG_TRUE);
 		
-		mCgVertexShaderProfile = cgD3D10GetLatestVertexProfile();
+		mCgVertexShaderProfile = cgD3D11GetLatestVertexProfile();
 		if(mCgVertexShaderProfile == CG_PROFILE_UNKNOWN)
 		{
 			// ERROR
@@ -261,14 +261,14 @@ void DXWindow::initPipeline()
 			return;
 		}
 		
-		mCgGeometryShaderProfile = cgD3D10GetLatestGeometryProfile();
+		mCgGeometryShaderProfile = cgD3D11GetLatestGeometryProfile();
 		if(mCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
 		{
 			// WARNING
 			std::cout << "[CgRuntime] Warning: Could not get valid Geometry-Profile." << std::endl;
 		}
 		
-		mCgFragmentShaderProfile = cgD3D10GetLatestPixelProfile();
+		mCgFragmentShaderProfile = cgD3D11GetLatestPixelProfile();
 		if(mCgFragmentShaderProfile == CG_PROFILE_UNKNOWN)
 		{
 			// ERROR
@@ -283,17 +283,15 @@ void DXWindow::initPipeline()
 
 		std::string sourcePtr = read("vshader.cg");
 
-		auto optimal = cgD3D10GetOptimalOptions(mCgVertexShaderProfile);
+		auto optimal = cgD3D11GetOptimalOptions(mCgVertexShaderProfile);
 
-		mVertexShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), mCgVertexShaderProfile, "main", optimal);
+		mVertexShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_PROFILE_VS_4_0, "main", optimal);
 
 		if(mVertexShaderId != nullptr)
 		{
-			optimal = cgD3D10GetOptimalOptions(mCgFragmentShaderProfile);
+			optimal = cgD3D11GetOptimalOptions(mCgFragmentShaderProfile);
 
-			hr = cgD3D10LoadProgram(mVertexShaderId, NULL);
-
-			checkForCgError("loading vertex shader", mCgContext, false);
+			hr = cgD3D11LoadProgram(mVertexShaderId, NULL);
 			
 			if( SUCCEEDED( hr ) )
 			{
@@ -308,9 +306,8 @@ void DXWindow::initPipeline()
 			CGerror error;
 			const char *errorString = cgGetLastErrorString(&error);
 			sourcePtr = read("fshader.cg");
-			mFragmentShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), mCgFragmentShaderProfile, "main", optimal);
-			errorString = cgGetLastErrorString(&error);
-			hr = cgD3D10LoadProgram(mFragmentShaderId, NULL);
+			mFragmentShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_PROFILE_PS_4_0, "main", optimal);
+			hr = cgD3D11LoadProgram(mFragmentShaderId, NULL);
 
 			if( SUCCEEDED( hr ) )
 			{
@@ -323,11 +320,11 @@ void DXWindow::initPipeline()
 			}
 		}
 		// get a D3D shader resource from CG shader resource
-		ID3D10Blob* VS = cgD3D10GetCompiledProgram(mVertexShaderId);
+		ID3D10Blob* VS = cgD3D11GetCompiledProgram(mVertexShaderId);
 		
 		// activate the shader objects
-		cgD3D10BindProgram(mVertexShaderId);
-		cgD3D10BindProgram(mFragmentShaderId);
+		cgD3D11BindProgram(mVertexShaderId);
+		cgD3D11BindProgram(mFragmentShaderId);
 
 		// create the input layout object
 		D3D11_INPUT_ELEMENT_DESC ied[] =

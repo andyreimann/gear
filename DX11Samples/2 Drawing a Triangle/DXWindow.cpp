@@ -3,6 +3,17 @@
 #include <fstream>
 #include <sstream>
 
+#include <D3Dcompiler.h>		// 
+
+std::string
+read(std::string const& file)
+{
+	std::ifstream t(file);
+	std::stringstream buffer;
+	buffer << t.rdbuf();
+	return buffer.str();
+}
+
 // the WindowProc function prototype for message handling
 LRESULT CALLBACK WindowProc(HWND hWnd,
 						 UINT message,
@@ -167,12 +178,23 @@ void DXWindow::initPipeline()
 	{
 		// load and compile the two shader
 		ID3D10Blob *VS, *PS;
-		D3DX11CompileFromFile("shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, 0, 0);
-		D3DX11CompileFromFile("shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, 0, 0);
+		//D3DX11CompileFromFile("shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, 0, 0);
+		//D3DX11CompileFromFile("shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, 0, 0);
 
 
-		D3DCompileFromFile("shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, 0, 0);
-		D3DCompileFromFile("shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, 0, 0);
+		std::string sourcePtr = read("shaders.shader");
+		D3DCompile(sourcePtr.c_str(), sourcePtr.size(), 0, 0, 0, "VShader", "vs_4_0", 0, 0, &VS, 0);
+		D3DCompile(sourcePtr.c_str(), sourcePtr.size(), 0, 0, 0, "PShader", "ps_4_0", 0, 0, &PS, 0);
+
+		ID3D11ShaderReflection* reflection;
+		D3DReflect(VS->GetBufferPointer(), VS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflection);
+		reflection->GetConstantBufferByName("myUniform");
+		D3D11_SHADER_INPUT_BIND_DESC uniformDesc;
+		reflection->GetResourceBindingDescByName("myUniform", &uniformDesc);
+		
+		
+
+		
 		// encapsulate both shaders into shader objects
 		mDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVShader);
 		mDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPShader);

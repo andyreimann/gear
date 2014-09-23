@@ -15,12 +15,12 @@ void _cgErrorHandler(CGcontext context, CGerror error, void* appData)
 	if(error != CG_NO_ERROR)
 	{
 		const char* strPtr = cgGetErrorString(error);
-		std::cout << "[CgRuntime] Cg Error: \n" << strPtr != nullptr ? strPtr : "";
+		std::cout << "[CgRuntime] Cg Error: \n" << (strPtr != nullptr ? strPtr : "");
 		
 		if(error == CG_COMPILER_ERROR)
 		{
 			strPtr = cgGetLastListing(context);
-			std::cout << strPtr != nullptr ? strPtr : "";
+			std::cout << (strPtr != nullptr ? strPtr : "");
 		}
 		std::cout << std::endl;
 	}
