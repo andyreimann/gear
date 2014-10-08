@@ -153,7 +153,6 @@ RenderSystem::_renderForward(
 	}
 	
 	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
-	//GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
 	
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
@@ -673,6 +672,7 @@ RenderSystem::_recalculateModelSpaceAABB(RenderComponent* component, TransformSy
 			unsigned int* indices = iao.getIndexPointer();
 			for(unsigned int v = 0; v < iao.getNumElements(); ++v)
 			{
+				// TODO VAO currently does not set the componentsPerPosition! Frustum Culling is therefore not active!
 				if(componentsPerPosition == 3)
 				{
 					aabb.merge(((glm::vec3*)vertexData)[indices[v]]);

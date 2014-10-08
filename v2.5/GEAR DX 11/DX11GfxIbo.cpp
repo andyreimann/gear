@@ -13,6 +13,7 @@ G2Core::GfxResource* CreateIBO()
 void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int numElements)
 {
 	G2DX11::IndexBufferObjectResource* iboPtr = static_cast<G2DX11::IndexBufferObjectResource*>(ibo);
+	HRESULT hr;
 	if(iboPtr->ibo == nullptr)
 	{
 		// create new one
@@ -27,8 +28,14 @@ void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int nu
 
 		D3D11_SUBRESOURCE_DATA iinitData;
 		iinitData.pSysMem = data;
-		gDevicePtr()->CreateBuffer(&bd, &iinitData, &iboPtr->ibo);    // create the buffer
+		hr = gDevicePtr()->CreateBuffer(&bd, &iinitData, &iboPtr->ibo);    // create the buffer
 		
+
+		if (!SUCCEEDED(hr))
+		{
+			G2::logger << "Could not create IBO" << G2::endl;
+		}
+
 		//D3D11_MAPPED_SUBRESOURCE ms;
 		//gDeviceContextPtr()->Map(ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 		//memcpy(ms.pData, data, bd.ByteWidth);           // copy the vertices
@@ -36,7 +43,12 @@ void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int nu
 		return;
 	}
 	D3D11_MAPPED_SUBRESOURCE ms;
-	gDeviceContextPtr()->Map(iboPtr->ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	hr = gDeviceContextPtr()->Map(iboPtr->ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+
+	if (!SUCCEEDED(hr))
+	{
+		G2::logger << "Could not map IBO" << G2::endl;
+	}
 	memcpy(ms.pData, data, sizeof(unsigned int) * numElements);						// copy the vertices
 	gDeviceContextPtr()->Unmap(iboPtr->ibo, NULL); 
 }
@@ -56,7 +68,12 @@ unsigned int* GetIBODataPointer(G2Core::GfxResource* ibo, G2Core::BufferAccessMo
 {
 	G2DX11::IndexBufferObjectResource* iboPtr = static_cast<G2DX11::IndexBufferObjectResource*>(ibo);
 	D3D11_MAPPED_SUBRESOURCE ms;
-	gDeviceContextPtr()->Map(iboPtr->ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	HRESULT hr = gDeviceContextPtr()->Map(iboPtr->ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+
+	if (!SUCCEEDED(hr))
+	{
+		G2::logger << "Could not map IBO" << G2::endl;
+	}
 	return (unsigned int*)ms.pData;
 }
 

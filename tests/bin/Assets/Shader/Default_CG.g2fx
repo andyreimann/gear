@@ -48,7 +48,6 @@ Ubershader "GEAR/Default" {
       // Vertex to Fragment Shader Data
       struct V2FData
       {
-        float4 position : POSITION;
         float4 eye : TEXCOORD0;
         float3 normal : TEXCOORD1;
       };

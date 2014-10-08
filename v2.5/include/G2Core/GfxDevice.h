@@ -20,6 +20,8 @@ namespace G2
 	typedef void (*SetViewport)(G2::rect const& viewport);
 	typedef void (*ClearBuffers)(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
 	typedef void (*UpdateRenderStates)(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
+	typedef void (*GetPerspectiveProjection)(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY);
+	typedef void (*AdjustCameraSpaceMatrix)(glm::mat4& camSpaceMatrix);
 
 	// Shader
 	typedef G2Core::GfxResource* (*CompileShader)(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
@@ -93,6 +95,8 @@ namespace G2
 			SetViewport setViewport;
 			ClearBuffers clearBuffers;
 			UpdateRenderStates updateRenderStates;
+			GetPerspectiveProjection getPerspectiveProjection;
+			AdjustCameraSpaceMatrix adjustCameraSpaceMatrix;
 
 			// Shader
 			CompileShader compileShader;

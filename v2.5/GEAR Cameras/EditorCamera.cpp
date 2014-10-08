@@ -21,8 +21,8 @@ EditorCamera::EditorCamera(G2::AbstractWindow* window)
 	mRotationSpeed(0.05f),
 	mWindow(window),
 	mFovY(70.f),
-	mZNear(0.01f),
-	mZFar(50.f),
+	mZNear(0.1f),
+	mZFar(100.f),
 	mPaused(false)
 {
 	auto* cameraComponent = addComponent<G2::CameraComponent>("Editor Camera");
@@ -30,6 +30,7 @@ EditorCamera::EditorCamera(G2::AbstractWindow* window)
 	cameraComponent->setMoveSpeed(0.02f);
 
 	addComponent<G2::TransformComponent>(G2::TransformMode::TRS);
+	getComponent<G2::TransformComponent>()->setIsCameraSpace();
 	
 	G2::EventDistributer::onMouseMove.hook(this, &EditorCamera::onMouseMove);
 	G2::EventDistributer::onMouseUp.hook(this, &EditorCamera::onMouseUp);

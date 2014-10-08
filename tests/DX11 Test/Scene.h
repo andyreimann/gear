@@ -34,6 +34,9 @@ class Scene
 		G2Cameras::EditorCamera mEditorCamera;
 		G2::EffectImporter  mEffectImporter;
 		bool mExitRendering;
+
+		G2::Entity			mTriangle;
+
 		G2::FBXImporter		mMeshImporter;
 		std::vector<std::shared_ptr<G2::FBXMesh>> mMeshes;
 };

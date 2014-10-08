@@ -166,3 +166,4 @@ v2.5/x64/Debug/GEARDX11.lib
 tests/bin/Assets/Resources/heightmap2048.png
 v2.5/lib/x64/Debug/libfbxsdk-md.lib
 v2.5/lib/x64/Release/libfbxsdk-md.lib
+tests/DX11 Test/DX11 Test.vcxproj.andy.nvuser

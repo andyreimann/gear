@@ -30,7 +30,10 @@ D3D11_RASTERIZER_DESC& gGetRasterizerStateDescr()
 
 void gUpdateRasterizer()
 {
-	gDevice->CreateRasterizerState( &gRasterizerStateDesc, &gRasterizerState );
+	//gRasterizerStateDesc.CullMode = D3D11_CULL_NONE;
+	//gRasterizerStateDesc.FrontCounterClockwise = false;
+	HRESULT hr = gDevice->CreateRasterizerState( &gRasterizerStateDesc, &gRasterizerState );
+	//
 	gDeviceContext->RSSetState(gRasterizerState);
 }
 
@@ -80,16 +83,9 @@ Init(void* data)
 	gBackbufferDepthStencilView = globals->backbufferDepthStencilView;
 	gBackbufferDepthStencilBuffer = globals->backbufferDepthStencilBuffer;
 
-	gRasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
-	gRasterizerStateDesc.CullMode = D3D11_CULL_FRONT;
-	gRasterizerStateDesc.FrontCounterClockwise = true;
-	gRasterizerStateDesc.DepthBias = false;
-	gRasterizerStateDesc.DepthBiasClamp = 0;
-	gRasterizerStateDesc.SlopeScaledDepthBias = 0;
-	gRasterizerStateDesc.DepthClipEnable = true;
-	gRasterizerStateDesc.ScissorEnable = true;
-	gRasterizerStateDesc.MultisampleEnable = false;
-	gRasterizerStateDesc.AntialiasedLineEnable = false;
+	gRasterizerStateDesc.FillMode = D3D11_FILL_WIREFRAME;
+	gRasterizerStateDesc.CullMode = D3D11_CULL_NONE;
+	gRasterizerStateDesc.FrontCounterClockwise = false;
 
 	gUpdateRasterizer();
 
@@ -146,8 +142,8 @@ void SetViewport(G2::rect const& vp)
 	viewport.TopLeftY = vp.y;
 	viewport.Width = vp.z;
 	viewport.Height = vp.w;
-	viewport.MinDepth = 0.f;
-	viewport.MaxDepth = 1.f;
+	//viewport.MinDepth = 0.f;
+	//viewport.MaxDepth = 1.f;
 
 	gDeviceContext->RSSetViewports(1, &viewport);
 }
@@ -159,8 +155,10 @@ void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer)
 		int dxFlags = 0;
 		dxFlags |= (flags & G2Core::Buffer::DEPTH) == G2Core::Buffer::DEPTH ? D3D11_CLEAR_DEPTH : 0;
 		dxFlags |= (flags & G2Core::Buffer::STENCIL) == G2Core::Buffer::STENCIL ? D3D11_CLEAR_STENCIL : 0;
-
-		gDeviceContext->ClearDepthStencilView(gBackbufferDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+		// LH Coordinate System
+		//gDeviceContext->ClearDepthStencilView(gBackbufferDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		// RH Coordinate System (=OpenGL)
+		gDeviceContext->ClearDepthStencilView(gBackbufferDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 	else
 	{
@@ -176,4 +174,32 @@ void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::Polygon
 void FreeGfxResource(G2Core::GfxResource* resource)
 {
 	delete resource;
+}
+
+void GetPerspectiveProjection(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY)
+{
+	// http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/perspective-projections-in-lh-and-rh-systems-r3598
+	D3DXMATRIX projection;
+	D3DXMatrixPerspectiveFovRH(&projection, fovY * 3.14f / 180.f, (float)width / (float)height, zNear, zFar);
+	//projection[10] *= -1;
+	//projection[14] *= -1;
+	for (int i = 0; i < 16; ++i)
+	{
+		float* t = glm::value_ptr(target);
+		t[i] = projection[i];
+	}
+}
+
+void AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix)
+{
+	float* data = glm::value_ptr(camSpaceMatrix);
+	//data[2] *= -1.f;
+	//data[6] *= -1.f;
+	//data[10] *= -1.f;
+	//data[14] *= -1.f;
+	data[8] *= -1.f;
+	data[9] *= -1.f;
+	data[10] *= -1.f;
+	data[11] *= -1.f;
+
 }

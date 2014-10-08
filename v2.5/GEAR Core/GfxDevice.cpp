@@ -24,7 +24,7 @@ GfxDevice::loadGfxLibrary()
 }
 
 void
-GfxDevice::loadFunctionPointers() 
+GfxDevice::loadFunctionPointers()  
 {
 	// General
 	init = (Init)loadFunctionPointer("Init");
@@ -35,6 +35,10 @@ GfxDevice::loadFunctionPointers()
 	setViewport = (SetViewport)loadFunctionPointer("SetViewport");
 	clearBuffers = (ClearBuffers)loadFunctionPointer("ClearBuffers");
 	updateRenderStates = (UpdateRenderStates)loadFunctionPointer("UpdateRenderStates");
+	getPerspectiveProjection = (GetPerspectiveProjection)loadFunctionPointer("GetPerspectiveProjection");
+	adjustCameraSpaceMatrix = (AdjustCameraSpaceMatrix)loadFunctionPointer("AdjustCameraSpaceMatrix");
+	 
+	
 
 	// Shader
 	compileShader = (CompileShader)loadFunctionPointer("CompileShader");

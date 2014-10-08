@@ -4,6 +4,33 @@
 #include <sstream>
 #include <unordered_map>
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <glm/ext.hpp>
+
+CGprofile CG_VERTEX_SHADER_PROFILES[] = {
+	CG_PROFILE_VS_5_0,
+	CG_PROFILE_VS_4_0,
+	CG_PROFILE_VS_3_0,
+	CG_PROFILE_VS_2_0,
+	CG_PROFILE_VS_1_1
+};
+
+CGprofile CG_GEOMETRY_SHADER_PROFILES[] = {
+	CG_PROFILE_GS_5_0,
+	CG_PROFILE_GS_4_0
+};
+
+CGprofile CG_PIXEL_SHADER_PROFILES[] = {
+	CG_PROFILE_PS_5_0,
+	CG_PROFILE_PS_4_0,
+	CG_PROFILE_PS_3_0,
+	CG_PROFILE_PS_2_0,
+	CG_PROFILE_PS_1_1
+};
+
 static void checkForCgError( const char * situation, CGcontext myCgContext, bool _exit = true )
 {
 	CGerror error;
@@ -249,75 +276,59 @@ void DXWindow::initPipeline()
 			return;
 
 		// Register the default state assignment for OpenGL
-		//cgD3D11RegisterStates(gCgContext);
+		cgD3D11RegisterStates(mCgContext);
 		// This will allow the Cg runtime to manage texture binding
-		//cgD3D11SetManageTextureParameters(gCgContext, CG_TRUE);
-		
-		mCgVertexShaderProfile = cgD3D11GetLatestVertexProfile();
-		if(mCgVertexShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			std::cout << "[CgRuntime] Error: Could not get valid Vertex-Profile." << std::endl;
-			return;
-		}
-		
-		mCgGeometryShaderProfile = cgD3D11GetLatestGeometryProfile();
-		if(mCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// WARNING
-			std::cout << "[CgRuntime] Warning: Could not get valid Geometry-Profile." << std::endl;
-		}
-		
-		mCgFragmentShaderProfile = cgD3D11GetLatestPixelProfile();
-		if(mCgFragmentShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			std::cout << "[CgRuntime] Error: Could not get valid Fragment-Profile." << std::endl;
-			return;
-		}
+		cgD3D11SetManageTextureParameters(mCgContext, CG_TRUE);
 	}
 
 
 	// LOAD SHADER
 	{
 
+
 		std::string sourcePtr = read("vshader.cg");
-
-		auto optimal = cgD3D11GetOptimalOptions(mCgVertexShaderProfile);
-
-		mVertexShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_PROFILE_VS_4_0, "main", optimal);
-
-		if(mVertexShaderId != nullptr)
+		int num = sizeof(CG_VERTEX_SHADER_PROFILES) / sizeof(CG_VERTEX_SHADER_PROFILES[0]);
+		for (int i = 0; i < num; ++i)
 		{
-			optimal = cgD3D11GetOptimalOptions(mCgFragmentShaderProfile);
-
+			auto optimal = cgD3D11GetOptimalOptions(CG_VERTEX_SHADER_PROFILES[i]);
+			mVertexShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_VERTEX_SHADER_PROFILES[i], "main", optimal);
 			hr = cgD3D11LoadProgram(mVertexShaderId, NULL);
-			
-			if( SUCCEEDED( hr ) )
-			{
-				std::cout << "Loaded vertex shader!\n";
-			}
-			else
-			{
-				std::cout << "Could not load vertex shader!\n";
-				exit(-1);
-			}
 
-			CGerror error;
-			const char *errorString = cgGetLastErrorString(&error);
-			sourcePtr = read("fshader.cg");
-			mFragmentShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_PROFILE_PS_4_0, "main", optimal);
+			if (SUCCEEDED(hr))
+				break;
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			std::cout << "Loaded vertex shader!\n";
+		}
+		else
+		{
+			std::cout << "Could not load vertex shader!\n";
+			exit(-1);
+		}
+
+		sourcePtr = read("fshader.cg");
+		num = sizeof(CG_PIXEL_SHADER_PROFILES) / sizeof(CG_PIXEL_SHADER_PROFILES[0]);
+		for (int i = 0; i < num; ++i)
+		{
+			auto optimal = cgD3D11GetOptimalOptions(CG_PIXEL_SHADER_PROFILES[i]);
+			mFragmentShaderId = cgCreateProgram(mCgContext, CG_SOURCE, sourcePtr.c_str(), CG_PIXEL_SHADER_PROFILES[i], "main", optimal);
+
 			hr = cgD3D11LoadProgram(mFragmentShaderId, NULL);
 
-			if( SUCCEEDED( hr ) )
-			{
-				std::cout << "Loaded pixel shader!\n";
-			}
-			else
-			{
-				std::cout << "Could not load pixel shader!\n";
-				exit(-1);
-			}
+			if (SUCCEEDED(hr))
+				break;
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			std::cout << "Loaded pixel shader!\n";
+		}
+		else
+		{
+			std::cout << "Could not load pixel shader!\n";
+			exit(-1);
 		}
 		// get a D3D shader resource from CG shader resource
 		ID3D10Blob* VS = cgD3D11GetCompiledProgram(mVertexShaderId);
@@ -357,9 +368,9 @@ DXWindow::initGraphics()
 	{
 		VERTEX OurVertices[] =
 		{
-			{0.0f, 0.5f, 0.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)},
-			{0.45f, -0.5, 0.0f, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f)},
-			{-0.45f, -0.5f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f)}
+			{0.0f, 0.5f, -30.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)},
+			{0.45f, -0.5, -30.0f, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f)},
+			{-0.45f, -0.5f, -30.0f, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f)}
 		};
 
 		D3D11_BUFFER_DESC bd;
@@ -414,6 +425,7 @@ DXWindow::startFrame()
 {
 	// clear the back buffer to a deep blue
 	mDeviceContext->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
+
 	// this struct holds Windows event messages
 	MSG msg;
 	// wait for the next message in the queue, store the result in 'msg'
@@ -428,6 +440,25 @@ DXWindow::startFrame()
 
 	// DRAWING
 	{
+
+		// setting a uniform variable 
+
+		glm::mat4 projection = glm::perspective(70.f, mWidth / (float)mHeight, 0.1f, 100.f);
+		glm::mat4 camera = glm::translate(glm::vec3(0.f, 0.f, -5.f));
+
+		D3DXMATRIX projectionDx;
+		D3DXMatrixPerspectiveFovRH(&projectionDx, 70.f * 3.14 / 180.f, (float)mWidth / (float)mHeight, 0.1f, 100.f);
+		for (int i = 0; i < 16; ++i)
+		{
+			float* t = glm::value_ptr(projection);
+			t[i] = projectionDx[i];
+		}
+
+		CGparameter location = cgGetNamedParameter(mVertexShaderId, "mvp");
+		cgSetMatrixParameterfc(location, glm::value_ptr(projection * camera));
+		// call bind again to update data of the shader
+		cgD3D11BindProgram(mVertexShaderId);
+
 		// select which vertex buffer to display
 		UINT stride = sizeof(VERTEX);
 		UINT offset = 0;

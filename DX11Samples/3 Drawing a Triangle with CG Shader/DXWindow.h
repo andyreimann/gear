@@ -48,9 +48,6 @@ class DXWindow
 
 		// render pipeline
 		CGcontext mCgContext;
-		CGprofile mCgVertexShaderProfile;
-		CGprofile mCgGeometryShaderProfile;
-		CGprofile mCgFragmentShaderProfile;
 		CGprogram mVertexShaderId;
 		CGprogram mFragmentShaderId;
 

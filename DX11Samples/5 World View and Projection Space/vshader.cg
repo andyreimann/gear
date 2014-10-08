@@ -1,0 +1,22 @@
+	// Application to Vertex Shader Data
+	struct A2VData
+	{
+	  float4 position : POSITION;
+	  float4 color    : COLOR;
+	};
+	// Vertex to Fragment Shader Data
+	struct V2FData
+	{
+		float4 position : POSITION;
+		float4 color : COLOR;
+	};
+
+	uniform float4x4 mvp;
+
+	V2FData main(A2VData dataIn, uniform float4 ambient) 
+	{
+		V2FData dataOut;
+		dataOut.position = mul(dataIn.position,mvp); // mult in LH Coordinate System
+		dataOut.color = dataIn.color;
+		return dataOut;
+	}

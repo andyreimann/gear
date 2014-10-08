@@ -54,8 +54,9 @@ Init(void* data)
 	GLCHECK( glEnable(GL_MULTISAMPLE) );
 	GLCHECK( glEnable(GL_CULL_FACE) );
 	GLCHECK( glEnable(GL_BLEND) );
-	GLCHECK( glEnable(GL_TEXTURE_2D) );
-	GLCHECK( glEnable(GL_TEXTURE_CUBE_MAP) );
+	GLCHECK(glEnable(GL_TEXTURE_2D));
+	GLCHECK(glEnable(GL_TEXTURE_CUBE_MAP));
+	GLCHECK(glFrontFace(GL_CW));
 	int max;
 	GLCHECK( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
 	G2::logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << G2::endl;
@@ -126,4 +127,20 @@ void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::Polygon
 void FreeGfxResource(G2Core::GfxResource* resource)
 {
 	release(resource);
+}
+
+void GetPerspectiveProjection(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY)
+{
+	glm::mat4 destination = glm::perspective(fovY, width / (float)height, zNear, zFar);
+
+	for (int i = 0; i < 16; ++i)
+	{
+		float* t = glm::value_ptr(target);
+		t[i] = glm::value_ptr(destination)[i];
+	}
+}
+
+void AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix)
+{
+	// nothing to do here
 }

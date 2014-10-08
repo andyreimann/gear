@@ -96,9 +96,8 @@ _glslGetProgramInfoLog(int program)
 	GLint infologLength = 0;
 	GLsizei charsWritten  = 0;
 	GLchar* infoLog;
-	GLint status = 0;
 
-	GLCHECK(glGetProgramInfoLog(program, GL_INFO_LOG_LENGTH, &infologLength));
+	GLCHECK(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infologLength));
 
 	if (infologLength > 1) 
 	{

@@ -28,7 +28,12 @@ void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		gDevicePtr()->CreateBuffer(&bd, NULL, &vbo);    // create the buffer
 
 		D3D11_MAPPED_SUBRESOURCE ms;
-		gDeviceContextPtr()->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		HRESULT hr = gDeviceContextPtr()->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		if (!SUCCEEDED(hr))
+		{
+			std::cout << "Could not load vertex buffer data!\n";
+			exit(-1);
+		}
 		memcpy(ms.pData, data, bd.ByteWidth);           // copy the vertices
 		gDeviceContextPtr()->Unmap(vbo, NULL); 
 
@@ -42,7 +47,7 @@ void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.AlignedByteOffset = 0;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
-		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(sizeof(float) * 4)));
+		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 4));
 
 		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo,vertexLayout);
 		return;
@@ -72,10 +77,24 @@ void UpdateVAOVertexBufferVec3(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;		// use as a vertex buffer
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in buffer
 
-		gDevicePtr()->CreateBuffer(&bd, NULL, &vbo);    // create the buffer
+		HRESULT hr = gDevicePtr()->CreateBuffer(&bd, NULL, &vbo);    // create the buffer
+		if (SUCCEEDED(hr))
+		{
+			std::cout << "Created vertex buffer!\n";
+		}
+		else
+		{
+			std::cout << "Could not create vertex buffer!\n";
+			exit(-1);
+		}
 
 		D3D11_MAPPED_SUBRESOURCE ms;
-		gDeviceContextPtr()->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		hr = gDeviceContextPtr()->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		if (!SUCCEEDED(hr))
+		{
+			std::cout << "Could not load vertex buffer data!\n";
+			exit(-1);
+		}
 		memcpy(ms.pData, data, bd.ByteWidth);           // copy the vertices
 		gDeviceContextPtr()->Unmap(vbo, NULL); 
 
@@ -89,7 +108,7 @@ void UpdateVAOVertexBufferVec3(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.AlignedByteOffset = 0;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
-		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(sizeof(float) * 3)));
+		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 3));
 
 		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo,vertexLayout);
 		return;
@@ -135,7 +154,7 @@ void UpdateVAOVertexBufferVec2(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.AlignedByteOffset = 0;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
-		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(sizeof(float) * 2)));
+		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 2));
 		return;
 	}
 	G2DX11::VertexBufferObjectResource* vboPtr = vaoPtr->vbos[semantic];
@@ -180,11 +199,12 @@ void BindVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader)
 			desc.InstanceDataStepRate = vboLayout.vertexLayout.InstanceDataStepRate;	// Vertex Array driven
 
 			finalVertexLayout[i] = desc;
-			finalStrides[i] = vboLayout.stride;
-			finalOffsets[i] = vboLayout.offset;
+			finalStrides[i] = vboLayout.offset;
+			finalOffsets[i] = vboLayout.stride;
+			finalBufferPtr[i] = vbo->vbo;
 		}
 		ID3D11InputLayout* renderLayout;
-		gDevicePtr()->CreateInputLayout(&finalVertexLayout[0], 2, shaderPtr->vertexShaderBlob->GetBufferPointer(), shaderPtr->vertexShaderBlob->GetBufferSize(), &renderLayout);
+		HRESULT hr = gDevicePtr()->CreateInputLayout(&finalVertexLayout[0], finalVertexLayout.size(), shaderPtr->vertexShaderBlob->GetBufferPointer(), shaderPtr->vertexShaderBlob->GetBufferSize(), &renderLayout);
 		gDeviceContextPtr()->IASetInputLayout(renderLayout); // this needs to be done to really set it
 	}
 	else
@@ -208,7 +228,7 @@ void BindVAO(G2Core::GfxResource* vao, G2Core::GfxResource* alreadyboundShader)
 		}
 	}
 
-	gDeviceContextPtr()->IASetVertexBuffers(0, 2, &finalBufferPtr[0], &finalStrides[0], &finalOffsets[0]);
+	gDeviceContextPtr()->IASetVertexBuffers(0, finalBufferPtr.size(), &finalBufferPtr[0], &finalStrides[0], &finalOffsets[0]);
 	return;
 }
 
@@ -221,7 +241,7 @@ void UnbindVAO(G2Core::GfxResource* vao)
 void DrawVAO(G2Core::GfxResource* vao, G2Core::DrawMode::Name drawMode, int numVertices)
 {
 	gDeviceContextPtr()->IASetPrimitiveTopology(toD3DDrawMode(drawMode));
-	gDeviceContextPtr()->Draw(numVertices, 0);    // draw 3 vertices, starting from vertex 0
+	gDeviceContextPtr()->Draw(numVertices, 0);
 	return;
 }
 

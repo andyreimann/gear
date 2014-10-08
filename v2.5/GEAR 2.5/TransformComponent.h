@@ -175,6 +175,11 @@ namespace G2
 			 * @param updateId An id which is unique within one frame.
 			 */
 			void updateWorldSpaceMatrix(long updateId);
+
+			/** This function sets this TransformComponent to be interpreted as being a transformation 
+			 * of a camera. Camera transformations may be handled a bit differently depending on the GfxDevice you choose.
+			 */
+			void setIsCameraSpace() { mIsViewSpace = true; }
 		private:
 
 			TransformComponent(TransformComponent const& rhs) {}
@@ -199,5 +204,6 @@ namespace G2
 			std::vector<unsigned int> mChildEntityIds; // The Entity-IDs of the TransformComponents, on which this TC is the parent
 			long			mLastUpdateId;		// The unique frame id the updateWorldSpaceMatrix was called last.
 			bool			mUpdated;			// Flag indicating whether the last call to updateWorldSpaceMatrix updated the TransformComponent
+			bool			mIsViewSpace;		// Flag indicating whether this TransformComponent is attached to a camera
 	};
 };

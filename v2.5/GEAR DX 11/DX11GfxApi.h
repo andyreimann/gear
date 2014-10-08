@@ -24,6 +24,8 @@ extern "C"
 	GEARDX11DLL_API void	ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
 	GEARDX11DLL_API void	FreeGfxResource(G2Core::GfxResource* resource);
 	GEARDX11DLL_API void	UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
+	GEARDX11DLL_API void	GetPerspectiveProjection(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY);
+	GEARDX11DLL_API void    AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix);
 
 	// Shader API
 	GEARDX11DLL_API G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);

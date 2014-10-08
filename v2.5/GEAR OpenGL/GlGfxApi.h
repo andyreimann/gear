@@ -23,6 +23,8 @@ extern "C"
 	GEAROPENGLDLL_API void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
 	GEAROPENGLDLL_API void FreeGfxResource(G2Core::GfxResource* resource);
 	GEAROPENGLDLL_API void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
+	GEAROPENGLDLL_API void GetPerspectiveProjection(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY);
+	GEAROPENGLDLL_API void AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix);
 
 	// ShaderAPI
 	GEAROPENGLDLL_API G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);

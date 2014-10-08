@@ -3,6 +3,8 @@
 #include "TransformComponent.h"
 #include "Logger.h"
 
+#include <G2Core/GfxDevice.h>
+
 using namespace G2;
 
 // GLM Quaternion doc: http://glm.g-truc.net/0.9.0/api/a00184.html#a2d9d1916258d13bd5f0373341400f18c
@@ -15,7 +17,8 @@ G2::TransformComponent::TransformComponent() :
 	mScale(1.f,1.f,1.f),
 	mMode(TransformMode::SRT),
 	mLastUpdateId(-1),
-	mUpdated(false)
+	mUpdated(false),
+	mIsViewSpace(false)
 { }
 
 G2::TransformComponent::TransformComponent(TransformMode::Name mode) : 
@@ -25,7 +28,8 @@ G2::TransformComponent::TransformComponent(TransformMode::Name mode) :
 	mScale(1.f,1.f,1.f),
 	mMode(mode),
 	mLastUpdateId(-1),
-	mUpdated(false)
+	mUpdated(false),
+	mIsViewSpace(false)
 { }
 
 TransformComponent::TransformComponent(TransformComponent && rhs) 
@@ -36,6 +40,7 @@ TransformComponent::TransformComponent(TransformComponent && rhs)
 
 TransformComponent& TransformComponent::operator=(TransformComponent && rhs) 
 {
+	mMode = rhs.mMode;
 	mParentEntityId = rhs.mParentEntityId;
 	mIsDirty = rhs.mIsDirty;
 	mPosition = std::move(rhs.mPosition);
@@ -43,10 +48,11 @@ TransformComponent& TransformComponent::operator=(TransformComponent && rhs)
 	mRotation = std::move(rhs.mRotation);
 	mLocalSpace = std::move(rhs.mLocalSpace);
 	mWorldSpace = std::move(rhs.mWorldSpace);
+	mWorldSpaceOrthogonal = std::move(rhs.mWorldSpaceOrthogonal);
 	mChildEntityIds = std::move(rhs.mChildEntityIds);
-	mMode = rhs.mMode;
 	mLastUpdateId = rhs.mLastUpdateId;
 	mUpdated = rhs.mUpdated;
+	mIsViewSpace = rhs.mIsViewSpace;
 	
 	return static_cast<TransformComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
@@ -195,13 +201,20 @@ TransformComponent::updateWorldSpaceMatrix(long updateId)
 		if(mMode == TransformMode::SRT)
 		{
 			mWorldSpaceOrthogonal = glm::translate(mPosition) * glm::toMat4(mRotation);
-			mLocalSpace = mWorldSpace = mWorldSpaceOrthogonal * glm::scale(mScale);
+			mLocalSpace = mWorldSpaceOrthogonal * glm::scale(mScale);
 		}
 		else
 		{
 			mWorldSpaceOrthogonal = glm::toMat4(mRotation) * glm::translate(mPosition);
-			mLocalSpace = mWorldSpace = glm::scale(mScale) * mWorldSpaceOrthogonal;
+			mLocalSpace = glm::scale(mScale) * mWorldSpaceOrthogonal;
 		}
+		if (mIsViewSpace)
+		{
+			// attached to some kind of camera - Some gfx context might treat view space different
+			G2_gfxDevice()->adjustCameraSpaceMatrix(mLocalSpace);
+			G2::logger << "CamSpaceMatrix: " << G2::endl << mLocalSpace << G2::endl;
+		}
+		mWorldSpace = mLocalSpace;
 		
 		auto* parentTransformComponent = system->get(mParentEntityId);
 		if(parentTransformComponent != nullptr)

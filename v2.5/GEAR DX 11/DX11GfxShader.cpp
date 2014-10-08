@@ -10,9 +10,27 @@
 #include <d3dx10.h>		// dx 11 is ext of dx 10 -> useful macros usable
 
 CGcontext gCgContext = nullptr;
-CGprofile gCgVertexShaderProfile;
-CGprofile gCgGeometryShaderProfile;
-CGprofile gCgFragmentShaderProfile;
+
+CGprofile CG_VERTEX_SHADER_PROFILES[] = {
+	CG_PROFILE_VS_5_0,
+	CG_PROFILE_VS_4_0,
+	CG_PROFILE_VS_3_0,
+	CG_PROFILE_VS_2_0,
+	CG_PROFILE_VS_1_1
+};
+
+CGprofile CG_GEOMETRY_SHADER_PROFILES[] = {
+	CG_PROFILE_GS_5_0,
+	CG_PROFILE_GS_4_0
+};
+
+CGprofile CG_PIXEL_SHADER_PROFILES[] = {
+	CG_PROFILE_PS_5_0,
+	CG_PROFILE_PS_4_0,
+	CG_PROFILE_PS_3_0,
+	CG_PROFILE_PS_2_0,
+	CG_PROFILE_PS_1_1
+};
 
 void _cgErrorHandler(CGcontext context, CGerror error, void* appData) 
 {
@@ -45,33 +63,10 @@ void _initCgRuntime(ID3D11Device* device)
 		if( hr != S_OK )
 			return;
 
-		// Register the default state assignment for OpenGL
-		cgD3D11RegisterStates(gCgContext);
-		// This will allow the Cg runtime to manage texture binding
-		cgD3D11SetManageTextureParameters(gCgContext, CG_TRUE);
-		
-		gCgVertexShaderProfile = cgD3D11GetLatestVertexProfile();
-		if(gCgVertexShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			G2::logger << "[CgRuntime] Error: Could not get valid Vertex-Profile." << G2::endl;
-			return;
-		}
-		
-		gCgGeometryShaderProfile = cgD3D11GetLatestGeometryProfile();
-		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// WARNING
-			G2::logger << "[CgRuntime] Warning: Could not get valid Geometry-Profile." << G2::endl;
-		}
-		
-		gCgFragmentShaderProfile = cgD3D11GetLatestPixelProfile();
-		if(gCgFragmentShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			G2::logger << "[CgRuntime] Error: Could not get valid Fragment-Profile." << G2::endl;
-			return;
-		}
+		//// Register the default state assignment for OpenGL
+		//cgD3D11RegisterStates(gCgContext);
+		//// This will allow the Cg runtime to manage texture binding
+		//cgD3D11SetManageTextureParameters(gCgContext, CG_TRUE);
 	}
 }
 
@@ -86,48 +81,70 @@ G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputL
 	}
 	else if(shadingLanguage == "CG")
 	{
-
-		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN && geometryCode != "")
-		{
-			return error(); // geometry shader given but not supported!
-		}
-	
+		HRESULT hr;
 		const char* sourcePtr = vertexCode.c_str();
 	
 		int D3DCOMPILE_OPTIMIZATION_LEVEL3 = (1 << 15);
-		// http://msdn.microsoft.com/en-us/library/windows/desktop/gg615083(v=vs.85).aspx
 
-		CGprogram vertexShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgVertexShaderProfile, "main", 0);
+		int flags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
+
+		CGprogram vertexShaderId = nullptr;
+		int num = sizeof(CG_VERTEX_SHADER_PROFILES) / sizeof(CG_VERTEX_SHADER_PROFILES[0]);
+		for (int i = 0; i < num; ++i)
+		{
+			auto optimal = cgD3D11GetOptimalOptions(CG_VERTEX_SHADER_PROFILES[i]);
+			vertexShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, CG_VERTEX_SHADER_PROFILES[i], "main", optimal);
+			hr = cgD3D11LoadProgram(vertexShaderId, flags);
+
+			if (SUCCEEDED(hr))
+				break;
+		}
+		if (!SUCCEEDED(hr) || vertexShaderId == nullptr)
+		{
+			G2::logger << "[Cg] Could not find any profile to compile vertex shader with!" << G2::endl;
+			return error();
+		}
+
+
 		CGprogram geometryShaderId = nullptr;
-		if(geometryCode != "")
+		if (geometryCode != "")
 		{
 			sourcePtr = geometryCode.c_str();
-			geometryShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgGeometryShaderProfile, "main", 0);
-			
-			cgD3D11LoadProgram(geometryShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
+			num = sizeof(CG_GEOMETRY_SHADER_PROFILES) / sizeof(CG_GEOMETRY_SHADER_PROFILES[0]);
+			for (int i = 0; i < num; ++i)
+			{
+				auto optimal = cgD3D11GetOptimalOptions(CG_GEOMETRY_SHADER_PROFILES[i]);
+				geometryShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, CG_GEOMETRY_SHADER_PROFILES[i], "main", optimal);
+				hr = cgD3D11LoadProgram(geometryShaderId, flags);
+
+				if (SUCCEEDED(hr))
+					break;
+			}
+			if (!SUCCEEDED(hr) || geometryShaderId == nullptr)
+			{
+				G2::logger << "[Cg] Could not find any profile to compile geometry shader with!" << G2::endl;
+				return error();
+			}
 		}
+
+
+		CGprogram fragmentShaderId = nullptr;
+		num = sizeof(CG_PIXEL_SHADER_PROFILES) / sizeof(CG_PIXEL_SHADER_PROFILES[0]);
 		sourcePtr = fragmentCode.c_str();
-		
-		/*std::vector<D3D11_INPUT_ELEMENT_DESC> layout;
-		
-		for(int i = 0; i < vertexInputLayout.elements.size(); ++i)
+		for (int i = 0; i < num; ++i)
 		{
-			D3D11_INPUT_ELEMENT_DESC element;
-			element.SemanticName = toSemanticString(vertexInputLayout.elements[i].semantic);
-			element.SemanticIndex = 0;
-			element.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			element.InputSlot = i;
-			element.AlignedByteOffset = 0;
-			element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			element.InstanceDataStepRate = 0;
+			auto optimal = cgD3D11GetOptimalOptions(CG_PIXEL_SHADER_PROFILES[i]);
+			fragmentShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, CG_PIXEL_SHADER_PROFILES[i], "main", optimal);
+			hr = cgD3D11LoadProgram(fragmentShaderId, flags);
 
-			layout.push_back(std::move(element));
-		}*/
-
-		CGprogram fragmentShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgFragmentShaderProfile, "main", 0);
-
-		cgD3D11LoadProgram(vertexShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
-		cgD3D11LoadProgram(fragmentShaderId, D3DCOMPILE_OPTIMIZATION_LEVEL3);
+			if (SUCCEEDED(hr))
+				break;
+		}
+		if (!SUCCEEDED(hr) || fragmentShaderId == nullptr)
+		{
+			G2::logger << "[Cg] Could not find any profile to compile pixel shader with!" << G2::endl;
+			return error();
+		}
 
 		G2DX11::InputLayoutShaderFragment inputLayoutShaderFragment;
 		for(int i = 0; i < vertexInputLayout.elements.size(); ++i)
@@ -154,13 +171,22 @@ void _bindShaderHlsl(G2Core::GfxResource const* shaderResource)
 void _bindShaderCg(G2Core::GfxResource const* shaderResource)
 {
 	G2DX11::CgShaderResource const* cgRes = static_cast<G2DX11::CgShaderResource const*>(shaderResource);
-			
+	
+	HRESULT hr;
 	if(cgRes->geometryShaderId != nullptr)
 	{
-		cgD3D11BindProgram(cgRes->geometryShaderId);
+		hr = cgD3D11BindProgram(cgRes->geometryShaderId);
 	}
-	cgD3D11BindProgram(cgRes->vertexShaderId);
-	cgD3D11BindProgram(cgRes->fragmentShaderId);
+	hr = cgD3D11BindProgram(cgRes->vertexShaderId);
+	if (!SUCCEEDED(hr))
+	{
+		G2::logger << "Could not bind Vertex Shader" << G2::endl;
+	}
+	hr = cgD3D11BindProgram(cgRes->fragmentShaderId);
+	if (!SUCCEEDED(hr))
+	{
+		G2::logger << "Could not bind Fragment Shader" << G2::endl;
+	}
 }
 
 void BindShader(G2Core::GfxResource const* shaderResource)
@@ -183,6 +209,7 @@ void _setShaderUniformMat4Cg(G2Core::GfxResource* shaderResource, std::string co
 		return;
 	}
 	cgSetMatrixParameterfc(location.first, glm::value_ptr(value));
+	cgRes->bindShader(shaderResource);
 }
 
 
@@ -206,6 +233,7 @@ void _setShaderUniformMat3Cg(G2Core::GfxResource* shaderResource, std::string co
 		return;
 	}
 	cgSetMatrixParameterfc(location.first, glm::value_ptr(value));
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformMat3(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat3 const& value)
@@ -228,6 +256,7 @@ void _setShaderUniformVec4Cg(G2Core::GfxResource* shaderResource, std::string co
 		return;
 	}
 	cgSetParameter4fv(location.first, glm::value_ptr(value));
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformVec4(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec4 const& value)
@@ -250,6 +279,7 @@ void _setShaderUniformVec3Cg(G2Core::GfxResource* shaderResource, std::string co
 		return;
 	}
 	cgSetParameter3fv(location.first, glm::value_ptr(value));
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformVec3(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec3 const& value)
@@ -272,6 +302,7 @@ void _setShaderUniformVec2Cg(G2Core::GfxResource* shaderResource, std::string co
 		return;
 	}
 	cgSetParameter2fv(location.first, glm::value_ptr(value));
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformVec2(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec2 const& value)
@@ -294,6 +325,7 @@ void _setShaderUniformFloatCg(G2Core::GfxResource* shaderResource, std::string c
 		return;
 	}
 	cgSetParameter1f(location.first, value);
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformFloat(G2Core::GfxResource* shaderResource, std::string const& property, float value)
@@ -315,6 +347,7 @@ void _setShaderUniformIntCg(G2Core::GfxResource* shaderResource, std::string con
 		return;
 	}
 	cgSetParameter1i(location.first, value);
+	cgRes->bindShader(shaderResource);
 }
 
 void SetShaderUniformInt(G2Core::GfxResource* shaderResource, std::string const& property, int value)
