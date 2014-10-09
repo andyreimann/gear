@@ -23,6 +23,8 @@
 #include <glm/ext.hpp>
 #include <algorithm>
 
+#define USE_FRUSTUM_CULLING
+
 using namespace G2;
 
 #define M_PI 3.14159265358979323846
@@ -461,10 +463,17 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 		for (unsigned int k = 0; k < component->getNumDrawCalls(); ++k) 
 		{
 			DrawCall& drawCall = component->getDrawCall(k);
-			if(drawCall.isFrustumCulled() || !drawCall.isEnabled())
+#ifdef USE_FRUSTUM_CULLING
+			if (drawCall.isFrustumCulled() || !drawCall.isEnabled())
 			{
-				continue;
+				return;
 			}
+#else
+			if (!drawCall.isEnabled())
+			{
+				return;
+			}
+#endif
 			// get the referenced VertexArrayObject of this DrawCall
 			auto& vao = component->mVaos[drawCall.getVaoIndex()];
 			vao.bind(boundShader);
@@ -486,11 +495,17 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 	else
 	{ // only draw given drawCall
 		DrawCall& drawCall = component->getDrawCall(drawCallToDraw);
-		
+#ifdef USE_FRUSTUM_CULLING
 		if(drawCall.isFrustumCulled() || !drawCall.isEnabled())
 		{
 			return;
 		}
+#else
+		if(!drawCall.isEnabled())
+		{
+			return;
+		}
+#endif
 		// get the referenced VertexArrayObject of this DrawCall
 		auto& vao = component->mVaos[drawCall.getVaoIndex()];
 		vao.bind(boundShader);

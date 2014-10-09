@@ -33,12 +33,7 @@ Ubershader "GEAR/Default" {
       // ---------------------------------------------------------------
       #FRAGMENTPROGRAM
       #INCLUDE "G2.material"
-
-      struct DirectionalLight 
-      {
-          float3 dir; // camera space
-      };
-      uniform DirectionalLight light;
+      #INCLUDE "G2.light" // include GEAR default stuff
 
       struct Data 
       {
@@ -62,13 +57,13 @@ Ubershader "GEAR/Default" {
         // normalize both input vectors
         float3 n = normalize(dataIn.normal);
         float3 e = normalize(dataIn.eye.xyz);
-        float intensity = max(dot(n,light.dir), 0.0);
+        float intensity = max(dot(n,light[0].direction), 0.0);
 
         // if the vertex is lit compute the specular color
         if (intensity > 0.0) 
         {
           // compute the half vector
-          float3 h = normalize(light.dir + e);
+          float3 h = normalize(light[0].direction + e);
           // compute the specular term into spec
           float intSpec = max(dot(h,n), 0.0);
           spec = material.specular * pow(intSpec,material.shininess);

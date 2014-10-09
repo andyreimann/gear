@@ -83,8 +83,8 @@ Init(void* data)
 	gBackbufferDepthStencilView = globals->backbufferDepthStencilView;
 	gBackbufferDepthStencilBuffer = globals->backbufferDepthStencilBuffer;
 
-	gRasterizerStateDesc.FillMode = D3D11_FILL_WIREFRAME;
-	gRasterizerStateDesc.CullMode = D3D11_CULL_NONE;
+	gRasterizerStateDesc.FillMode = D3D11_FILL_SOLID;
+	gRasterizerStateDesc.CullMode = D3D11_CULL_BACK;
 	gRasterizerStateDesc.FrontCounterClockwise = false;
 
 	gUpdateRasterizer();

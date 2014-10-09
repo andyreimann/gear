@@ -140,7 +140,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec2 const* 
 		unbind();
 		// a new semantic was added
 		updateVersion();
-		//mBytesPerSemantic[semantic] = sizeof(float) * 2;
+		mBytesPerSemantic[semantic] = sizeof(float) * 2;
 		return *this;
 	}
 	G2_gfxDevice()->updateVAOVertexBufferVec2(mVertexArrayResource, semantic, data, numElementsToTransfer);
@@ -164,7 +164,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec3 const* 
 		unbind();
 		// a new semantic was added
 		updateVersion();
-		//mBytesPerSemantic[semantic] = sizeof(float) * 3;
+		mBytesPerSemantic[semantic] = sizeof(float) * 3;
 		return *this;
 	}
 	G2_gfxDevice()->updateVAOVertexBufferVec3(mVertexArrayResource, semantic, data, numElementsToTransfer);
@@ -188,7 +188,7 @@ VertexArrayObject::writeData(G2Core::Semantics::Name semantic, glm::vec4 const* 
 		unbind();
 		// a new semantic was added
 		updateVersion();
-		//mBytesPerSemantic[semantic] = sizeof(float) * 4;
+		mBytesPerSemantic[semantic] = sizeof(float) * 4;
 		return *this;
 	}
 	G2_gfxDevice()->updateVAOVertexBufferVec4(mVertexArrayResource, semantic, data, numElementsToTransfer);

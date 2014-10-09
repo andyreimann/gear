@@ -9,6 +9,30 @@ G2Core::GfxResource* CreateVAO()
 	return new G2DX11::VertexArrayObjectResource();
 } 
 
+ID3D11Buffer* _createStagingBuffer(int bytes, float* data)
+{
+
+	ID3D11Buffer* stagingVbo = nullptr;
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_STAGING;					// write access access by CPU and GPU
+	bd.ByteWidth = bytes;						// allocate memory
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;		// allow CPU to read in buffer
+
+	gDevicePtr()->CreateBuffer(&bd, NULL, &stagingVbo);    // create the buffer
+
+	D3D11_MAPPED_SUBRESOURCE ms;
+	HRESULT hr = gDeviceContextPtr()->Map(stagingVbo, NULL, D3D11_MAP_WRITE, NULL, &ms);
+	if (!SUCCEEDED(hr))
+	{
+		std::cout << "Could not load vertex buffer data into staging buffer!\n";
+		exit(-1);
+	}
+	memcpy(ms.pData, data, bd.ByteWidth);           // copy the vertices
+	gDeviceContextPtr()->Unmap(stagingVbo, NULL);
+	return stagingVbo;
+}
+
 void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements)
 {
 	G2DX11::VertexArrayObjectResource* vaoPtr = static_cast<G2DX11::VertexArrayObjectResource*>(vao);
@@ -49,7 +73,10 @@ void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.InstanceDataStepRate = 0;
 		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 4));
 
-		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo,vertexLayout);
+		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo, vertexLayout, bytes);
+
+		// create staging buffer
+		vaoPtr->vbos[semantic]->stagingVbo = _createStagingBuffer(bytes, (float*)data);
 		return;
 	}
 	G2DX11::VertexBufferObjectResource* vboPtr = vaoPtr->vbos[semantic];
@@ -110,7 +137,10 @@ void UpdateVAOVertexBufferVec3(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.InstanceDataStepRate = 0;
 		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 3));
 
-		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo,vertexLayout);
+		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo,vertexLayout,bytes);
+
+		// create staging buffer
+		vaoPtr->vbos[semantic]->stagingVbo = _createStagingBuffer(bytes, (float*)data);
 		return;
 	}
 	G2DX11::VertexBufferObjectResource* vboPtr = vaoPtr->vbos[semantic];
@@ -154,7 +184,12 @@ void UpdateVAOVertexBufferVec2(G2Core::GfxResource* vao, G2Core::Semantics::Name
 		desc.AlignedByteOffset = 0;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
-		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc,0,sizeof(float) * 2));
+		vertexLayout.push_back(G2DX11::InputLayoutVertexBufferFragment(desc, 0, sizeof(float) * 2));
+
+		vaoPtr->vbos[semantic] = new G2DX11::VertexBufferObjectResource(vbo, vertexLayout, bytes);
+
+		// create staging buffer
+		vaoPtr->vbos[semantic]->stagingVbo = _createStagingBuffer(bytes, (float*)data);
 		return;
 	}
 	G2DX11::VertexBufferObjectResource* vboPtr = vaoPtr->vbos[semantic];
@@ -252,8 +287,16 @@ void* GetVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name semant
 	G2DX11::VertexArrayObjectResource* vaoPtr = static_cast<G2DX11::VertexArrayObjectResource*>(vao);
 	if(vaoPtr->vbos.find(semantic) != vaoPtr->vbos.end())
 	{
+		auto* vbo = vaoPtr->vbos[semantic];
+		// copy the data from the VBO to the staging VBO and map it to get the data
 		D3D11_MAPPED_SUBRESOURCE ms;
-		gDeviceContextPtr()->Map(vaoPtr->vbos[semantic]->vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);   // map the buffer
+		HRESULT hr = gDeviceContextPtr()->Map(vbo->stagingVbo, NULL, D3D11_MAP_READ, NULL, &ms);   // map the buffer
+
+		if (!SUCCEEDED(hr))
+		{
+			std::cout << "Could not map staging vertex buffer!\n";
+			exit(-1);
+		}
 		return ms.pData;
 	}
 	return nullptr;
@@ -264,7 +307,9 @@ void ReturnVAODataPointer(G2Core::GfxResource* vao, G2Core::Semantics::Name sema
 	G2DX11::VertexArrayObjectResource* vaoPtr = static_cast<G2DX11::VertexArrayObjectResource*>(vao);
 	if(vaoPtr->vbos.find(semantic) != vaoPtr->vbos.end())
 	{
-		gDeviceContextPtr()->Unmap(vaoPtr->vbos[semantic]->vbo, NULL);
+		auto* vbo = vaoPtr->vbos[semantic];
+		gDeviceContextPtr()->Unmap(vbo->stagingVbo, NULL);
+		gDeviceContextPtr()->CopyResource(vbo->vbo, vbo->stagingVbo);
 	}
 	return;
 }

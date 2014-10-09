@@ -175,8 +175,9 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 			.setDrawMode(G2Core::DrawMode::TRIANGLES)
 			.setEnabled(true)
 			.setVaoIndex(i)
+			.setModelSpaceAABB(meshData.modelSpaceAABB)
 			//.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)
-			.setAABBCalculationMode(AABBCalculationMode::ANIMATED));
+			.setAABBCalculationMode(AABBCalculationMode::MANUAL));
 	}
 #endif
 	
@@ -337,6 +338,7 @@ FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int v
 			vertices[lIndex] = glm::vec3(static_cast<float>(lCurrentVertex[0]),
 										 static_cast<float>(lCurrentVertex[1]),
 										 static_cast<float>(lCurrentVertex[2]));
+			modelSpaceAABB.merge(vertices[lIndex]);
 
 			// Save the normal.
 			if (hasNormals)
@@ -401,6 +403,7 @@ FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int v
 				vertices[lVertexCount] = glm::vec3(static_cast<float>(lCurrentVertex[0]),
 												   static_cast<float>(lCurrentVertex[1]),
 												   static_cast<float>(lCurrentVertex[2]));
+				modelSpaceAABB.merge(vertices[lVertexCount]);
 
 				if (hasNormals)
 				{

@@ -7,6 +7,7 @@
 #include "FBXMaterialCache.h"
 #include "FBXVBOMesh.h"
 #include "FBXLightCache.h"
+#include "AABB.h"
 
 #include <G2Core/Entity.h>
 
@@ -51,6 +52,7 @@ namespace G2
 					std::vector<glm::vec3>  vertices;		// The initial vertices
 					std::vector<glm::vec3>  normals;		// The initial normals
 					std::vector<glm::vec2>  uvs;			// The initial texture coordinates
+					G2::AABB				modelSpaceAABB; // The initial model space axis aligned bounding box
 					std::vector<unsigned int> indices;		// The indices
 
 					std::vector<SubMeshMetaData> subMeshMetaData; // Meta data for how to render the resulting index buffer (is rendered in multiple draw calls)

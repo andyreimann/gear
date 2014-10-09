@@ -56,7 +56,7 @@ Init(void* data)
 	GLCHECK( glEnable(GL_BLEND) );
 	GLCHECK(glEnable(GL_TEXTURE_2D));
 	GLCHECK(glEnable(GL_TEXTURE_CUBE_MAP));
-	GLCHECK(glFrontFace(GL_CW));
+	GLCHECK(glFrontFace(GL_CCW));
 	int max;
 	GLCHECK( glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max));
 	G2::logger << "Info: GL_MAX_VERTEX_ATTRIBS=" << max << G2::endl;

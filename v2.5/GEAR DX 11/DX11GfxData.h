@@ -135,28 +135,37 @@ namespace G2DX11
 
 	struct VertexBufferObjectResource : DX11Resource
 	{
-		VertexBufferObjectResource(ID3D11Buffer* vbo, std::vector<InputLayoutVertexBufferFragment> const& vertexLayout) 
+		VertexBufferObjectResource(ID3D11Buffer* vbo, std::vector<InputLayoutVertexBufferFragment> const& vertexLayout, int bytes) 
 			: DX11Resource(VBO),
 			vbo(vbo),
-			vertexLayout(std::move(vertexLayout)) {}
+			stagingVbo(nullptr),
+			vertexLayout(std::move(vertexLayout)),
+			bytes(bytes) {}
 
 		~VertexBufferObjectResource()
 		{
-			if(vbo != nullptr)
+			if (vbo != nullptr)
 			{
 				vbo->Release();
 			}
+			if (stagingVbo != nullptr)
+			{
+				stagingVbo->Release();
+			}
 		}
 
+		int bytes;
 		std::vector<InputLayoutVertexBufferFragment> vertexLayout;
 		ID3D11Buffer* vbo;
+		ID3D11Buffer* stagingVbo; // for CPU Access if needed
 	};
 
 	struct VertexArrayObjectResource : DX11Resource
 	{
 		VertexArrayObjectResource() 
 			: DX11Resource(VAO) {}
-		std::unordered_map<G2Core::Semantics::Name,VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
+
+		std::unordered_map<G2Core::Semantics::Name, VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
 	};
 
 	struct IndexBufferObjectResource : DX11Resource
@@ -174,6 +183,7 @@ namespace G2DX11
 		}
 
 		ID3D11Buffer* ibo;
+
 	};
 
 	struct RenderTargetResource : DX11Resource
