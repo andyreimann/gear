@@ -59,12 +59,12 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	//auto* terrain = mTerrainComponent.addComponent<G2::Terrain::ClipmapTerrain>();
 	//terrain->setup(
-	//	mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", GL_LINEAR, GL_LINEAR),
+	//	mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
 	//	mEffectImporter.import(ASSET_PATH + "Shader/ClipmapTerrain.g2fx"));
 
 	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>();
 	terrain->setup(
-		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", GL_LINEAR, GL_LINEAR),
+		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
 		15.f, // max height
 		50000, // desired num triangles
 		100000 // max number of triangles
@@ -72,7 +72,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	auto* renderComponent = mTerrainComponent.getComponent<G2::RenderComponent>();
 	renderComponent->material.setTexture(
 		G2::Sampler::DIFFUSE, 
-		mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", GL_LINEAR, GL_LINEAR)
+		mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
 	);
 	renderComponent->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/DefaultTex.g2fx"));
 
@@ -121,17 +121,17 @@ TerrainTest::generateSpline()
 	renderComponent->allocateVertexArrays(1);
 	auto& vao = renderComponent->getVertexArray(0);
 	vao.resizeElementCount(geometry.size());
-	vao.writeData(G2::Semantics::POSITION, &geometry[0]);
+	vao.writeData(G2Core::Semantics::POSITION, &geometry[0]);
 	
 	renderComponent->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_LINE_STRIP)
+		.setDrawMode(G2Core::DrawMode::LINE_STRIP)
 		.setEnabled(true)
 		.setAABBCalculationMode(G2::AABBCalculationMode::AUTOMATIC)
 		.setVaoIndex(0)
 		);
 	
 	renderComponent->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_POINTS)
+		.setDrawMode(G2Core::DrawMode::POINTS)
 		.setEnabled(true)
 		.setAABBCalculationMode(G2::AABBCalculationMode::AUTOMATIC)
 		.setVaoIndex(0)

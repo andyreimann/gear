@@ -105,38 +105,41 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 	float height = 1.f / 1920.f * 1080.f;
 	
 	// visualize normal min and mag filter using assassins creed HD image
-	createTexturedPlane(glm::vec3(-3.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR,  G2::LINEAR), "MIN: LINEAR, Mag: LINEAR");
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST, G2::NEAREST), "MIN: NEAREST, Mag: NEAREST");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR,  G2::NEAREST), "MIN: LINEAR, Mag: NEAREST");
-	createTexturedPlane(glm::vec3( 0.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST, G2::LINEAR), "MIN: NEAREST, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-3.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR,  G2Core::FilterMode::LINEAR), "MIN: LINEAR, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-2.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST), "MIN: NEAREST, Mag: NEAREST");
+	createTexturedPlane(glm::vec3(-1.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR,  G2Core::FilterMode::NEAREST), "MIN: LINEAR, Mag: NEAREST");
+	createTexturedPlane(glm::vec3( 0.f*width,-1.f,0.f), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST, G2Core::FilterMode::LINEAR), "MIN: NEAREST, Mag: LINEAR");
 	
 	// visualize normal min and mag filter using assassins creed HD image using mipmaps
-	createTexturedPlane(glm::vec3(-3.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR_MIPMAP_LINEAR,   G2::LINEAR), "MIN: LINEAR_MIPMAP_LINEAR, Mag: LINEAR");
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST_MIPMAP_NEAREST, G2::NEAREST), "MIN: NEAREST_MIPMAP_NEAREST, Mag: NEAREST");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR_MIPMAP_LINEAR,   G2::NEAREST), "MIN: LINEAR_MIPMAP_LINEAR, Mag: NEAREST");
-	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST_MIPMAP_NEAREST, G2::LINEAR), "MIN: NEAREST_MIPMAP_NEAREST, Mag: LINEAR");
-	createTexturedPlane(glm::vec3(-3.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR_MIPMAP_NEAREST,  G2::LINEAR), "MIN: LINEAR_MIPMAP_NEAREST, Mag: LINEAR");
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST_MIPMAP_LINEAR,  G2::NEAREST), "MIN: NEAREST_MIPMAP_LINEAR, Mag: NEAREST");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR_MIPMAP_NEAREST,  G2::NEAREST), "MIN: LINEAR_MIPMAP_NEAREST, Mag: NEAREST");
-	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::NEAREST_MIPMAP_LINEAR,  G2::LINEAR), "MIN: NEAREST_MIPMAP_LINEAR, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-3.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR_MIPMAP_LINEAR,   G2Core::FilterMode::LINEAR), "MIN: LINEAR_MIPMAP_LINEAR, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST_MIPMAP_NEAREST, G2Core::FilterMode::NEAREST), "MIN: NEAREST_MIPMAP_NEAREST, Mag: NEAREST");
+	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR_MIPMAP_LINEAR,   G2Core::FilterMode::NEAREST), "MIN: LINEAR_MIPMAP_LINEAR, Mag: NEAREST");
+	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-1.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST_MIPMAP_NEAREST, G2Core::FilterMode::LINEAR), "MIN: NEAREST_MIPMAP_NEAREST, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-3.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR_MIPMAP_NEAREST,  G2Core::FilterMode::LINEAR), "MIN: LINEAR_MIPMAP_NEAREST, Mag: LINEAR");
+	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST_MIPMAP_LINEAR,  G2Core::FilterMode::NEAREST), "MIN: NEAREST_MIPMAP_LINEAR, Mag: NEAREST");
+	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR_MIPMAP_NEAREST,  G2Core::FilterMode::NEAREST), "MIN: LINEAR_MIPMAP_NEAREST, Mag: NEAREST");
+	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-2.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::NEAREST_MIPMAP_LINEAR,  G2Core::FilterMode::LINEAR), "MIN: NEAREST_MIPMAP_LINEAR, Mag: LINEAR");
 
 	// modify the internal format of the imported images
-	//createTexturedPlane(glm::vec3(-3.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::LUMINANCE), "Internal format: LUMINANCE"); // not supported by NSight
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::RED), "Internal format: GL_RED");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::RG), "Internal format: GL_RG");
-	//createTexturedPlane(glm::vec3( 0.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::INTENSITY), "Internal format: INTENSITY"); // not supported by NSight
+	//createTexturedPlane(glm::vec3(-3.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::LUMINANCE), "Internal format: LUMINANCE"); // not supported by NSight
+	createTexturedPlane(glm::vec3(-2.f*width, -1.f, -3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RED), "Internal format: RED");
+	createTexturedPlane(glm::vec3(-1.f*width, -1.f, -3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RG), "Internal format: RG");
+	//createTexturedPlane(glm::vec3( 0.f*width,-1.f,-3.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::INTENSITY), "Internal format: INTENSITY"); // not supported by NSight
 	
 	// compressed images
-	//createTexturedPlane(glm::vec3(-3.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::LUMINANCE), "Compressed Internal format: LUMINANCE"); // not supported by NSight
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::RED), "Compressed Internal format: GL_RED");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::RG), "Compressed Internal format: GL_RGB");
-	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2::RGB), "Compressed Internal format: RGB");
+	//createTexturedPlane(glm::vec3(-3.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, G2Core::DataFormat::LUMINANCE), "Compressed Internal format: LUMINANCE"); // not supported by NSight
+	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, true, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RED), "Compressed Internal format: RED");
+	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, true, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RG), "Compressed Internal format: RGB");
+	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-4.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, true, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RGB), "Compressed Internal format: RGB");
 	
 	// compressed images
-	createTexturedPlane(glm::vec3(-3.f*width,-1.f,-5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, GL_RGBA), "Internal format: GL_RGBA");
-	createTexturedPlane(glm::vec3(-2.f*width,-1.f,-5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, true, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, GL_COMPRESSED_RGBA), "Compressed Internal format: GL_COMPRESSED_SIGNED_RED_RGTC1");
-	createTexturedPlane(glm::vec3(-1.f*width,-1.f,-5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, GL_COMPRESSED_RG_RGTC2), "Compressed Internal format: GL_COMPRESSED_RG_RGTC2");
-	createTexturedPlane(glm::vec3( 0.f*width,-1.f,-5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2::LINEAR, G2::LINEAR, false, G2::WrapMode::REPEAT, G2::WrapMode::REPEAT, GL_COMPRESSED_SIGNED_RG_RGTC2), "Compressed Internal format: GL_COMPRESSED_SIGNED_RG_RGTC2");
+	createTexturedPlane(glm::vec3(-3.f*width, -1.f, -5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, G2Core::DataFormat::RGBA), "Internal format: RGBA");
+	
+	// after switch to external renderer we have temporarily dropped
+	// support for compressed formats
+	//createTexturedPlane(glm::vec3(-2.f*width, -1.f, -5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, true, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, COMPRESSED_RGBA), "Compressed Internal format: GL_COMPRESSED_SIGNED_RED_RGTC1");
+	//createTexturedPlane(glm::vec3(-1.f*width, -1.f, -5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, GL_COMPRESSED_RG_RGTC2), "Compressed Internal format: GL_COMPRESSED_RG_RGTC2");
+	//createTexturedPlane(glm::vec3(0.f*width, -1.f, -5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT, GL_COMPRESSED_SIGNED_RG_RGTC2), "Compressed Internal format: GL_COMPRESSED_SIGNED_RG_RGTC2");
 }
 
 TexturingTest::~TexturingTest(void)
@@ -193,7 +196,7 @@ TexturingTest::createTexturedPlane(glm::vec3 const& center, float width, float h
 
 	// add draw call
 	plane->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_TRIANGLES)
+		.setDrawMode(G2Core::DrawMode::TRIANGLES)
 		.setIaoIndex(0)
 		.setVaoIndex(0));
 

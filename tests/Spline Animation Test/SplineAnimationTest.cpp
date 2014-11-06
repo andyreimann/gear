@@ -134,15 +134,15 @@ SplineAnimationTest::createSpline(std::shared_ptr<G2::Curve> curve, std::string 
 	renderComponent->allocateVertexArrays(1);	
 	G2::VertexArrayObject& vao = renderComponent->getVertexArray(0);
 	vao.resizeElementCount((unsigned int)geometry.size());
-	vao.writeData(G2::Semantics::POSITION, &geometry[0]);
+	vao.writeData(G2Core::Semantics::POSITION, &geometry[0]);
 	
 	renderComponent->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_LINE_STRIP)
+		.setDrawMode(G2Core::DrawMode::LINE_STRIP)
 		.setVaoIndex(renderComponent->getNumVertexArrays()-1)
 		.setEnabled(true)
 	);
 	renderComponent->addDrawCall(G2::DrawCall()
-		.setDrawMode(GL_POINTS)
+		.setDrawMode(G2Core::DrawMode::POINTS)
 		.setVaoIndex(renderComponent->getNumVertexArrays()-1)
 		.setEnabled(true)
 	);

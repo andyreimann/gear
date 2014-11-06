@@ -94,6 +94,7 @@
 #	endif
 #endif
 
+#include <algorithm>
 
 // The following defines macros used within CEGUI for std::min/std::max
 // usage, and is done as a compatibility measure for VC6 with native STL.
