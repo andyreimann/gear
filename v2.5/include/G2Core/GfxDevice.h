@@ -91,6 +91,9 @@ namespace G2
 			Shutdown shutdown;
 			GfxVersion gfxVersion;
 			SupportsShadingLanguage supportsShadingLanguage;
+			/** Clears the color buffer with a given  color
+			 * @param color The color to clear the color buffer with.
+			 */
 			ClearColor clearColor;
 			SetViewport setViewport;
 			ClearBuffers clearBuffers;

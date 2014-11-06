@@ -53,13 +53,20 @@ namespace G2
 	class EventReceiver
 	{ };
 
+	/** This generic function implements an universal Event with variadic templates, on which listeners can connect itself to.
+	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
+	 */
 	template <typename ... ARGS>
 	class Event
 	{
 		public:
-
+			/** Default constructor of the Event.
+			 */
 			Event() {}
-			
+			/** This function will invoke the Event and call all registered listeners functions
+			 * with the given arguments.
+			 * @param args The list of arguments.
+			 */
 			void operator()(ARGS ... args) 
 			{
 				for(int i = 0; i < mEventListeners_.size(); ++i)
@@ -67,13 +74,21 @@ namespace G2
 					mEventListeners_[i]->Process(args ...);
 				}
 			}
-			
+
+			/** This function will hook a given member function pointer of an object to the event.
+			* @param t The object on which you want a member function pointer to be registered.
+			* @param method The member function pointer to register.
+			*/
 			template<typename TargetT>
 			void hook(TargetT* t, void (TargetT::*method)(ARGS ... args))
 			{
 				mEventListeners_.push_back(new Handler<TargetT, ARGS ...>(t, method));
 			}
-			
+
+			/** This function will unhook a given member function pointer of an object from the event.
+			* @param t The object on which you want a member function pointer to be unhooked.
+			* @param method The member function pointer to unhook.
+			*/
 			template<typename TargetT>
 			void unHook(TargetT* t, void (TargetT::*method)(ARGS ... args)) 
 			{
@@ -88,7 +103,10 @@ namespace G2
 					++it;
 				}
 			}
-			
+
+			/** This function will unhook all registered member function pointers of an object from the event.
+			* @param t The object on which you want all member function pointers to be unhooked.
+			*/
 			template<typename TargetT>
 			void unHookAll(TargetT* t)
 			{
@@ -106,6 +124,6 @@ namespace G2
 			}
 
 		private:
-			std::vector<HandlerBase<ARGS ...>*> mEventListeners_;
+			std::vector<HandlerBase<ARGS ...>*> mEventListeners_;	// the vector of all registered listeners
 	};
 };

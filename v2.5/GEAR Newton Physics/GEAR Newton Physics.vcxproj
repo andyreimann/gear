@@ -96,7 +96,8 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,7 +117,8 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +140,8 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,7 +163,8 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

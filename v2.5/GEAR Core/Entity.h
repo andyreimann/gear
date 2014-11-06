@@ -20,12 +20,13 @@ namespace G2
 	class Entity : public NonCopyable 
 	{
 		public:
-
+			/** Constructs a new Entity.
+			 */
 			COREDLL_API Entity();
 			/** Move ctor.
 			 */
 			COREDLL_API Entity(Entity && rhs);
-			/** Move ctor.
+			/** Move assignment operator.
 			 */
 			COREDLL_API Entity& operator=(Entity && rhs);
 			/** This function will return the unique ID of the Entity. 
@@ -53,22 +54,6 @@ namespace G2
 			{
 				return T::getComponentByEntityId<T>(mId);
 			}
-			/* This function will instantiate a Component (only if not already attached) and return a pointer to the requested Component.
-			 * @note One specific component can only be attached once!
-			 * @return A pointer to the requested Component.
-			 * @complexity constant
-			 */
-			//template<class T>
-			//T* addComponent() 
-			//{
-			//	T* componentPtr = getComponent<T>();
-			//	if(nullptr != componentPtr) 
-			//	{
-			//		return componentPtr;
-			//	}
-			//	T* component = T::create<T>(mId);
-			//	return component;
-			//}
 			/* This function will instantiate a Component (only if not already attached) and return a pointer to the requested Component.
 			 * @note One specific component can only be attached once!
 			 * @return A pointer to the requested Component.
@@ -102,7 +87,9 @@ namespace G2
 			{
 				T::remove<T>(mId);
 			}
-
+			/** Deletes the Entity.
+			 * @note Deleting an Entity will automatically delete all attached Components of any System.
+			 */
 			COREDLL_API ~Entity();
 
 			COREDLL_API static unsigned int UNINITIALIZED_ENTITY_ID;

@@ -92,6 +92,10 @@
     <Lib>
       <OutputFile>$(SolutionDir)\lib\$(Platform)\$(Configuration)\GEARPhysics$(TargetExt)</OutputFile>
     </Lib>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\pcre*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -111,7 +115,8 @@
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\pcre*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,6 +131,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\pcre*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -142,7 +151,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2BulletPhysics\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\pcre*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
     <Lib>
       <OutputFile>$(SolutionDir)\lib\$(Platform)\$(Configuration)\GEARBulletPhysics$(TargetExt)</OutputFile>

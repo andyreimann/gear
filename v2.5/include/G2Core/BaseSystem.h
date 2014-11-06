@@ -142,11 +142,14 @@ namespace G2
 				std::lock_guard<std::mutex> lock(componentsMutex);
 				components.reserve(num);
 			}
-			
+			/** Locks the access to the components of that BaseSystem using a mutex.
+			 */
 			void lock()
 			{
 				componentsMutex.lock();
 			}
+			/** Unlocks the access to the components of that BaseSystem using a mutex.
+			*/
 			void unlock()
 			{
 				componentsMutex.unlock();

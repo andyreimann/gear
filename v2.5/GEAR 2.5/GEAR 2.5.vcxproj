@@ -131,6 +131,11 @@
       <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Relese|Win32'">
     <ClCompile>
@@ -146,6 +151,11 @@
       <AdditionalLibraryDirectories>../lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>DevIL.lib;glew32.lib;OpenGL32.lib;cg.lib;cgGL.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -165,7 +175,8 @@
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
-XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
     <Lib>
       <OutputFile>$(OutDir)GEAR.lib</OutputFile>
@@ -199,7 +210,8 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
-XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -214,6 +226,11 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -237,7 +254,9 @@ XCOPY "*.inl" "..\include\G2\" /R /I /Y</Command>
       <AdditionalLibraryDirectories>../lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2\" /R /I /Y
+XCOPY "*.inl" "..\include\G2\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

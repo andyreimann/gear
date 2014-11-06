@@ -167,3 +167,26 @@ tests/bin/Assets/Resources/heightmap2048.png
 v2.5/lib/x64/Debug/libfbxsdk-md.lib
 v2.5/lib/x64/Release/libfbxsdk-md.lib
 tests/DX11 Test/DX11 Test.vcxproj.andy.nvuser
+tests/bin/x64/Debug/dlls/CEGUICoreWindowRendererSet_d.dll
+tests/bin/x64/Debug/dlls/CEGUIExpatParser_d.dll
+tests/bin/x64/Debug/dlls/CEGUIOpenGLRenderer-0_d.dll
+tests/bin/x64/Debug/dlls/CEGUISILLYImageCodec_d.dll
+tests/bin/x64/Debug/dlls/DevIL.dll
+tests/bin/x64/Debug/dlls/GEARCameras.dll
+tests/bin/x64/Debug/dlls/GEARCegui.dll
+tests/bin/x64/Debug/dlls/GEARCore.dll
+tests/bin/x64/Debug/dlls/GEARDX11.dll
+tests/bin/x64/Debug/dlls/GEAREditor.dll
+tests/bin/x64/Debug/dlls/GEARGL.dll
+tests/bin/x64/Debug/dlls/GEARSdlContext.dll
+tests/bin/x64/Debug/dlls/GEARTerrains.dll
+tests/bin/x64/Debug/dlls/SDL2.dll
+tests/bin/x64/Debug/dlls/SILLY_d.dll
+tests/bin/x64/Debug/dlls/expat_d.dll
+tests/bin/x64/Debug/dlls/freetype_d.dll
+tests/bin/x64/Debug/dlls/glew_d.dll
+tests/bin/x64/Debug/dlls/jpeg_d.dll
+tests/bin/x64/Debug/dlls/libpng_d.dll
+tests/bin/x64/Debug/dlls/newton.dll
+tests/bin/x64/Debug/dlls/pcre_d.dll
+tests/bin/x64/Debug/dlls/zlib_d.dll

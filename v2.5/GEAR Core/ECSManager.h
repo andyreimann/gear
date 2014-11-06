@@ -111,7 +111,9 @@ namespace G2
 			 * 
 			 */
 			COREDLL_API void runSideThread(FrameInfo const& frameInfo);
-
+			/** Deletes all registered Components on any available System for the given Entity
+			 * @param entityId The ID of the Entity to delete all Components for.
+			 */
 			COREDLL_API void deleteComponentsForEntity(unsigned int entityId);
 			/** Get a reference to one single instance.
 			 * @return A reference of one single instance.

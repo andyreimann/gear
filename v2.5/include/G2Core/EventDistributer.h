@@ -12,6 +12,8 @@
 namespace G2 
 {
 	/** This class can distribute all global Events.
+	 * It holds several engine internal Event objects for different G2Core features, 
+	 * everyone can attach itself to.
 	 */
 	class EventDistributer 
 	{
