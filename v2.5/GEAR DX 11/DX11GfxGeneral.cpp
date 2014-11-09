@@ -138,10 +138,10 @@ void SetViewport(G2::rect const& vp)
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
-	viewport.TopLeftX = vp.x;
-	viewport.TopLeftY = vp.y;
-	viewport.Width = vp.z;
-	viewport.Height = vp.w;
+	viewport.TopLeftX = (float)vp.x;
+	viewport.TopLeftY = (float)vp.y;
+	viewport.Width = (float)vp.z;
+	viewport.Height = (float)vp.w;
 	//viewport.MinDepth = 0.f;
 	//viewport.MaxDepth = 1.f;
 

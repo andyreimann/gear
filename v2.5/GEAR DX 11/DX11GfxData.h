@@ -200,33 +200,92 @@ namespace G2DX11
 
 	struct TextureResource : DX11Resource
 	{
-		TextureResource(Type type) 
-			: DX11Resource(type) {}
+		TextureResource(Type type, ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+			: DX11Resource(type),
+			shaderResourceView(shaderResourceView),
+			samplerState(samplerState) {}
+
+		~TextureResource()
+		{
+			if (shaderResourceView != nullptr)
+			{
+				shaderResourceView->Release();
+			}
+			if (samplerState != nullptr)
+			{
+				samplerState->Release();
+			}
+		}
+
+		ID3D11ShaderResourceView*	shaderResourceView;
+		ID3D11SamplerState*			samplerState;
 	};
 
 	struct Texture2DResource : TextureResource
 	{
-		Texture2DResource() 
-			: TextureResource(TEX_2D) {}
+		Texture2DResource(ID3D11Texture2D* tex, ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+			: TextureResource(TEX_2D, shaderResourceView, samplerState),
+			tex(tex) {}
+
+		~Texture2DResource()
+		{
+			if (tex != nullptr)
+			{
+				tex->Release();
+			}
+		}
+
+		ID3D11Texture2D* tex;
 	};
 
 	struct Texture2DArrayResource : TextureResource
 	{
-		Texture2DArrayResource() 
-			: TextureResource(TEX_2D_ARRAY) {}
-		
+		Texture2DArrayResource(ID3D11Texture2D* tex, ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+			: TextureResource(TEX_2D_ARRAY, shaderResourceView, samplerState),
+			tex(tex) {}
+
+		~Texture2DArrayResource()
+		{
+			if (tex != nullptr)
+			{
+				tex->Release();
+			}
+		}
+
+		ID3D11Texture2D* tex;
 	};
 
 	struct TextureCubeResource : TextureResource
 	{
-		TextureCubeResource() 
-			: TextureResource(TEX_CUBE) {}
+		TextureCubeResource(ID3D11Texture2D* tex, ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+			: TextureResource(TEX_CUBE, shaderResourceView, samplerState) {}
+
+		//~Texture2DArrayResource()
+		//{
+		//	if (tex != nullptr)
+		//	{
+		//		tex->Release();
+		//	}
+		//}
+
+		//ID3D11Texture2D* tex;
 	};
 
 	struct Texture3DResource : TextureResource
 	{
-		Texture3DResource() 
-			: TextureResource(TEX_3D) {}
+		Texture3DResource(ID3D11Texture3D* tex, ID3D11ShaderResourceView* shaderResourceView, ID3D11SamplerState* samplerState)
+			: TextureResource(TEX_3D, shaderResourceView, samplerState),
+			tex(tex) {}
+
+		~Texture3DResource()
+		{
+			if (tex != nullptr)
+			{
+				tex->Release();
+			}
+		}
+
+		ID3D11Texture3D* tex;
 	};
 
 };

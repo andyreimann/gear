@@ -277,6 +277,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DrawCall.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectBlockImporter.h" />
     <ClInclude Include="EffectImporter.h" />
     <ClInclude Include="FBXAnimationComponent.h" />
     <ClInclude Include="FBXAnimationData.h" />
@@ -333,6 +334,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceBuilder.h" />
+    <ClInclude Include="RootImporter.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="SettingsBlockParser.h" />
@@ -432,6 +434,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceBuilder.cpp" />
+    <ClCompile Include="RootImporter.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="SettingsBlockParser.cpp" />

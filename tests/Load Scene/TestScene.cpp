@@ -26,7 +26,8 @@ TestScene::TestScene(G2::SDL::Window& window)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
-	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default_CG.g2fx");
+	//std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default_CG.g2fx");
+	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/EffectFileImporterTest.g2fx");
 	G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setDefaultEffect(effect);

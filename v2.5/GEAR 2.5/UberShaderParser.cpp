@@ -38,8 +38,6 @@ UberShaderParser::parse(std::string const& fileName)
         return builder;
     }
 
-    int curvedBracketsOpened = 0;
-
     while(!file.eof()) 
     {
         log.str("");

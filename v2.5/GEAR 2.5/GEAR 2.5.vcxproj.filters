@@ -299,6 +299,10 @@
     <ClInclude Include="BSplineCurve.h">
       <Filter>Curves\BSplineCurve</Filter>
     </ClInclude>
+    <ClInclude Include="EffectBlockImporter.h">
+      <Filter>Importer\Effect\EffectBlockImporter</Filter>
+    </ClInclude>
+    <ClInclude Include="RootImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -577,6 +581,7 @@
     <ClCompile Include="BSplineCurve.cpp">
       <Filter>Curves\BSplineCurve</Filter>
     </ClCompile>
+    <ClCompile Include="RootImporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -797,6 +802,12 @@
     </Filter>
     <Filter Include="Curves\BSplineCurve">
       <UniqueIdentifier>{9ad7bccf-9e8a-4caa-938e-eb3b004d1b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\EffectBlockImporter">
+      <UniqueIdentifier>{58b00e69-c551-4bba-b820-21d91862a04e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer\Effect\EffectBlockImporter\Root">
+      <UniqueIdentifier>{ebd57b98-9bc4-48fe-9ea8-615b7f0c423c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

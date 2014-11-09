@@ -18,6 +18,12 @@ namespace G2
 			public:
 
 			static std::string trim(std::string const& str);
+			/** Checks if the given string ends with the given suffix.
+			 * @param str The string to search in.
+			 * @param suffix The suffix to search for.
+			 * @return True if the given string ends with the suffix, false if not.
+			 */
+			static bool endsWith(std::string const& str, std::string const& suffix);
 
 
 

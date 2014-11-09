@@ -31,3 +31,13 @@ String::trim( std::string const& str ) {
 	}
 	return buffer;
 }
+
+bool
+G2::Tools::String::endsWith(std::string const& str, std::string const& suffix)
+{
+	if (suffix.size() > str.size())
+	{
+		return false;
+	}
+	return std::equal(str.begin() + str.size() - suffix.size(), str.end(), suffix.begin());
+}
