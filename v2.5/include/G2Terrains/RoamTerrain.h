@@ -66,34 +66,34 @@ namespace G2
 				 * @note When you disable the frustum culling, you should maybe also increase the number of triangles used for the terrain to get equal quality!.
 				 */
 				void setFrustumCullingMode(bool mode);
-				/** This function will return the frustum culling mode of the RoamTerrain.
+				/** Returns the frustum culling mode of the RoamTerrain.
 				* @return The frustum culling mode of the RoamTerrain.
 				* @see setFrustumCullingMode for more details on frustum culling when using RoamTerrain
 				*/
 				bool const& getFrustumCullingMode() const { return mUseFrustumCulling; }
-				/** This function will return the maximum height of the RoamTerrain. 
+				/** Returns the maximum height of the RoamTerrain. 
 				* @return The maximum height of the RoamTerrain.
 				*/
 				float const& getMaxHeight() const { return mMaxHeight; }
-				/** This function will return the number of patches per side of the RoamTerrain used for the tessellation. 
+				/** Returns the number of patches per side of the RoamTerrain used for the tessellation. 
 				* @return The number of patches per side.
 				*/
 				unsigned int const& getNumPatchesPerSide() const { return mNumPatchesPerSide; }
-				/** This function will return the current amount of triangles produces in the last tessellation process. 
+				/** Returns the current amount of triangles produces in the last tessellation process. 
 				* @return The current amount of triangles.
 				* @note This value may vary from frame to frame and indicates, how many triangles the tessellation stage produced.
 				* @note Tessellation is done in the postUpdate phase of the RoamTerrainSystem
 				*/
 				unsigned int const& getNumTriangles() const { return mNumTrisRendered; }
-				/** This function will return the currently set amount of desired triangle tessellations. 
+				/** Returns the currently set amount of desired triangle tessellations. 
 				* @return The currently set amount of desired triangle tessellations.
 				*/
 				unsigned int const& getDesiredTriangleTesselations() const { return mDesiredTriangleTesselations; }
-				/** This function will return the maximum number of triangles available for this RoamTerrain. 
+				/** Returns the maximum number of triangles available for this RoamTerrain. 
 				* @return The maximum number of triangles available for this RoamTerrain. 
 				*/
 				unsigned int getMaxTriangles() const { return (unsigned int)mTriangePool.size(); }
-				/** This function will set the amount of desired triangle tessellations to the given value.
+				/** Sets the amount of desired triangle tessellations to the given value.
 				* @param value The amount of desired triangle tessellations.
 				* @note The value is omitted, if it is bigger than the maximum number of triangles defined. 
 				* @see See the setup() funciton for more details.
@@ -105,13 +105,13 @@ namespace G2
 				void _tesselate(glm::vec3 const& cameraPosition);
 				void _draw();
 
-				/** This function will apply the given world space matrix to the AABB objects of all RoamPatch objects.
+				/** Applies the given world space matrix to the AABB objects of all RoamPatch objects.
 				 * It is called from the RoamTerrainSystem, whenever the Attached TransformComponent was recalculated.
 				 * @param worldSpaceMatrix The world space matrix to recalculate all RoamPatch objects AABB with.
 				 */
 				void _updatePatchPositions(glm::mat4 const& worldSpaceMatrix);
 				
-				/** This function will return the next unused triangle tree node from the triangle pool.
+				/** Returns the next unused triangle tree node from the triangle pool.
 				 */
 				TriTreeNode*	_allocateTriange();
 

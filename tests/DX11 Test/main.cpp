@@ -13,7 +13,7 @@
 #pragma comment (lib, "dinput8.lib")
 #pragma comment (lib, "dxguid.lib")
 
-//#define USE_DX11 1
+#define USE_DX11 1
 
 #ifdef _WIN32
 	// in SDLmain.lib is an SDL_main entry point

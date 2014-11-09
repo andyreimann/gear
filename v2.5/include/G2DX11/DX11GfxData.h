@@ -171,7 +171,8 @@ namespace G2DX11
 	struct IndexBufferObjectResource : DX11Resource
 	{
 		IndexBufferObjectResource(ID3D11Buffer* ibo) 
-			: ibo(ibo), 
+			: ibo(ibo),
+			stagingIbo(nullptr),
 			DX11Resource(IBO) {}
 
 		~IndexBufferObjectResource()
@@ -180,9 +181,14 @@ namespace G2DX11
 			{
 				ibo->Release();
 			}
+			if (stagingIbo != nullptr)
+			{
+				stagingIbo->Release();
+			}
 		}
 
 		ID3D11Buffer* ibo;
+		ID3D11Buffer* stagingIbo; // for CPU Access if needed
 
 	};
 

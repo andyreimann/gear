@@ -190,3 +190,6 @@ tests/bin/x64/Debug/dlls/libpng_d.dll
 tests/bin/x64/Debug/dlls/newton.dll
 tests/bin/x64/Debug/dlls/pcre_d.dll
 tests/bin/x64/Debug/dlls/zlib_d.dll
+*.sbr
+*.bsc
+v2.5/GEAR 2.5/ClassDiagram.cd

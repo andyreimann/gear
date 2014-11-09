@@ -108,6 +108,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\SDL2*.dll" "..\..\tests\bin\$
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/D SDLCONTEXTDLL_EXPORTS %(AdditionalOptions)</AdditionalOptions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -118,6 +119,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\SDL2*.dll" "..\..\tests\bin\$
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tests\bin\$(Platform)\$(Configuration)\"
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\SDL2*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

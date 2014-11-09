@@ -799,4 +799,7 @@
       <UniqueIdentifier>{9ad7bccf-9e8a-4caa-938e-eb3b004d1b78}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

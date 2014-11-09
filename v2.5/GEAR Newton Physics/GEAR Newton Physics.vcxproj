@@ -106,6 +106,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -120,6 +121,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin
       <Command>XCOPY "*.h" "..\include\G2NewtonPhysics\" /R /I /Y
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\newton*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

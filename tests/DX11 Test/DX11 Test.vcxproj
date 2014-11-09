@@ -103,7 +103,8 @@
       <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>Copy /Y "..\..\v2.5\lib\$(PlatformTarget)\$(Configuration)\*.dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

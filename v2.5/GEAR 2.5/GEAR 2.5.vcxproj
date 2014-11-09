@@ -166,6 +166,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
       <AdditionalOptions>/MP8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>../include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -192,6 +193,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
       <AdditionalCompilerOptions>
       </AdditionalCompilerOptions>
     </CudaCompile>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Relese|x64'">
     <ClCompile>
@@ -458,6 +462,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
     <ClCompile Include="VertexArrayObject.cpp" />
     <ClCompile Include="VertexStream.cpp" />
     <ClCompile Include="ZSorter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -145,7 +145,7 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 			++numIndexArrays;
 		}
 	}
-	//renderComponent->allocateIndexArrays(numIndexArrays);
+	renderComponent->allocateIndexArrays(numIndexArrays);
 
 	// init the VAO
 	unsigned int currentIndexArrayIndex = 0;
@@ -163,20 +163,20 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 		{
 			renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &meshData.uvs[0]);
 		}
-		//if(meshData.indices.size() > 0)
-		//{
-		//	IndexArrayObject& iao = renderComponent->getIndexArray(currentIndexArrayIndex);
-		//	iao.writeIndices(&meshData.indices[0], (unsigned int)meshData.indices.size());
-		//	
-		//	++currentIndexArrayIndex;
-		//}
+		if(meshData.indices.size() > 0)
+		{
+			IndexArrayObject& iao = renderComponent->getIndexArray(currentIndexArrayIndex);
+			iao.writeIndices(&meshData.indices[0], (unsigned int)meshData.indices.size());
+			
+			++currentIndexArrayIndex;
+		}
 		// add a draw call
 		renderComponent->addDrawCall(DrawCall()
 			.setDrawMode(G2Core::DrawMode::TRIANGLES)
 			.setEnabled(true)
 			.setVaoIndex(i)
 			.setModelSpaceAABB(meshData.modelSpaceAABB)
-			//.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)
+			.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)
 			.setAABBCalculationMode(AABBCalculationMode::MANUAL));
 	}
 #endif

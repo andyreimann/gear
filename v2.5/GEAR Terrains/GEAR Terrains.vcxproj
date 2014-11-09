@@ -107,6 +107,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tes
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/D TERRAINSDLL_EXPORTS %(AdditionalOptions)</AdditionalOptions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,6 +117,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tes
       <Command>XCOPY "*.h" "..\include\G2Terrains\" /R /I /Y
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

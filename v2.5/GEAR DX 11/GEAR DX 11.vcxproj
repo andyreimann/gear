@@ -103,6 +103,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/D GEARDX11DLL_EXPORTS %(AdditionalOptions)</AdditionalOptions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -110,8 +111,12 @@
       <PerUserRedirection>true</PerUserRedirection>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY "*.h" "..\include\G2DX11\" /R /I /Y</Command>
+      <Command>XCOPY "*.h" "..\include\G2DX11\" /R /I /Y
+Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

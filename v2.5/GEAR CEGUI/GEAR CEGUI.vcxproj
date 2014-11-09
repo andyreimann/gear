@@ -108,6 +108,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\zlib*.dll" "..\..\tests\bin\$
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/D UICEGUIDLL_EXPORTS %(AdditionalOptions)</AdditionalOptions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -125,6 +126,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\libpng*.dll" "..\..\tests\bin
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\SILLY*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\zlib*.dll" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

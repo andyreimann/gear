@@ -102,6 +102,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tes
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/D COREDLL_EXPORTS %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,6 +112,9 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tes
       <Command>XCOPY "*.h" "..\include\G2Core\" /R /I /Y
 Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tests\bin\$(Platform)\$(Configuration)\"</Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
