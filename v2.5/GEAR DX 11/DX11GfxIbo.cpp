@@ -51,11 +51,8 @@ void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int nu
 		{
 			G2::logger << "Could not create IBO" << G2::endl;
 		}
-
-		//D3D11_MAPPED_SUBRESOURCE ms;
-		//gDeviceContextPtr()->Map(ibo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-		//memcpy(ms.pData, data, bd.ByteWidth);           // copy the vertices
-		//gDeviceContextPtr()->Unmap(ibo, NULL); 
+		// create staging buffer
+		iboPtr->stagingIbo = _createStagingBuffer(sizeof(unsigned int) * numElements, data);
 		return;
 	}
 	D3D11_MAPPED_SUBRESOURCE ms;
@@ -67,9 +64,6 @@ void UpdateIBOIndices(G2Core::GfxResource* ibo, unsigned int const* data, int nu
 	}
 	memcpy(ms.pData, data, sizeof(unsigned int) * numElements);						// copy the vertices
 	gDeviceContextPtr()->Unmap(iboPtr->ibo, NULL); 
-
-	// create staging buffer
-	iboPtr->stagingIbo = _createStagingBuffer(sizeof(unsigned int) * numElements, data);
 }
 
 void BindIBO(G2Core::GfxResource* ibo)
