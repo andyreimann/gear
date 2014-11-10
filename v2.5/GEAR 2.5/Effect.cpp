@@ -121,7 +121,10 @@ void _compile(
 	std::vector<Property> const& properties,
 	std::vector<std::shared_ptr<AbstractShaderPart>> const& vertexShaderParts,
 	std::vector<std::shared_ptr<AbstractShaderPart>> const& geometryShaderParts,
-	std::vector<std::shared_ptr<AbstractShaderPart>> const& fragmentShaderParts,
+	std::vector<std::shared_ptr<AbstractShaderPart>> const& fragmentShaderParts, 
+	std::string	const& vertexShaderVersion,
+	std::string	const& geometryShaderVersion,
+	std::string	const& fragmentShaderVersion,
 	ShaderMetaData const& shaderMetaData,
 	std::vector<std::shared_ptr<Shader>>& target
 	)
@@ -135,13 +138,17 @@ void _compile(
 	std::string vertexShaderHeader = "", geometryShaderHeader = "", fragmentShaderHeader = "";
 
 	
-	if(shadingLanguage == "GLSL") 
+	if (vertexShaderVersion != "")
 	{
-		vertexShaderHeader = fragmentShaderHeader = "#version 330\n\n";
-		if(geometryShaderParts.size() > 0)
-		{
-			geometryShaderHeader = "#version 330\n\n";
-		}
+		vertexShaderHeader = "#version " + vertexShaderVersion + "\n\n";
+	}
+	if (geometryShaderParts.size() > 0 && geometryShaderVersion != "")
+	{
+		geometryShaderHeader = "#version " + geometryShaderVersion + "\n\n";
+	}
+	if (fragmentShaderVersion != "")
+	{
+		fragmentShaderHeader = "#version " + fragmentShaderVersion + "\n\n";
 	}
 
 	G2Core::VertexInputLayout vertexInputLayout;
@@ -331,6 +338,9 @@ Effect::Builder::buildAndCompile()
 		vertexShaderParts, 
 		geometryShaderParts,
 		fragmentShaderParts, 
+		vertexShaderVersion,
+		geometryShaderVersion,
+		fragmentShaderVersion,
 		metaData, 
 		shaderPermutations
 	);
@@ -353,7 +363,10 @@ Effect::Builder::buildAndCompile()
 			passBuilder.properties, 
 			passBuilder.vertexShaderParts, 
 			passBuilder.geometryShaderParts, 
-			passBuilder.fragmentShaderParts, 
+			passBuilder.fragmentShaderParts,
+			passBuilder.vertexShaderVersion,
+			passBuilder.geometryShaderVersion,
+			passBuilder.fragmentShaderVersion,
 			passBuilder.metaData, 
 			passBuilder.shaderPermutations
 		);

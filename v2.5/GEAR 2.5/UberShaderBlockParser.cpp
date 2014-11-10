@@ -74,6 +74,10 @@ UberShaderBlockParser::parse()
 				mBuilder->addGeometryShaderParts(blockParser.getGeometryShaderParts());
 				mBuilder->addFragmentShaderParts(blockParser.getFragmentShaderParts());
 
+				mBuilder->vertexShaderVersion = blockParser.getVertexShaderVersionString();
+				mBuilder->geometryShaderVersion = blockParser.getGeometryShaderVersionString();
+				mBuilder->fragmentShaderVersion = blockParser.getFragmentShaderVersionString();
+
 				// transport location bindings to builder
 				mBuilder->locationBindings = mLocationBindingBlockParser.getLocationBindings();
 				// transport location bindings to builder
@@ -110,6 +114,9 @@ UberShaderBlockParser::parse()
 					pass.addVertexShaderParts(shaderBlockParser->getVertexShaderParts());
 					pass.addGeometryShaderParts(shaderBlockParser->getGeometryShaderParts());
 					pass.addFragmentShaderParts(shaderBlockParser->getFragmentShaderParts());
+					pass.vertexShaderVersion = shaderBlockParser->getVertexShaderVersionString();
+					pass.geometryShaderVersion = shaderBlockParser->getGeometryShaderVersionString();
+					pass.fragmentShaderVersion = shaderBlockParser->getFragmentShaderVersionString();
 				}
 				logger << "[UberShaderBlockParser] -> Shader block provides " << blockParser.getPassesBlockParser().getParsedPasses().size() << " passes\n";
 			}

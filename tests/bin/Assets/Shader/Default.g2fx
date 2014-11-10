@@ -10,6 +10,7 @@ Ubershader "GEAR/Default" {
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
  
        out Data
@@ -27,6 +28,7 @@ Ubershader "GEAR/Default" {
             dataOut.color = inColor;
        }
      #FRAGMENTPROGRAM
+       #version 330
        #extension GL_EXT_texture_array : enable
        #INCLUDE "G2.material" // include GEAR default stuff
        #INCLUDE "G2.light" // include GEAR default stuff

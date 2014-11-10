@@ -59,6 +59,19 @@ namespace G2
 			{ 
 				return mFragmentShaderParts; 
 			}
+
+			std::string const& getVertexShaderVersionString()
+			{
+				return mVertexShaderVersion;
+			}
+			std::string const& getGeometryShaderVersionString()
+			{
+				return mGeometryShaderVersion;
+			}
+			std::string const& getFragmentShaderVersionString()
+			{
+				return mFragmentShaderVersion;
+			}
 			
 			/// This function will return the Setting for a given name.
 			/// @param name The name of the Setting object to get the Settings for.
@@ -112,6 +125,10 @@ namespace G2
 			LocationBindingsBlockParser							mLocationBindingBlockParser;
 			PropertiesBlockParser								mPropertiesBlockParser;
 			std::shared_ptr<AbstractShaderPart>					mCurrentShaderPart;
+
+			std::string											mVertexShaderVersion;
+			std::string											mGeometryShaderVersion;
+			std::string											mFragmentShaderVersion;
 
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mVertexShaderParts;		// The available parts of vertex shader code
 			std::vector<std::shared_ptr<AbstractShaderPart>>	mGeometryShaderParts;	// The available parts of vertex shader code

@@ -71,6 +71,11 @@ namespace G2
 					std::vector<std::shared_ptr<AbstractShaderPart>>	fragmentShaderParts;// The available parts of fragment shader code
 					std::vector<std::shared_ptr<Shader>>				shaderPermutations;	// The vector containing all available Shader-Permutations
 
+
+					std::string											vertexShaderVersion;
+					std::string											geometryShaderVersion;
+					std::string											fragmentShaderVersion;
+
 					
 					ShaderMetaData										metaData;	
 

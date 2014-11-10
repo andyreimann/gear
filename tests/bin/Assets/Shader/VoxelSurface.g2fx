@@ -10,6 +10,7 @@ Ubershader "GEAR/Default" {
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
  
        out Data
@@ -30,6 +31,7 @@ Ubershader "GEAR/Default" {
             dataOut.color = inColor;
        }
      #FRAGMENTPROGRAM
+       #version 330
        #INCLUDE "G2.material" // include GEAR default stuff
 
         struct DirectionalLight {

@@ -180,10 +180,28 @@ ShaderBlockParser::parseLine(std::string const& line, std::stringstream& lineStr
 			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
 			mCurrentState = READING_GEOMETRY_SHADER;
 		}
-		else if(macro == "#FRAGMENTPROGRAM") 
+		else if (macro == "#FRAGMENTPROGRAM")
 		{
 			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
 			mCurrentState = READING_FRAGMENT_SHADER;
+		}
+		else if (macro == "#version")
+		{
+			flushShaderPart(std::shared_ptr<AbstractShaderPart>(new SimpleShaderPart));
+			std::string version;
+			lineStr >> version;
+			if (mCurrentState == READING_VERTEX_SHADER)
+			{
+				mVertexShaderVersion = version;
+			}
+			else if (mCurrentState == READING_GEOMETRY_SHADER)
+			{
+				mGeometryShaderVersion = version;
+			}
+			else if (mCurrentState == READING_FRAGMENT_SHADER)
+			{
+				mFragmentShaderVersion = version;
+			}
 		}
 		else
 		{

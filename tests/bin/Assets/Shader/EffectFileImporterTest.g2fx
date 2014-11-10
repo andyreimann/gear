@@ -8,6 +8,7 @@ Ubershader"GEAR/Test"{
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
        #INCLUDE "G2.postprocess"
  
@@ -28,7 +29,7 @@ Ubershader"GEAR/Test"{
 
        }
      #FRAGMENTPROGRAM
-
+       #version 330
         in Data
         {
           vec2 texCoord;

@@ -8,6 +8,7 @@ Ubershader "GEAR/Default" {
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
        #INCLUDE "G2.postprocess"
  
@@ -28,6 +29,7 @@ Ubershader "GEAR/Default" {
 
        }
      #FRAGMENTPROGRAM
+       #version 330
 
         in Data
         {

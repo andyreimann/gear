@@ -15,6 +15,7 @@ Ubershader "Example/Simple" {
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices" // include GEAR default stuff
 
       struct ClipmapCellInfo {
@@ -47,6 +48,7 @@ Ubershader "Example/Simple" {
            	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * pos; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
+       #version 330
        #INCLUDE "G2.material" // include GEAR default stuff
 
       struct ClipmapCellInfo {

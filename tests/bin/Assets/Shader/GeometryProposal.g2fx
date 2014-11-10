@@ -26,6 +26,7 @@ Ubershader "GEAR/Multipass" {
            }
 
            #VERTEXPROGRAM
+             #version 330
              #INCLUDE "G2.matrices" 
 
              void main(void) 
@@ -33,6 +34,7 @@ Ubershader "GEAR/Multipass" {
                   gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
              }
            #FRAGMENTPROGRAM
+              #version 330
               #INCLUDE "G2.material" // include GEAR default stuff
            
               out vec4 outColor; // here goes the final color
@@ -43,6 +45,7 @@ Ubershader "GEAR/Multipass" {
         }
      }
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
  
        void main(void) 
@@ -50,6 +53,7 @@ Ubershader "GEAR/Multipass" {
             gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
        }
      #GEOMETRYPROGRAM
+       #version 330
        #INCLUDE "G2.matrices"
       // simple passthrough geometry shader
       layout(triangles) in;
@@ -63,6 +67,7 @@ Ubershader "GEAR/Multipass" {
         EndPrimitive();
       }
      #FRAGMENTPROGRAM
+       #version 330
 
         out vec4 outColor; // here goes the final color
    
