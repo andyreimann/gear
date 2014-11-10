@@ -22,9 +22,10 @@ namespace G2
 					  unsigned int width,
 					  unsigned int height,
 					  unsigned int depth,
-					  G2Core::DataFormat::Name format,
+					  G2Core::DataFormat::Internal::Name format,
 					  bool compress,
-					  unsigned char * data);
+					  G2Core::DataType::Name dataType,
+					  void* data);
 			/// Move ctor.
 			Texture3D(Texture3D && rhs);
 			/// Move ctor.

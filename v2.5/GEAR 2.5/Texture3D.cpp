@@ -11,9 +11,10 @@ Texture3D::Texture3D(G2Core::FilterMode::Name minFilter,
 					 unsigned int width,
 					 unsigned int height,
 					 unsigned int depth,
-					 G2Core::DataFormat::Name format,
+					 G2Core::DataFormat::Internal::Name format,
 					 bool compress,
-					 unsigned char * data)
+					 G2Core::DataType::Name dataType,
+					 void* data)
 	: Texture(G2Core::TextureFormat::TEXTURE_3D, format, minFilter, magFilter),
 	mWidth(width),
 	mHeight(height),
@@ -26,9 +27,10 @@ Texture3D::Texture3D(G2Core::FilterMode::Name minFilter,
 
 	mTexResource = G2_gfxDevice()->createTexture3D(
 		mWidth, mHeight, mDepth,
-		format,format,
+		getBaseFormatByInternalFormat(format), format,
 		mMinFilter,mMagFilter,
 		G2Core::WrapMode::CLAMP_TO_EDGE,G2Core::WrapMode::CLAMP_TO_EDGE,G2Core::WrapMode::CLAMP_TO_EDGE,
+		dataType,
 		data
 	);
 }

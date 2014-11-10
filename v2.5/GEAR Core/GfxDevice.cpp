@@ -85,6 +85,7 @@ GfxDevice::loadFunctionPointers()
 	createTexture2DArray = (CreateTexture2DArray)loadFunctionPointer("CreateTexture2DArray");
 	createTextureCube = (CreateTextureCube)loadFunctionPointer("CreateTextureCube");
 	createTexture3D = (CreateTexture3D)loadFunctionPointer("CreateTexture3D");
+	createTexture2DFromFile = (CreateTexture2DFromFile)loadFunctionPointer("CreateTexture2DFromFile");
 	bindTexture = (BindTexture)loadFunctionPointer("BindTexture");
 	unbindTexture = (UnbindTexture)loadFunctionPointer("UnbindTexture");
 

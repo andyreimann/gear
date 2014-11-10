@@ -46,7 +46,7 @@ bool _check()
 	return true;
 }
 
-G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format)
+G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format)
 {
 	unsigned int fboId, renderBufferId;
 	GLCHECK( glGenFramebuffers( 1, &fboId ) );

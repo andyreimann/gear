@@ -168,6 +168,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\$(TargetFileName)" "..\..\tes
     <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="MouseButton.h" />
     <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="TextureMetaData.h" />
     <ClInclude Include="VertexInputLayout.h" />
   </ItemGroup>
   <ItemGroup>

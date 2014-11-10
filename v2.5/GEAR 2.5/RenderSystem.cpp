@@ -752,7 +752,7 @@ RenderSystem::_onViewportResize(int w, int h)
 	if(mRenderType == RenderType::DEFERRED_SHADING)
 	{
 		// setup render target for deferred rendering 
-		mDeferredShadingTarget = std::shared_ptr<MultipleRenderTarget>(new MultipleRenderTarget(w,h,G2Core::DataFormat::RGBA));
+		mDeferredShadingTarget = std::shared_ptr<MultipleRenderTarget>(new MultipleRenderTarget(w,h,G2Core::DataFormat::Internal::R32G32B32A32_F));
 		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_0);	// diffuse texture
 		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_1);	// normals texture
 		mDeferredShadingTarget->allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::COLOR_2);	// positions texture
@@ -769,11 +769,12 @@ RenderSystem::_onViewportResize(int w, int h)
 					G2Core::FilterMode::NEAREST, 
 					w, 
 					h, 
-					G2Core::DataFormat::RGBA, 
-					G2Core::DataFormat::RGBA,
+					G2Core::DataFormat::Base::RGBA, 
+					G2Core::DataFormat::Internal::R32G32B32A32_F,
 					G2Core::WrapMode::CLAMP_TO_EDGE,
 					G2Core::WrapMode::CLAMP_TO_EDGE,
 					false,
+					G2Core::DataType::UNSIGNED_BYTE,
 					nullptr
 				)), 
 				RenderTargetType::RT_2D

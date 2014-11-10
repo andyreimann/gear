@@ -8,7 +8,7 @@ using namespace G2;
 
 
 Texture::Texture(G2Core::TextureFormat::Name type, 
-				 G2Core::DataFormat::Name dataFormat, 
+				 G2Core::DataFormat::Internal::Name dataFormat, 
 				 G2Core::FilterMode::Name minFilter, 
 				 G2Core::FilterMode::Name magFilter) 
 	: mType(type),
@@ -65,77 +65,50 @@ Texture::unbind(G2Core::TexSlot::Name textureSlot) const
 }
 
 unsigned int 
-Texture::numChannelsFromFormat( G2Core::DataFormat::Name dstFormat ) {
-	if(	dstFormat == G2Core::DataFormat::RGBA_UB || 
-		dstFormat == G2Core::DataFormat::RGBA_US || 
-		dstFormat == G2Core::DataFormat::RGBA16_F || 
-		dstFormat == G2Core::DataFormat::RGBA_F || 
-		dstFormat == G2Core::DataFormat::RGBA_B || 
-		dstFormat == G2Core::DataFormat::RGBA_S || 
-		dstFormat == G2Core::DataFormat::RGBA_I || 
-		dstFormat == G2Core::DataFormat::RGBA_UI || 
-		dstFormat == G2Core::DataFormat::RGBA || 
-		dstFormat == G2Core::DataFormat::BGRA || 
-		dstFormat == GL_COMPRESSED_RGBA || 
+Texture::numChannelsFromFormat( G2Core::DataFormat::Internal::Name dstFormat ) {
+	if (dstFormat == G2Core::DataFormat::Internal::R32G32B32A32_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32B32A32_I ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32B32A32_F
+		/*dstFormat == GL_COMPRESSED_RGBA || 
 		dstFormat == GL_COMPRESSED_SRGB_ALPHA || 
 		dstFormat == GL_COMPRESSED_RGBA_BPTC_UNORM || 
-		dstFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM ) 
+		dstFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM*/ ) 
 			return 4;
-	else if( dstFormat == G2Core::DataFormat::RGB || 
-		dstFormat == G2Core::DataFormat::BGR || 
-		dstFormat == G2Core::DataFormat::RGB_UB || 
-		dstFormat == GL_COMPRESSED_RGB || 
+	else if (dstFormat == G2Core::DataFormat::Internal::R32G32B32_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32B32_I ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32B32_F
+		/*dstFormat == GL_COMPRESSED_RGB || 
 		dstFormat == GL_COMPRESSED_SRGB || 
 		dstFormat == GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT || 
-		dstFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT) 
+		dstFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT*/) 
 		return 3;
-	else if( dstFormat == G2Core::DataFormat::ALPHA_UB || 
-		dstFormat == G2Core::DataFormat::ALPHA_US || 
-		dstFormat == G2Core::DataFormat::ALPHA16_F || 
-		dstFormat == G2Core::DataFormat::ALPHA_F || 
-		dstFormat == G2Core::DataFormat::ALPHA_B || 
-		dstFormat == G2Core::DataFormat::ALPHA_S || 
-		dstFormat == G2Core::DataFormat::ALPHA_I || 
-		dstFormat == G2Core::DataFormat::ALPHA_UI || 
-		dstFormat == G2Core::DataFormat::LUMINANCE || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_UB || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_US || 
-		dstFormat == G2Core::DataFormat::LUMINANCE16_F || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_F || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_B || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_S || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_I || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_UI ||
-		dstFormat == G2Core::DataFormat::DEPTH || 
-		dstFormat == G2Core::DataFormat::DEPTH16 || 
-		dstFormat == G2Core::DataFormat::DEPTH24 || 
-		dstFormat == G2Core::DataFormat::DEPTH32 || 
-		dstFormat == G2Core::DataFormat::INTENSITY || 
-		dstFormat == G2Core::DataFormat::INTENSITY_UB || 
-		dstFormat == G2Core::DataFormat::INTENSITY_US || 
-		dstFormat == G2Core::DataFormat::INTENSITY16_F || 
-		dstFormat == G2Core::DataFormat::INTENSITY_F || 
-		dstFormat == G2Core::DataFormat::INTENSITY_B || 
-		dstFormat == G2Core::DataFormat::INTENSITY_S || 
-		dstFormat == G2Core::DataFormat::INTENSITY_I || 
-		dstFormat == G2Core::DataFormat::INTENSITY_UI || 
-		dstFormat == G2Core::DataFormat::RED || 
-		dstFormat == GL_COMPRESSED_RED || 
+	else if (dstFormat == G2Core::DataFormat::Internal::R8_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R8_I ||
+		dstFormat == G2Core::DataFormat::Internal::R16_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R16_I ||
+		dstFormat == G2Core::DataFormat::Internal::R16_F ||
+		dstFormat == G2Core::DataFormat::Internal::R32_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R32_I ||
+		dstFormat == G2Core::DataFormat::Internal::R32_F ||
+		dstFormat == G2Core::DataFormat::Internal::D16_F ||
+		dstFormat == G2Core::DataFormat::Internal::D24_F ||
+		dstFormat == G2Core::DataFormat::Internal::D32_F
+		/*dstFormat == GL_COMPRESSED_RED || 
 		dstFormat == GL_COMPRESSED_RED_RGTC1 || 
-		dstFormat == GL_COMPRESSED_SIGNED_RED_RGTC1 ) {
+		dstFormat == GL_COMPRESSED_SIGNED_RED_RGTC1*/ ) {
 			return 1;
 	}
-	else if( dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_UB || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_US || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA16_F || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_F || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_B || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_S || 
-		dstFormat == G2Core::DataFormat::LUMINANCE_ALPHA_I || 
-		dstFormat == G2Core::DataFormat::RG || 
-		dstFormat == GL_COMPRESSED_RG || 
+	else if (dstFormat == G2Core::DataFormat::Internal::R8G8_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R8G8_I ||
+		dstFormat == G2Core::DataFormat::Internal::R16G16_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R16G16_I ||
+		dstFormat == G2Core::DataFormat::Internal::R16G16_F ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32_UI ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32_I ||
+		dstFormat == G2Core::DataFormat::Internal::R32G32_F
+		/*dstFormat == GL_COMPRESSED_RG || 
 		dstFormat == GL_COMPRESSED_RG_RGTC2 || 
-		dstFormat == GL_COMPRESSED_SIGNED_RG_RGTC2 ) {
+		dstFormat == GL_COMPRESSED_SIGNED_RG_RGTC2*/ ) {
 			return 2;
 	}
 	assert(0);
@@ -143,39 +116,42 @@ Texture::numChannelsFromFormat( G2Core::DataFormat::Name dstFormat ) {
 }
 
 unsigned int 
-Texture::convertFormat( G2Core::DataFormat::Name baseFormat, bool compress ) {
-	
-	if( !compress ) // no compression requested or compression not supported
-		return baseFormat;
+Texture::convertFormat( G2Core::DataFormat::Internal::Name baseFormat, bool compress ) 
+{
 
-	switch( baseFormat ) {
-		case G2Core::DataFormat::ALPHA_F:
-			return GL_COMPRESSED_ALPHA;
-			break;
-		case G2Core::DataFormat::LUMINANCE:
-			return GL_COMPRESSED_LUMINANCE;
-			break;
-		case G2Core::DataFormat::LUMINANCE_ALPHA_F:
-			return GL_COMPRESSED_LUMINANCE_ALPHA;
-			break;
-		case G2Core::DataFormat::INTENSITY:
-			return GL_COMPRESSED_INTENSITY;
-			break;
-		case G2Core::DataFormat::RGB:
-			return GL_COMPRESSED_RGB;
-			break;
-		case G2Core::DataFormat::RED:
-			return GL_COMPRESSED_RED;
-			break;
-		case G2Core::DataFormat::RG:
-			return GL_COMPRESSED_RG;
-			break;
-		case G2Core::DataFormat::RGBA:
-			return GL_COMPRESSED_RGBA;
-			break;
-		default:
-			return baseFormat;
-	}
+	return baseFormat; // disabled
+
+	//if( !compress ) // no compression requested or compression not supported
+	//	return baseFormat;
+
+	//switch( baseFormat ) {
+	//	case G2Core::DataFormat::ALPHA_F:
+	//		return GL_COMPRESSED_ALPHA;
+	//		break;
+	//	case G2Core::DataFormat::LUMINANCE:
+	//		return GL_COMPRESSED_LUMINANCE;
+	//		break;
+	//	case G2Core::DataFormat::LUMINANCE_ALPHA_F:
+	//		return GL_COMPRESSED_LUMINANCE_ALPHA;
+	//		break;
+	//	case G2Core::DataFormat::INTENSITY:
+	//		return GL_COMPRESSED_INTENSITY;
+	//		break;
+	//	case G2Core::DataFormat::RGB:
+	//		return GL_COMPRESSED_RGB;
+	//		break;
+	//	case G2Core::DataFormat::RED:
+	//		return GL_COMPRESSED_RED;
+	//		break;
+	//	case G2Core::DataFormat::RG:
+	//		return GL_COMPRESSED_RG;
+	//		break;
+	//	case G2Core::DataFormat::RGBA:
+	//		return GL_COMPRESSED_RGBA;
+	//		break;
+	//	default:
+	//		return baseFormat;
+	//}
 }
 
 bool Texture::mipMapsRequested(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter) 
@@ -207,109 +183,159 @@ void Texture::checkFilter(G2Core::FilterMode::Name minFilter, G2Core::FilterMode
 
 
 unsigned 
-Texture::baseFormatToCompressedFormat( G2Core::DataFormat::Name baseFormat, bool compress ) 
+Texture::baseFormatToCompressedFormat(G2Core::DataFormat::Internal::Name baseFormat, bool compress)
 {
 	return baseFormat;
-	if( !compress /*|| !mTexCompressionSupported*/ ) // no compression requested or compression not supported
-		return baseFormat;
-	switch( baseFormat ) 
-	{
-		case G2Core::DataFormat::ALPHA_F:
-			return GL_COMPRESSED_ALPHA;
-			break;
-		case G2Core::DataFormat::LUMINANCE:
-			return GL_COMPRESSED_LUMINANCE;
-			break;
-		case G2Core::DataFormat::LUMINANCE_ALPHA_F:
-			return GL_COMPRESSED_LUMINANCE_ALPHA;
-			break;
-		case G2Core::DataFormat::INTENSITY:
-			return GL_COMPRESSED_INTENSITY;
-			break;
-		case G2Core::DataFormat::RGB:
-			return GL_COMPRESSED_RGB;
-			break;
-		case G2Core::DataFormat::RGBA:
-			return GL_COMPRESSED_RGBA;
-			break;
-		default:
-			return baseFormat;
-			break;
-	}
+
+	//if( !compress /*|| !mTexCompressionSupported*/ ) // no compression requested or compression not supported
+	//	return baseFormat;
+	//switch( baseFormat ) 
+	//{
+	//	case G2Core::DataFormat::ALPHA_F:
+	//		return GL_COMPRESSED_ALPHA;
+	//		break;
+	//	case G2Core::DataFormat::LUMINANCE:
+	//		return GL_COMPRESSED_LUMINANCE;
+	//		break;
+	//	case G2Core::DataFormat::LUMINANCE_ALPHA_F:
+	//		return GL_COMPRESSED_LUMINANCE_ALPHA;
+	//		break;
+	//	case G2Core::DataFormat::INTENSITY:
+	//		return GL_COMPRESSED_INTENSITY;
+	//		break;
+	//	case G2Core::DataFormat::RGB:
+	//		return GL_COMPRESSED_RGB;
+	//		break;
+	//	case G2Core::DataFormat::RGBA:
+	//		return GL_COMPRESSED_RGBA;
+	//		break;
+	//	default:
+	//		return baseFormat;
+	//		break;
+	//}
 }
 
-G2Core::DataFormat::Name
-Texture::getFormatByString(std::string const& format) 
+G2Core::DataFormat::Base::Name
+Texture::getBaseFormatByString(std::string const& format)
 {
-	if(format == "RGB") { return G2Core::DataFormat::RGB; }
-	if(format == "BGR") { return G2Core::DataFormat::BGR; }
-	if(format == "RGB_UB") { return G2Core::DataFormat::RGB_UB; }
-	if(format == "RGB_US") { return G2Core::DataFormat::RGB_US; }
-	if(format == "RGBA") { return G2Core::DataFormat::RGBA; }
-	if(format == "BGRA") { return G2Core::DataFormat::BGRA; }
-	if(format == "RGBA_UB") { return G2Core::DataFormat::RGBA_UB; }
-	if(format == "RGBA_US") { return G2Core::DataFormat::RGBA_US; }
-	if(format == "RGBA16_F") { return G2Core::DataFormat::RGBA16_F; }
-	if(format == "RGBA_F") { return G2Core::DataFormat::RGBA_F; }
-	if(format == "RGBA_B") { return G2Core::DataFormat::RGBA_B; }
-	if(format == "RGBA_S") { return G2Core::DataFormat::RGBA_S; }
-	if(format == "RGBA_I") { return G2Core::DataFormat::RGBA_I; }
-	if(format == "RGBA_UI") { return G2Core::DataFormat::RGBA_UI; }
-	if(format == "ALPHA_UB") { return G2Core::DataFormat::ALPHA_UB; }
-	if(format == "ALPHA_US") { return G2Core::DataFormat::ALPHA_US; }
-	if(format == "ALPHA16_F") { return G2Core::DataFormat::ALPHA16_F; }
-	if(format == "ALPHA_B") { return G2Core::DataFormat::ALPHA_B; }
-	if(format == "ALPHA_S") { return G2Core::DataFormat::ALPHA_S; }
-	if(format == "ALPHA_I") { return G2Core::DataFormat::ALPHA_I; }
-	if(format == "ALPHA_UI") { return G2Core::DataFormat::ALPHA_UI; }
-	if(format == "LUMINANCE") { return G2Core::DataFormat::LUMINANCE; }
-	if(format == "DEPTH") { return G2Core::DataFormat::DEPTH; }
-	if(format == "DEPTH16") { return G2Core::DataFormat::DEPTH16; }
-	if(format == "DEPTH24") { return G2Core::DataFormat::DEPTH24; }
-	if(format == "DEPTH32") { return G2Core::DataFormat::DEPTH32; }
-	if(format == "LUMINANCE_ALPHA_UB") { return G2Core::DataFormat::LUMINANCE_ALPHA_UB; }
-	if(format == "LUMINANCE_ALPHA_US") { return G2Core::DataFormat::LUMINANCE_ALPHA_US; }
-	if(format == "LUMINANCE_ALPHA16_F") { return G2Core::DataFormat::LUMINANCE_ALPHA16_F; }
-	if(format == "LUMINANCE_ALPHA_F") { return G2Core::DataFormat::LUMINANCE_ALPHA_F; }
-	if(format == "LUMINANCE_ALPHA_B") { return G2Core::DataFormat::LUMINANCE_ALPHA_B; }
-	if(format == "LUMINANCE_ALPHA_S") { return G2Core::DataFormat::LUMINANCE_ALPHA_S; }
-	if(format == "LUMINANCE_ALPHA_I") { return G2Core::DataFormat::LUMINANCE_ALPHA_I; }
-	if(format == "LUMINANCE_ALPHA_UI") { return G2Core::DataFormat::LUMINANCE_ALPHA_UI; }
-	if(format == "LUMINANCE_UB") { return G2Core::DataFormat::LUMINANCE_UB; }
-	if(format == "LUMINANCE_US") { return G2Core::DataFormat::LUMINANCE_US; }
-	if(format == "LUMINANCE16_F") { return G2Core::DataFormat::LUMINANCE16_F; }
-	if(format == "LUMINANCE_F") { return G2Core::DataFormat::LUMINANCE_F; }
-	if(format == "LUMINANCE_B") { return G2Core::DataFormat::LUMINANCE_B; }
-	if(format == "LUMINANCE_S") { return G2Core::DataFormat::LUMINANCE_S; }
-	if(format == "LUMINANCE_I") { return G2Core::DataFormat::LUMINANCE_I; }
-	if(format == "LUMINANCE_UI") { return G2Core::DataFormat::LUMINANCE_UI; }
-	if(format == "INTENSITY") { return G2Core::DataFormat::INTENSITY; }
-	if(format == "INTENSITY_UB") { return G2Core::DataFormat::INTENSITY_UB; }
-	if(format == "INTENSITY_US") { return G2Core::DataFormat::INTENSITY_US; }
-	if(format == "INTENSITY16_F") { return G2Core::DataFormat::INTENSITY16_F; }
-	if(format == "INTENSITY_F") { return G2Core::DataFormat::INTENSITY_F; }
-	if(format == "INTENSITY_B") { return G2Core::DataFormat::INTENSITY_B; }
-	if(format == "INTENSITY_S") { return G2Core::DataFormat::INTENSITY_S; }
-	if(format == "INTENSITY_I") { return G2Core::DataFormat::INTENSITY_I; }
-	if(format == "INTENSITY_UI") { return G2Core::DataFormat::INTENSITY_UI; }
-	return G2Core::DataFormat::UNKNOWN;
+	if (format == "RED") { return G2Core::DataFormat::Base::RED; }
+	if (format == "RG") { return G2Core::DataFormat::Base::RG; }
+	if (format == "RGB") { return G2Core::DataFormat::Base::RGB; }
+	if (format == "RGBA") { return G2Core::DataFormat::Base::RGBA; }
+	if (format == "DEPTH") { return G2Core::DataFormat::Base::DEPTH; }
+
+	if (format == "R8_UI") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R8_I") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R16_UI") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R16_I") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R16_F") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R32_UI") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R32_I") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R32_F") { return G2Core::DataFormat::Base::RED; }
+	if (format == "R8G8_UI") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R8G8_I") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R16G16_UI") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R16G16_I") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R16G16_F") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R32G32_UI") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R32G32_I") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R32G32_F") { return G2Core::DataFormat::Base::RG; }
+	if (format == "R32G32B32_UI") { return G2Core::DataFormat::Base::RGB; }
+	if (format == "R32G32B32_I") { return G2Core::DataFormat::Base::RGB; }
+	if (format == "R32G32B32_F") { return G2Core::DataFormat::Base::RGB; }
+	if (format == "R32G32B32A32_UI") { return G2Core::DataFormat::Base::RGBA; }
+	if (format == "R32G32B32A32_I") { return G2Core::DataFormat::Base::RGBA; }
+	if (format == "R32G32B32A32_F") { return G2Core::DataFormat::Base::RGBA; }
+	if (format == "D16_F") { return G2Core::DataFormat::Base::DEPTH; }
+	if (format == "D24_F") { return G2Core::DataFormat::Base::DEPTH; }
+	if (format == "D32_F") { return G2Core::DataFormat::Base::DEPTH; }
+	return G2Core::DataFormat::Base::UNKNOWN;
+}
+
+G2Core::DataFormat::Internal::Name
+Texture::getInternalFormatByString(std::string const& format)
+{
+	if (format == "RED") { return G2Core::DataFormat::Internal::R32_F; }
+	if (format == "RG") { return G2Core::DataFormat::Internal::R32G32_F; }
+	if (format == "RGB") { return G2Core::DataFormat::Internal::R32G32B32_F; }
+	if (format == "RGBA") { return G2Core::DataFormat::Internal::R32G32B32A32_F; }
+	if (format == "DEPTH") { return G2Core::DataFormat::Internal::D24_F; }
+
+	if (format == "R8_UI") { return G2Core::DataFormat::Internal::R8_UI; }
+	if (format == "R8_I") { return G2Core::DataFormat::Internal::R8_I; }
+	if (format == "R16_UI") { return G2Core::DataFormat::Internal::R16_UI; }
+	if (format == "R16_I") { return G2Core::DataFormat::Internal::R16_I; }
+	if (format == "R16_F") { return G2Core::DataFormat::Internal::R16_F; }
+	if (format == "R32_UI") { return G2Core::DataFormat::Internal::R32_UI; }
+	if (format == "R32_I") { return G2Core::DataFormat::Internal::R32_I; }
+	if (format == "R32_F") { return G2Core::DataFormat::Internal::R32_F; }
+	if (format == "R8G8_UI") { return G2Core::DataFormat::Internal::R8G8_UI; }
+	if (format == "R8G8_I") { return G2Core::DataFormat::Internal::R8G8_I; }
+	if (format == "R16G16_UI") { return G2Core::DataFormat::Internal::R16G16_UI; }
+	if (format == "R16G16_I") { return G2Core::DataFormat::Internal::R16G16_I; }
+	if (format == "R16G16_F") { return G2Core::DataFormat::Internal::R16G16_F; }
+	if (format == "R32G32_UI") { return G2Core::DataFormat::Internal::R32G32_UI; }
+	if (format == "R32G32_I") { return G2Core::DataFormat::Internal::R32G32_I; }
+	if (format == "R32G32_F") { return G2Core::DataFormat::Internal::R32G32_F; }
+	if (format == "R32G32B32_UI") { return G2Core::DataFormat::Internal::R32G32B32_UI; }
+	if (format == "R32G32B32_I") { return G2Core::DataFormat::Internal::R32G32B32_I; }
+	if (format == "R32G32B32_F") { return G2Core::DataFormat::Internal::R32G32B32_F; }
+	if (format == "R32G32B32A32_UI") { return G2Core::DataFormat::Internal::R32G32B32A32_UI; }
+	if (format == "R32G32B32A32_I") { return G2Core::DataFormat::Internal::R32G32B32A32_I; }
+	if (format == "R32G32B32A32_F") { return G2Core::DataFormat::Internal::R32G32B32A32_F; }
+	if (format == "D16_F") { return G2Core::DataFormat::Internal::D16_F; }
+	if (format == "D24_F") { return G2Core::DataFormat::Internal::D24_F; }
+	if (format == "D32_F") { return G2Core::DataFormat::Internal::D32_F; }
+	return G2Core::DataFormat::Internal::UNKNOWN;
+}
+
+G2Core::DataFormat::Base::Name
+Texture::getBaseFormatByInternalFormat(G2Core::DataFormat::Internal::Name format)
+{
+	if (format == G2Core::DataFormat::Internal::R8_UI) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R8_I) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R16_UI) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R16_I) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R16_F) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R32_UI) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R32_I) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R32_F) { return G2Core::DataFormat::Base::RED; }
+	if (format == G2Core::DataFormat::Internal::R8G8_UI) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R8G8_I) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R16G16_UI) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R16G16_I) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R16G16_F) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R32G32_UI) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R32G32_I) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R32G32_F) { return G2Core::DataFormat::Base::RG; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32_UI) { return G2Core::DataFormat::Base::RGB; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32_I) { return G2Core::DataFormat::Base::RGB; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32_F) { return G2Core::DataFormat::Base::RGB; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32A32_UI) { return G2Core::DataFormat::Base::RGBA; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32A32_I) { return G2Core::DataFormat::Base::RGBA; }
+	if (format == G2Core::DataFormat::Internal::R32G32B32A32_F) { return G2Core::DataFormat::Base::RGBA; }
+	if (format == G2Core::DataFormat::Internal::D16_F) { return G2Core::DataFormat::Base::DEPTH; }
+	if (format == G2Core::DataFormat::Internal::D24_F) { return G2Core::DataFormat::Base::DEPTH; }
+	if (format == G2Core::DataFormat::Internal::D32_F) { return G2Core::DataFormat::Base::DEPTH; }
+	return G2Core::DataFormat::Base::UNKNOWN;
 }
 
 bool
-Texture::isCompressedFormat(G2Core::DataFormat::Name baseFormat) 
+Texture::isCompressedFormat(G2Core::DataFormat::Internal::Name baseFormat)
 {
-	return baseFormat == GL_COMPRESSED_RED ||
-		baseFormat == GL_COMPRESSED_RG ||
-		baseFormat == GL_COMPRESSED_RGB ||
-		baseFormat == GL_COMPRESSED_RGBA ||
-		baseFormat == GL_COMPRESSED_SRGB ||
-		baseFormat == GL_COMPRESSED_SRGB_ALPHA ||
-		baseFormat == GL_COMPRESSED_RED_RGTC1 ||
-		baseFormat == GL_COMPRESSED_SIGNED_RED_RGTC1 ||
-		baseFormat == GL_COMPRESSED_RG_RGTC2 ||
-		baseFormat == GL_COMPRESSED_SIGNED_RG_RGTC2 ||
-		baseFormat == GL_COMPRESSED_RGBA_BPTC_UNORM ||
-		baseFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM ||
-		baseFormat == GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT ||
-		baseFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+	return false;
+	//return baseFormat == GL_COMPRESSED_RED ||
+	//	baseFormat == GL_COMPRESSED_RG ||
+	//	baseFormat == GL_COMPRESSED_RGB ||
+	//	baseFormat == GL_COMPRESSED_RGBA ||
+	//	baseFormat == GL_COMPRESSED_SRGB ||
+	//	baseFormat == GL_COMPRESSED_SRGB_ALPHA ||
+	//	baseFormat == GL_COMPRESSED_RED_RGTC1 ||
+	//	baseFormat == GL_COMPRESSED_SIGNED_RED_RGTC1 ||
+	//	baseFormat == GL_COMPRESSED_RG_RGTC2 ||
+	//	baseFormat == GL_COMPRESSED_SIGNED_RG_RGTC2 ||
+	//	baseFormat == GL_COMPRESSED_RGBA_BPTC_UNORM ||
+	//	baseFormat == GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM ||
+	//	baseFormat == GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT ||
+	//	baseFormat == GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
 }

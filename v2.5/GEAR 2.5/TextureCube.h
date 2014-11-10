@@ -17,9 +17,9 @@ namespace G2
 						G2Core::FilterMode::Name magFilter, 
 						unsigned int width,
 						unsigned int height,
-						G2Core::DataFormat::Name format,
+						G2Core::DataFormat::Internal::Name format,
 						bool compress,
-						unsigned char * data = nullptr);
+						void* data = nullptr);
 			/// Move ctor.
 			TextureCube(TextureCube && rhs);
 			/// Move ctor.

@@ -5,6 +5,7 @@
 #include <G2/Logger.h>
 
 #include <glm/ext.hpp>
+#include <IL/il.h>
 
 void _initCgRuntime();
 
@@ -70,12 +71,16 @@ Init(void* data)
 
 	// init CG Runtime
 	_initCgRuntime();
+
+	// init IL
+	ilInit();
+
 	return true;
 }
 
 void Shutdown()
 {
-
+	releaseTextureCache();
 }
 
 int GfxVersion()

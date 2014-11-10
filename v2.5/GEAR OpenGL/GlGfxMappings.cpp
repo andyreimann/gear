@@ -5,74 +5,57 @@
 
 #include <unordered_map>
 
-std::unordered_map<G2Core::BufferAccessMode::Name,unsigned int> bufferAccessMapping;
-std::unordered_map<G2Core::DataFormat::Name,unsigned int> dataFormatMapping;
+std::unordered_map<G2Core::BufferAccessMode::Name, unsigned int> bufferAccessMapping;
+std::unordered_map<G2Core::DataFormat::Base::Name, unsigned int> baseDataFormatMapping;
+std::unordered_map<G2Core::DataFormat::Internal::Name, unsigned int> internalDataFormatMapping;
 std::unordered_map<G2Core::FrameBufferAttachmentPoint::Name,unsigned int> frameBufferAttachmentPointMapping;
 std::unordered_map<G2Core::TextureFormat::Name,unsigned int> textureFormatMapping;
 std::unordered_map<G2Core::FilterMode::Name,unsigned int> filterModeMapping;
-std::unordered_map<G2Core::WrapMode::Name,unsigned int> wrapModeMapping;
-std::unordered_map<G2Core::DrawMode::Name,unsigned int> drawModeMapping;
+std::unordered_map<G2Core::WrapMode::Name, unsigned int> wrapModeMapping;
+std::unordered_map<G2Core::DrawMode::Name, unsigned int> drawModeMapping;
+std::unordered_map<G2Core::DataType::Name, unsigned int> dataTypeMapping;
 
 void _initMappings()
 {
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_ONLY]	= GL_READ_ONLY;
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_WRITE]	= GL_READ_WRITE;
-	bufferAccessMapping[G2Core::BufferAccessMode::WRITE_ONLY]	= GL_WRITE_ONLY;
+	bufferAccessMapping[G2Core::BufferAccessMode::WRITE_ONLY] = GL_WRITE_ONLY;
 
-	dataFormatMapping[G2Core::DataFormat::RED]					= GL_RED;						//!< Format description: channels: 1; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::RG]					= GL_RG;						//!< Format description: channels: 2; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::RGB]					= GL_RGB;						//!< Format description: channels: 3; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::BGR]					= GL_BGR;						//!< Format description: channels: 3; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::RGB_UB]				= GL_RGB8;						//!< Format description: channels: 3; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::RGB_US]				= GL_RGB16;						//!< Format description: channels: 3; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::RGBA]					= GL_RGBA;						//!< Format description: channels: 4; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::BGRA]					= GL_BGRA;						//!< Format description: channels: 3; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::RGBA_UB]				= GL_RGBA8;						//!< Format description: channels: 4; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::RGBA_US]				= GL_RGBA16;					//!< Format description: channels: 4; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::RGBA16_F]				= GL_RGBA16F_ARB;				//!< Format description: channels: 4; datatype: half; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::RGBA_F]				= GL_RGBA32F_ARB;				//!< Format description: channels: 4; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::RGBA_B]				= GL_RGBA8I_EXT;				//!< Format description: channels: 4; datatype: byte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::RGBA_S]				= GL_RGBA16I_EXT;				//!< Format description: channels: 4; datatype: short; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::RGBA_I]				= GL_RGBA32I_EXT;				//!< Format description: channels: 4; datatype: int; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::RGBA_UI]				= GL_RGBA32UI_EXT;				//!< Format description: channels: 4; datatype: uint; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::ALPHA_UB]				= GL_ALPHA8;					//!< Format description: channels: 1; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::ALPHA_US]				= GL_ALPHA16;					//!< Format description: channels: 1; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::ALPHA16_F]			= GL_ALPHA16F_ARB;				//!< Format description: channels: 1; datatype: half; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::ALPHA_F]				= GL_ALPHA32F_ARB;				//!< Format description: channels: 1; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::ALPHA_B]				= GL_ALPHA8I_EXT;				//!< Format description: channels: 1; datatype: byte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::ALPHA_S]				= GL_ALPHA16I_EXT;				//!< Format description: channels: 1; datatype: short; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::ALPHA_I]				= GL_ALPHA32I_EXT;				//!< Format description: channels: 1; datatype: int; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::ALPHA_UI]				= GL_ALPHA32UI_EXT;				//!< Format description: channels: 1; datatype: uint; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE]			= GL_LUMINANCE;					//!< Format description: channels: 1; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_UB]	= GL_LUMINANCE8_ALPHA8;			//!< Format description: channels: 2; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_US]	= GL_LUMINANCE16_ALPHA16;		//!< Format description: channels: 2; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA16_F]	= GL_LUMINANCE_ALPHA16F_ARB;	//!< Format description: channels: 2; datatype: half; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_F]	= GL_LUMINANCE_ALPHA32F_ARB;	//!< Format description: channels: 2; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_B]	= GL_LUMINANCE_ALPHA8I_EXT;		//!< Format description: channels: 2; datatype: byte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_S]	= GL_LUMINANCE_ALPHA16I_EXT;	//!< Format description: channels: 2; datatype: short; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_I]	= GL_LUMINANCE_ALPHA32I_EXT;	//!< Format description: channels: 2; datatype: int; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_ALPHA_UI]	= GL_LUMINANCE_ALPHA32UI_EXT;	//!< Format description: channels: 2; datatype: uint; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_UB]			= GL_LUMINANCE8;				//!< Format description: channels: 1; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_US ]		= GL_LUMINANCE16;				//!< Format description: channels: 1; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE16_F]		= GL_LUMINANCE16F_ARB;			//!< Format description: channels: 1; datatype: half; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_F]			= GL_LUMINANCE32F_ARB;			//!< Format description: channels: 1; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_B]			= GL_LUMINANCE8I_EXT;			//!< Format description: channels: 1; datatype: byte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_S]			= GL_LUMINANCE16I_EXT;			//!< Format description: channels: 1; datatype: short; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_I]			= GL_LUMINANCE32I_EXT;			//!< Format description: channels: 1; datatype: int; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::LUMINANCE_UI]			= GL_LUMINANCE32UI_EXT;			//!< Format description: channels: 1; datatype: uint; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::INTENSITY	]			= GL_INTENSITY;					//!< Format description: channels: 1; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_UB]			= GL_INTENSITY8;				//!< Format description: channels: 1; datatype: ubyte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_US]			= GL_INTENSITY16;				//!< Format description: channels: 1; datatype: ushort; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::INTENSITY16_F]		= GL_INTENSITY16F_ARB;			//!< Format description: channels: 1; datatype: half; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_F]			= GL_INTENSITY32F_ARB;			//!< Format description: channels: 1; datatype: float; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_B]			= GL_INTENSITY8I_EXT;			//!< Format description: channels: 1; datatype: byte; bytes per channel: 1
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_S]			= GL_INTENSITY16I_EXT;			//!< Format description: channels: 1; datatype: short; bytes per channel: 2
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_I]			= GL_INTENSITY32I_EXT;			//!< Format description: channels: 1; datatype: int; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::INTENSITY_UI]			= GL_INTENSITY32UI_EXT;			//!< Format description: channels: 1; datatype: uint; bytes per channel: 4
-	dataFormatMapping[G2Core::DataFormat::DEPTH]				= GL_DEPTH_COMPONENT;			//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT - Use GEAR::DEPTH to let your driver choose the best resolution.
-	dataFormatMapping[G2Core::DataFormat::DEPTH16]				= GL_DEPTH_COMPONENT16;			//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT16 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
-	dataFormatMapping[G2Core::DataFormat::DEPTH24]				= GL_DEPTH_COMPONENT24;			//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT24 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
-	dataFormatMapping[G2Core::DataFormat::DEPTH32]				= GL_DEPTH_COMPONENT32;			//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT32 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
+	baseDataFormatMapping[G2Core::DataFormat::Base::RED] = GL_RED;
+	baseDataFormatMapping[G2Core::DataFormat::Base::RG] = GL_RG;
+	baseDataFormatMapping[G2Core::DataFormat::Base::RGB] = GL_RGB;
+	baseDataFormatMapping[G2Core::DataFormat::Base::RGBA] = GL_RGBA;
+	baseDataFormatMapping[G2Core::DataFormat::Base::DEPTH] = GL_DEPTH_COMPONENT;
+
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R8_UI] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R8_I] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16_UI] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16_I] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16_F] = GL_R16F;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32_UI] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32_I] = GL_RED;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32_F] = GL_R32F;					
+	// -------------------------------------------------------------------------
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R8G8_UI] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R8G8_I] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16G16_UI] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16G16_I] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R16G16_F] = GL_RG16F;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32_UI] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32_I] = GL_RG;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32_F] = GL_RG32F;				
+	// -------------------------------------------------------------------------
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32_UI] = GL_RGB;				
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32_I] = GL_RGB;				
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32_F] = GL_RGB32F;			
+	// -------------------------------------------------------------------------
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32A32_UI] = GL_RGBA;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32A32_I] = GL_RGBA;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::R32G32B32A32_F] = GL_RGBA32F;		
+	// -------------------------------------------------------------------------
+	internalDataFormatMapping[G2Core::DataFormat::Internal::D16_F] = GL_DEPTH_COMPONENT16;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::D24_F] = GL_DEPTH_COMPONENT24;
+	internalDataFormatMapping[G2Core::DataFormat::Internal::D32_F] = GL_DEPTH_COMPONENT32;
 
 	frameBufferAttachmentPointMapping[G2Core::FrameBufferAttachmentPoint::COLOR_0]				= GL_COLOR_ATTACHMENT0;
 	frameBufferAttachmentPointMapping[G2Core::FrameBufferAttachmentPoint::COLOR_1]				= GL_COLOR_ATTACHMENT1;
@@ -127,6 +110,15 @@ void _initMappings()
 	drawModeMapping[G2Core::DrawMode::TRIANGLE_FAN]		=	GL_TRIANGLE_FAN;
 	drawModeMapping[G2Core::DrawMode::TRIANGLES]		= GL_TRIANGLES;
 	drawModeMapping[G2Core::DrawMode::QUADS]			=	GL_QUADS;
+
+
+	dataTypeMapping[G2Core::DataType::BYTE]				= GL_BYTE;
+	dataTypeMapping[G2Core::DataType::UNSIGNED_BYTE]	= GL_UNSIGNED_BYTE;
+	dataTypeMapping[G2Core::DataType::UNSIGNED_SHORT]	= GL_UNSIGNED_SHORT;
+	dataTypeMapping[G2Core::DataType::SHORT]			= GL_SHORT;
+	dataTypeMapping[G2Core::DataType::UNSIGNED_INT]		= GL_UNSIGNED_INT;
+	dataTypeMapping[G2Core::DataType::INT]				= GL_INT;
+	dataTypeMapping[G2Core::DataType::FLOAT]			= GL_FLOAT;
 }
 
 unsigned int toGlBufferAccessMode(G2Core::BufferAccessMode::Name mode)
@@ -134,9 +126,14 @@ unsigned int toGlBufferAccessMode(G2Core::BufferAccessMode::Name mode)
 	return bufferAccessMapping[mode];
 }
 
-unsigned int toGlDataFormat(G2Core::DataFormat::Name dataFormat)
+unsigned int toGlBaseDataFormat(G2Core::DataFormat::Base::Name dataFormat)
 {
-	return dataFormatMapping[dataFormat];
+	return baseDataFormatMapping[dataFormat];
+}
+
+unsigned int toGlInternalDataFormat(G2Core::DataFormat::Internal::Name dataFormat)
+{
+	return internalDataFormatMapping[dataFormat];
 }
 
 unsigned int toGlFrameBufferAttachmentPoint(G2Core::FrameBufferAttachmentPoint::Name attachmentPoint)
@@ -162,4 +159,9 @@ unsigned int toGlFilterMode(G2Core::FilterMode::Name filterMode)
 unsigned int toGlDrawMode(G2Core::DrawMode::Name drawMode)
 {
 	return drawModeMapping[drawMode];
+}
+
+unsigned int toGlDataType(G2Core::DataType::Name dataType)
+{
+	return dataTypeMapping[dataType];
 }

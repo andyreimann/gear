@@ -18,7 +18,7 @@ namespace G2
 		friend class RenderTarget;
 		public:
 			/// This constructs a new FrameBuffer.
-			FrameBuffer(unsigned width, unsigned height, G2Core::DataFormat::Name format);
+			FrameBuffer(unsigned width, unsigned height, G2Core::DataFormat::Internal::Name format);
 			/// Move ctor.
 			FrameBuffer(FrameBuffer && rhs);
 			/// Move ctor.

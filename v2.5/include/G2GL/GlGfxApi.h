@@ -11,6 +11,8 @@ G2Core::GfxResource* make(G2GL::Type type,G2Core::GfxResource* resource);
 G2GL::Type type(G2Core::GfxResource const* resource);
 void release(G2Core::GfxResource* resource);
 
+void releaseTextureCache();
+
 extern "C"
 {
 	// General API
@@ -60,16 +62,72 @@ extern "C"
 	GEAROPENGLDLL_API void DrawIBO(G2Core::GfxResource* ibo, G2Core::DrawMode::Name drawMode, int numIndices);
 
 	// RenderTarget
-	GEAROPENGLDLL_API G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format);
 	GEAROPENGLDLL_API void AttachTextureToRenderTarget(G2Core::GfxResource* renderTarget, G2Core::GfxResource* texture, G2Core::FrameBufferAttachmentPoint::Name attachment, G2Core::TextureFormat::Name texTarget, int mipmapLevel, int layer);
 	GEAROPENGLDLL_API void BindRenderTarget(G2Core::GfxResource* renderTarget);
 	GEAROPENGLDLL_API void UnbindRenderTarget(G2Core::GfxResource* renderTarget);	
 
 	// Texture
-	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2D(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
-	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2DArray(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
-	GEAROPENGLDLL_API G2Core::GfxResource* CreateTextureCube(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT);
-	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::WrapMode::Name wrapR, unsigned char * data);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2D(
+		unsigned int width, 
+		unsigned int height, 
+		G2Core::DataFormat::Base::Name format, 
+		G2Core::DataFormat::Internal::Name internalFormat, 
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter, 
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT, 
+		G2Core::DataType::Name dataType, 
+		void * data
+	);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2DArray(
+		unsigned int width, 
+		unsigned int height, 
+		unsigned int size, 
+		G2Core::DataFormat::Base::Name format, 
+		G2Core::DataFormat::Internal::Name internalFormat, 
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter,
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT,
+		G2Core::DataType::Name dataType,
+		void * data
+	);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTextureCube(
+		unsigned int width, 
+		unsigned int height, 
+		G2Core::DataFormat::Base::Name format, 
+		G2Core::DataFormat::Internal::Name internalFormat, 
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter,
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT
+	);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture3D(
+		unsigned int width, 
+		unsigned int height, 
+		unsigned int depth, 
+		G2Core::DataFormat::Base::Name format, 
+		G2Core::DataFormat::Internal::Name internalFormat, 
+		G2Core::FilterMode::Name minFilter,
+		G2Core::FilterMode::Name magFilter,
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT, 
+		G2Core::WrapMode::Name wrapR, 
+		G2Core::DataType::Name dataType,
+		void * data
+	);
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateTexture2DFromFile(
+		std::string const& fileName,
+		G2Core::DataFormat::Internal::Name internalFormat,
+		G2Core::FilterMode::Name minFilter,
+		G2Core::FilterMode::Name magFilter,
+		G2Core::WrapMode::Name wrapS,
+		G2Core::WrapMode::Name wrapT,
+		G2Core::TextureMetaData* metaData
+	);
+
+
 	GEAROPENGLDLL_API void BindTexture(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
 	GEAROPENGLDLL_API void UnbindTexture(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
 	

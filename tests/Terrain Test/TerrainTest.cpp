@@ -64,7 +64,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>();
 	terrain->setup(
-		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
+		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
 		15.f, // max height
 		50000, // desired num triangles
 		100000 // max number of triangles
@@ -72,7 +72,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	auto* renderComponent = mTerrainComponent.getComponent<G2::RenderComponent>();
 	renderComponent->material.setTexture(
 		G2::Sampler::DIFFUSE, 
-		mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
+		mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
 	);
 	renderComponent->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/DefaultTex.g2fx"));
 

@@ -99,70 +99,75 @@ namespace G2Core
 		};
 	};
 
+	namespace DataType
+	{
+		enum Name
+		{
+			BYTE = 0,	
+			UNSIGNED_BYTE,	
+			UNSIGNED_SHORT,		
+			SHORT,		
+			UNSIGNED_INT,		
+			INT,			
+			FLOAT,
+		};
+	};
+
 	namespace DataFormat 
 	{
-		enum Name 
+
+		namespace Base
 		{
-			UNKNOWN			   ,	//!< Unknown Format
-			RED				   ,	//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
-			RG				   ,	//!< Format description: channels: 2, datatype: ubyte, bytes per channel: 1
-			RGB				   ,	//!< Format description: channels: 3, datatype: float, bytes per channel: 4
-			BGR				   ,	//!< Format description: channels: 3, datatype: float, bytes per channel: 4
-			RGB_UB			   ,	//!< Format description: channels: 3, datatype: ubyte, bytes per channel: 1
-			RGB_US			   ,	//!< Format description: channels: 3, datatype: ushort, bytes per channel: 2
-							   	
-			RGBA			   ,	//!< Format description: channels: 4, datatype: float, bytes per channel: 4
-			BGRA			   ,	//!< Format description: channels: 4, datatype: float, bytes per channel: 4
-			RGBA_UB			   ,	//!< Format description: channels: 4, datatype: ubyte, bytes per channel: 1
-			RGBA_US			   ,	//!< Format description: channels: 4, datatype: ushort, bytes per channel: 2
-			RGBA16_F		   ,	//!< Format description: channels: 4, datatype: half, bytes per channel: 2
-			RGBA_F			   ,	//!< Format description: channels: 4, datatype: float, bytes per channel: 4
-			RGBA_B			   ,	//!< Format description: channels: 4, datatype: byte, bytes per channel: 1
-			RGBA_S			   ,	//!< Format description: channels: 4, datatype: short, bytes per channel: 2
-			RGBA_I			   ,	//!< Format description: channels: 4, datatype: int, bytes per channel: 4
-			RGBA_UI			   ,	//!< Format description: channels: 4, datatype: uint, bytes per channel: 4
-							   	
-			ALPHA_UB		   ,	//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
-			ALPHA_US		   ,	//!< Format description: channels: 1, datatype: ushort, bytes per channel: 2
-			ALPHA16_F		   ,	//!< Format description: channels: 1, datatype: half, bytes per channel: 2
-			ALPHA_F			   ,	//!< Format description: channels: 1, datatype: float, bytes per channel: 4
-			ALPHA_B			   ,	//!< Format description: channels: 1, datatype: byte, bytes per channel: 1
-			ALPHA_S			   ,	//!< Format description: channels: 1, datatype: short, bytes per channel: 2
-			ALPHA_I			   ,	//!< Format description: channels: 1, datatype: int, bytes per channel: 4
-			ALPHA_UI		   ,	//!< Format description: channels: 1, datatype: uint, bytes per channel: 4
-							   	
-			LUMINANCE		   ,	//!< Format description: channels: 1, datatype: float, bytes per channel: 4
-			LUMINANCE_ALPHA_UB ,	//!< Format description: channels: 2, datatype: ubyte, bytes per channel: 1
-			LUMINANCE_ALPHA_US ,	//!< Format description: channels: 2, datatype: ushort, bytes per channel: 2
-			LUMINANCE_ALPHA16_F,	//!< Format description: channels: 2, datatype: half, bytes per channel: 2
-			LUMINANCE_ALPHA_F  ,	//!< Format description: channels: 2, datatype: float, bytes per channel: 4
-			LUMINANCE_ALPHA_B  ,	//!< Format description: channels: 2, datatype: byte, bytes per channel: 1
-			LUMINANCE_ALPHA_S  ,	//!< Format description: channels: 2, datatype: short, bytes per channel: 2
-			LUMINANCE_ALPHA_I  ,	//!< Format description: channels: 2, datatype: int, bytes per channel: 4
-			LUMINANCE_ALPHA_UI ,	//!< Format description: channels: 2, datatype: uint, bytes per channel: 4
-			LUMINANCE_UB	   ,	//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
-			LUMINANCE_US 	   ,	//!< Format description: channels: 1, datatype: ushort, bytes per channel: 2
-			LUMINANCE16_F	   ,	//!< Format description: channels: 1, datatype: half, bytes per channel: 2
-			LUMINANCE_F		   ,	//!< Format description: channels: 1, datatype: float, bytes per channel: 4
-			LUMINANCE_B		   ,	//!< Format description: channels: 1, datatype: byte, bytes per channel: 1
-			LUMINANCE_S		   ,	//!< Format description: channels: 1, datatype: short, bytes per channel: 2
-			LUMINANCE_I		   ,	//!< Format description: channels: 1, datatype: int, bytes per channel: 4
-			LUMINANCE_UI	   ,	//!< Format description: channels: 1, datatype: uint, bytes per channel: 4
-							   	
-			INTENSITY		   ,	//!< Format description: channels: 1, datatype: float, bytes per channel: 4
-			INTENSITY_UB	   ,	//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
-			INTENSITY_US	   ,	//!< Format description: channels: 1, datatype: ushort, bytes per channel: 2
-			INTENSITY16_F	   ,	//!< Format description: channels: 1, datatype: half, bytes per channel: 2
-			INTENSITY_F		   ,	//!< Format description: channels: 1, datatype: float, bytes per channel: 4
-			INTENSITY_B		   ,	//!< Format description: channels: 1, datatype: byte, bytes per channel: 1
-			INTENSITY_S		   ,	//!< Format description: channels: 1, datatype: short, bytes per channel: 2
-			INTENSITY_I		   ,	//!< Format description: channels: 1, datatype: int, bytes per channel: 4
-			INTENSITY_UI	   ,	//!< Format description: channels: 1, datatype: uint, bytes per channel: 4
-							   	
-			DEPTH 			   ,	//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT - Use GEAR::DEPTH to let your driver choose the best resolution.
-			DEPTH16			   ,	//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT16 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
-			DEPTH24			   ,	//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT24 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
-			DEPTH32			   ,	//!< only wrapper constant for opengl variable GL_DEPTH_COMPONENT32 - only use when your machine supports 32 bit depth maps. Use GEAR::DEPTH to let your driver choose the best resolution.
+			enum Name
+			{
+				UNKNOWN,
+				RED,
+				RG,
+				RGB,
+				RGBA,
+				DEPTH,
+			};
+		};
+
+		namespace Internal /* sized data formats */
+		{
+			enum Name
+			{
+				UNKNOWN,
+				// _UI		-> unsigned integer
+				// _I		-> integer
+				// _F		-> float
+
+				R8_UI,				// GL: GL_R8UI				DX: DXGI_FORMAT_R8_UINT
+				R8_I,				// GL: GL_R8I				DX: DXGI_FORMAT_R8_SINT
+				R16_UI,				// GL: GL_R16UI				DX: DXGI_FORMAT_R16_UINT
+				R16_I,				// GL: GL_R16I				DX: DXGI_FORMAT_R16_SINT
+				R16_F,				// GL: GL_R16F				DX: DXGI_FORMAT_R16_FLOAT
+				R32_UI,				// GL: GL_R32UI				DX: DXGI_FORMAT_R32_UINT	
+				R32_I,				// GL: GL_R32I				DX: DXGI_FORMAT_R32_SINT	
+				R32_F,				// GL: GL_R32F				DX: DXGI_FORMAT_R32_FLOAT
+
+				R8G8_UI,			// GL: GL_RG8UI				DX: DXGI_FORMAT_R8G8_UINT
+				R8G8_I,				// GL: GL_RG8I				DX: DXGI_FORMAT_R8G8_SINT
+				R16G16_UI,			// GL: GL_R16UI				DX: DXGI_FORMAT_R16G16_UINT
+				R16G16_I,			// GL: GL_R16I				DX: DXGI_FORMAT_R16G16_SINT
+				R16G16_F,			// GL: GL_R16F				DX: DXGI_FORMAT_R16G16_FLOAT
+				R32G32_UI,			// GL: GL_R32UI				DX: DXGI_FORMAT_R32G32_UINT	
+				R32G32_I,			// GL: GL_R32I				DX: DXGI_FORMAT_R32G32_SINT	
+				R32G32_F,			// GL: GL_R32F				DX: DXGI_FORMAT_R32G32_FLOAT
+
+				R32G32B32_UI,		// GL: GL_RGB32UI			DX: DXGI_FORMAT_R32G32B32_UINT	
+				R32G32B32_I,		// GL: GL_RGB32I			DX: DXGI_FORMAT_R32G32B32_SINT	
+				R32G32B32_F,		// GL: GL_RGB32F			DX: DXGI_FORMAT_R32G32B32_FLOAT
+
+				R32G32B32A32_UI,	// GL: GL_RGBA32UI			DX: DXGI_FORMAT_R32G32B32A32_UINT	
+				R32G32B32A32_I,		// GL: GL_RGBA32I			DX: DXGI_FORMAT_R32G32B32A32_SINT	
+				R32G32B32A32_F,		// GL: GL_RGBA32F			DX: DXGI_FORMAT_R32G32B32A32_FLOAT
+
+				D16_F,				// GL: GL_DEPTH_COMPONENT16 DX: DXGI_FORMAT_D16_UNORM
+				D24_F,				// GL: GL_DEPTH_COMPONENT24 DX: DXGI_FORMAT_D24_UNORM_S8_UINT ???
+				D32_F,				// GL: GL_DEPTH_COMPONENT32 DX: DXGI_FORMAT_D32_FLOAT
+			};
 		};
 	};
 

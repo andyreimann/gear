@@ -15,7 +15,7 @@ namespace G2
 			typedef std::unordered_map<G2Core::FrameBufferAttachmentPoint::Name,std::shared_ptr<Texture>> RenderTextureMap;
 		public:
 			/// This constructs a new MultipleRenderTarget.
-			MultipleRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
+			MultipleRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format);
 			/** This function will allocate a new Texture and attach it to the given
 			 * attachment point.
 			 * @param attachmentPoint The attachment point to attach it to.
@@ -31,6 +31,6 @@ namespace G2
 			unsigned int		mHeight;
 			FrameBuffer			mFrameBuffer;		// The framebuffer, the render textures are attached to
 			RenderTextureMap	mRenderTextures;	// The attached render textures
-			G2Core::DataFormat::Name mDataFormat;	
+			G2Core::DataFormat::Internal::Name mDataFormat;
 	};
 };

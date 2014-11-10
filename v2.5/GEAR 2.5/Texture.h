@@ -7,7 +7,7 @@
 
 namespace G2 
 {
-	/** This class defines...
+	/** This class defines the basic data structure of a Texture.
 	 * @created:	2014/02/12
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
@@ -19,7 +19,7 @@ namespace G2
 			/** This constructs a new Texture.
 			 */
 			Texture(G2Core::TextureFormat::Name type, 
-				    G2Core::DataFormat::Name dataFormat,
+				    G2Core::DataFormat::Internal::Name dataFormat,
 					G2Core::FilterMode::Name minFilter, 
 					G2Core::FilterMode::Name magFilter);
 			/// Move ctor.
@@ -56,19 +56,21 @@ namespace G2
 			/** Returns the format of the internal data contained in the texture.
 			 * @return The format of the internal data contained in the texture.
 			 */
-			G2Core::DataFormat::Name getDataFormat() { return mDataFormat; }
+			G2Core::DataFormat::Internal::Name getDataFormat() { return mDataFormat; }
 
 			/** normal destructor
 			 */
 			virtual ~Texture() = 0;
 
-			static G2Core::DataFormat::Name getFormatByString(std::string const& format);
+			static G2Core::DataFormat::Base::Name getBaseFormatByString(std::string const& format);
+			static G2Core::DataFormat::Internal::Name getInternalFormatByString(std::string const& format);
+			static G2Core::DataFormat::Base::Name getBaseFormatByInternalFormat(G2Core::DataFormat::Internal::Name format);
 		protected:
 			Texture() {}
 
-			static unsigned int numChannelsFromFormat(G2Core::DataFormat::Name dstFormat );
-			static unsigned int convertFormat( G2Core::DataFormat::Name baseFormat, bool compress );
-			static bool isCompressedFormat(G2Core::DataFormat::Name baseFormat);
+			static unsigned int numChannelsFromFormat(G2Core::DataFormat::Internal::Name dstFormat);
+			static unsigned int convertFormat(G2Core::DataFormat::Internal::Name baseFormat, bool compress);
+			static bool isCompressedFormat(G2Core::DataFormat::Internal::Name baseFormat);
 			static bool mipMapsRequested(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter);
 			static void checkFilter(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter);
 			/** This function computes the compressed internal format from the corresponding internal base format if requested.
@@ -76,16 +78,16 @@ namespace G2
 			 * @param compress A flag indicating whether compression should be done or not.
 			 * @return The corresponding compressed format if available and requested, the base format if compression is not requested or the corresponding compressed internal format is not available.
 			 */
-			static unsigned baseFormatToCompressedFormat( G2Core::DataFormat::Name baseFormat, bool compress );
+			static unsigned baseFormatToCompressedFormat(G2Core::DataFormat::Internal::Name baseFormat, bool compress);
 			
 
-			G2Core::GfxResource* mTexResource;
+			G2Core::GfxResource* mTexResource;					// The GfxResource of the Texture
 
-			G2Core::TextureFormat::Name	mType;			// The texture type
-			G2Core::DataFormat::Name	mDataFormat;	// The format of the internal data contained in the texture
+			G2Core::TextureFormat::Name			mType;			// The texture type
+			G2Core::DataFormat::Internal::Name	mDataFormat;	// The format of the internal data contained in the texture
 			
-			G2Core::FilterMode::Name mMinFilter;		// The type of min filter, the texture uses
-			G2Core::FilterMode::Name mMagFilter;		// The type of mag filter, the texture uses			
-			bool					 mUseMipMaps;		// If true mip maps are applied to the texture
+			G2Core::FilterMode::Name			mMinFilter;		// The type of min filter, the texture uses
+			G2Core::FilterMode::Name			mMagFilter;		// The type of mag filter, the texture uses			
+			bool								mUseMipMaps;	// If true mip maps are applied to the texture
 	};
 };

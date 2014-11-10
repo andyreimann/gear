@@ -8,9 +8,9 @@ TextureCube::TextureCube(G2Core::FilterMode::Name minFilter,
 						 G2Core::FilterMode::Name magFilter, 
 						 unsigned int width,
 						 unsigned int height,
-						 G2Core::DataFormat::Name format,
+						 G2Core::DataFormat::Internal::Name format,
 						 bool compress,
-						 unsigned char * data)
+						 void* data)
 	: Texture(G2Core::TextureFormat::TEXTURE_CUBE_MAP, format,minFilter,magFilter),
 	mWidth(width),
 	mHeight(height),
@@ -20,7 +20,7 @@ TextureCube::TextureCube(G2Core::FilterMode::Name minFilter,
 {
 	mTexResource = G2_gfxDevice()->createTextureCube(
 		mWidth, mHeight,
-		format,format,
+		getBaseFormatByInternalFormat(format),format,
 		mMinFilter,mMagFilter,
 		G2Core::WrapMode::CLAMP_TO_EDGE,G2Core::WrapMode::CLAMP_TO_EDGE
 	);

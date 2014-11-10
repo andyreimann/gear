@@ -59,6 +59,11 @@ Scene::Scene(G2::AbstractWindow* window) :
 	} 
 
 
+	float width = 1.f;
+	float height = 1.f / 1920.f * 1080.f;
+
+	createTexturedPlane(glm::vec3(-3.f*width, -1.f, -5.f*height), width, height, mTexImporter.import(ASSET_PATH + "Resources/ac-unity-hd.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR, false, G2Core::WrapMode::REPEAT, G2Core::WrapMode::REPEAT), "Internal format: R32G32B32_F");
+
 	// TODO Test with Default_CG shader -> crash because has no normals -> better error!!!
 	//auto* renderComponent = mTriangle.addComponent<G2::RenderComponent>();
 	//renderComponent->allocateVertexArrays(1);
@@ -79,6 +84,58 @@ Scene::Scene(G2::AbstractWindow* window) :
 	//renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
 	//renderComp->material.setDiffuse(glm::vec4(1.f,0.23f,0.f,0.3));
 	//renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Glass.g2fx"));
+}
+
+void
+Scene::createTexturedPlane(glm::vec3 const& center, float width, float height, std::shared_ptr<G2::Texture2D> const& diffuseTex, std::string const& name)
+{
+	mTexturedPlanes.push_back(G2::Entity());
+	auto* plane = mTexturedPlanes.back().addComponent<G2::RenderComponent>();
+	auto* nameComp = mTexturedPlanes.back().addComponent<G2::NameComponent>();
+	nameComp->name = name;
+	plane->allocateVertexArrays(1);
+	plane->allocateIndexArrays(1);
+
+	//plane->drawMode = GL_TRIANGLES;
+	//// import and assign a texture
+	plane->material.setTexture(G2::Sampler::DIFFUSE, diffuseTex); // only rendered/used in passes
+
+	//// prepare vao
+	//// assign vao to RenderComponent using move semantic
+	G2::VertexArrayObject& vao = plane->getVertexArray(0);
+
+	vao.resizeElementCount(4);
+
+	glm::vec3 planeGeometry[4];
+	width *= 0.5f;
+	height *= 0.5f;
+	planeGeometry[0] = center + glm::vec3(-width, 0.f, -height);
+	planeGeometry[1] = center + glm::vec3(width, 0.f, -height);
+	planeGeometry[2] = center + glm::vec3(width, 0.f, height);
+	planeGeometry[3] = center + glm::vec3(-width, 0.f, height);
+
+	vao.writeData(G2Core::Semantics::POSITION, planeGeometry);
+
+	glm::vec2 tex[4];
+	tex[0] = glm::vec2(0.f, 0.f);
+	tex[1] = glm::vec2(1.f, 0.f);
+	tex[2] = glm::vec2(1.f, 1.f);
+	tex[3] = glm::vec2(0.f, 1.f);
+	vao.writeData(G2Core::Semantics::TEXCOORD_0, tex);
+
+	// build indices
+	G2::IndexArrayObject& iao = plane->getIndexArray(0);
+	unsigned int indices[6] = { 0, 3, 1, 1, 3, 2 };
+	iao.writeIndices(&indices[0], 6);
+
+	// add draw call
+	plane->addDrawCall(G2::DrawCall()
+		.setDrawMode(G2Core::DrawMode::TRIANGLES)
+		.setIaoIndex(0)
+		.setVaoIndex(0));
+
+	// load and assign texturing shader
+	plane->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/SimpleTex.g2fx"));
 }
 
 Scene::~Scene(void)

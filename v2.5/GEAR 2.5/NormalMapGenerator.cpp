@@ -109,5 +109,5 @@ NormalMapGenerator::generateFromHeightMap(unsigned char* heightMap, int size, fl
 			normals[(y*size+x)*3+2] = (unsigned char)(slopeY1*255.f);
 		}
 	}
-	return std::shared_ptr<G2::Texture2D>(new Texture2D(G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST, size, size, G2Core::DataFormat::RGB, G2Core::DataFormat::RGB, G2Core::WrapMode::CLAMP_TO_EDGE, G2Core::WrapMode::CLAMP_TO_EDGE, false, &normals[0]));			// The height map to use for this terrain
+	return std::shared_ptr<G2::Texture2D>(new Texture2D(G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST, size, size, G2Core::DataFormat::Base::RGB, G2Core::DataFormat::Internal::R32G32B32_UI, G2Core::WrapMode::CLAMP_TO_EDGE, G2Core::WrapMode::CLAMP_TO_EDGE, false, G2Core::DataType::UNSIGNED_BYTE, &normals[0]));			// The height map to use for this terrain
 }

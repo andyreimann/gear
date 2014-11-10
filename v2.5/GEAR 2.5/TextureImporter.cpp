@@ -8,7 +8,14 @@
 using namespace G2;
 
 std::shared_ptr<Texture2D>
-TextureImporter::importResource(std::string const& fileName, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, bool compress, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::DataFormat::Name internalFormat) 
+TextureImporter::importResource(
+	std::string const& fileName,
+	G2Core::DataFormat::Internal::Name internalFormat, 
+	G2Core::FilterMode::Name minFilter, 
+	G2Core::FilterMode::Name magFilter,
+	bool compress, 
+	G2Core::WrapMode::Name wrapS, 
+	G2Core::WrapMode::Name wrapT)
 {
 	
 	auto it = mCache.find(fileName);
@@ -22,24 +29,19 @@ TextureImporter::importResource(std::string const& fileName, G2Core::FilterMode:
 }
 
 std::pair<std::string,std::shared_ptr<Texture2D::Builder>> 
-TextureImporter::produceResourceBuilder(std::string const& fileName, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, bool compress, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::DataFormat::Name internalFormat) 
+TextureImporter::produceResourceBuilder(
+	std::string const& fileName,
+	G2Core::DataFormat::Internal::Name internalFormat,
+	G2Core::FilterMode::Name minFilter, 
+	G2Core::FilterMode::Name magFilter, 
+	bool compress, 
+	G2Core::WrapMode::Name wrapS, 
+	G2Core::WrapMode::Name wrapT)
 {
 	logger << "[TextureImporter] Import image file " << fileName << endl;
-
-	Texture2D::init();
-	
-	ILuint imageID;				// index for DevIL texture
-	ilGenImages(1,&imageID);	// generate IL-ID for texture
-	ilBindImage(imageID);		// bind ID as current Texture
-	ILboolean ret = ilLoadImage ( fileName.c_str() );
-	if(!ret ) 
-	{
-		ilDeleteImages(1,&imageID);
-	}
 	
 	// Step 1: create builder and fill
 	std::shared_ptr<Texture2D::Builder> builder = std::shared_ptr<Texture2D::Builder>(new Texture2D::Builder);
-	builder->id = imageID;
-	ilBindImage(0);
+	builder->fileName = fileName;
 	return std::make_pair(fileName, builder);
 }

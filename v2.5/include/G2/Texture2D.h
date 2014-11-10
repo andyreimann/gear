@@ -27,34 +27,63 @@ namespace G2
 					bool compress, 
 					G2Core::WrapMode::Name wrapS, 
 					G2Core::WrapMode::Name wrapT,
-					G2Core::DataFormat::Name internalFormat);
-				~Builder();
+					G2Core::DataFormat::Internal::Name internalFormat);
 
-				unsigned id; // The IL image id
+				std::string fileName;
 			};
 
 			/** This constructs a new Texture2D from the given data.
-			 * @param minFilter The min filter to use.
-			 * @param magFilter The mag filter to use.
-			 * @param width The width  to use.
-			 * @param height The height to use.
-			 * @param format The format of the incoming data.
-			 * @param internalFormat The internal format to interpret it as. Set this value to -1 if you want to choose the same internal format as given in 'format'
-			 * @param compress The compress flag to use.
-			 * @param data The pointer to the initial data or nullptr.
-			 * @note If you don't want to use the internal compression method, just pass in a compressed internal format.
-			 * If the supplied internal format is already a compressed format, it does not matter what value you set the compressed parameter to!
-			 */
-			Texture2D(G2Core::FilterMode::Name minFilter, 
-					  G2Core::FilterMode::Name magFilter, 
-					  unsigned int width,
-					  unsigned int height,
-					  G2Core::DataFormat::Name format,
-					  G2Core::DataFormat::Name internalFormat,
-					  G2Core::WrapMode::Name wrapS,
-					  G2Core::WrapMode::Name wrapT,
-					  bool compress,
-					  unsigned char * data = nullptr);
+			* @param minFilter The min filter to use.
+			* @param magFilter The mag filter to use.
+			* @param width The width  to use.
+			* @param height The height to use.
+			* @param format The format of the incoming data.
+			* @param internalFormat The internal format to interpret it as. Set this value to -1 if you want to choose the same internal format as given in 'format'
+			* @param compress The compress flag to use.
+			* @param dataType The type of the data.
+			* @param data The pointer to the initial data or nullptr.
+			* @note If you don't want to use the internal compression method, just pass in a compressed internal format.
+			* If the supplied internal format is already a compressed format, it does not matter what value you set the compressed parameter to!
+			*/
+			Texture2D(G2Core::FilterMode::Name minFilter,
+				G2Core::FilterMode::Name magFilter,
+				unsigned int width,
+				unsigned int height,
+				G2Core::DataFormat::Base::Name format,
+				G2Core::DataFormat::Internal::Name internalFormat,
+				G2Core::WrapMode::Name wrapS,
+				G2Core::WrapMode::Name wrapT,
+				bool compress,
+				G2Core::DataType::Name dataType,
+				void* data = nullptr);
+			/** This constructs a new Texture2D loaded from a file.
+			* @param gfxResource The GfxResource representing the texture object on the GPU.
+			* @param sourceFile The source file the Texture was loaded from.
+			* @param minFilter The min filter to use.
+			* @param magFilter The mag filter to use.
+			* @param width The width  to use.
+			* @param height The height to use.
+			* @param format The format of the incoming data.
+			* @param internalFormat The internal format to interpret it as. Set this value to -1 if you want to choose the same internal format as given in 'format'
+			* @param compress The compress flag to use.
+			* @param dataType The type of the data.
+			* @param data The pointer to the initial data or nullptr.
+			* @note If you don't want to use the internal compression method, just pass in a compressed internal format.
+			* If the supplied internal format is already a compressed format, it does not matter what value you set the compressed parameter to!
+			*/
+			Texture2D(
+				G2Core::GfxResource* gfxResource, 
+				std::string const& sourceFile,
+				G2Core::FilterMode::Name minFilter,
+				G2Core::FilterMode::Name magFilter,
+				unsigned int width,
+				unsigned int height,
+				G2Core::DataFormat::Base::Name format,
+				G2Core::DataFormat::Internal::Name internalFormat,
+				G2Core::WrapMode::Name wrapS,
+				G2Core::WrapMode::Name wrapT,
+				bool compress);
+
 			/// Move ctor.
 			Texture2D(Texture2D && rhs);
 			/// Move ctor.
@@ -76,12 +105,10 @@ namespace G2
 			*/
 			unsigned const& getChannels() const { return mChannels; }
 			
-			static void		init();
 		private:
 			Texture2D() {}
-			
-			static bool		gInitialized;
 
+			std::string		mSourceFile;	// The source file if the Texture was loaded from a file.
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.
 			unsigned		mChannels;		// The number of channels of the Texture

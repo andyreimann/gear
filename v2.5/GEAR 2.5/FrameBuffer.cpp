@@ -6,7 +6,7 @@
 
 using namespace G2;
 
-FrameBuffer::FrameBuffer(unsigned width, unsigned height, G2Core::DataFormat::Name format) 
+FrameBuffer::FrameBuffer(unsigned width, unsigned height, G2Core::DataFormat::Internal::Name format)
 	: mRenderTargetResource(G2_gfxDevice()->createRenderTarget(width, height, format))
 {
 }

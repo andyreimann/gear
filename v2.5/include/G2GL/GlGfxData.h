@@ -208,7 +208,7 @@ namespace G2GL
 
 	struct RenderTargetResource : GlResource
 	{
-		RenderTargetResource(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, unsigned int fboId, unsigned int renderBufferId) 
+		RenderTargetResource(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format, unsigned int fboId, unsigned int renderBufferId) 
 			: GlResource(FBO),
 			width(width),
 			height(height),
@@ -227,7 +227,7 @@ namespace G2GL
 
 		unsigned int width;
 		unsigned int height;
-		G2Core::DataFormat::Name format;
+		G2Core::DataFormat::Internal::Name format;
 		unsigned int fboId;
 		unsigned int renderBufferId;
 	};

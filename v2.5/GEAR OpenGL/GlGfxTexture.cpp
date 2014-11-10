@@ -4,6 +4,10 @@
 
 #include <G2/Logger.h>
 
+#include <IL/il.h>
+
+std::unordered_map<std::string, ILuint> gTextureCache;
+
 bool _mipMapsRequested(G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter) 
 {
 
@@ -32,7 +36,7 @@ void _checkFilterValidity(G2Core::FilterMode::Name minFilter, G2Core::FilterMode
 
 
 
-bool _isCompressedFormat(G2Core::DataFormat::Name baseFormat) 
+bool _isCompressedFormat(G2Core::DataFormat::Base::Name baseFormat)
 {
 	return false;
 	//return baseFormat == GL_COMPRESSED_RED ||
@@ -54,13 +58,14 @@ bool _isCompressedFormat(G2Core::DataFormat::Name baseFormat)
 G2Core::GfxResource* CreateTexture2D(
 	unsigned int width, 
 	unsigned int height, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format,
+	G2Core::DataFormat::Internal::Name internalFormat,
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT,
-	unsigned char * data)
+	G2Core::DataType::Name dataType,
+	void* data)
 {
 	_checkFilterValidity(minFilter,magFilter);
 
@@ -70,12 +75,13 @@ G2Core::GfxResource* CreateTexture2D(
 	//}
 
 	unsigned int texId;
-	unsigned int glFormat = toGlDataFormat(format);
-	unsigned int glInternalFormat = toGlDataFormat(internalFormat);
+	unsigned int glFormat = toGlBaseDataFormat(format);
+	unsigned int glInternalFormat = toGlInternalDataFormat(internalFormat);
 	unsigned int glWrapS = toGlWrapMode(wrapS);
 	unsigned int glWrapT = toGlWrapMode(wrapT);
 	unsigned int glMinFilter = toGlFilterMode(minFilter);
 	unsigned int glMagFilter = toGlFilterMode(magFilter);
+	unsigned int glDataType = toGlDataType(dataType);
 	GLCHECK( glGenTextures(1, &texId) );
 	GLCHECK( glBindTexture(GL_TEXTURE_2D, texId) );
 	GLCHECK( glTexImage2D(
@@ -86,7 +92,7 @@ G2Core::GfxResource* CreateTexture2D(
 		height, 
 		0, 
 		glFormat, 
-		GL_UNSIGNED_BYTE, 
+		glDataType,
 		data) );
 
 	if(_mipMapsRequested(minFilter,magFilter))
@@ -117,13 +123,14 @@ G2Core::GfxResource* CreateTexture2DArray(
 	unsigned int width, 
 	unsigned int height, 
 	unsigned int size, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format,
+	G2Core::DataFormat::Internal::Name internalFormat,
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT,
-	unsigned char * data)
+	G2Core::DataType::Name dataType,
+	void* data)
 {
 	_checkFilterValidity(minFilter,magFilter);
 
@@ -133,15 +140,16 @@ G2Core::GfxResource* CreateTexture2DArray(
 	//}
 
 	unsigned int texId;
-	unsigned int glFormat = toGlDataFormat(format);
-	unsigned int glInternalFormat = toGlDataFormat(internalFormat);
+	unsigned int glFormat = toGlBaseDataFormat(format);
+	unsigned int glInternalFormat = toGlInternalDataFormat(internalFormat);
 	unsigned int glWrapS = toGlWrapMode(wrapS);
 	unsigned int glWrapT = toGlWrapMode(wrapT);
 	unsigned int glMinFilter = toGlFilterMode(minFilter);
 	unsigned int glMagFilter = toGlFilterMode(magFilter);
+	unsigned int glDataType = toGlDataType(dataType);
 	GLCHECK( glGenTextures(1, &texId) );
 	GLCHECK( glBindTexture(GL_TEXTURE_2D_ARRAY, texId) );
-	GLCHECK( glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, glInternalFormat, width, height, size, 0, glFormat, GL_UNSIGNED_BYTE, data) );
+	GLCHECK(glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, glInternalFormat, width, height, size, 0, glFormat, glDataType, data));
 	
 	if(_mipMapsRequested(minFilter,magFilter))
 	{
@@ -170,8 +178,8 @@ G2Core::GfxResource* CreateTexture2DArray(
 G2Core::GfxResource* CreateTextureCube(
 	unsigned int width, 
 	unsigned int height, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format,
+	G2Core::DataFormat::Internal::Name internalFormat, 
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
@@ -189,8 +197,8 @@ G2Core::GfxResource* CreateTextureCube(
 	};
 
 	unsigned int texId;
-	unsigned int glFormat = toGlDataFormat(format);
-	unsigned int glInternalFormat = toGlDataFormat(internalFormat);
+	unsigned int glFormat = toGlBaseDataFormat(format);
+	unsigned int glInternalFormat = toGlInternalDataFormat(internalFormat);
 	unsigned int glWrapS = toGlWrapMode(wrapS);
 	unsigned int glWrapT = toGlWrapMode(wrapT);
 	unsigned int glMinFilter = toGlFilterMode(minFilter);
@@ -224,14 +232,15 @@ G2Core::GfxResource* CreateTexture3D(
 	unsigned int width, 
 	unsigned int height, 
 	unsigned int depth, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format,
+	G2Core::DataFormat::Internal::Name internalFormat,
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT,
 	G2Core::WrapMode::Name wrapR,
-	unsigned char * data)
+	G2Core::DataType::Name dataType,
+	void* data)
 {
 	_checkFilterValidity(minFilter,magFilter);
 
@@ -241,16 +250,17 @@ G2Core::GfxResource* CreateTexture3D(
 	//}
 
 	unsigned int texId;
-	unsigned int glFormat = toGlDataFormat(format);
-	unsigned int glInternalFormat = toGlDataFormat(internalFormat);
+	unsigned int glFormat = toGlBaseDataFormat(format);
+	unsigned int glInternalFormat = toGlInternalDataFormat(internalFormat);
 	unsigned int glWrapS = toGlWrapMode(wrapS);
 	unsigned int glWrapT = toGlWrapMode(wrapT);
 	unsigned int glWrapR = toGlWrapMode(wrapR);
 	unsigned int glMinFilter = toGlFilterMode(minFilter);
 	unsigned int glMagFilter = toGlFilterMode(magFilter);
+	unsigned int glDataType = toGlDataType(dataType);
 	GLCHECK( glGenTextures(1, &texId) );
 	GLCHECK( glBindTexture(GL_TEXTURE_3D, texId) );
-	GLCHECK( glTexImage3D(GL_TEXTURE_3D, 0, glInternalFormat, width, height, depth, 0, glFormat, GL_UNSIGNED_BYTE, data) );
+	GLCHECK(glTexImage3D(GL_TEXTURE_3D, 0, glInternalFormat, width, height, depth, 0, glFormat, glDataType, data));
 	
 	if(_mipMapsRequested(minFilter,magFilter))
 	{
@@ -278,6 +288,90 @@ G2Core::GfxResource* CreateTexture3D(
 	);
 }
 
+G2Core::GfxResource* CreateTexture2DFromFile(
+	std::string const& fileName,
+	G2Core::DataFormat::Internal::Name internalFormat,
+	G2Core::FilterMode::Name minFilter,
+	G2Core::FilterMode::Name magFilter,
+	G2Core::WrapMode::Name wrapS,
+	G2Core::WrapMode::Name wrapT,
+	G2Core::TextureMetaData* metaData)
+{
+	bool cacheHit = false;
+	ILuint imageID;				// index for DevIL texture
+	if (gTextureCache.find(fileName) != gTextureCache.end())
+	{
+		imageID = gTextureCache[fileName];
+		cacheHit = true;
+	}
+	else
+	{
+		ilGenImages(1, &imageID);	// generate IL-ID for texture
+		ilBindImage(imageID);		// bind ID as current Texture
+		ILboolean ret = ilLoadImage(fileName.c_str());
+		if (!ret)
+		{
+			ilDeleteImages(1, &imageID);
+			if (metaData != nullptr)
+			{
+				metaData->status = G2Core::TextureMetaData::INVALID_ARG;
+				metaData->error = "Could not load texture";
+			}
+			return error();
+		}
+	}
+	ilBindImage(imageID);		// bind ID as current Texture
+
+	unsigned char * data = ilGetData();
+	if (data == NULL)
+	{
+		ilDeleteImages(1, &imageID);
+		if (metaData != nullptr)
+		{
+			metaData->status = G2Core::TextureMetaData::INVALID_ARG;
+			metaData->error = "Could not read texture data";
+		}
+		return error();
+	}
+	unsigned width = ilGetInteger(IL_IMAGE_WIDTH);
+	unsigned height = ilGetInteger(IL_IMAGE_HEIGHT);
+	if (metaData != nullptr)
+	{
+		metaData->width = width;
+		metaData->height = height;
+	}
+	unsigned format = ilGetInteger(IL_IMAGE_FORMAT);
+
+	G2Core::DataFormat::Base::Name parsedFormat = G2Core::DataFormat::Base::UNKNOWN;
+	switch (format)
+	{
+		case IL_RGB:			parsedFormat = G2Core::DataFormat::Base::RGB; break;
+		case IL_RGBA:			parsedFormat = G2Core::DataFormat::Base::RGBA; break;
+		default:
+			if (metaData != nullptr)
+			{
+				metaData->status = G2Core::TextureMetaData::FORMAT_NOT_SUPPORTED;
+				metaData->error = "Could not obtain texture source format";
+			}
+			return error();
+	}
+	assert(parsedFormat != G2Core::DataFormat::Base::UNKNOWN);
+
+
+	G2Core::GfxResource* tex = CreateTexture2D(
+		width, height,
+		parsedFormat, internalFormat,
+		minFilter, magFilter, wrapS, wrapT, G2Core::DataType::UNSIGNED_BYTE, data);
+
+	ilDeleteImages(1, &imageID);
+	if (!cacheHit)
+	{
+		// create cache entry
+		gTextureCache[fileName] = imageID;
+	}
+	return tex;
+}
+
 const G2Core::TextureFormat::Name CubeMapDefines[6] = {
 	G2Core::TextureFormat::CUBE_MAP_POS_X,
 	G2Core::TextureFormat::CUBE_MAP_NEG_X,
@@ -303,3 +397,10 @@ void UnbindTexture(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSl
 	GLCHECK( glBindTexture( texPtr->texType, 0 ) );
 }
 	
+void releaseTextureCache()
+{
+	for (auto it = gTextureCache.begin(); it != gTextureCache.end(); ++it)
+	{
+		ilDeleteImages(1, &it->second);
+	}
+}

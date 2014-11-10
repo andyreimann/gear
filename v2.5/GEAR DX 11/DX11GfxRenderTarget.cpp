@@ -2,7 +2,7 @@
 #include "DX11GfxData.h"
 #include "DX11GfxMappings.h"
 
-G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format)
+G2Core::GfxResource* CreateRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format)
 {
 	G2DX11::RenderTargetResource* renderTarget = new G2DX11::RenderTargetResource();
 	return renderTarget;

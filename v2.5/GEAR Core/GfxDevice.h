@@ -1,6 +1,7 @@
 #pragma once
 #include "Defines.h"
 #include "VertexInputLayout.h"
+#include "TextureMetaData.h"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -58,16 +59,72 @@ namespace G2
 	typedef void (*DrawIBO)(G2Core::GfxResource* ibo, G2Core::DrawMode::Name drawMode, int numIndices);
 	
 	// RenderTarget
-	typedef G2Core::GfxResource* (*CreateRenderTarget)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format);
+	typedef G2Core::GfxResource* (*CreateRenderTarget)(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format);
 	typedef void (*AttachTextureToRenderTarget)(G2Core::GfxResource* renderTarget, G2Core::GfxResource* texture, G2Core::FrameBufferAttachmentPoint::Name attachment, G2Core::TextureFormat::Name texTarget, int mipmapLevel, int layer);
 	typedef void (*BindRenderTarget)(G2Core::GfxResource* renderTarget);
 	typedef void (*UnbindRenderTarget)(G2Core::GfxResource* renderTarget);	
 
 	// Texture
-	typedef G2Core::GfxResource* (*CreateTexture2D)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
-	typedef G2Core::GfxResource* (*CreateTexture2DArray)(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, unsigned char * data);
-	typedef G2Core::GfxResource* (*CreateTextureCube)(unsigned int width, unsigned int height, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT);
-	typedef G2Core::GfxResource* (*CreateTexture3D)(unsigned int width, unsigned int height, unsigned int size, G2Core::DataFormat::Name format, G2Core::DataFormat::Name internalFormat, G2Core::FilterMode::Name minFilter, G2Core::FilterMode::Name magFilter, G2Core::WrapMode::Name wrapS, G2Core::WrapMode::Name wrapT, G2Core::WrapMode::Name wrapR, unsigned char * data);
+	typedef G2Core::GfxResource* (*CreateTexture2D)(
+		unsigned int width, 
+		unsigned int height, 
+		G2Core::DataFormat::Base::Name format, 
+		G2Core::DataFormat::Internal::Name internalFormat, 
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter, 
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT,
+		G2Core::DataType::Name dataType,
+		void* data
+	);
+	typedef G2Core::GfxResource* (*CreateTexture2DArray)(
+		unsigned int width, 
+		unsigned int height, 
+		unsigned int size,
+		G2Core::DataFormat::Base::Name format,
+		G2Core::DataFormat::Internal::Name internalFormat,
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter, 
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT,
+		G2Core::DataType::Name dataType,
+		void * data
+	);
+	typedef G2Core::GfxResource* (*CreateTextureCube)(
+		unsigned int width, 
+		unsigned int height,
+		G2Core::DataFormat::Base::Name format,
+		G2Core::DataFormat::Internal::Name internalFormat,
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter, 
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT
+	);
+	typedef G2Core::GfxResource* (*CreateTexture3D)(
+		unsigned int width, 
+		unsigned int height, 
+		unsigned int size,
+		G2Core::DataFormat::Base::Name format,
+		G2Core::DataFormat::Internal::Name internalFormat,
+		G2Core::FilterMode::Name minFilter, 
+		G2Core::FilterMode::Name magFilter, 
+		G2Core::WrapMode::Name wrapS, 
+		G2Core::WrapMode::Name wrapT, 
+		G2Core::WrapMode::Name wrapR, 
+		G2Core::DataType::Name dataType,
+		void * data
+	);
+	
+	typedef G2Core::GfxResource* (*CreateTexture2DFromFile)(
+		std::string const& fileName,
+		G2Core::DataFormat::Internal::Name internalFormat,
+		G2Core::FilterMode::Name minFilter,
+		G2Core::FilterMode::Name magFilter,
+		G2Core::WrapMode::Name wrapS,
+		G2Core::WrapMode::Name wrapT,
+		G2Core::TextureMetaData* metaData
+	);
+	
 	typedef void (*BindTexture)(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
 	typedef void (*UnbindTexture)(G2Core::GfxResource* texResource, G2Core::TexSlot::Name texSlot);
 	
@@ -146,6 +203,7 @@ namespace G2
 			CreateTexture2DArray createTexture2DArray;
 			CreateTextureCube createTextureCube;
 			CreateTexture3D createTexture3D;
+			CreateTexture2DFromFile createTexture2DFromFile;
 			BindTexture bindTexture;
 			UnbindTexture unbindTexture;
 

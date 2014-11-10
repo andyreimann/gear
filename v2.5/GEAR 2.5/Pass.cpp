@@ -24,11 +24,12 @@ Pass::Pass(
 							G2Core::FilterMode::NEAREST, 
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
-							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
-							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
+							Texture::getBaseFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+							Texture::getInternalFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
 							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
 							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value), 
 							false,
+							G2Core::DataType::UNSIGNED_BYTE,
 							nullptr))
 				  : (
 					  renderTargetType == RenderTargetType::RT_2D_ARRAY ?
@@ -38,8 +39,9 @@ Pass::Pass(
 								(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 								(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 								(unsigned)Setting::get("RenderTargetDepth", mSettings, "2").toInt(), 
-								Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+								Texture::getInternalFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
 								false,
+								G2Core::DataType::UNSIGNED_BYTE,
 								nullptr))
 					  : (
 					  // RT_CUBE
@@ -48,7 +50,7 @@ Pass::Pass(
 							G2Core::FilterMode::NEAREST, 
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
-							Texture::getFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
+							Texture::getInternalFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
 							false))
 					)
 				),

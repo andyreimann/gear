@@ -26,8 +26,8 @@ TestScene::TestScene(G2::SDL::Window& window)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
-	//std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default_CG.g2fx");
-	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/EffectFileImporterTest.g2fx");
+	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default_CG.g2fx");
+	//std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/EffectFileImporterTest.g2fx");
 	G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem,G2::RenderComponent>()
 		->setDefaultEffect(effect);
@@ -235,7 +235,7 @@ TestScene::createWalls()
 	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
 	
 	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/NormalMapping.g2fx"));
-	renderComp->material.setTexture(G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "Resources/normalmap.png", G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST, false));
+	renderComp->material.setTexture(G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "Resources/normalmap.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST, false));
 
 	mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(
 		G2::Physics::CollisionShapeDescriptor::box(glm::vec3(5.f, 0.5f, 5.f)),

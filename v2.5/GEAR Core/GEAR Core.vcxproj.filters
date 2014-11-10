@@ -31,6 +31,9 @@
     <ClInclude Include="VertexInputLayout.h">
       <Filter>VertexInputLayout</Filter>
     </ClInclude>
+    <ClInclude Include="TextureMetaData.h">
+      <Filter>Texture\MetaData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSManager.cpp">
@@ -63,6 +66,12 @@
     </Filter>
     <Filter Include="VertexInputLayout">
       <UniqueIdentifier>{6855542f-bb2a-465a-845e-d37f59845937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{3b5acc39-1d3c-4232-b257-9bf511a7d749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture\MetaData">
+      <UniqueIdentifier>{e10717d8-e4ed-426e-b436-d0080a952c93}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

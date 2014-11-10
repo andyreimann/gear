@@ -13,9 +13,10 @@ TextureArray::TextureArray(
 					 unsigned int width,
 					 unsigned int height,
 					 unsigned int size,
-					 G2Core::DataFormat::Name format,
+					 G2Core::DataFormat::Internal::Name format,
 					 bool compress,
-					 unsigned char * data)
+					 G2Core::DataType::Name dataType,
+					 void* data)
 	: Texture(G2Core::TextureFormat::TEXTURE_2D_ARRAY,format,minFilter,magFilter),
 	mWidth(width),
 	mHeight(height),
@@ -28,9 +29,10 @@ TextureArray::TextureArray(
 
 	mTexResource = G2_gfxDevice()->createTexture2DArray(
 		mWidth, mHeight, size,
-		format,format,
+		getBaseFormatByInternalFormat(format),format,
 		mMinFilter,mMagFilter,
 		G2Core::WrapMode::CLAMP_TO_EDGE,G2Core::WrapMode::CLAMP_TO_EDGE,
+		dataType,
 		data
 	);
 }

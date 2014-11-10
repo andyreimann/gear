@@ -3,7 +3,7 @@
 
 using namespace G2;
 
-MultipleRenderTarget::MultipleRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Name format)
+MultipleRenderTarget::MultipleRenderTarget(unsigned int width, unsigned int height, G2Core::DataFormat::Internal::Name format)
 	: mWidth(width),
 	mHeight(height),
 	mDataFormat(format),
@@ -21,11 +21,12 @@ MultipleRenderTarget::allocateRenderTexture(G2Core::FrameBufferAttachmentPoint::
 			G2Core::FilterMode::NEAREST, 
 			mWidth, 
 			mHeight, 
-			mDataFormat,
+			Texture::getBaseFormatByInternalFormat(mDataFormat),
 			mDataFormat,
 			G2Core::WrapMode::REPEAT,
 			G2Core::WrapMode::REPEAT, 
 			false,
+			G2Core::DataType::UNSIGNED_BYTE,
 			nullptr
 		)
 	);

@@ -60,15 +60,34 @@ D3D11_SAMPLER_DESC _samplerStateAnisotropic16Desc(D3D11_TEXTURE_ADDRESS_MODE u, 
 G2Core::GfxResource* CreateTexture2D(
 	unsigned int width, 
 	unsigned int height, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format, 
+	G2Core::DataFormat::Internal::Name internalFormat,
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT,
 	unsigned char * data)
 {
-	DXGI_FORMAT dxFormat = toD3DFormat(internalFormat);
+	unsigned char* internalData = data;
+	bool allocated = false;
+	if (format == G2Core::DataFormat::Base::RGB)
+	{
+		// 
+		unsigned char* internalData = new unsigned char[width * height * 4];
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				internalData[(y*width + x) * 4] = data[(y*width + x) * 3];
+				internalData[(y*width + x) * 4 + 1] = data[(y*width + x) * 3 + 1];
+				internalData[(y*width + x) * 4 + 2] = data[(y*width + x) * 3 + 2];
+				internalData[(y*width + x) * 4 + 3] = 255;
+			}
+		}
+		allocated = true;
+	}
+
+	DXGI_FORMAT dxFormat = toD3DInternalDataFormat(internalFormat);
 	if(dxFormat == DXGI_FORMAT_UNKNOWN)
 	{
 		std::cout << "Not supported format for 2D Texture!\n";
@@ -81,6 +100,7 @@ G2Core::GfxResource* CreateTexture2D(
 	desc.ArraySize = 1;
 	desc.Format = dxFormat;
 	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -88,7 +108,7 @@ G2Core::GfxResource* CreateTexture2D(
 
 	ID3D11Texture2D* tex = nullptr;
 	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = data;
+	initData.pSysMem = internalData;
 	HRESULT hr = gDevicePtr()->CreateTexture2D(&desc, &initData, &tex);
 
 	if (!SUCCEEDED(hr))
@@ -121,7 +141,10 @@ G2Core::GfxResource* CreateTexture2D(
 		std::cout << "Could not create sampler state for Texture!\n";
 		exit(-1);
 	}
-
+	if (allocated)
+	{
+		delete[] internalData;
+	}
 	return new G2DX11::Texture2DResource(tex, resView, samplerState);
 }
 
@@ -129,15 +152,15 @@ G2Core::GfxResource* CreateTexture2DArray(
 	unsigned int width, 
 	unsigned int height, 
 	unsigned int size, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format, 
+	G2Core::DataFormat::Internal::Name internalFormat, 
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT,
 	unsigned char * data)
 {
-	DXGI_FORMAT dxFormat = toD3DFormat(internalFormat);
+	DXGI_FORMAT dxFormat = toD3DInternalDataFormat(internalFormat);
 	if (dxFormat == DXGI_FORMAT_UNKNOWN)
 	{
 		std::cout << "Not supported format for 2D Texture Array!\n";
@@ -196,14 +219,14 @@ G2Core::GfxResource* CreateTexture2DArray(
 G2Core::GfxResource* CreateTextureCube(
 	unsigned int width, 
 	unsigned int height, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format, 
+	G2Core::DataFormat::Internal::Name internalFormat, 
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT)
 {
-	DXGI_FORMAT dxFormat = toD3DFormat(internalFormat);
+	DXGI_FORMAT dxFormat = toD3DInternalDataFormat(internalFormat);
 	if (dxFormat == DXGI_FORMAT_UNKNOWN)
 	{
 		std::cout << "Not supported format for Cubemap Texture!\n";
@@ -262,8 +285,8 @@ G2Core::GfxResource* CreateTexture3D(
 	unsigned int width, 
 	unsigned int height, 
 	unsigned int depth, 
-	G2Core::DataFormat::Name format, 
-	G2Core::DataFormat::Name internalFormat, 
+	G2Core::DataFormat::Base::Name format, 
+	G2Core::DataFormat::Internal::Name internalFormat, 
 	G2Core::FilterMode::Name minFilter, 
 	G2Core::FilterMode::Name magFilter, 
 	G2Core::WrapMode::Name wrapS, 
@@ -271,7 +294,7 @@ G2Core::GfxResource* CreateTexture3D(
 	G2Core::WrapMode::Name wrapR,
 	unsigned char * data)
 {
-	DXGI_FORMAT dxFormat = toD3DFormat(internalFormat);
+	DXGI_FORMAT dxFormat = toD3DInternalDataFormat(internalFormat);
 	if (dxFormat == DXGI_FORMAT_UNKNOWN)
 	{
 		std::cout << "Not supported format for 3D Texture!\n";

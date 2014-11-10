@@ -27,6 +27,7 @@ namespace G2
 			 * @param height The height to use.
 			 * @param size The actual number of elements in the TextureArray for this texture (so that it actually becomes a texture array)
 			 * @param compress The compress flag to use.
+			 * @param dataType The type of the data.
 			 * @param data The pointer to the initial data or nullptr.
 			 */
 			TextureArray(G2Core::FilterMode::Name minFilter, 
@@ -34,9 +35,10 @@ namespace G2
 					  unsigned int width,
 					  unsigned int height,
 					  unsigned int size,
-					  G2Core::DataFormat::Name format,
+					  G2Core::DataFormat::Internal::Name format,
 					  bool compress,
-					  unsigned char * data = nullptr);
+					  G2Core::DataType::Name dataType,
+					  void* data = nullptr);
 			/// Move ctor.
 			TextureArray(TextureArray && rhs);
 			/// Move ctor.
