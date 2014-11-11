@@ -78,9 +78,9 @@ namespace G2Core
 	{
 		enum Name 
 		{
-			READ_ONLY = 0x88B8,
-			WRITE_ONLY = 0x88B9,
-			READ_WRITE = 0x88BA,
+			READ_ONLY,
+			WRITE_ONLY,
+			READ_WRITE,
 		};
 	};
 
@@ -88,14 +88,14 @@ namespace G2Core
 	{
 		enum Name 
 		{
-			POINTS = 0x0000,
-			LINE_STRIP = 0x0003,
-			LINE_LOOP = 0x0002,
-			LINES = 0x0001,
-			TRIANGLE_STRIP = 0x0005,
-			TRIANGLE_FAN = 0x0006,
-			TRIANGLES = 0x0004,
-			QUADS = 0x0007,
+			POINTS,
+			LINE_STRIP,
+			LINE_LOOP,
+			LINES,
+			TRIANGLE_STRIP,
+			TRIANGLE_FAN,
+			TRIANGLES,
+			QUADS,
 		};
 	};
 
@@ -138,30 +138,30 @@ namespace G2Core
 				// _I		-> integer
 				// _F		-> float
 
-				R8_UI,				// GL: GL_R8UI				DX: DXGI_FORMAT_R8_UINT
-				R8_I,				// GL: GL_R8I				DX: DXGI_FORMAT_R8_SINT
-				R16_UI,				// GL: GL_R16UI				DX: DXGI_FORMAT_R16_UINT
-				R16_I,				// GL: GL_R16I				DX: DXGI_FORMAT_R16_SINT
+				R8_UI,				// GL: GL_RED				DX: DXGI_FORMAT_R8_UINT
+				R8_I,				// GL: GL_RED				DX: DXGI_FORMAT_R8_SINT
+				R16_UI,				// GL: GL_RED				DX: DXGI_FORMAT_R16_UINT
+				R16_I,				// GL: GL_RED				DX: DXGI_FORMAT_R16_SINT
 				R16_F,				// GL: GL_R16F				DX: DXGI_FORMAT_R16_FLOAT
-				R32_UI,				// GL: GL_R32UI				DX: DXGI_FORMAT_R32_UINT	
-				R32_I,				// GL: GL_R32I				DX: DXGI_FORMAT_R32_SINT	
+				R32_UI,				// GL: GL_RED				DX: DXGI_FORMAT_R32_UINT	
+				R32_I,				// GL: GL_RED				DX: DXGI_FORMAT_R32_SINT	
 				R32_F,				// GL: GL_R32F				DX: DXGI_FORMAT_R32_FLOAT
 
-				R8G8_UI,			// GL: GL_RG8UI				DX: DXGI_FORMAT_R8G8_UINT
-				R8G8_I,				// GL: GL_RG8I				DX: DXGI_FORMAT_R8G8_SINT
-				R16G16_UI,			// GL: GL_R16UI				DX: DXGI_FORMAT_R16G16_UINT
-				R16G16_I,			// GL: GL_R16I				DX: DXGI_FORMAT_R16G16_SINT
+				R8G8_UI,			// GL: GL_RG				DX: DXGI_FORMAT_R8G8_UINT
+				R8G8_I,				// GL: GL_RG				DX: DXGI_FORMAT_R8G8_SINT
+				R16G16_UI,			// GL: GL_RG				DX: DXGI_FORMAT_R16G16_UINT
+				R16G16_I,			// GL: GL_RG				DX: DXGI_FORMAT_R16G16_SINT
 				R16G16_F,			// GL: GL_R16F				DX: DXGI_FORMAT_R16G16_FLOAT
-				R32G32_UI,			// GL: GL_R32UI				DX: DXGI_FORMAT_R32G32_UINT	
-				R32G32_I,			// GL: GL_R32I				DX: DXGI_FORMAT_R32G32_SINT	
+				R32G32_UI,			// GL: GL_RG				DX: DXGI_FORMAT_R32G32_UINT	
+				R32G32_I,			// GL: GL_RG				DX: DXGI_FORMAT_R32G32_SINT	
 				R32G32_F,			// GL: GL_R32F				DX: DXGI_FORMAT_R32G32_FLOAT
 
-				R32G32B32_UI,		// GL: GL_RGB32UI			DX: DXGI_FORMAT_R32G32B32_UINT	
-				R32G32B32_I,		// GL: GL_RGB32I			DX: DXGI_FORMAT_R32G32B32_SINT	
+				R32G32B32_UI,		// GL: GL_RGB			DX: DXGI_FORMAT_R32G32B32_UINT	
+				R32G32B32_I,		// GL: GL_RGB			DX: DXGI_FORMAT_R32G32B32_SINT	
 				R32G32B32_F,		// GL: GL_RGB32F			DX: DXGI_FORMAT_R32G32B32_FLOAT
 
-				R32G32B32A32_UI,	// GL: GL_RGBA32UI			DX: DXGI_FORMAT_R32G32B32A32_UINT	
-				R32G32B32A32_I,		// GL: GL_RGBA32I			DX: DXGI_FORMAT_R32G32B32A32_SINT	
+				R32G32B32A32_UI,	// GL: GL_RGBA			DX: DXGI_FORMAT_R32G32B32A32_UINT	
+				R32G32B32A32_I,		// GL: GL_RGBA			DX: DXGI_FORMAT_R32G32B32A32_SINT	
 				R32G32B32A32_F,		// GL: GL_RGBA32F			DX: DXGI_FORMAT_R32G32B32A32_FLOAT
 
 				D16_F,				// GL: GL_DEPTH_COMPONENT16 DX: DXGI_FORMAT_D16_UNORM
@@ -213,6 +213,12 @@ namespace G2Core
 			STENCIL ,
 			ATTACHMENT_INVALID,
 		};
+		/** This function will parse the given string to the appropriate
+		* FrameBufferAttachmentPoint enum value.
+		* @param outputFormat The name to parse. 
+		* @note Strings like 'COLOR' and 'RGB' will additionally be parsed to the enum value 'COLOR_0', 'COLOR_0', 
+		* @return The parsed Semantic enum value.
+		*/
 		COREDLL_API FrameBufferAttachmentPoint::Name getByDataFormat(std::string const& outputFormat);
 	};
 
