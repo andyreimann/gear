@@ -125,6 +125,7 @@ namespace G2Core
 				RG,
 				RGB,
 				RGBA,
+				LUMINANCE,
 				DEPTH,
 			};
 		};
@@ -167,6 +168,8 @@ namespace G2Core
 				D16_F,				// GL: GL_DEPTH_COMPONENT16 DX: DXGI_FORMAT_D16_UNORM
 				D24_F,				// GL: GL_DEPTH_COMPONENT24 DX: DXGI_FORMAT_D24_UNORM_S8_UINT ???
 				D32_F,				// GL: GL_DEPTH_COMPONENT32 DX: DXGI_FORMAT_D32_FLOAT
+
+				LUMINANCE_F,		// GL: GL_LUMINANCE DX: NOT_SUPPORTED
 			};
 		};
 	};

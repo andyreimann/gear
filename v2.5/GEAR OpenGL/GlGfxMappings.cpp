@@ -26,6 +26,7 @@ void _initMappings()
 	baseDataFormatMapping[G2Core::DataFormat::Base::RGB] = GL_RGB;
 	baseDataFormatMapping[G2Core::DataFormat::Base::RGBA] = GL_RGBA;
 	baseDataFormatMapping[G2Core::DataFormat::Base::DEPTH] = GL_DEPTH_COMPONENT;
+	baseDataFormatMapping[G2Core::DataFormat::Base::LUMINANCE] = GL_LUMINANCE;
 
 	internalDataFormatMapping[G2Core::DataFormat::Internal::R8_UI] = GL_RED;
 	internalDataFormatMapping[G2Core::DataFormat::Internal::R8_I] = GL_RED;
@@ -56,6 +57,8 @@ void _initMappings()
 	internalDataFormatMapping[G2Core::DataFormat::Internal::D16_F] = GL_DEPTH_COMPONENT16;
 	internalDataFormatMapping[G2Core::DataFormat::Internal::D24_F] = GL_DEPTH_COMPONENT24;
 	internalDataFormatMapping[G2Core::DataFormat::Internal::D32_F] = GL_DEPTH_COMPONENT32;
+	// -------------------------------------------------------------------------
+	internalDataFormatMapping[G2Core::DataFormat::Internal::LUMINANCE_F] = GL_LUMINANCE;
 
 	frameBufferAttachmentPointMapping[G2Core::FrameBufferAttachmentPoint::COLOR_0]				= GL_COLOR_ATTACHMENT0;
 	frameBufferAttachmentPointMapping[G2Core::FrameBufferAttachmentPoint::COLOR_1]				= GL_COLOR_ATTACHMENT1;

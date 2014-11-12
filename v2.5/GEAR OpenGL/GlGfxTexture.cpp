@@ -347,6 +347,7 @@ G2Core::GfxResource* CreateTexture2DFromFile(
 	{
 		case IL_RGB:			parsedFormat = G2Core::DataFormat::Base::RGB; break;
 		case IL_RGBA:			parsedFormat = G2Core::DataFormat::Base::RGBA; break;
+		case IL_LUMINANCE:			parsedFormat = G2Core::DataFormat::Base::LUMINANCE; break;
 		default:
 			if (metaData != nullptr)
 			{
@@ -363,7 +364,7 @@ G2Core::GfxResource* CreateTexture2DFromFile(
 		parsedFormat, internalFormat,
 		minFilter, magFilter, wrapS, wrapT, G2Core::DataType::UNSIGNED_BYTE, data);
 
-	ilDeleteImages(1, &imageID);
+	//ilDeleteImages(1, &imageID);
 	if (!cacheHit)
 	{
 		// create cache entry

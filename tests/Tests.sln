@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Load Scene", "Load Scene\Load Scene.vcxproj", "{B9F86157-B33E-4818-8AF2-A24DD6412EF3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics Test - Newton", "Physics Test - Newton\Physics Test - Newton.vcxproj", "{3F569DAD-4E3B-46C6-940F-0FA3C31FAB27}"
@@ -14,6 +16,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spline Animation Test", "Spline Animation Test\Spline Animation Test.vcxproj", "{11125541-7ADD-417B-9D4D-046FC019B5C3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11 Test", "DX11 Test\DX11 Test.vcxproj", "{8D4316FD-7558-418E-8346-041C1E2A90AA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Solarsystem", "Solarsystem\Solarsystem.vcxproj", "{A03489FB-1AFE-45BF-92AE-61C2D8953E32}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +112,17 @@ Global
 		{8D4316FD-7558-418E-8346-041C1E2A90AA}.Release|Win32.ActiveCfg = Release|Win32
 		{8D4316FD-7558-418E-8346-041C1E2A90AA}.Release|Win32.Build.0 = Release|Win32
 		{8D4316FD-7558-418E-8346-041C1E2A90AA}.Release|x64.ActiveCfg = Release|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|Win32.Build.0 = Debug|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|x64.ActiveCfg = Debug|x64
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Debug|x64.Build.0 = Debug|x64
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Release|Win32.ActiveCfg = Release|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Release|Win32.Build.0 = Release|Win32
+		{A03489FB-1AFE-45BF-92AE-61C2D8953E32}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

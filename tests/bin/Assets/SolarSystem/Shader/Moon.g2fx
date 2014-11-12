@@ -1,0 +1,121 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inColor ("Vertex Color", vec4) = { COLOR_0 }
+     inNormal ("Vertex Normal", vec3) = { NORMAL }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _shadowTex ("The shadow texture of a pointlight", samplerCube) = { SHADOW }
+       _csmTex ("The cascade shadow texture of a directional light", sampler2DArrayShadow) = { SAMPLER_6 }
+       _diffuseTex ("The diffuse texture", sampler2D) = { DIFFUSE }
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #version 330
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec3 normal;
+          vec3 eye;
+          vec4 color;
+          vec2 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+            dataOut.normal = matrices.normal_matrix * inNormal;
+            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
+           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition;
+            dataOut.color = inColor;
+       }
+
+     #FRAGMENTPROGRAM
+       #version 330
+       #extension GL_EXT_texture_array : enable
+       #INCLUDE "G2.material" // include GEAR default stuff
+       #INCLUDE "G2.light" // include GEAR default stuff
+
+        out vec4 outColor; // here goes the final color
+
+        int getCascadeIndex(int lightIndex) 
+        {
+          // find the appropriate depth map to look up in based on the depth of this fragment
+          for(int i = 0; i < light[lightIndex].numCascades; ++i)
+          {
+            if(gl_FragCoord.z < light[lightIndex].zFar[i])
+            {
+              return i;
+            }
+          }
+          return 0;
+        }
+
+        float toTexDepth( vec3 d, float near, float far) 
+        {      
+          float dist = max(max(abs(d.x),abs(d.y)),abs(d.z)); 
+          float fmn = far - near;   
+          dist = ((far+near)/(fmn)) + (1.0/dist)*((-2.0*far*near)/(fmn));   
+          return (dist+1.0)/2.0;   
+        }
+           
+        in Data
+        {
+           vec3 normal;
+           vec3 eye;
+           vec4 color;
+           vec2 texCoord;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          // set the specular term to black
+          vec4 spec = vec4(0.0);
+
+          // normalize both input vectors
+          vec3 n = normalize(dataIn.normal);
+          vec3 e = normalize(dataIn.eye);
+
+          // set color to ambient material term
+          outColor = material.ambient;
+
+          vec4 diffuse = material.diffuse * texture(_diffuseTex, dataIn.texCoord);
+
+          for(int i = 0; i < G2ActiveLights; ++i)
+          {
+              // point light
+              vec4 spec = vec4(0.0);
+              // Compute the ligt direction
+              vec3 l = vec3(light[i].position)+dataIn.eye;
+              float dist = length(l);
+              // near clip plane, far clip plane used while calculating shadow
+              float texDepth = toTexDepth(l, 0.11, 500.0);
+              l = normalize(l);
+              float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
+
+              if( texDepth >= shadowDepth && texDepth < 1.0 )
+              {
+                // texel in shadow
+                outColor += light[i].ambient; // only ambient light component influences
+              }
+              else
+              {
+
+                float intensity = max(dot(n,l), 0.0);
+                if (intensity > 0.0) 
+                {
+                  float att = 1.0 / (light[i].attenuation.x +
+                          light[i].attenuation.y * dist +
+                          light[i].attenuation.z * dist * dist);
+                  vec3 h = normalize(l + e);
+                  float intSpec = max(dot(h,n), 0.0);
+                  spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+                }
+                outColor += max(intensity * light[i].diffuse * diffuse + spec, light[i].ambient);
+              }
+          }
+        }
+   }
+ }

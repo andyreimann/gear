@@ -167,6 +167,7 @@ Copy /Y "..\lib\$(PlatformTarget)\$(Configuration)\DevIL*.dll" "..\..\tests\bin\
       <AdditionalIncludeDirectories>../include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <BrowseInformation>true</BrowseInformation>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
