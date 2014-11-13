@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARCegui.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARCegui.lib;GEARCameras.lib;CEGUIBase-0_d.lib;CEGUIOpenGLRenderer-0_d.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -126,7 +126,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARCegui.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEARGL.lib;GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARCegui.lib;GEARCameras.lib;CEGUIBase-0_d.lib;CEGUIOpenGLRenderer-0_d.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>Copy /Y "..\..\v2.5\lib\$(PlatformTarget)\$(Configuration)\*.dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\"</Command>

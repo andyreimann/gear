@@ -96,7 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARGL.lib;GEARSdlContext.lib;GEARNewtonPhysics.lib;GEARCameras.lib;newton.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARGL.lib;GEARSdlContext.lib;GEARNewtonPhysics.lib;GEARCameras.lib;newton.lib;dMath.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib;glew_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -134,7 +134,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARGL.lib;GEARSdlContext.lib;GEARNewtonPhysics.lib;GEARCameras.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARGL.lib;GEARSdlContext.lib;GEARNewtonPhysics.lib;GEARCameras.lib;newton.lib;dMath.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>

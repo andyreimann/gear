@@ -98,7 +98,7 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool import
 		// Get the list of all the animation stack.
 		builder->fbxScene->FillAnimStackNameArray(builder->animStackNameArray);
 
-		if(builder->animStackNameArray.Size() == 0)
+		if(!importAnimations || builder->animStackNameArray.Size() == 0)
 		{
 			builder->isAnimated = false;
 		}

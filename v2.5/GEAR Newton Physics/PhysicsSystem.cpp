@@ -10,7 +10,6 @@
 
 #include <glm/ext.hpp>
 
-#define _CRT_SECURE_NO_WARNINGS
 #include <Newton/newton/Newton.h>
 #include <Newton/dMath/dVector.h>
 #include <Newton/dMath/dMatrix.h>

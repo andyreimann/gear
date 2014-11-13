@@ -31,17 +31,6 @@
 // TEXTURING
 #include "Texture3D.h"
 
-// Library search
-#pragma comment(lib, "OpenGL32.lib")
-#pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "freeglut.lib")
-#ifdef _DEBUG
-	#pragma comment(lib, "glew_d.lib")
-#else
-	#pragma comment(lib, "glew.lib")
-#endif
-#pragma comment(lib, "libfbxsdk-md.lib")
-
 #include "AbstractWindow.h"
 
 extern "C" {

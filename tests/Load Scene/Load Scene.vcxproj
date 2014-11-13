@@ -102,7 +102,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARBulletPhysics.lib;GEARCameras.lib;GEAREditor.lib;GEARCegui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARBulletPhysics.lib;GEARCameras.lib;GEAREditor.lib;GEARCegui.lib;BulletSoftBody.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PreBuildEvent>
@@ -139,7 +139,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>../../v2.5/lib/$(PlatformTarget)/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARGL.lib;GEARSdlContext.lib;GEARBulletPhysics.lib;GEARCameras.lib;GEAREditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GEAR.lib;GEARCore.lib;GEARSdlContext.lib;GEARBulletPhysics.lib;GEARCameras.lib;GEAREditor.lib;GEARCegui.lib;BulletSoftBody.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;libfbxsdk-md.lib;OpenGL32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>

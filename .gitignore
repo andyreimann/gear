@@ -193,3 +193,24 @@ tests/bin/x64/Debug/dlls/zlib_d.dll
 *.sbr
 *.bsc
 v2.5/GEAR 2.5/ClassDiagram.cd
+v2.5/DX11Samples/
+tests/bin/Assets/SolarSystem/lrgrlijrfhmo-Moon3DModel/
+GEAR Editor/bin/x64/Debug/DevIL.dll
+GEAR Editor/bin/x64/Debug/GEARCameras.dll
+GEAR Editor/bin/x64/Debug/GEARCegui.dll
+GEAR Editor/bin/x64/Debug/GEARCore.dll
+GEAR Editor/bin/x64/Debug/GEAREditor.dll
+GEAR Editor/bin/x64/Debug/GEARSdlContext.dll
+GEAR Editor/bin/x64/Debug/GEARTerrains.dll
+GEAR Editor/bin/x64/Debug/SDL2.dll
+GEAR Editor/bin/x64/Debug/SILLY_d.dll
+GEAR Editor/bin/x64/Debug/expat_d.dll
+GEAR Editor/bin/x64/Debug/freetype_d.dll
+GEAR Editor/bin/x64/Debug/glew_d.dll
+GEAR Editor/bin/x64/Debug/libpng_d.dll
+GEAR Editor/bin/x64/Debug/newton.dll
+GEAR Editor/bin/x64/Debug/pcre_d.dll
+GEAR Editor/bin/x64/Debug/zlib_d.dll
+tests/bin/x32/Debug/GEARCore.dll
+tests/bin/x64/Release/GEARDX11.dll
+tests/bin/x64/Release/GEARGL.dll

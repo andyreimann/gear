@@ -1,77 +1,81 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\G2Core">
+      <UniqueIdentifier>{5A957500-4663-6906-2FF7-D92C1B64456B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseComponent.h" />
+    <ClInclude Include="BaseSystem.h" />
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="ECSManager.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventDistributer.h" />
     <ClInclude Include="FrameInfo.h" />
+    <ClInclude Include="G2Core.h" />
+    <ClInclude Include="GfxDevice.h" />
     <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="MouseButton.h" />
-    <ClInclude Include="ECSManager.h">
-      <Filter>ECS</Filter>
+    <ClInclude Include="NonCopyable.h" />
+    <ClInclude Include="TextureMetaData.h" />
+    <ClInclude Include="VertexInputLayout.h" />
+    <ClInclude Include="include\G2Core\BaseComponent.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="BaseSystem.h">
-      <Filter>ECS\Base</Filter>
+    <ClInclude Include="include\G2Core\BaseSystem.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="BaseComponent.h">
-      <Filter>ECS\Base</Filter>
+    <ClInclude Include="include\G2Core\Defines.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>ECS\Base</Filter>
+    <ClInclude Include="include\G2Core\ECSManager.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Event</Filter>
+    <ClInclude Include="include\G2Core\Entity.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="EventDistributer.h">
-      <Filter>Event</Filter>
+    <ClInclude Include="include\G2Core\Event.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="GfxDevice.h">
-      <Filter>GfxDevice</Filter>
+    <ClInclude Include="include\G2Core\EventDistributer.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="G2Core.h" />
-    <ClInclude Include="VertexInputLayout.h">
-      <Filter>VertexInputLayout</Filter>
+    <ClInclude Include="include\G2Core\FrameInfo.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
-    <ClInclude Include="TextureMetaData.h">
-      <Filter>Texture\MetaData</Filter>
+    <ClInclude Include="include\G2Core\G2Core.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\GfxDevice.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\KeyCodes.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\MouseButton.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\NonCopyable.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\TextureMetaData.h">
+      <Filter>include\G2Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\G2Core\VertexInputLayout.h">
+      <Filter>include\G2Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ECSManager.cpp">
-      <Filter>ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>ECS\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="EventDistributer.cpp">
-      <Filter>Event</Filter>
-    </ClCompile>
-    <ClCompile Include="G2Core.cpp" />
-    <ClCompile Include="GfxDevice.cpp">
-      <Filter>GfxDevice</Filter>
-    </ClCompile>
     <ClCompile Include="Defines.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="ECS">
-      <UniqueIdentifier>{2c457bce-3e08-4c71-92d6-cf5fea9f71c1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\Base">
-      <UniqueIdentifier>{c5d461d6-e676-4b52-a7f7-f2d4a2a57855}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Event">
-      <UniqueIdentifier>{645b48d5-05b2-4e5b-8f33-25ed99249e1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GfxDevice">
-      <UniqueIdentifier>{d7ab0d8a-7b5e-45ea-b763-ad4dc4e9e435}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="VertexInputLayout">
-      <UniqueIdentifier>{6855542f-bb2a-465a-845e-d37f59845937}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Texture">
-      <UniqueIdentifier>{3b5acc39-1d3c-4232-b257-9bf511a7d749}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Texture\MetaData">
-      <UniqueIdentifier>{e10717d8-e4ed-426e-b436-d0080a952c93}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="ECSManager.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EventDistributer.cpp" />
+    <ClCompile Include="G2Core.cpp" />
+    <ClCompile Include="GfxDevice.cpp" />
   </ItemGroup>
 </Project>
