@@ -20,3 +20,5 @@ Current features:
  * Render to Texture (with multiple render targets)
  * Z-Sorted rendering for transparent materials
  * generic extendable resource importer with multithreaded caching possibility
+
+Project Page: http://confluence.gear2.de/display/G2/PROJECT+GEAR+2.5
