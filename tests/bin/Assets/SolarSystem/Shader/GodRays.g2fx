@@ -1,0 +1,74 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _godRays ("The godray base texture", sampler2D) = { SAMPLER_7 }
+   }
+   Shader "GLSL" {
+     Settings {
+        Name "GodraysPass"
+        // Define the Sampler, the output texture will be bound to
+        RenderTarget SAMPLER_7
+     }
+     #VERTEXPROGRAM
+       #version 330
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec2 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+           	gl_Position = inPosition;
+       }
+
+     #FRAGMENTPROGRAM
+       #version 330
+       #INCLUDE "G2.postprocess"
+
+       uniform float exposure;
+       uniform float decay;
+       uniform float density;
+       uniform float weight;
+       uniform vec2 lightPositionOnScreen;
+
+       const int NUM_SAMPLES = 200;
+
+        out vec4 outColor; // here goes the final color
+
+        in Data
+        {
+           vec2 texCoord;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          vec2 deltaTextCoord = vec2( dataIn.texCoord.st - lightPositionOnScreen.xy );
+          vec2 textCoo = dataIn.texCoord.st;
+          // Divide by number of samples and scale by control factor.
+          deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;
+          float illuminationDecay = 1.0;
+      
+          //outColor = texture(_scene, dataIn.texCoord.st );
+          outColor = texture(_godRays, textCoo );
+      
+          for(int i=0; i < NUM_SAMPLES ; i++)
+          {
+             textCoo -= deltaTextCoord;
+             vec4 sample = texture(_godRays, textCoo );
+
+             sample *= illuminationDecay * weight;
+
+             outColor += sample;
+             // Update exponential decay factor.  
+             illuminationDecay *= decay;
+          }
+          outColor *= exposure;
+        }
+   }
+ }

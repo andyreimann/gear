@@ -78,6 +78,9 @@ UberShaderBlockParser::parse()
 				mBuilder->geometryShaderVersion = blockParser.getGeometryShaderVersionString();
 				mBuilder->fragmentShaderVersion = blockParser.getFragmentShaderVersionString();
 
+
+				mBuilder->settings = blockParser.getSettingsBlockParser().getSettings();
+
 				// transport location bindings to builder
 				mBuilder->locationBindings = mLocationBindingBlockParser.getLocationBindings();
 				// transport location bindings to builder

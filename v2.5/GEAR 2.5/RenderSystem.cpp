@@ -40,7 +40,8 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 
 RenderSystem::RenderSystem() :
 	mPostProcessingRenderTargets(2),
-	mClearColor(0.25f, 0.25f, 0.25f, 1.f)
+	mClearColor(0.25f, 0.25f, 0.25f, 1.f),
+	mLastWindowSize(1.f,1.f)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
 
@@ -151,7 +152,7 @@ RenderSystem::_renderForward(
 	{
 		// capture frame in first render target
 		mCurrentPostProcessingRenderTargetIndex = 0;
-		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
+		mSceneRenderTarget->bind(0);
 	}
 	
 	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
@@ -164,7 +165,11 @@ RenderSystem::_renderForward(
 	if(mPostProcessingEffects.size() > 0)
 	{
 		// capture frame in first render target
-		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+		mSceneRenderTarget->unbind();
+		// bind initial rendering of scene in Sampler::DIFFUSE when entering the post processing chaing
+		mSceneRenderTarget->getRenderTexture()->bind(
+			static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1 + (int)mSceneRenderTarget->getRenderTextureSampler())
+		);
 	}
 	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
@@ -172,22 +177,26 @@ RenderSystem::_renderForward(
 
 		_uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
 
-		mCurrentPostProcessingRenderTargetIndex = 1 - mCurrentPostProcessingRenderTargetIndex;
 		if(i < mPostProcessingEffects.size() - 1)
 		{
 			// bind next ping pong render target for capturing
-			mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->bind(0);
+			mPostProcessingRenderTargets[i]->bind(0);
 		}
-		// bind last scene rendering texture
-		mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTexture()->bind(
-			static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1+(int)mPostProcessingRenderTargets[1-mCurrentPostProcessingRenderTargetIndex]->getRenderTextureSampler())
-		);
 		// draw post processing
 		mFullScreenQuad.bind(mPostProcessingEffects[i]->getShader());
-		mFullScreenQuad.draw(G2Core::DrawMode::QUADS, 0);
+		mFullScreenQuad.draw(G2Core::DrawMode::QUADS, 4);
 		mFullScreenQuad.unbind();
 		// unbind render target
-		mPostProcessingRenderTargets[mCurrentPostProcessingRenderTargetIndex]->unbind();
+		if (i < mPostProcessingEffects.size() - 1)
+		{
+			// bind next ping pong render target for capturing
+			mPostProcessingRenderTargets[i]->unbind();
+
+			// bind output of this post processing step to the RenderTarget Sampler
+			mPostProcessingRenderTargets[i]->getRenderTexture()->bind(
+				static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1 + (int)mPostProcessingRenderTargets[i]->getRenderTextureSampler())
+			);
+		}
 	}
 }
 
@@ -281,7 +290,7 @@ RenderSystem::_renderPasses(
 							passCameraSpaceMatrix = cameraSpaceMatrix;
 						}
 					}
-					if(it->getPov() == PointOfView::MAIN_CAMERA_FLIP_Y)
+					else if(it->getPov() == PointOfView::MAIN_CAMERA_FLIP_Y)
 					{
 						glm::vec3 camPos = -cameraPosition;
 						glm::vec3 viewVec = glm::vec3(glm::normalize(cameraSpaceMatrix * glm::vec4(0.f,0.f,-1.f,0.f)));
@@ -322,7 +331,15 @@ RenderSystem::_renderPasses(
 					Frustum frustum;
 					frustum.setup(passProjectionMatrix * passCameraSpaceMatrix);
 
-					_renderAllComponents(&frustum, passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, glm::vec4(cameraPosition, 1.f), transformSystem, lightSystem, &(*it), comp.getEntityId());
+					unsigned int entityIdToSkip = comp.getEntityId();
+
+					if(!it->getSkipPassRenderComponent())
+					{
+						// we want to render the RenderComponent the Pass is attached to
+						entityIdToSkip = G2::Entity::UNINITIALIZED_ENTITY_ID;
+					}
+
+					_renderAllComponents(&frustum, passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, glm::vec4(cameraPosition, 1.f), transformSystem, lightSystem, &(*it), entityIdToSkip);
 					
 					it->getRenderTarget().unbind();
 				}
@@ -759,14 +776,14 @@ RenderSystem::_onViewportResize(int w, int h)
 	}
 
 	// Setup render targets for post processing
-	for(int i = 0; i < 2; ++i)
+	for (int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
 		mPostProcessingRenderTargets[i] = std::shared_ptr<RenderTarget>(
 			new RenderTarget(
-				Sampler::DIFFUSE,
+			Sampler::getSampler(mPostProcessingEffects[i]->getSetting("RenderTarget", "DIFFUSE").value),
 				std::shared_ptr<Texture>(new Texture2D(
-					G2Core::FilterMode::NEAREST, 
-					G2Core::FilterMode::NEAREST, 
+					G2Core::FilterMode::LINEAR,
+					G2Core::FilterMode::LINEAR,
 					w, 
 					h, 
 					G2Core::DataFormat::Base::RGBA, 
@@ -781,28 +798,123 @@ RenderSystem::_onViewportResize(int w, int h)
 			)
 		);
 	}
+
+	// update the last known window size
+	mLastWindowSize.x = (float)w;
+	mLastWindowSize.y = (float)h;
 	
-	glm::vec2 windowSize(
-		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getWidth(),
-		(float)mPostProcessingRenderTargets[0]->getRenderTexture()->getHeight()
-	);
-	glm::vec2 pixelSize(
-		1.f / windowSize.x,
-		1.f / windowSize.y
-	);
+	// update post processing uniforms for all Effects
 	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
-		auto shader = mPostProcessingEffects[i]->getShader();
-		shader->bind();
-		shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
-		shader->setProperty(std::string("postProcessInfo.windowSize"), windowSize);
+		_updatePostProcessingUniforms(mPostProcessingEffects[i]);
+	}
+
+	// re-initialize initial scene capturing if it is already existing (=if we have at least one post processing Effect)
+	if(mSceneRenderTarget.get() != nullptr)
+	{
+		mSceneRenderTarget = std::shared_ptr<RenderTarget>(
+			new RenderTarget(
+				Sampler::DIFFUSE, // initial Scene rendering always binds to DIFFUSE
+				std::shared_ptr<Texture>(
+					new Texture2D(
+						G2Core::FilterMode::LINEAR,
+						G2Core::FilterMode::LINEAR,
+						(unsigned int)mLastWindowSize.x,
+						(unsigned int)mLastWindowSize.y,
+						G2Core::DataFormat::Base::RGBA,
+						G2Core::DataFormat::Internal::R32G32B32A32_F,
+						G2Core::WrapMode::CLAMP_TO_EDGE,
+						G2Core::WrapMode::CLAMP_TO_EDGE,
+						false,
+						G2Core::DataType::UNSIGNED_BYTE,
+						nullptr
+					)
+				),
+				RenderTargetType::RT_2D
+			)
+		);
 	}
 }
 
 void
 RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect) 
 {
+	if (mSceneRenderTarget.get() == nullptr)
+	{
+		// lazy init initial scene capturing RenderTarget
+		mSceneRenderTarget = std::shared_ptr<RenderTarget>(
+			new RenderTarget(
+				Sampler::DIFFUSE, // initial Scene rendering always binds to DIFFUSE
+					std::shared_ptr<Texture>(
+					new Texture2D(
+						G2Core::FilterMode::LINEAR,
+						G2Core::FilterMode::LINEAR,
+						(unsigned int)mLastWindowSize.x,
+						(unsigned int)mLastWindowSize.y,
+						G2Core::DataFormat::Base::RGBA,
+						G2Core::DataFormat::Internal::R32G32B32A32_F,
+						G2Core::WrapMode::CLAMP_TO_EDGE,
+						G2Core::WrapMode::CLAMP_TO_EDGE,
+						false,
+						G2Core::DataType::UNSIGNED_BYTE,
+						nullptr
+					)
+				),
+				RenderTargetType::RT_2D
+			)
+		);
+	}
+
+	// Add the Effect to the list of post processing effects.
 	mPostProcessingEffects.push_back(effect);
+
+	// Create a RenderTarget for the post processing shader.
+	// The output sampler in the setting "RenderTarget" defines to which sampler the output is
+	// bound after the post processing Effect was applied.
+	// If the Effect is the last one in a chain of multiple post processing Effects,
+	// The value is just ignored since the output is then written directly into the back buffer.
+
+	mPostProcessingRenderTargets.push_back(
+		std::shared_ptr<RenderTarget>(
+			new RenderTarget(
+			Sampler::getSampler(effect->getSetting("RenderTarget", "DIFFUSE").value),
+			std::shared_ptr<Texture>(
+				new Texture2D(
+					G2Core::FilterMode::LINEAR,
+					G2Core::FilterMode::LINEAR,
+					(unsigned int)mLastWindowSize.x,
+					(unsigned int)mLastWindowSize.y,
+					G2Core::DataFormat::Base::RGBA,
+					G2Core::DataFormat::Internal::R32G32B32A32_F,
+					G2Core::WrapMode::CLAMP_TO_EDGE,
+					G2Core::WrapMode::CLAMP_TO_EDGE,
+					false,
+					G2Core::DataType::UNSIGNED_BYTE,
+					nullptr
+				)
+			),
+			RenderTargetType::RT_2D
+			)
+		)
+	);
+	// set post processing specific uniform variables if present in Effect
+	_updatePostProcessingUniforms(mPostProcessingEffects.back());
+}
+
+void
+RenderSystem::_updatePostProcessingUniforms(std::shared_ptr<G2::Effect> const& effect) const
+{
+	if (effect->hasCompiledShaders())
+	{
+		glm::vec2 pixelSize(
+			1.f / mLastWindowSize.x,
+			1.f / mLastWindowSize.y
+			);
+		auto shader = effect->getShader();
+		shader->bind();
+		shader->setProperty(std::string("postProcessInfo.pixelSize"), pixelSize);
+		shader->setProperty(std::string("postProcessInfo.windowSize"), mLastWindowSize);
+	}
 }
 
 bool

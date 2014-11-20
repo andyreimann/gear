@@ -20,8 +20,8 @@ Pass::Pass(
 				  // TODO implement case RT_1D here as well!
 				  renderTargetType == RenderTargetType::RT_2D ?
 					  std::shared_ptr<Texture>(new Texture2D(
-							G2Core::FilterMode::NEAREST, 
-							G2Core::FilterMode::NEAREST, 
+							G2Core::FilterMode::LINEAR, 
+							G2Core::FilterMode::LINEAR,
 							(unsigned)Setting::get("RenderTargetWidth", mSettings, "512").toInt(), 
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 							Texture::getBaseFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
@@ -62,7 +62,8 @@ Pass::Pass(
 	mPolygonOffsetFactor(Setting::get("PolygonOffsetFactor", mSettings, "1.0").toFloat()),
 	mPolygonOffsetUnits(Setting::get("PolygonOffsetUnits", mSettings, "100.0").toFloat()),
 	mFovY(Setting::get("FovY", mSettings, "90.0").toFloat()),
-	mFlipYLevel(Setting::get("FlipYLevel", mSettings, "0.0").toFloat())
+	mFlipYLevel(Setting::get("FlipYLevel", mSettings, "0.0").toFloat()),
+	mSkipPassRenderComponent(Setting::get("SkipPassRenderComponent", mSettings, "true").toBool())
 {
 	if(renderTargetType == RenderTargetType::RT_CUBE)
 	{
@@ -100,6 +101,7 @@ Pass& Pass::operator=(Pass && rhs)
 	mPolygonOffsetFactor = rhs.mPolygonOffsetFactor;
 	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
 	mFlipYLevel = rhs.mFlipYLevel;
+	mSkipPassRenderComponent = rhs.mSkipPassRenderComponent;
 	// 3. Stage: modify src to a well defined state
 	rhs.mNumRenderIterations = 0;
 	rhs.mPov = PointOfView::POV_INVALID;

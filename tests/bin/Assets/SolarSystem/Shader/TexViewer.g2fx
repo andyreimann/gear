@@ -1,0 +1,43 @@
+Ubershader "GEAR/TexViewer" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _diffuseTex ("The diffuse texture", sampler2D) = { SAMPLER_7 }
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #version 330
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec3 eye;
+          vec2 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
+            gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition;
+       }
+
+     #FRAGMENTPROGRAM
+       #version 330
+
+        out vec4 outColor; // here goes the final color
+           
+        in Data
+        {
+           vec3 eye;
+           vec2 texCoord;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          outColor = texture(_diffuseTex, dataIn.texCoord) * 3;
+        }
+   }
+ }

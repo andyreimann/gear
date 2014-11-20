@@ -1,0 +1,52 @@
+Ubershader "GEAR/SolarSystemFinal" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _scene ("The last rendering of the scene", sampler2D) = { DIFFUSE }
+       _godRays ("The FINAL godray texture", sampler2D) = { SAMPLER_7 }
+   }
+   Shader "GLSL" {
+     Settings {
+        Name "Combins the scene and the godray texture to the final rendering"
+     }
+     #VERTEXPROGRAM
+       #version 330
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec2 texCoord;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+           	gl_Position = inPosition;
+       }
+
+     #FRAGMENTPROGRAM
+       #version 330
+
+       uniform float exposure;
+       uniform float decay;
+       uniform float density;
+       uniform float weight;
+       uniform vec2 lightPositionOnScreen;
+
+       const int NUM_SAMPLES = 100;
+
+        out vec4 outColor; // here goes the final color
+
+        in Data
+        {
+           vec2 texCoord;
+        } dataIn; // this data comes from the vertex program
+ 
+        void main() 
+        {
+          outColor = texture(_scene, dataIn.texCoord) + texture(_godRays, dataIn.texCoord);
+        }
+   }
+ }

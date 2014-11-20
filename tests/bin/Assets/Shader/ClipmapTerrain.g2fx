@@ -40,7 +40,6 @@ Ubershader "Example/Simple" {
 
 
             pos.y += _maxHeight * texture( _heightMap, dataOut.texCoord).r;
-
             // shift the position of the clipmap vertex to center the clipmaps under the camera
             pos.x += _camX;
             pos.z += _camZ;

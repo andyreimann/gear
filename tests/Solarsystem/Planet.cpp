@@ -14,9 +14,11 @@ Planet::Planet(
 	mPlanetMesh(planetMesh),
 	mRotationAxis(rotationAxis),
 	mAnchorRotationSpeed(360.0 / period),
-	mAxisRotationSpeed(axisRotationSpeed)
+	mAxisRotationSpeed(axisRotationSpeed),
+	mSpeed(1.0)
 {
 	G2::EventDistributer::onRenderFrame.hook(this, &Planet::_onRenderFrame);
+	G2::EventDistributer::onKeyDown.hook(this, &Planet::_onKeyDown);
 
 	// set transformation
 	mAnchor.addComponent<G2::TransformComponent>();
@@ -50,9 +52,18 @@ Planet::_onRenderFrame(G2::FrameInfo const& frameInfo)
 {
 	// rotate around anchor
 	auto* transformation = mAnchor.getComponent<G2::TransformComponent>();
-	transformation->rotateY(mAnchorRotationSpeed * frameInfo.timeSinceLastFrame);
+	transformation->rotateY(mAnchorRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed);
 
 	// rotate around it's own axis
 	transformation = mPlanetMesh->getComponent<G2::TransformComponent>();
-	transformation->rotateAxis(mAxisRotationSpeed * frameInfo.timeSinceLastFrame, mRotationAxis);
+	transformation->rotateAxis(mAxisRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed, mRotationAxis);
+}
+
+void
+Planet::_onKeyDown(G2::KeyCode keyCode)
+{
+	if (keyCode == G2::KC_P)
+	{
+		mSpeed = 1.0 - mSpeed;
+	}
 }

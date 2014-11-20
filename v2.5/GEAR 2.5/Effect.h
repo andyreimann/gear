@@ -65,6 +65,7 @@ namespace G2
 					std::string											shadingLanguage;	// The shading language to use.
 					std::vector<LocationBinding>						locationBindings;	// The available LocationBindings used by all Shader
 					std::vector<Property>								properties;			// The available Properties used by all Shader
+					std::unordered_map<std::string, Setting>			settings;			// The settings of the Shader object
 			
 					std::vector<std::shared_ptr<AbstractShaderPart>>	vertexShaderParts;	// The available parts of vertex shader code
 					std::vector<std::shared_ptr<AbstractShaderPart>>	geometryShaderParts;// The available parts of geometry shader code
@@ -82,6 +83,13 @@ namespace G2
 					std::vector<Pass::Builder>							passes;				// The vector containing all available Shader-Permutations
 
 			};
+			Effect(std::unordered_map<std::string, Setting> const& settings);
+
+			/** Returns a value of a setting coming from a Settings block of an Effect file.
+			 * @param name The name of the Setting to retrieve.
+			 * @param defaultValue The default value to return in case the setting is not present.
+			 */
+			G2::Setting const& getSetting(std::string const& name, std::string const& defaultValue = "");
 			/** This function returns the state of the UberShader.
 			 * @return True if the UberShader has some compiled Shader, false if not.
 			 */
@@ -102,6 +110,7 @@ namespace G2
 		protected:
 		private:
 
+			std::unordered_map<std::string, Setting> mSettings;				// The settings of the Effect file
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
 			std::vector<Pass>						mPasses;				// The vector of passes for this Effect
 

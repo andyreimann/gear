@@ -152,6 +152,15 @@ namespace G2
 			/// This function will set the FlipYLevel to the given value.
 			/// @param value The FlipYLevel.
 			void setFlipYLevel(float const& value) { mFlipYLevel = value; }
+			/** This function will return the SkipPassRenderComponent.
+			* This value defines whether the RenderComponent the Pass is attached to should be rendered during the Pass rendering or not (default is false).
+			* @return The SkipPassRenderComponent.
+			*/
+			bool const& getSkipPassRenderComponent() const { return mSkipPassRenderComponent; }
+			/** Defines whether the RenderComponent the Pass is attached to should be rendered during the Pass rendering or not (default is false).
+			* @param value The SkipPassRenderComponent parameter.
+			*/
+			void setSkipPassRenderComponent(bool const& value) { mSkipPassRenderComponent = value; }
 		protected:
 			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
@@ -166,5 +175,6 @@ namespace G2
 			float									mPolygonOffsetFactor;	// The polygon offset factor to use while rendering the Pass
 			float									mPolygonOffsetUnits;	// The polygon offset units to use while rendering the Pass
 			float									mFlipYLevel;			// The flip y level used when rendering with PointOfView mode MAIN_CAMERA_FLIP_Y
+			bool									mSkipPassRenderComponent; // Defines whether the RenderComponent the Pass is attached to should be rendered during the Pass rendering or not (default is false).
 	};
 };

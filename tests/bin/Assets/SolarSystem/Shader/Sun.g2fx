@@ -45,6 +45,54 @@ Ubershader "GEAR/Multipass" {
                 outColor = material.diffuse;
               }
         }
+        Pass {
+           LocationBindings {
+             inPosition ("Vertex Position", vec4) = { POSITION }
+             inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+           }
+           Properties {
+               _diffuseTex ("The diffuse texture", sampler2D) = { DIFFUSE }
+           }
+           Settings {
+              Name "GodraysPrePass"
+              RenderTarget SAMPLER_7
+              RenderType TEXTURE_2D
+              RenderTargetWidth 1600
+              RenderTargetHeight 768
+              PointOfView MAIN_CAMERA
+              OutputFormat RGBA
+              SkipPassRenderComponent false
+           }
+
+           #VERTEXPROGRAM
+             #version 330
+             #INCLUDE "G2.matrices" 
+
+             out Data
+             {
+                vec2 texCoord;
+             } dataOut; 
+
+             void main(void) 
+             {
+                  dataOut.texCoord = inTexCoord;
+                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+             }
+           #FRAGMENTPROGRAM
+              #version 330
+              #INCLUDE "G2.material" // include GEAR default stuff
+              
+              in Data
+              {
+                 vec2 texCoord;
+              } dataIn; // this data comes from the vertex program
+           
+              out vec4 outColor; // here goes the final color
+              void main() 
+              {
+                outColor = material.ambient * texture(_diffuseTex, dataIn.texCoord);;
+              }
+        }
      }
      #VERTEXPROGRAM
        #version 330

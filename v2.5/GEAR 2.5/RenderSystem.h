@@ -58,7 +58,7 @@ namespace G2
 	class MultipleRenderTarget;
 
 	typedef std::vector<std::shared_ptr<G2::Effect>> PostProcessingPipeline;
-	typedef std::vector<std::shared_ptr<RenderTarget>> PostProcessingPingPongRenderTargets;
+	typedef std::vector<std::shared_ptr<RenderTarget>> PostProcessingRenderTargets;
 	typedef std::vector<std::shared_ptr<RenderStatesGroup>> RenderStatesGroups;
 	
 	/** This class defines the whole render pipeline of the GEAR engine.
@@ -234,6 +234,11 @@ namespace G2
 			/** This function will delete all RenderStatesGroups, which do not contain any RenderComponent entity id anymore.
 			 */
 			void _deleteEmptyRenderStatesGroups();
+			/** Updates the uniform variables requested by the shaders of the given post processing Effect
+			 * to the last reported state.
+			 * @param effect The post processing Effect to set the uniforms on.
+			 */
+			void _updatePostProcessingUniforms(std::shared_ptr<Effect> const& effect) const;
 
 			
 			glm::vec4										mClearColor;			// The clear color to use for rendering
@@ -247,15 +252,19 @@ namespace G2
 			std::shared_ptr<MultipleRenderTarget>			mDeferredShadingTarget;
 			VertexArrayObject								mFullScreenQuad;
 			PostProcessingPipeline							mPostProcessingEffects;			// A vector of shader to use for post processing
-			PostProcessingPingPongRenderTargets				mPostProcessingRenderTargets;	// The render target of the post processing pipeline
+			
+			std::shared_ptr<RenderTarget>					mSceneRenderTarget;				// The render target of the initial scene when entering the post processing chain (only set if at least one post processing Effect is added).
+			PostProcessingRenderTargets						mPostProcessingRenderTargets;	// The render target of the post processing pipeline
 			int												mCurrentPostProcessingRenderTargetIndex;
 
 			std::list<unsigned int>							mRecalcAABBEntityIds;
 			std::unordered_set<unsigned int>				mTransparentEntityIds;			// Entity ids of the RenderComponent objects to treat as transparent while rendering
 			
-			std::vector<std::pair<unsigned int,int>> mZSortedTransparentEntityIdsToDrawCall;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
+			std::vector<std::pair<unsigned int,int>>		mZSortedTransparentEntityIdsToDrawCall;	// Entity ids of the RenderComponent objects to treat as transparent while rendering -> sorted by their distance to the camera.
 
 			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
+
+			glm::vec2										mLastWindowSize;				// The last known window size
 	};
 };
 

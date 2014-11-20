@@ -214,3 +214,27 @@ GEAR Editor/bin/x64/Debug/zlib_d.dll
 tests/bin/x32/Debug/GEARCore.dll
 tests/bin/x64/Release/GEARDX11.dll
 tests/bin/x64/Release/GEARGL.dll
+tests/Solarsystem/Solarsystem.vcxproj.andy.nvuser
+v2.5/GEAR 2.5.sln
+v2.5/GEAR 2.5/GEAR 2.5.vcxproj
+v2.5/GEAR 2.5/GEAR 2.5.vcxproj.user
+v2.5/GEAR Bullet Physics/GEAR Bullet Physics.vcxproj
+v2.5/GEAR Bullet Physics/GEAR Bullet Physics.vcxproj.user
+v2.5/GEAR CEGUI/GEAR CEGUI.vcxproj
+v2.5/GEAR Cameras/GEAR Cameras.vcxproj
+v2.5/GEAR Cameras/GEAR Cameras.vcxproj.user
+v2.5/GEAR Core/GEAR Core.vcxproj.user
+v2.5/GEAR DX 11/GEAR GFX DX 11.vcxproj
+v2.5/GEAR DX 11/GEAR GFX DX 11.vcxproj.user
+v2.5/GEAR Editor/GEAR Editor.vcxproj
+v2.5/GEAR Newton Physics/GEAR Newton Physics.vcxproj
+v2.5/GEAR Newton Physics/GEAR Newton Physics.vcxproj.user
+v2.5/GEAR OpenGL/GEAR GFX GL 3.vcxproj
+v2.5/GEAR OpenGL/GEAR GFX GL 3.vcxproj.user
+v2.5/GEAR SDL Context/GEAR SDL Context.vcxproj
+v2.5/GEAR Terrains/GEAR Terrains.vcxproj
+v2.5/lib/x64/Release/GEARDX11.dll
+v2.5/lib/x64/Release/GEARDX11.lib
+v2.5/lib/x64/Release/GEARGL.dll
+v2.5/lib/x64/Release/GEARGL.lib
+v2.5/GEAR Core/GEAR Core.vcxproj

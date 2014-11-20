@@ -19,10 +19,14 @@ class Planet
 			std::shared_ptr<G2::Effect> effect
 		);
 
+		std::shared_ptr<G2::FBXMesh>& getPlanetMesh() { return mPlanetMesh; }
+
 		~Planet();
 	private:
 
 		void _onRenderFrame(G2::FrameInfo const&);
+
+		void _onKeyDown(G2::KeyCode keyCode);
 
 		std::string						mName;					// The name of the planet
 		G2::Entity						mAnchor;				// The anchor of the planet in the solar system
@@ -30,5 +34,6 @@ class Planet
 		glm::vec3						mRotationAxis;			// The rotation axis of the planet
 		double							mAnchorRotationSpeed;	// The rotation speed around the anchor
 		double							mAxisRotationSpeed;		// The rotation speed around the axis
+		double							mSpeed;
 };
 

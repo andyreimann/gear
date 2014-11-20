@@ -7,6 +7,12 @@
 
 using namespace G2;
 
+
+G2::Effect::Effect(std::unordered_map<std::string, Setting> const& settings) :
+	mSettings(settings)
+{
+}
+
 std::shared_ptr<Shader>
 Effect::getShader(Material const* material, VertexArrayObject const* vao) const
 {
@@ -55,7 +61,7 @@ std::shared_ptr<Effect>
 Effect::Builder::buildResource() 
 {
 	// create new Effect
-	std::shared_ptr<Effect> effect = std::shared_ptr<Effect>(new Effect());
+	std::shared_ptr<Effect> effect = std::shared_ptr<Effect>(new Effect(settings));
 
 	effect->mShaderPermutations = shaderPermutations;
 	//effect->mPasses.resize(passes.size()); // no default ctor
@@ -372,4 +378,10 @@ Effect::Builder::buildAndCompile()
 		);
 	}
 	return *this;
+}
+
+G2::Setting const&
+G2::Effect::getSetting(std::string const& name, std::string const& defaultValue /*= ""*/)
+{
+	return Setting::get(name, mSettings, defaultValue);
 }
