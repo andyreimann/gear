@@ -11,9 +11,9 @@ Scene::Scene(G2::AbstractWindow* window) :
 	mExitRendering(false)
 {
 	mEditorCamera
-		//.pan(0.f,10.f)
+		//.translate(0.f,10.f)
 		//.rotate(25.f, 0.f)
-		.moveView(-3.f)
+		.zoom(-3.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	  
 	// new way of loading shader

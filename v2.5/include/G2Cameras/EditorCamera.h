@@ -44,10 +44,20 @@ namespace G2Cameras
 			/// This function will return the camera view vector. 
 			/// @return The camera view vector.
 			CAMERADLL_API glm::vec4 const& getViewVec() const { return mView; }
-
+			/** Rotates the camera around it's position.
+			 * @param xDegrees The degrees to rotate around the local X-Axis of the camera.
+			 * @param yDegrees The degrees to rotate around the local Y-Axis of the camera.
+			 */
 			CAMERADLL_API EditorCamera& rotate(float xDegrees, float yDegrees);
-			CAMERADLL_API EditorCamera& pan(float strafe, float up);
-			CAMERADLL_API EditorCamera& moveView(float units);
+			/** Translates the camera on it's current view plane.
+			 * @param strafe The translation on the local X-Axis.
+			 * @param up The translation on the local Y-Axis.
+			 */
+			CAMERADLL_API EditorCamera& translate(float strafe, float up);
+			/** Zooms into the cameras view vector.
+			 * @param units the translation to move the camera into the direction of it's view vector.
+			 */
+			CAMERADLL_API EditorCamera& zoom(float units);
 
 			
 			CAMERADLL_API EditorCamera& pause();

@@ -108,7 +108,7 @@ EditorCamera::rotate(float xDegrees, float yDegrees)
 }
 
 EditorCamera& 
-EditorCamera::pan(float strafe, float up)
+EditorCamera::translate(float strafe, float up)
 {
 	getComponent<G2::TransformComponent>()->translate(glm::vec3(mStrafe) * strafe);
 	getComponent<G2::TransformComponent>()->translate(glm::vec3(mUp) * up);
@@ -116,7 +116,7 @@ EditorCamera::pan(float strafe, float up)
 }
 
 EditorCamera& 
-EditorCamera::moveView(float units)
+EditorCamera::zoom(float units)
 {
 	getComponent<G2::TransformComponent>()->translate(glm::vec3(mView) * -units);
 	return *this;
@@ -143,7 +143,7 @@ EditorCamera::onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 	}
 	else if(mTranslationMode == VIEW_PLANE)
 	{
-		pan(
+		translate(
 			getComponent<G2::CameraComponent>()->getMoveSpeed() * -dx * mSpeedBoost * mViewPlaneTranslationSpeed,
 			getComponent<G2::CameraComponent>()->getMoveSpeed() * dy * mSpeedBoost * mViewPlaneTranslationSpeed
 		);
@@ -205,7 +205,7 @@ EditorCamera::onMouseWheel(int y)
 	}
 	if(mTranslationMode != VIEW_PLANE)
 	{
-		moveView(getComponent<G2::CameraComponent>()->getMoveSpeed() * y * mSpeedBoost);
+		zoom(getComponent<G2::CameraComponent>()->getMoveSpeed() * y * mSpeedBoost);
 	}
 }
 

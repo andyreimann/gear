@@ -24,9 +24,9 @@ void
 SolarSystem::init()
 {
 	mCamera
-		.pan(0.f, 0.f)
+		.translate(0.f, 0.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f)
+		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mCamera.setInternals(70.f, 0.01f, 1000.f);
 

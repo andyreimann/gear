@@ -13,9 +13,9 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	mTerrain(mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", GL_NEAREST, GL_NEAREST))*/
 {
 	mEditorCamera
-		.pan(0.f,10.f)
+		.translate(0.f,10.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f)
+		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mEditorCamera.setInternals(70.f,0.5f,100000.f);
 	

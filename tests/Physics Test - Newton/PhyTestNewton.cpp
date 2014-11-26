@@ -20,9 +20,9 @@ PhyTestNewton::PhyTestNewton(G2::SDL::Window& window)
 	srand(2006);
 
 	mEditorCamera
-		.pan(0.f,10.f)
+		.translate(0.f,10.f)
 		.rotate(25.f, 0.f)
-		.moveView(-15.f)
+		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 
 	// new way of loading shader
