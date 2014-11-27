@@ -13,10 +13,17 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	mTerrain(mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", GL_NEAREST, GL_NEAREST))*/
 {
 	mEditorCamera
-		.translate(0.f,10.f)
-		.rotate(25.f, 0.f)
+		.translate(300.f,60.f)
+		.rotate(25.f, 180.f)
 		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+
+	mEditor.getCamera()
+		->translate(-80.f, -60.f)
+		.rotate(25.f, 180.f)
+		.zoom(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+
 	mEditorCamera.setInternals(70.f,0.5f,100000.f);
 	
 	// new way of loading shader
@@ -48,7 +55,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	light->getType();
-	light->diffuse = glm::vec4(1.f,1.f,1.f,1.f);
+	light->diffuse = glm::vec4(1.f,0.f,1.f,1.f);
 	//light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
 	 
@@ -64,15 +71,15 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	auto* terrain = mTerrainComponent.addComponent<G2::Terrain::RoamTerrain>();
 	terrain->setup(
-		mTexImporter.import(ASSET_PATH + "Resources/heightmap512.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
-		15.f, // max height
+		mTexImporter.import(ASSET_PATH + "Resources/heightmap.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR),
+		30.f, // max height
 		50000, // desired num triangles
 		100000 // max number of triangles
 	);
 	auto* renderComponent = mTerrainComponent.getComponent<G2::RenderComponent>();
 	renderComponent->material.setTexture(
 		G2::Sampler::DIFFUSE, 
-		mTexImporter.import(ASSET_PATH + "Resources/launch-button.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
+		mTexImporter.import(ASSET_PATH + "Resources/heightmap-diffuse.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
 	);
 	renderComponent->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/DefaultTex.g2fx"));
 
@@ -165,6 +172,23 @@ void
 TerrainTest::onKeyDown(G2::KeyCode keyCode) 
 {
 
+
+	if (keyCode == G2::KC_R)
+	{
+		// shoot ray
+		auto intersection = G2::ECSManager::getShared()
+			.getSystem<G2::RenderSystem, G2::RenderComponent>()
+			->intersect(G2::Ray(glm::vec3(100.f, 1000.f, 100.f), glm::vec4(0.f, -1.f, 0.f, 0.f)));
+
+		if (intersection.second)
+		{
+			G2::logger << "Intersection at " << intersection.first << G2::endl;
+		}
+		else
+		{
+			G2::logger << "No Intersection" << G2::endl;
+		}
+	}
 }
 
 void

@@ -117,7 +117,7 @@ Ubershader "GEAR/Default" {
                 // compute the specular term into spec
                 float intSpec = max(dot(h,n), 0.0);
                 spec = shadowMultiplier * light[i].specular * material.specular * pow(intSpec,material.shininess);
-                outColor += max(/*shadowMultiplier * */intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+                outColor += max(/*shadowMultiplier * */intensity * light[i].diffuse * material.diffuse * texture(_diffuseTex, dataIn.texCoord) + spec, light[i].ambient);
               }
               else
               {
@@ -185,6 +185,8 @@ Ubershader "GEAR/Default" {
                   spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
                 }
                 outColor += max(intensity * light[i].diffuse * material.diffuse * texture(_diffuseTex, dataIn.texCoord) + spec, light[i].ambient);
+
+                outColor = vec4(intensity,0,0,1);
               }
 
             }

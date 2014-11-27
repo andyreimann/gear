@@ -113,6 +113,13 @@ namespace G2
 			*/
 			void setClearColor(glm::vec4 const& value) { mClearColor = value; }
 
+			/** This function performs an intersection of a ray and all G2::RenderComponent objects.
+			* @param ray The ray which is used for the intersection calculation.
+			* @return A pair of an intersection point, if some intersection was found and a boolean indicating if an intersection was found. The boolean is true, if the intersection point is a real intersection point and false if not.
+			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
+			*/
+			std::pair<glm::vec4, bool> intersect(G2::Ray const& ray);
+
 
 			~RenderSystem();
 		private:
@@ -234,12 +241,20 @@ namespace G2
 			/** This function will delete all RenderStatesGroups, which do not contain any RenderComponent entity id anymore.
 			 */
 			void _deleteEmptyRenderStatesGroups();
-			/** Updates the uniform variables requested by the shaders of the given post processing Effect
+			/** Updates the uniform variables requested by the shader of the given post processing Effect
 			 * to the last reported state.
 			 * @param effect The post processing Effect to set the uniforms on.
 			 */
 			void _updatePostProcessingUniforms(std::shared_ptr<Effect> const& effect) const;
 
+			void _intersect(
+				std::pair<glm::vec4, bool>& closestMatch,
+				glm::mat4 const& worldSpaceMatrix,
+				G2::Ray const& worldSpaceRay, 
+				G2::Ray const& modelSpaceRay, 
+				glm::vec3 const& p1, 
+				glm::vec3 const& p2, 
+				glm::vec3 const& p3);
 			
 			glm::vec4										mClearColor;			// The clear color to use for rendering
 			RenderType::Name								mRenderType;

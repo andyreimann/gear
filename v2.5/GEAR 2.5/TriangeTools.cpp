@@ -1,6 +1,8 @@
 #include "TriangeTools.h"
 #include "Logger.h"
 
+#include <algorithm>
+
 using namespace G2;
 
 void
@@ -91,4 +93,59 @@ bool
 TriangeTools::isDegenerated(glm::vec3 const& p1, glm::vec3 const& p2, glm::vec3 const& p3) 
 {
 	return (p1 == p2 || p1 == p3 || p2 == p3);
+}
+
+
+std::pair<glm::vec4, bool> 
+TriangeTools::intersectRayTriangle(G2::Ray const& ray, glm::vec3 const& p1, glm::vec3 const& p2, glm::vec3 const& p3)
+{
+	glm::vec4 rayDir = ray.getDir();
+	// get the indices for the triangle vertices
+	glm::vec3 v1 = p2 - p1;
+	glm::vec3 v2 = p3 - p1;
+	glm::vec3 n = glm::cross(v1,v2);
+	n = glm::normalize(n);
+	n *= -1;
+	float dist = -glm::dot(ray.getOrigin() - p1, n) / glm::dot(glm::vec3(rayDir),n);
+	if (dist > 0.0f)
+	{
+		float bx, by, cx, cy, px, py;
+		glm::vec3 intersection = ray.getOrigin() + (glm::vec3(rayDir) * dist);
+		glm::vec3 p = intersection - p1;
+		float nmax = std::max<float>(fabs(n.x), std::max<float>(fabs(n.y), fabs(n.z)));
+		if (fabs(n.x) == nmax) 
+		{
+			bx = v1.y;
+			by = v1.z;
+			cx = v2.y;
+			cy = v2.z;
+			px = p.y;
+			py = p.z;
+		}
+		else if (fabs(n.y) == nmax) 
+		{
+			bx = v1.x;
+			by = v1.z;
+			cx = v2.x;
+			cy = v2.z;
+			px = p.x;
+			py = p.z;
+		}
+		else {
+			bx = v1.x;
+			by = v1.y;
+			cx = v2.x;
+			cy = v2.y;
+			px = p.x;
+			py = p.y;
+		}
+		float u = (py * cx - px * cy) / (by * cx - bx * cy);
+		float v = (py * bx - px * by) / (cy * bx - cx * by);
+
+		if (u > 0.0f - std::numeric_limits<float>::epsilon() && v > 0.0f - std::numeric_limits<float>::epsilon() && (u + v) < 1.0f + std::numeric_limits<float>::epsilon()) 
+		{
+			return std::make_pair<glm::vec4, bool>(glm::vec4(intersection,1.f), true);
+		}
+	}
+	return std::make_pair<glm::vec4, bool>(glm::vec4(0.f), false);
 }

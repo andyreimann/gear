@@ -75,6 +75,10 @@ RoamTerrain::setup(
 	   heightMap->getWidth() != heightMap->getHeight() ||
 	   !isPow2)
 	{
+		if (!isPow2)
+		{
+			G2::logger << "[G2::Terrain] Heightmap Texture needs to be power of 2!" << G2::endl;
+		}
 		// don't change anything
 		return false;
 	}
