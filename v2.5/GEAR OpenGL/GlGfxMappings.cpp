@@ -14,6 +14,9 @@ std::unordered_map<G2Core::FilterMode::Name,unsigned int> filterModeMapping;
 std::unordered_map<G2Core::WrapMode::Name, unsigned int> wrapModeMapping;
 std::unordered_map<G2Core::DrawMode::Name, unsigned int> drawModeMapping;
 std::unordered_map<G2Core::DataType::Name, unsigned int> dataTypeMapping;
+std::unordered_map<G2Core::PolygonDrawMode::Name, unsigned int> polygonDrawModeMapping;
+std::unordered_map<G2Core::FaceCulling::Name, unsigned int> faceCullingModeMapping;
+std::unordered_map<G2Core::BlendFactor::Name, unsigned int> blendFuncMapping;
 
 void _initMappings()
 {
@@ -114,6 +117,15 @@ void _initMappings()
 	drawModeMapping[G2Core::DrawMode::TRIANGLES]		= GL_TRIANGLES;
 	drawModeMapping[G2Core::DrawMode::QUADS]			=	GL_QUADS;
 
+	polygonDrawModeMapping[G2Core::PolygonDrawMode::FILL] = GL_FILL;
+	polygonDrawModeMapping[G2Core::PolygonDrawMode::LINE] = GL_LINE;
+	polygonDrawModeMapping[G2Core::PolygonDrawMode::POINT] = GL_POINTS;
+
+
+	faceCullingModeMapping[G2Core::FaceCulling::BACK_FACE] = GL_BACK;
+	faceCullingModeMapping[G2Core::FaceCulling::FRONT_FACE] = GL_FRONT;
+	faceCullingModeMapping[G2Core::FaceCulling::FRONT_AND_BACK_FACE] = GL_FRONT_AND_BACK;
+
 
 	dataTypeMapping[G2Core::DataType::BYTE]				= GL_BYTE;
 	dataTypeMapping[G2Core::DataType::UNSIGNED_BYTE]	= GL_UNSIGNED_BYTE;
@@ -122,6 +134,28 @@ void _initMappings()
 	dataTypeMapping[G2Core::DataType::UNSIGNED_INT]		= GL_UNSIGNED_INT;
 	dataTypeMapping[G2Core::DataType::INT]				= GL_INT;
 	dataTypeMapping[G2Core::DataType::FLOAT]			= GL_FLOAT;
+
+	blendFuncMapping[G2Core::BlendFactor::CONSTANT_ALPHA];
+
+	blendFuncMapping[G2Core::BlendFactor::ONE]						= GL_ONE; // OpenGL default
+	blendFuncMapping[G2Core::BlendFactor::ZERO]						= GL_ZERO;
+	blendFuncMapping[G2Core::BlendFactor::SRC_COLOR]				= GL_SRC_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC_COLOR]		= GL_ONE_MINUS_SRC_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::DST_COLOR]				= GL_DST_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_DST_COLOR]		= GL_ONE_MINUS_DST_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::SRC_ALPHA]				= GL_SRC_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA]		= GL_ONE_MINUS_SRC_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::DST_ALPHA]				= GL_DST_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_DST_ALPHA]		= GL_ONE_MINUS_DST_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::CONSTANT_COLOR]			= GL_CONSTANT_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_CONSTANT_COLOR] = GL_ONE_MINUS_CONSTANT_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::CONSTANT_ALPHA]			= GL_CONSTANT_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_CONSTANT_ALPHA] = GL_ONE_MINUS_CONSTANT_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::SRC_ALPHA_SATURATE]		= GL_SRC_ALPHA_SATURATE;
+	blendFuncMapping[G2Core::BlendFactor::SRC1_COLOR]				= GL_SRC1_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC1_COLOR]		= GL_ONE_MINUS_SRC1_COLOR;
+	blendFuncMapping[G2Core::BlendFactor::SRC1_ALPHA]				= GL_SRC1_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC1_ALPHA]		= GL_ONE_MINUS_SRC1_ALPHA;
 }
 
 unsigned int toGlBufferAccessMode(G2Core::BufferAccessMode::Name mode)
@@ -167,4 +201,22 @@ unsigned int toGlDrawMode(G2Core::DrawMode::Name drawMode)
 unsigned int toGlDataType(G2Core::DataType::Name dataType)
 {
 	return dataTypeMapping[dataType];
+}
+
+unsigned int
+toGlPolygonDrawMode(G2Core::PolygonDrawMode::Name drawMode)
+{
+	return polygonDrawModeMapping[drawMode];
+}
+
+unsigned int
+toGlFaceCullingMode(G2Core::FaceCulling::Name faceCullingMode)
+{
+	return faceCullingModeMapping[faceCullingMode];
+}
+
+unsigned int
+toGlBlendFunc(G2Core::BlendFactor::Name blendFunc)
+{
+	return blendFuncMapping[blendFunc];
 }

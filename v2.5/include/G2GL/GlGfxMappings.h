@@ -13,3 +13,6 @@ unsigned int toGlWrapMode(G2Core::WrapMode::Name wrapMode);
 unsigned int toGlFilterMode(G2Core::FilterMode::Name filterMode);
 unsigned int toGlDrawMode(G2Core::DrawMode::Name drawMode);
 unsigned int toGlDataType(G2Core::DataType::Name dataType);
+unsigned int toGlPolygonDrawMode(G2Core::PolygonDrawMode::Name drawMode);
+unsigned int toGlFaceCullingMode(G2Core::FaceCulling::Name faceCullingMode);
+unsigned int toGlBlendFunc(G2Core::BlendFactor::Name blendFunc);

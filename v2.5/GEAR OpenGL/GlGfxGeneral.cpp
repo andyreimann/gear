@@ -119,14 +119,15 @@ void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer)
 
 void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor)
 {
-	GLCHECK( glCullFace(cullFaceState) );
-	GLCHECK( glPolygonMode(cullFaceState, polygonDrawMode) );
+	GLint glCullFaceState = toGlFaceCullingMode(cullFaceState);
+	GLCHECK(glCullFace(glCullFaceState));
+	GLCHECK(glPolygonMode(GL_FRONT_AND_BACK, toGlPolygonDrawMode(polygonDrawMode)));
 	if(polygonOffsetFactor >= 0.f && polygonOffsetUnits >= 0.f)
 	{
 		// sometimes we have to skip this!
 		GLCHECK( glPolygonOffset(polygonOffsetFactor,polygonOffsetUnits) );
 	}
-	GLCHECK( glBlendFunc(blendFuncSourceFactor, blendFuncDestinationFactor) );
+	GLCHECK(glBlendFunc(toGlBlendFunc(blendFuncSourceFactor), toGlBlendFunc(blendFuncDestinationFactor)));
 }
 
 void FreeGfxResource(G2Core::GfxResource* resource)

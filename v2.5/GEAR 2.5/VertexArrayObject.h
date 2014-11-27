@@ -16,7 +16,7 @@ namespace G2
 {
 	class Shader;
 	/** This class defines a VertexArrayObject, combining buffers for 
-	 * vertices, normals and user defined data.
+	 * vertices, normals, texture coordinates and user defined data.
 	 * @created:	2014/01/22
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
@@ -61,15 +61,36 @@ namespace G2
 			 * @return The calling VertexArrayObject instance.
 			 */
 			VertexArrayObject& resizeElementCount(unsigned int numElements);
-			
+			/** Writes the given data into the given semantic.
+			 * @param semantic The semantic to write the data for.
+			 * @param data A pointer to the data containing at least numElements entries.
+			 * @param numEntries The number of entries contained in data.
+			 */
 			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec2 const* data, int numElements = -1);
+			/** Writes the given data into the given semantic.
+			* @param semantic The semantic to write the data for.
+			* @param data A pointer to the data containing at least numElements entries.
+			* @param numEntries The number of entries contained in data.
+			*/
 			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec3 const* data, int numElements = -1);
+			/** Writes the given data into the given semantic.
+			* @param semantic The semantic to write the data for.
+			* @param data A pointer to the data containing at least numElements entries.
+			* @param numEntries The number of entries contained in data.
+			*/
 			VertexArrayObject& writeData(G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements = -1);
 
-			
+			/** Retrieves a pointer to the data for the given semantic.
+			 * @param semantic The semantic to get the data pointer for.
+			 * @param mode The access mode to use (if you pass in a read access mode, the returned pointer will contain the data which is currently inside).
+			 * @return A pointer to the data or nullptr if no data pointer is available.
+			 * @note Please make sure that you call the returnDataPointer function with the same semantic as soon as you don't need access to the data anymore.
+			 */
 			float* getDataPointer(G2Core::Semantics::Name semantic, G2Core::BufferAccessMode::Name mode = G2Core::BufferAccessMode::WRITE_ONLY);
+			/** Returns a previously acquired data pointer.
+			 * @semantic the semantic to return a data pointer for.
+			 */
 			void returnDataPointer(G2Core::Semantics::Name semantic);
-
 			/** This function will return the NumElements. 
 			* @return The current NumElements.
 			*/
@@ -88,6 +109,8 @@ namespace G2
 			 * @param drawMode The draw mode to use.
 			 */
 			void draw(G2Core::DrawMode::Name drawMode, int numVertices = -1);
+			/** Unbinds the VertexArrayObject.
+			 */
 			void unbind();
 
 			~VertexArrayObject();

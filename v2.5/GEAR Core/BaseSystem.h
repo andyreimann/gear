@@ -22,7 +22,7 @@ namespace G2
 			virtual bool runsOnSideThread() = 0;
 			virtual ~BaseSystemWrapper() {}
 	};
-	/** This class defines...
+	/** This class is used as a base class for every specific system class of the Entity-Component-System.
 	 * @created	2014/01/29
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */

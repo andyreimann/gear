@@ -9,7 +9,7 @@ solution "GEAR 2.5"
 
   configuration "Debug"
     buildoptions { "/MP8", "/MDd" }  
-    -- flags{ "Symbols" }
+    flags{ "Symbols" }
     optimize "Off"
 
   configuration "Release"

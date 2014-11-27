@@ -23,26 +23,39 @@ namespace G2Cameras
 		NO_ROTATION,
 		AROUND_LOCATION,
 	};
-	/// This class implements a camera simulating a behavior used in an editor.
-	/// @created:	2014/05/16
-	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
+	/** This class implements a camera simulating a behavior often used in an editor.
+	 * @created:	2014/05/16
+	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
+	 */
 	class EditorCamera : public G2::Entity
 	{
 		public:
-			/// This constructs a new EditorCamera.
+			/** This constructs a new EditorCamera.
+			 */
 			CAMERADLL_API EditorCamera(G2::AbstractWindow* window);
-			/// Basic move constructor.
+			/** Basic move constructor.
+			*/
 			CAMERADLL_API EditorCamera(EditorCamera && rhs);
-			/// Basic move operator.
+			/** Basic move operator.
+			*/
 			CAMERADLL_API EditorCamera& operator=(EditorCamera && rhs);
-			/// normal destructor
+			/** normal destructor
+			*/
 			CAMERADLL_API ~EditorCamera();
-
+			/** Updates the viewport of the camera.
+			 * @param width The width of the viewport.
+			 * @param height The height of the viewport.
+			 */
 			CAMERADLL_API void setViewport(int width, int height);
+			/** Updates the cameras perspective projection matrix.
+			 * @param fovY The cameras opening angle.
+			 * @param zNear The near clip plane distance.
+			 * @param zFar The far clip plane distance.
+			 */
 			CAMERADLL_API void setInternals(float fovY, float zNear, float zFar);
-
-			/// This function will return the camera view vector. 
-			/// @return The camera view vector.
+			/** This function will return the camera view vector. 
+			 * @return The camera view vector.
+			 */
 			CAMERADLL_API glm::vec4 const& getViewVec() const { return mView; }
 			/** Rotates the camera around it's position.
 			 * @param xDegrees The degrees to rotate around the local X-Axis of the camera.
@@ -58,12 +71,12 @@ namespace G2Cameras
 			 * @param units the translation to move the camera into the direction of it's view vector.
 			 */
 			CAMERADLL_API EditorCamera& zoom(float units);
-
-			
+			/** Pauses the cameras internal event processing.
+			 */
 			CAMERADLL_API EditorCamera& pause();
+			/** Unpauses the cameras internal event processing.
+			*/
 			CAMERADLL_API EditorCamera& unpause();
-
-
 		private:
 		
 			CAMERADLL_API void onMouseMove(glm::detail::tvec2<int> const& mouseCoords);
