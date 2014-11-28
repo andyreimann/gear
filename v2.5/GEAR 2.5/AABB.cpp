@@ -430,12 +430,3 @@ AABB::transform(glm::mat4 const& m) const
 
 	return std::move(transformed);
 }
-//void
-//AABB::syncTransformComponent()
-//{
-//	TransformComponent* transformation = getComponent<TransformComponent>();
-//	if(transformation != nullptr)
-//	{
-//		transformation->setPosition(mCenter);
-//	}
-//}

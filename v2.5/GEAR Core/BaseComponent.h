@@ -5,7 +5,7 @@
 
 namespace G2 
 {
-	/** This class defines the BaseComponent of the ECS.
+	/** This class defines the BaseComponent of the Entity-Component-System.
 	 * A Component is basically a container holding user defined data.
 	 * @created:	2014/01/29
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -15,18 +15,25 @@ namespace G2
 	{
 			template<class AnySystem,class AnyComponent> friend class BaseSystem;
 		public:
+			/** Constructor of the BaseComponent.
+			 * @note After construction, the BaseComponent does not yet have the entity id set!
+			 */
 			BaseComponent() 
 				: mEntityId(0)
 			{
 			}
-
+			/** Move constructor of the BaseComponent.
+			 * @note The given rhs BaseComponent will be invalid afterwards!
+			 */
 			BaseComponent(BaseComponent && rhs) 
 				: mEntityId(0)
 			{
 				// eliminates redundant code
 				*this = std::move(rhs); // rvalue property is kept with std::move!
 			}
-
+			/** Move assignment operator of the BaseComponent.
+			 * @note The given rhs BaseComponent will be invalid afterwards!
+			 */
 			BaseComponent& operator=(BaseComponent && rhs) 
 			{
 				mEntityId = rhs.mEntityId;
@@ -83,7 +90,7 @@ namespace G2
 			}
 
 		protected:
-			static SYSTEM* system;
+			static SYSTEM* system; // The responsible system class of the BaseComponent
 		private:
 			/** This function will return the appropriate system 
 			 * for the current component class.

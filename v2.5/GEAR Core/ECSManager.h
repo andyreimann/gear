@@ -9,7 +9,7 @@
 
 namespace G2
 {
-	/** This singleton class is the central management of all BaseSystems of the ECS.
+	/** This singleton class is the central management of all BaseSystems of the Entity-Component-System.
 	 * It automatically creates the Systems needed at runtime.
 	 * @created:	2014/01/30
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>

@@ -27,7 +27,7 @@ namespace G2
 		bool animatePosition;
 	};
 
-	/** This class defines the interface for a curve in 3 dimensional space.
+	/** This class defines the interface for a Curve in 3 dimensional space.
 	 * @created:	2014/07/01
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
@@ -50,7 +50,6 @@ namespace G2
 
 			/** This function steps the Curve forward and calculates the position and rotation accordingly.
 			 * @param timeStep The time step to forward the Curve.
-			 * 
 			 */
 			virtual void interpolate(double const& timeStep);
 			/** Checks if the specialized Curve implementation uses the given points of the CurveSample objects.

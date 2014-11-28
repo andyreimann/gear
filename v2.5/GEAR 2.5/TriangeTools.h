@@ -15,7 +15,19 @@ namespace G2
 	class TriangeTools : public NonInstanceable
 	{
 		public:
-
+			/** Calculates the tablent and binormal vector for a given triangle.
+			 * @param vertexIndex1 The first point index of the triangle.
+			 * @param vertexIndex2 The second point index of the triangle.
+			 * @param vertexIndex3 The third point index of the triangle.
+			 * @param p1 The first point of the triangle.
+			 * @param p2 The second point of the triangle.
+			 * @param p3 The third point of the triangle.
+			 * @param t1 The first points texture coordinate.
+			 * @param t2 The second points texture coordinate.
+			 * @param t3 The third points texture coordinate.
+			 * @param binormals A reference to a preallocated vector were the binormals are written to.
+			 * @param binormals A reference to a preallocated vector were the tanbents are written to.
+			 */
 			static void calculateTangentAndBinormalForTriangle(
 				unsigned int vertexIndex1,
 				unsigned int vertexIndex2,
@@ -29,7 +41,14 @@ namespace G2
 				std::vector<glm::vec3>& binormals,
 				std::vector<glm::vec3>& tangents
 				);
-
+			/** Checks whether a given triangle is degenerated or not.
+			 * A degenerated triangle is a triangle, in which at least 2 points
+			 * share the same coordinates.
+			 * @param p1 The first point of the triangle.
+			 * @param p2 The second point of the triangle.
+			 * @param p3 The third point of the triangle.
+			 * @return True if the triangle is degenerated, false if not.
+			 */
 			static bool isDegenerated(
 				glm::vec3 const& p1,
 				glm::vec3 const& p2,

@@ -12,9 +12,17 @@
 
 namespace G2 
 {
+	/** This is a base class for every single BaseSystem. 
+	 * Since it does not have any dependency templates, it provides a single base type for every existing BaseSystem.
+	 * It also provides a base API every BaseSystem has to implement.
+	 * @created	2014/01/29
+	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
+	 */
 	class BaseSystemWrapper 
 	{
 		public:
+			/** This function removes any registered component for the given entityId.
+			 */
 			virtual void deleteComponentsForEntity(unsigned int entityId) = 0;
 			/// Returns true if the system runs in the main thread.
 			virtual bool runsOnMainThread() = 0;
@@ -171,8 +179,8 @@ namespace G2
 			 */
 			virtual void onComponentRemoved(unsigned int entityId) {}
 
-			std::mutex										componentsMutex;
-			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;
-			std::vector<COMPONENT>							components; // components are sequentially in memory
+			std::mutex										componentsMutex;		// The mutex to access the BaseComponent objects.
+			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;	// The map holding the vector indices for every existing entity id.
+			std::vector<COMPONENT>							components; 			// The existing components in sequentially in memory
 	};
 };

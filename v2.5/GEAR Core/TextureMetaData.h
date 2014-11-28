@@ -2,7 +2,8 @@
 
 namespace G2Core
 {
-	/** This class defines...
+	/** This class holds some meta data for a texture.
+	 * It can be used to pass around the meta data from the graphics library to the GEAR library.
 	 * @created:	2014/11/10
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
