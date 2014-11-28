@@ -27,6 +27,11 @@ namespace G2
 			/** This constructs a new Intersection at the given point and normal.
 			 */
 			Intersection(glm::vec3 const& point, glm::vec3 const& normal);
+			/** Sets the internal point and normal to the given ones.
+			 * @param point The point to set the Intersection to.
+			 * @param normal The normal to set the Intersection normal vector to.
+			 */
+			Intersection& set(glm::vec3 const& point, glm::vec3 const& normal);
 			/** This function will return the normal of the Intersection
 			* @return The
 			*/
@@ -40,21 +45,41 @@ namespace G2
 			*/
 			G2::IntersectionState const& getState() const { return mState; }
 			/** Calculates an intersection between a ray and a triangle.
-			 * @param r The ray to intersect the triangle with.
-			 * @param p1 The first point of the triangle.
-			 * @param p2 The second point of the triangle.
-			 * @param p3 The third point of the triangle.
-			 * @return The intersection object containing the result of the calculation.
+			 * @param intersection The Intersection info object to write the result to in world space coordinates. Note that the object will not be changed in case there is no intersection!
+			 * @param worldSpaceMatrix The current world space matrix.
+			 * @param worldSpaceRay The ray to intersect the triangle with in world space coordinates.
+			 * @param modelSpaceRay The ray to intersect the triangle with in model space coordinates.
+			 * @param p1 The first point of the triangle in model space coordinates.
+			 * @param p2 The second point of the triangle in model space coordinates.
+			 * @param p3 The third point of the triangle in model space coordinates.
+			 * @return True if an intersection was found, false if not.
 			 */
-			static Intersection rayTriangle(Ray const& r, glm::vec3 const& p1, glm::vec3 const& p2, glm::vec3 const& p3);
+			static bool rayTriangle(
+				Intersection& intersection,
+				glm::mat4 const& worldSpaceMatrix,
+				G2::Ray const& worldSpaceRay,
+				G2::Ray const& modelSpaceRay,
+				glm::vec3 const& p1, 
+				glm::vec3 const& p2, 
+				glm::vec3 const& p3);
 			/** Calculates an intersection between a ray and a triangle.
-			 * @param r The ray to intersect the triangle with.
-			 * @param p1 The first point of the triangle.
-			 * @param p2 The second point of the triangle.
-			 * @param p3 The third point of the triangle.
-			 * @return The intersection object containing the result of the calculation.
+			* @param intersection The Intersection info object to write the result to in world space coordinates. Note that the object will not be changed in case there is no intersection!
+			* @param worldSpaceMatrix The current world space matrix.
+			* @param worldSpaceRay The ray to intersect the triangle with in world space coordinates.
+			* @param modelSpaceRay The ray to intersect the triangle with in model space coordinates.
+			* @param p1 The first point of the triangle in model space coordinates.
+			* @param p2 The second point of the triangle in model space coordinates.
+			* @param p3 The third point of the triangle in model space coordinates.
+			* @return True if an intersection was found, false if not.
 			 */
-			static Intersection rayTriangle(Ray const& r, glm::vec4 const& p1, glm::vec4 const& p2, glm::vec4 const& p3);
+			static bool rayTriangle(
+				Intersection& intersection,
+				glm::mat4 const& worldSpaceMatrix,
+				G2::Ray const& worldSpaceRay,
+				G2::Ray const& modelSpaceRay,
+				glm::vec4 const& p1,
+				glm::vec4 const& p2,
+				glm::vec4 const& p3);
 		private:
 
 			IntersectionState	mState;		// The state of the Intersection.

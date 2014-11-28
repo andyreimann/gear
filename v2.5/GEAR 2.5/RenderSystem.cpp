@@ -1079,7 +1079,7 @@ G2::RenderSystem::intersect(G2::Ray const& ray)
 Intersection
 G2::RenderSystem::intersectTmp(G2::Ray const& ray)
 {
-	Intersection closestMatch;
+	Intersection closestMatch, intersection;
 
 	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem, TransformComponent>();
 
@@ -1106,6 +1106,7 @@ G2::RenderSystem::intersectTmp(G2::Ray const& ray)
 
 		for (unsigned int k = 0; k < comp.getNumDrawCalls(); ++k)
 		{
+
 			DrawCall& drawCall = comp.getDrawCall(k);
 			if (drawCall.getWorldSpaceAABB().intersects(ray))
 			{
@@ -1121,35 +1122,30 @@ G2::RenderSystem::intersectTmp(G2::Ray const& ray)
 				// stream all data as triangles
 				while (triangleStream.hasNext())
 				{
-					// TODO Find a way to not copy the Intersection struct all the time -> move semantic, parameter pass in, ...
-
 					// stream triangle
 					triangleStream.next(&p1, &p2, &p3);
 					// run the intersection
-					Intersection intersectionResult = Intersection::rayTriangle(modelSpaceRay, *p1, *p2, *p3);
-					if (intersectionResult.getState() == G2::IntersectionState::INTERSECTION)
+					if(Intersection::rayTriangle(
+						intersection,
+						worldSpaceMatrix,
+						ray, modelSpaceRay,
+						*p1, *p2, *p3))
 					{
-						if (closestMatch.getState() != G2::IntersectionState::INTERSECTION)
+						if (closestMatch.getState() == G2::IntersectionState::INTERSECTION)
 						{
-							// just take it and transform into world space
-							closestMatch = Intersection(
-								glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 1.f)),
-								glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 0.f)));
-						}
-						else
-						{
-							glm::vec3 worldSpaceIntersectionPoint = glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 1.f));
 							// calculate distances in world space for closest match
 							float dist = glm::length2(closestMatch.getPoint() - ray.getOrigin());
 							// calculate distances in world space for intersection point (already in world space)
-							float newDist = glm::length2(worldSpaceIntersectionPoint - ray.getOrigin());
+							float newDist = glm::length2(intersection.getPoint() - ray.getOrigin());
 							if (newDist < dist)
 							{
-								// transform normal into world space, point is already calculated
-								closestMatch = Intersection(
-									worldSpaceIntersectionPoint,
-									glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 0.f)));
+								closestMatch = intersection;
 							}
+						}
+						else
+						{
+							// just take it as it is - already in world space coordinates
+							closestMatch = intersection;
 						}
 					}
 				}
