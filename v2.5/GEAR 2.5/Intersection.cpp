@@ -34,8 +34,8 @@ Intersection Intersection::rayTriangle(Ray const& r, glm::vec3 const& p1, glm::v
 
 Intersection Intersection::rayTriangle(Ray const& r, glm::vec4 const& p1, glm::vec4 const& p2, glm::vec4 const& p3)
 {
-				glm::vec3 p1v3(p1);
-				glm::vec3 p2v3(p2);
-				glm::vec3 p3v3(p3);
-				return rayTriangle(r, p1v3,p2v3,p3v3);
+	glm::vec3 p1v3(p1);
+	glm::vec3 p2v3(p2);
+	glm::vec3 p3v3(p3);
+	return rayTriangle(r, p1v3,p2v3,p3v3);
 }
