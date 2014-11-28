@@ -1023,8 +1023,8 @@ RenderSystem::onComponentRemoved(unsigned int entityId)
 std::pair<glm::vec4, bool>
 G2::RenderSystem::intersect(G2::Ray const& ray)
 {
-	std::pair<glm::vec4, bool> closestMatch = std::make_pair<glm::vec4, bool>(glm::vec4(FLT_MAX, FLT_MAX, FLT_MAX,1.f), false);
-	
+	std::pair<glm::vec4, bool> closestMatch = std::make_pair<glm::vec4, bool>(glm::vec4(FLT_MAX, FLT_MAX, FLT_MAX, 1.f), false);
+
 	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem, TransformComponent>();
 
 	for (int i = 0; i < components.size(); ++i)
@@ -1044,14 +1044,14 @@ G2::RenderSystem::intersect(G2::Ray const& ray)
 
 		// transform the ray into model space
 		Ray modelSpaceRay(
-			glm::vec3(invWorldSpaceMatrix * glm::vec4(ray.getOrigin(),1.f)), 
+			glm::vec3(invWorldSpaceMatrix * glm::vec4(ray.getOrigin(), 1.f)),
 			invWorldSpaceMatrix * ray.getDir()
-		);
+			);
 
 		for (unsigned int k = 0; k < comp.getNumDrawCalls(); ++k)
 		{
 			DrawCall& drawCall = comp.getDrawCall(k);
-			if(drawCall.getWorldSpaceAABB().intersects(ray))
+			if (drawCall.getWorldSpaceAABB().intersects(ray))
 			{
 				glm::vec3* p1, *p2, *p3;
 				p1 = p2 = p3 = nullptr;
@@ -1061,7 +1061,7 @@ G2::RenderSystem::intersect(G2::Ray const& ray)
 					drawCall.getIaoIndex() == -1 ? nullptr : &comp.getIndexArray(drawCall.getIaoIndex()),
 					&comp.getVertexArray(drawCall.getVaoIndex()),
 					drawCall.getDrawMode()
-				);
+					);
 				// stream all data as triangles
 				while (triangleStream.hasNext())
 				{
@@ -1069,6 +1069,89 @@ G2::RenderSystem::intersect(G2::Ray const& ray)
 					triangleStream.next(&p1, &p2, &p3);
 					// run the intersection which will update the closestMatch variable
 					_intersect(closestMatch, worldSpaceMatrix, ray, modelSpaceRay, *p1, *p2, *p3);
+				}
+			}
+		}
+	}
+	return closestMatch;
+}
+
+Intersection
+G2::RenderSystem::intersectTmp(G2::Ray const& ray)
+{
+	Intersection closestMatch;
+
+	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem, TransformComponent>();
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		auto& comp = components[i];// check if this component has a pass attached
+
+		// TODO Transform Ray into model space to be able to perform intersection in model space!
+		auto* compTransformation = transformSystem->get(comp.getEntityId());
+		glm::mat4 worldSpaceMatrix;
+		glm::mat4 invWorldSpaceMatrix;
+		if (compTransformation != nullptr)
+		{
+			// TODO: accelerate!
+			worldSpaceMatrix = compTransformation->getWorldSpaceMatrix();
+			invWorldSpaceMatrix = glm::inverse(compTransformation->getWorldSpaceMatrix());
+		}
+
+		// transform the ray into model space
+		Ray modelSpaceRay(
+			glm::vec3(invWorldSpaceMatrix * glm::vec4(ray.getOrigin(), 1.f)),
+			invWorldSpaceMatrix * ray.getDir()
+		);
+
+		for (unsigned int k = 0; k < comp.getNumDrawCalls(); ++k)
+		{
+			DrawCall& drawCall = comp.getDrawCall(k);
+			if (drawCall.getWorldSpaceAABB().intersects(ray))
+			{
+				glm::vec3* p1, *p2, *p3;
+				p1 = p2 = p3 = nullptr;
+				// create a uniform triangle stream
+				G2::TriangleStream triangleStream(
+					G2Core::Semantics::POSITION,
+					drawCall.getIaoIndex() == -1 ? nullptr : &comp.getIndexArray(drawCall.getIaoIndex()),
+					&comp.getVertexArray(drawCall.getVaoIndex()),
+					drawCall.getDrawMode()
+					);
+				// stream all data as triangles
+				while (triangleStream.hasNext())
+				{
+					// TODO Find a way to not copy the Intersection struct all the time -> move semantic, parameter pass in, ...
+
+					// stream triangle
+					triangleStream.next(&p1, &p2, &p3);
+					// run the intersection
+					Intersection intersectionResult = Intersection::rayTriangle(modelSpaceRay, *p1, *p2, *p3);
+					if (intersectionResult.getState() == G2::IntersectionState::INTERSECTION)
+					{
+						if (closestMatch.getState() != G2::IntersectionState::INTERSECTION)
+						{
+							// just take it and transform into world space
+							closestMatch = Intersection(
+								glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 1.f)),
+								glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 0.f)));
+						}
+						else
+						{
+							glm::vec3 worldSpaceIntersectionPoint = glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 1.f));
+							// calculate distances in world space for closest match
+							float dist = glm::length2(closestMatch.getPoint() - ray.getOrigin());
+							// calculate distances in world space for intersection point (already in world space)
+							float newDist = glm::length2(worldSpaceIntersectionPoint - ray.getOrigin());
+							if (newDist < dist)
+							{
+								// transform normal into world space, point is already calculated
+								closestMatch = Intersection(
+									worldSpaceIntersectionPoint,
+									glm::vec3(worldSpaceMatrix * glm::vec4(intersectionResult.getPoint(), 0.f)));
+							}
+						}
+					}
 				}
 			}
 		}

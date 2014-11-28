@@ -14,8 +14,10 @@ namespace G2Core
 		unsigned int alignedByteOffset; // defined by vertex array
 	};
 
+	/** Describes a VertexInputLayout of a shader.
+	 */
 	struct VertexInputLayout
 	{
-		std::vector<VertexInputElement> elements;
+		std::vector<VertexInputElement> elements; // vector of all VertexInputElement elements expected
 	};
 };

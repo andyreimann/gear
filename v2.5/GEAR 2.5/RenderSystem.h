@@ -6,6 +6,7 @@
 #include "AABB.h"
 #include "RenderStatesGroup.h"
 #include "ZSorter.h"
+#include "Intersection.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -119,6 +120,13 @@ namespace G2
 			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
 			*/
 			std::pair<glm::vec4, bool> intersect(G2::Ray const& ray);
+
+			/** This function performs an intersection of a ray and all G2::RenderComponent objects.
+			* @param ray The ray which is used for the intersection calculation.
+			* @return The Intersection containing the information.
+			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
+			*/
+			Intersection intersectTmp(G2::Ray const& ray);
 
 
 			~RenderSystem();

@@ -130,6 +130,7 @@ namespace G2
 	
 
 	/** This class declares the interface of a graphics device.
+	 * It uses late binding to load all API functions from a shared library during runtime. 
 	 * @created:	2014/09/11
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
@@ -209,11 +210,17 @@ namespace G2
 
 			// END GFX LIB FUNCTION POINTERS
 		private:
-			
+			/** Loads the shared graphics library.
+			 * @return True if the shared library could be loaded, false if not.
+			 */
 			bool loadGfxLibrary();
-			
+			/** Loads all function pointers the graphics API requires.
+			 */
 			void loadFunctionPointers();
-			
+			/** Loads a function pointer by string.
+			 * @param name The name of the function to get the function pointer from.
+			 * @param The function pointer or nullptr, if no function pointer was found in the shared library. 
+			 */
 			FARPROC loadFunctionPointer(std::string const& name);
 
 			std::string mGfxLibName;
@@ -224,7 +231,15 @@ namespace G2
 
 extern "C"
 {
+	/** Initializes the GfxDevice with a given shared libraryname.
+	 * @param gfxDeviceLib The name of the shared library to load.
+	 */
 	COREDLL_API void G2_loadGfxDevice(std::string const& gfxDeviceLib);
+	/** Destroys the GfxDevice and releases all allocated memory.
+	 */
 	COREDLL_API void G2_gfxDeviceDestroy();
+	/** Returns the currently loaded GfxDveice.
+	 * @return The currently loaded GfxDevice or nullptr if no GfxDevice is loaded.
+	 */
 	COREDLL_API G2::GfxDevice* G2_gfxDevice();
 };
