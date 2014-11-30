@@ -52,6 +52,7 @@ CeguiSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 { 
 	if(name == "render")
 	{
+		mGuiRenderStates.applyStates(0);
 		GLDEBUG( glBindTexture(GL_TEXTURE_2D, 0) );
 		GLDEBUG( glUseProgram(0) );
 		GLDEBUG( glActiveTexture(GL_TEXTURE0) );

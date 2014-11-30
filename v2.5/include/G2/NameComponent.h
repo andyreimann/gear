@@ -15,6 +15,11 @@ namespace G2
 	class NameComponent : public BaseComponent<NameSystem> 
 	{
 		public:
+
+			NameComponent() {}
+
+			NameComponent(std::string const& name) : name(name) {}
+
 			std::string name;
 	};
 };

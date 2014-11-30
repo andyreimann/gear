@@ -57,8 +57,8 @@ Ubershader "GEAR/Multipass" {
               Name "GodraysPrePass"
               RenderTarget SAMPLER_7
               RenderType TEXTURE_2D
-              RenderTargetWidth 1600
-              RenderTargetHeight 768
+              RenderTargetWidth 400
+              RenderTargetHeight 192
               PointOfView MAIN_CAMERA
               OutputFormat RGBA
               SkipPassRenderComponent false
@@ -81,7 +81,7 @@ Ubershader "GEAR/Multipass" {
            #FRAGMENTPROGRAM
               #version 330
               #INCLUDE "G2.material" // include GEAR default stuff
-              
+
               in Data
               {
                  vec2 texCoord;
@@ -90,7 +90,7 @@ Ubershader "GEAR/Multipass" {
               out vec4 outColor; // here goes the final color
               void main() 
               {
-                outColor = material.ambient * texture(_diffuseTex, dataIn.texCoord);;
+                outColor = material.ambient /* texture(_diffuseTex, dataIn.texCoord)*/;
               }
         }
      }

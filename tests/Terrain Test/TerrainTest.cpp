@@ -49,6 +49,7 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 
 	
 	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	mLight->addComponent<G2::NameComponent>("Light_directional_0");
 
 
 	
@@ -60,7 +61,27 @@ TerrainTest::TerrainTest(G2::SDL::Window& window)
 	light->linearAttenuation = 1.f;
 	 
 	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
-	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f,0.f,0.f));
+	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f, 0.f, 0.f));
+
+	// load skybox
+	// Editor camera has far clip plane of 1000
+	mSkySphere = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere-high-res.fbx");
+	auto* skyTransformation = mSkySphere->addComponent<G2::TransformComponent>();
+	skyTransformation->setScale(glm::vec3(1000.f, 1000.f, 1000.f));
+
+	mSkySphere->addComponent<G2::NameComponent>("sky_cam_attached");
+	auto* skyRender = mSkySphere->getComponent<G2::RenderComponent>();
+	skyRender->setFaceCulling(G2Core::FaceCulling::FRONT_FACE);
+	skyRender->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/SimpleTex.g2fx"));
+	skyRender->material.setTexture(
+		G2::Sampler::DIFFUSE,
+		mTexImporter.import(ASSET_PATH + "SolarSystem/starmap_low.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
+	);
+	skyTransformation->rotateX(90.f);
+	// connect skybox to main cameras inverse translation
+	skyTransformation->setParent(mEditor.getCamera()->getComponent<G2::TransformComponent>());
+	// load skybox end
+
 
 	mEditor.start();
 

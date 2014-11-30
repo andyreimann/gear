@@ -1,14 +1,18 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "TransformComponent.h"
+#include "CameraComponent.h"
 #include "Logger.h"
 
 #include <G2Core/GfxDevice.h>
+#include <G2Core/ECSManager.h>
 
 using namespace G2;
 
 // GLM Quaternion doc: http://glm.g-truc.net/0.9.0/api/a00184.html#a2d9d1916258d13bd5f0373341400f18c
 
+
+G2::CameraSystem* G2::TransformComponent::gCameraSystem = nullptr;
 
 G2::TransformComponent::TransformComponent() : 
 	mParentEntityId(0),
@@ -53,7 +57,7 @@ TransformComponent& TransformComponent::operator=(TransformComponent && rhs)
 	mLastUpdateId = rhs.mLastUpdateId;
 	mUpdated = rhs.mUpdated;
 	mIsViewSpace = rhs.mIsViewSpace;
-	
+
 	return static_cast<TransformComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
 
@@ -212,7 +216,7 @@ TransformComponent::updateWorldSpaceMatrix(long updateId)
 		{
 			// attached to some kind of camera - Some gfx context might treat view space different
 			G2_gfxDevice()->adjustCameraSpaceMatrix(mLocalSpace);
-			G2::logger << "CamSpaceMatrix: " << G2::endl << mLocalSpace << G2::endl;
+			//G2::logger << "CamSpaceMatrix: " << G2::endl << mLocalSpace << G2::endl;
 		}
 		mWorldSpace = mLocalSpace;
 		
@@ -221,7 +225,15 @@ TransformComponent::updateWorldSpaceMatrix(long updateId)
 		{
 			// TODO: implement component sorting in TransformSystem to not update parents here!
 			parentTransformComponent->updateWorldSpaceMatrix(updateId);
-			mWorldSpace = parentTransformComponent->getWorldSpaceMatrix() * mLocalSpace;
+			if (parentTransformComponent->isCameraSpace())
+			{
+				// For TransformComponent parents of cameras, we just take the cameras inverse position
+				mWorldSpace = glm::translate(-parentTransformComponent->getPosition()) * mLocalSpace;
+			}
+			else
+			{
+				mWorldSpace = parentTransformComponent->getWorldSpaceMatrix() * mLocalSpace;
+			}
 		}
 		mIsDirty = false;
 		mUpdated = true;
@@ -244,7 +256,7 @@ TransformComponent::getWorldSpaceMatrix() const
 }
 
 TransformComponent*
-TransformComponent::setParent(TransformComponent* parent) 
+TransformComponent::setParent(TransformComponent* parent)
 {
 	if(parent != nullptr && parent != this)
 	{

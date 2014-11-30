@@ -23,6 +23,7 @@ Ubershader "GEAR/Default" {
        }
      #FRAGMENTPROGRAM
        #version 330
+       #INCLUDE "G2.material" // include GEAR default stuff
 
         in Data
         {
@@ -33,7 +34,7 @@ Ubershader "GEAR/Default" {
    
         void main() 
         {
-          outColor = texture(_diffuseTex, dataIn.texCoord);
+          outColor = texture(_diffuseTex, dataIn.texCoord) * material.diffuse;
         }
    }
  }

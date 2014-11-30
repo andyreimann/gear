@@ -11,6 +11,8 @@ Ubershader "GEAR/Default" {
         Name "GodraysPass"
         // Define the Sampler, the output texture will be bound to
         RenderTarget SAMPLER_7
+        RenderTargetWidth 512
+        RenderTargetHeight 384
      }
      #VERTEXPROGRAM
        #version 330

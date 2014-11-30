@@ -19,7 +19,7 @@ RootEditor::RootEditor(G2::AbstractWindow* window, std::string const& editorAsse
 	mEditorGeometryManager(this)
 {
 	G2::EventDistributer::onViewportResize.hook(this, &RootEditor::_onViewportResize);
-	mEditorCamera.setInternals(70.f, 0.1f, 500.f);
+	mEditorCamera.setInternals(70.f, 0.1f, 1000.f);
 	mEditorCamera.pause();
 	mEditorUI.setup();
 	mEditorUI.hide();

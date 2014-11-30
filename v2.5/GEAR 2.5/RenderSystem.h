@@ -256,6 +256,9 @@ namespace G2
 			std::shared_ptr<G2::Effect>						mShadingEffect;
 			std::shared_ptr<MultipleRenderTarget>			mDeferredShadingTarget;
 			VertexArrayObject								mFullScreenQuad;
+			
+
+			G2::RenderStates								mPostProcessingRenderStates;	// The Render States for the post processing 
 			PostProcessingPipeline							mPostProcessingEffects;			// A vector of shader to use for post processing
 			
 			std::shared_ptr<RenderTarget>					mSceneRenderTarget;				// The render target of the initial scene when entering the post processing chain (only set if at least one post processing Effect is added).

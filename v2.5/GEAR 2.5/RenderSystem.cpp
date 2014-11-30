@@ -41,7 +41,6 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 };
 
 RenderSystem::RenderSystem() :
-	mPostProcessingRenderTargets(2),
 	mClearColor(0.25f, 0.25f, 0.25f, 1.f),
 	mLastWindowSize(1.f,1.f)
 {
@@ -173,9 +172,14 @@ RenderSystem::_renderForward(
 			static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1 + (int)mSceneRenderTarget->getRenderTextureSampler())
 		);
 	}
+
+	mPostProcessingRenderStates.applyStates(false);
+
 	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
 		mPostProcessingEffects[i]->getShader()->bind();
+
+		G2_gfxDevice()->setViewport(G2::rect(0.f, 0.f, mPostProcessingRenderTargets[i]->getRenderTexture()->getWidth(), mPostProcessingRenderTargets[i]->getRenderTexture()->getHeight()));
 
 		_uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
 
@@ -780,25 +784,33 @@ RenderSystem::_onViewportResize(int w, int h)
 	// Setup render targets for post processing
 	for (int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
-		mPostProcessingRenderTargets[i] = std::shared_ptr<RenderTarget>(
-			new RenderTarget(
-			Sampler::getSampler(mPostProcessingEffects[i]->getSetting("RenderTarget", "DIFFUSE").value),
+
+		unsigned int customWidth = (unsigned int)mPostProcessingEffects[i]->getSetting("RenderTargetWidth", "-1").toInt();
+		unsigned int customHeight = (unsigned int)mPostProcessingEffects[i]->getSetting("RenderTargetHeight", "-1").toInt();
+		bool hasCustomSize = customWidth != -1 && customHeight != -1;
+
+		if (!hasCustomSize)
+		{
+			mPostProcessingRenderTargets[i] = std::shared_ptr<RenderTarget>(
+				new RenderTarget(
+				Sampler::getSampler(mPostProcessingEffects[i]->getSetting("RenderTarget", "DIFFUSE").value),
 				std::shared_ptr<Texture>(new Texture2D(
-					G2Core::FilterMode::LINEAR,
-					G2Core::FilterMode::LINEAR,
-					w, 
-					h, 
-					G2Core::DataFormat::Base::RGBA, 
-					G2Core::DataFormat::Internal::R32G32B32A32_F,
-					G2Core::WrapMode::CLAMP_TO_EDGE,
-					G2Core::WrapMode::CLAMP_TO_EDGE,
-					false,
-					G2Core::DataType::UNSIGNED_BYTE,
-					nullptr
-				)), 
+				G2Core::FilterMode::LINEAR,
+				G2Core::FilterMode::LINEAR,
+				w,
+				h,
+				G2Core::DataFormat::Base::RGBA,
+				G2Core::DataFormat::Internal::R32G32B32A32_F,
+				G2Core::WrapMode::CLAMP_TO_EDGE,
+				G2Core::WrapMode::CLAMP_TO_EDGE,
+				false,
+				G2Core::DataType::UNSIGNED_BYTE,
+				nullptr
+				)),
 				RenderTargetType::RT_2D
-			)
-		);
+				)
+			);
+		}
 	}
 
 	// update the last known window size
@@ -875,6 +887,9 @@ RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect)
 	// bound after the post processing Effect was applied.
 	// If the Effect is the last one in a chain of multiple post processing Effects,
 	// The value is just ignored since the output is then written directly into the back buffer.
+	unsigned int customWidth = (unsigned int)effect->getSetting("RenderTargetWidth", "-1").toInt();
+	unsigned int customHeight = (unsigned int)effect->getSetting("RenderTargetHeight", "-1").toInt();
+	bool hasCustomSize = customWidth != -1 && customHeight != -1;
 
 	mPostProcessingRenderTargets.push_back(
 		std::shared_ptr<RenderTarget>(
@@ -884,8 +899,8 @@ RenderSystem::addPostProcessingEffect(std::shared_ptr<G2::Effect> effect)
 				new Texture2D(
 					G2Core::FilterMode::LINEAR,
 					G2Core::FilterMode::LINEAR,
-					(unsigned int)mLastWindowSize.x,
-					(unsigned int)mLastWindowSize.y,
+					hasCustomSize ? customWidth : (unsigned int)mLastWindowSize.x,
+					hasCustomSize ? customHeight : (unsigned int)mLastWindowSize.y,
 					G2Core::DataFormat::Base::RGBA,
 					G2Core::DataFormat::Internal::R32G32B32A32_F,
 					G2Core::WrapMode::CLAMP_TO_EDGE,

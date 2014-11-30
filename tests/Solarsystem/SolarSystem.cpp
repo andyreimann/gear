@@ -6,10 +6,10 @@
 #include <G2/Shader.h>
 
 
-
 SolarSystem::SolarSystem(G2::SDL::Window& window) :
 	mWindow(&window),
-	mCamera(&window)
+	mCamera(&window),
+	mCameraAnimation(false)
 {
 	init();
 }
@@ -17,7 +17,10 @@ SolarSystem::SolarSystem(G2::SDL::Window& window) :
 
 SolarSystem::~SolarSystem()
 {
+	G2::EventDistributer::onViewportResize.unHookAll(this);
 	G2::EventDistributer::onRenderFrame.unHookAll(this);
+	G2::EventDistributer::onPhaseStarted.unHookAll(this);
+	G2::EventDistributer::onKeyDown.unHookAll(this);
 }
 
 void
@@ -42,8 +45,11 @@ SolarSystem::init()
 
 	G2::EventDistributer::onViewportResize.hook(this, &SolarSystem::onViewportResize);
 	G2::EventDistributer::onRenderFrame.hook(this, &SolarSystem::onRenderFrame);
+	G2::EventDistributer::onPhaseStarted.hook(this, &SolarSystem::onPhaseStarted);
+	G2::EventDistributer::onKeyDown.hook(this, &SolarSystem::onKeyDown);
 
 	initPlanets();
+	initSky();
 }
 
 void
@@ -72,7 +78,7 @@ SolarSystem::initPlanets()
 		mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Sun.g2fx")
 		)));
 	mPlanets.back()->getPlanetMesh()->getComponent<G2::RenderComponent>()
-		->material.setAmbient(glm::vec4(1.f, 1.f, 1.f, 1.f));
+		->material.setAmbient(glm::vec4(0.9f, 0.9f, 0.8f, 1.f));
 
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Mercury",
@@ -173,9 +179,9 @@ SolarSystem::initPlanets()
 
 
 
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRayBlur.g2fx"));
+	//G2::ECSManager::getShared()
+	//	.getSystem<G2::RenderSystem, G2::RenderComponent>()
+	//	->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRayBlur.g2fx"));
 
 
 	G2::ECSManager::getShared()
@@ -188,6 +194,30 @@ SolarSystem::initPlanets()
 }
 
 void
+SolarSystem::initSky()
+{
+	// Editor camera has far clip plane of 1000
+	mSkySphere = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere-high-res.fbx");
+	auto* skyTransformation = mSkySphere->addComponent<G2::TransformComponent>();
+	skyTransformation->setScale(glm::vec3(990.f, 990.f, 990.f));
+
+	mSkySphere->addComponent<G2::NameComponent>("sky_cam_attached");
+	auto* skyRender = mSkySphere->getComponent<G2::RenderComponent>();
+	skyRender->setFaceCulling(G2Core::FaceCulling::FRONT_FACE);
+	skyRender->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/SimpleTex.g2fx"));
+	skyRender->material.setTexture(
+		G2::Sampler::DIFFUSE,
+		mTexImporter.import(ASSET_PATH + "SolarSystem/starmap_low.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::LINEAR, G2Core::FilterMode::LINEAR)
+		);
+	skyRender->material.setDiffuse(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	skyRender->material.setAmbient(glm::vec4(0.08f, 0.08f, 0.08f, 1.f));
+	skyTransformation->rotateX(90.f);
+	// connect skybox to main cameras inverse translation
+	skyTransformation->setParent(mCamera.getComponent<G2::TransformComponent>());
+	// load skybox end
+}
+
+void
 SolarSystem::updatePostProcessShader()
 {
 	if (mGodRayPostProcess.get() != nullptr)
@@ -196,7 +226,7 @@ SolarSystem::updatePostProcessShader()
 		shader->bind();
 		// set some variables
 
-		int viewport[4] = { 0, 0, mCamera.getComponent<G2::CameraComponent>()->getViewportWidth(), mCamera.getComponent<G2::CameraComponent>()->getViewportHeight() };
+		int viewport[4] = { 0, 0, mGodRayPostProcess->getSetting("RenderTargetWidth", "-1").toInt(), mGodRayPostProcess->getSetting("RenderTargetHeight", "-1").toInt() };
 
 		glm::detail::tvec3<double> screenCoord;
 
@@ -222,24 +252,42 @@ SolarSystem::updatePostProcessShader()
 			&screenCoord.y,
 			&screenCoord.z);
 
-		shader->setProperty("exposure", 0.015f);
+		shader->setProperty("exposure", 0.007f);
 		shader->setProperty("decay", 1.0f);
 		shader->setProperty("density", 0.99f);
 		shader->setProperty("weight", 0.3f);
 
-		// TODO: THIS IS NOT DYNAMIC!
-		float OFF_SCREEN_RENDER_RATIO = 1.f; // same size as window
-		float uniformLightX = screenCoord.x / ((float)camComponent->getViewportWidth() / OFF_SCREEN_RENDER_RATIO);
-		float uniformLightY = screenCoord.y / ((float)camComponent->getViewportHeight() / OFF_SCREEN_RENDER_RATIO);
+
+		float OFF_SCREEN_RENDER_RATIO_X = camComponent->getViewportWidth() / mGodRayPostProcess->getSetting("RenderTargetWidth", "-1").toFloat();
+		float OFF_SCREEN_RENDER_RATIO_Y = camComponent->getViewportHeight() / mGodRayPostProcess->getSetting("RenderTargetHeight", "-1").toFloat();
+
+		float uniformLightX = screenCoord.x / ((float)camComponent->getViewportWidth() / OFF_SCREEN_RENDER_RATIO_X);
+		float uniformLightY = screenCoord.y / ((float)camComponent->getViewportHeight() / OFF_SCREEN_RENDER_RATIO_Y);
 
 		shader->setProperty("lightPositionOnScreen", glm::vec2(uniformLightX, uniformLightY));
+
+		//G2::logger << glm::vec2(uniformLightX, uniformLightY) << G2::endl;
 	}
 }
 
 void
 SolarSystem::onRenderFrame(G2::FrameInfo const& frame)
 {
-	updatePostProcessShader();
+	//updatePostProcessShader();
+
+	if (mCameraAnimation)
+	{
+		auto* trans = mCamera.getComponent<G2::TransformComponent>();
+		if (trans != nullptr)
+		{
+			glm::vec3 const& pos = trans->getPosition();
+			if (pos != glm::vec3(0, 0, 0))
+			{
+				glm::mat4 rot = glm::lookAt(-pos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+				mCamera.getComponent<G2::TransformComponent>()->setRotation(rot);
+			}
+		}
+	}
 }
 
 void
@@ -293,4 +341,108 @@ void
 SolarSystem::onViewportResize(int width, int height)
 {
 	mCamera.setViewport(width, height);
+}
+
+void
+SolarSystem::onPhaseStarted(std::string const& phase, G2::FrameInfo const& frame)
+{
+	if (phase == "render")
+	{
+		updatePostProcessShader();
+	}
+}
+
+void
+SolarSystem::onKeyDown(G2::KeyCode key)
+{
+	if (key == G2::KC_A)
+	{
+
+		std::vector<G2::CurveSample> curveSamples;
+
+		float zOffset = 0.f;
+		G2::CurveSample sample;
+		sample.point = glm::vec3(0.67, -5.4, -14);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(8.1,-8.75,-4.1);
+		sample.speed = 0.25f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(6,1.3,20);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-8.9,10.75,13.5);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(17,2.1,-1.1);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-0.8,-1.8,-13.6);
+		sample.speed = 0.25f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-77, -3.6, -25);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-79.4, -3.9, -25.8);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-60, -3.9, 73);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-60, -3.6, 111);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-56, -26, 107);
+		sample.speed = 0.25f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-63, -34, 102);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-77, -40, 93);
+		sample.speed = 0.25f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-92, -45, 85);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-89.5, -39, 87.7);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-111, -39, 31);
+		sample.speed = 0.35f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(-19.2, -14, 53);
+		sample.speed = 0.3f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(24, -14.7, 25.5);
+		sample.speed = 0.25f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(45.5, 7.5, -4.6);
+		sample.speed = 0.2f;
+		curveSamples.push_back(sample);
+		sample.point = glm::vec3(23, 6.4, -16.5);
+		sample.speed = 0.15f;
+		curveSamples.push_back(sample);
+
+		std::shared_ptr<G2::Curve> curve = std::shared_ptr<G2::Curve>(new G2::CatmullRomCurve(G2::InterpolationDescription(), curveSamples));
+
+		auto* animation = mCamera.addComponent<G2::SplineAnimation>(curve);
+		mCameraAnimation = true;
+	}
+
+
+	if (key == G2::KC_W)
+	{
+		G2::CurveSample sample;
+		sample.point = mCamera.getComponent<G2::TransformComponent>()->getPosition();
+		sample.speed = 0.15f;
+		mCameraSamples.push_back(sample);
+		G2::logger << mCamera.getComponent<G2::TransformComponent>()->getPosition() << G2::endl;
+	}
+	if (key == G2::KC_D)
+	{
+		for (int i = 0; i < mCameraSamples.size(); ++i)
+		{
+			G2::logger << mCameraSamples[i].point << G2::endl;
+		}
+	}
 }

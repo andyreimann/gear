@@ -10,6 +10,9 @@
 
 namespace G2 
 {
+
+	class CameraSystem;
+
 	namespace TransformMode
 	{
 		enum Name {
@@ -156,6 +159,8 @@ namespace G2
 			 * @return The TransformComponent itself.
 			 * @note This function will perform a circular dependency check on the parent
 			 * to prevent endless loops.
+			 * @note In case the parent TransformComponent is in camera space, only the inverse position of the parent 
+			 * is used to modify this TransformComponent.
 			 */
 			TransformComponent* setParent(TransformComponent* parent);
 			/** This function will return the Entity-ID of the parent TransformComponent 
@@ -180,6 +185,10 @@ namespace G2
 			 * of a camera. Camera transformations may be handled a bit differently depending on the GfxDevice you choose.
 			 */
 			void setIsCameraSpace() { mIsViewSpace = true; }
+			/** Returns whether this TransformComponent is attached to a camera or not.
+			 * @return True if this TransformComponent is attached to a camera, false if not.
+			 */
+			bool isCameraSpace() { return mIsViewSpace; }
 		private:
 
 			TransformComponent(TransformComponent const& rhs) {}
@@ -205,5 +214,7 @@ namespace G2
 			long			mLastUpdateId;		// The unique frame id the updateWorldSpaceMatrix was called last.
 			bool			mUpdated;			// Flag indicating whether the last call to updateWorldSpaceMatrix updated the TransformComponent
 			bool			mIsViewSpace;		// Flag indicating whether this TransformComponent is attached to a camera
+			
+			static G2::CameraSystem* gCameraSystem;	// A pointer to the camera system
 	};
 };

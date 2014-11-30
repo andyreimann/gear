@@ -62,7 +62,7 @@ CameraComponent::setProjectionMatrix(int width, int height, float zNear, float z
 		mViewportHeight = 1;
 	}
 	mProjectionMatrix = glm::perspective(mFovY, mViewportWidth / (float)mViewportHeight, mZNear, mZFar);
-	logger << "OpenGL (w:" << width << ",h:" << height << ",zNear:" << zNear << ",zFar:" << zFar << ",fovY:" << fovY << ")" << endl << mProjectionMatrix << endl << endl;
+	//logger << "OpenGL (w:" << width << ",h:" << height << ",zNear:" << zNear << ",zFar:" << zFar << ",fovY:" << fovY << ")" << endl << mProjectionMatrix << endl << endl;
 	// adjust projection matrix for DX
 	//float* values = glm::value_ptr(mProjectionMatrix);
 	//values[11] = 1;
@@ -70,7 +70,7 @@ CameraComponent::setProjectionMatrix(int width, int height, float zNear, float z
 	//mProjectionMatrix = glm::translate(mProjectionMatrix, glm::vec3(0.f, 0.f, 0.5f));
 
 	G2_gfxDevice()->getPerspectiveProjection(mProjectionMatrix, width, height, zNear, zFar, fovY);
-	logger << "D3D (w:" << width << ",h:" << height << ",zNear:" << zNear << ",zFar:" << zFar << ",fovY:" << fovY << ")" << endl << mProjectionMatrix << endl << endl;
+	//logger << "D3D (w:" << width << ",h:" << height << ",zNear:" << zNear << ",zFar:" << zFar << ",fovY:" << fovY << ")" << endl << mProjectionMatrix << endl << endl;
 }
 
 void

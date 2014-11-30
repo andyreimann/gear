@@ -3,6 +3,7 @@
 #include <G2Core/BaseSystem.h>
 #include <G2Core/MouseButton.h>
 #include <G2Core/KeyCodes.h>
+#include <G2/RenderStates.h>
 
 #include <G2/Defines.h>
 #include <CEGUI/CEGUI.h>
@@ -52,6 +53,7 @@ namespace G2
 				void _onViewportResize(int w, int h);
 				void _init();
 
+				G2::RenderStates		mGuiRenderStates;
 				CEGUI::OpenGL3Renderer& mRenderer;		// The OpenGL 3+ renderer for the CEGUI subsystem
 				bool					mMouseCoordsInjected;
 				glm::detail::tvec2<int> mMouseCoords;

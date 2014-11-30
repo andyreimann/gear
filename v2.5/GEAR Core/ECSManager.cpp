@@ -42,7 +42,9 @@ ECSManager::runMainThread(FrameInfo const& frameInfo)
 {
 	for(size_t i = 0; i < mMainThreadPhases.size(); ++i)
 	{
+		EventDistributer::onPhaseStarted(mMainThreadPhases[i], frameInfo);
 		mMainThreadUpdateEvent(mMainThreadPhases[i], frameInfo);
+		EventDistributer::onPhaseEnded(mMainThreadPhases[i], frameInfo);
 	}
 }
 
@@ -51,7 +53,9 @@ ECSManager::runSideThread(FrameInfo const& frameInfo)
 {
 	for(size_t i = 0; i < mSideThreadPhases.size(); ++i)
 	{
+		EventDistributer::onPhaseStarted(mSideThreadPhases[i], frameInfo);
 		mSideThreadUpdateEvent(mSideThreadPhases[i], frameInfo);
+		EventDistributer::onPhaseEnded(mSideThreadPhases[i], frameInfo);
 	}
 }
 

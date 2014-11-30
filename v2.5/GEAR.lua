@@ -9,11 +9,12 @@ solution "GEAR 2.5"
 
   configuration "Debug"
     buildoptions { "/MP8", "/MDd" }  
-    flags{ "Symbols" }
+    flags{ "Symbols", "NoMinimalRebuild" }
     optimize "Off"
 
   configuration "Release"
-    flags { "NoFramePointer" }
+    buildoptions { "/MP8" }  
+    flags { "NoFramePointer", "NoMinimalRebuild" }
     optimize "Speed"
   
   configuration {} -- Clear configuration

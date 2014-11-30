@@ -16,3 +16,5 @@ Event<int>											EventDistributer::onMouseWheel;
 Event<int,int>										EventDistributer::onViewportResize;
 Event<FrameInfo const&>								EventDistributer::onRenderFrame;
 Event<FrameInfo const&>								EventDistributer::onFrameRendered;
+Event<std::string const&, FrameInfo const&>			EventDistributer::onPhaseStarted;
+Event<std::string const&, FrameInfo const&>			EventDistributer::onPhaseEnded;

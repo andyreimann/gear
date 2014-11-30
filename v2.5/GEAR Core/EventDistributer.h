@@ -34,6 +34,8 @@ namespace G2
 			
 			COREDLL_API static Event<FrameInfo const&>								onRenderFrame;
 			COREDLL_API static Event<FrameInfo const&>								onFrameRendered;
+			COREDLL_API static Event<std::string const&, FrameInfo const&>			onPhaseStarted;
+			COREDLL_API static Event<std::string const&, FrameInfo const&>			onPhaseEnded;
 		private:
 
 			
