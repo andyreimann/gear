@@ -180,9 +180,9 @@ TerrainTest::onKeyDown(G2::KeyCode keyCode)
 			.getSystem<G2::RenderSystem, G2::RenderComponent>()
 			->intersect(G2::Ray(glm::vec3(100.f, 1000.f, 100.f), glm::vec4(0.f, -1.f, 0.f, 0.f)));
 
-		if (intersection.second)
+		if (intersection.getState() == G2::INTERSECTION)
 		{
-			G2::logger << "Intersection at " << intersection.first << G2::endl;
+			G2::logger << "Intersection at " << intersection.getPoint() << G2::endl;
 		}
 		else
 		{

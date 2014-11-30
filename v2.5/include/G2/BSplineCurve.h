@@ -17,10 +17,17 @@ namespace G2
 			 * @param curveSamples The samples of the B-Spline curve.
 			 */
 			BSplineCurve(InterpolationDescription const& interpolationDescription, std::vector<CurveSample> const& curveSamples);
-			
+			/** This function steps the Curve forward and calculates the position and rotation accordingly.
+			 * @param timeStep The time step to forward the Curve.
+			 */
 			virtual void interpolate(double const& timeStep) override;
-			
+			/** Checks if the specialized Curve implementation uses the given points of the CurveSample objects.
+			 * @return True if the specialized Curve implementation uses the given points of the CurveSample objects, false if not.
+			 */
 			virtual bool usePoints() override;
+			/** Checks if the specialized Curve implementation uses the given tangents of the CurveSample objects.
+			 * @return True if the specialized Curve implementation uses the given tangents of the CurveSample objects, false if not.
+			 */
 			virtual bool useTangents() override;
 	};
 };

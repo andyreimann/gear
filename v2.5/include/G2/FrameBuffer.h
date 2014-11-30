@@ -10,7 +10,7 @@ namespace G2
 {
 	class Texture;
 
-	/// This class defines...
+	/// This class can configure a buffer together with textures to catch a rendered image in this textures.
 	/// @created:	2014/05/08
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class FrameBuffer 

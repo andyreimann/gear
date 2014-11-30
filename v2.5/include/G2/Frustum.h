@@ -17,7 +17,7 @@ namespace G2
 				NUM_PLANES
 		};
 	};
-	/// This class defines...
+	/// A class, which defines a camera frustum for a perspective camera.
 	/// @created:	2014/05/24
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class Frustum 
@@ -40,7 +40,9 @@ namespace G2
 			 * @param modelViewProjectionMatrix The model view projection matrix to get a Frustum representation for.
 			 */
 			void setup(glm::mat4 const& modelViewProjectionMatrix);
-
+			/** Returns a pointer to the 8 frustum corner points.
+			 * @return A pointer to the 8 frustum corner points.
+			 */
 			glm::vec4 const* getCornerPoints() const { return &mCorners[0]; } 
 		protected:
 			

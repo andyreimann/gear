@@ -11,8 +11,8 @@
 namespace G2 
 {
 	class Shader;
-	/// This class holds all informations needed to describe and use an
-	/// effect.
+	/// This class holds all informations needed to describe and use an Effect.
+	/// Effect objects are used for rendering RenderComponents as well as post processing.
 	/// @created:	2014/03/11
 	/// @author Andy Reimann <a.reimann@moorlands-grove.de>
 	class Effect 

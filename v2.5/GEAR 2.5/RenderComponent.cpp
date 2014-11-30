@@ -1,5 +1,5 @@
 #include "RenderComponent.h"
-#include "TriangeTools.h"
+#include "TriangleTools.h"
 
 using namespace G2;
 
@@ -179,7 +179,7 @@ RenderComponent::calculateBinormalsAndTangents(G2Core::Semantics::Name vertexSem
 				glm::vec2& t3 = *(glm::vec2*)(&(vertices[(i+2)*texCoordsComponents]));
 				
 				//calculate for current triangle
-				TriangeTools::calculateTangentAndBinormalForTriangle(i, i+1, i+2, p1, p2, p3, t1, t2, t3, binormals, tangents);
+				TriangleTools::calculateTangentAndBinormalForTriangle(i, i+1, i+2, p1, p2, p3, t1, t2, t3, binormals, tangents);
 			}
 		}
 		//else

@@ -8,7 +8,7 @@
 
 namespace G2 
 {
-	/** This class defines...
+	/** With a FileResource object, you can read files from a hard drive.
 	 * @created:	2014/01/19
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */

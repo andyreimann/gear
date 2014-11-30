@@ -6,6 +6,7 @@
 #include "AABB.h"
 #include "RenderStatesGroup.h"
 #include "ZSorter.h"
+#include "Intersection.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -112,14 +113,12 @@ namespace G2
 			* @param value The clear color.
 			*/
 			void setClearColor(glm::vec4 const& value) { mClearColor = value; }
-
 			/** This function performs an intersection of a ray and all G2::RenderComponent objects.
 			* @param ray The ray which is used for the intersection calculation.
-			* @return A pair of an intersection point, if some intersection was found and a boolean indicating if an intersection was found. The boolean is true, if the intersection point is a real intersection point and false if not.
+			* @return The Intersection containing the information.
 			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
 			*/
-			std::pair<glm::vec4, bool> intersect(G2::Ray const& ray);
-
+			Intersection intersect(G2::Ray const& ray);
 
 			~RenderSystem();
 		private:
@@ -246,15 +245,6 @@ namespace G2
 			 * @param effect The post processing Effect to set the uniforms on.
 			 */
 			void _updatePostProcessingUniforms(std::shared_ptr<Effect> const& effect) const;
-
-			void _intersect(
-				std::pair<glm::vec4, bool>& closestMatch,
-				glm::mat4 const& worldSpaceMatrix,
-				G2::Ray const& worldSpaceRay, 
-				G2::Ray const& modelSpaceRay, 
-				glm::vec3 const& p1, 
-				glm::vec3 const& p2, 
-				glm::vec3 const& p3);
 			
 			glm::vec4										mClearColor;			// The clear color to use for rendering
 			RenderType::Name								mRenderType;

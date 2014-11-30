@@ -238,3 +238,5 @@ v2.5/lib/x64/Release/GEARDX11.lib
 v2.5/lib/x64/Release/GEARGL.dll
 v2.5/lib/x64/Release/GEARGL.lib
 v2.5/GEAR Core/GEAR Core.vcxproj
+v2.5/GEAR 2.5/obj/x64/Debug/GEAR 2.5.vcxprojResolveAssemblyReference.cache
+v2.5/include/G2/TriangleTools.h

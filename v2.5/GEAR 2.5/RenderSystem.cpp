@@ -15,7 +15,7 @@
 #include "Frustum.h"
 #include "LightEffectState.h"
 #include "MultipleRenderTarget.h"
-#include "TriangeTools.h"
+#include "TriangleTools.h"
 #include "TriangleStream.h"
 
 #include <G2Core/ECSManager.h>
@@ -1020,64 +1020,8 @@ RenderSystem::onComponentRemoved(unsigned int entityId)
 	}
 }
 
-std::pair<glm::vec4, bool>
-G2::RenderSystem::intersect(G2::Ray const& ray)
-{
-	std::pair<glm::vec4, bool> closestMatch = std::make_pair<glm::vec4, bool>(glm::vec4(FLT_MAX, FLT_MAX, FLT_MAX, 1.f), false);
-
-	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem, TransformComponent>();
-
-	for (int i = 0; i < components.size(); ++i)
-	{
-		auto& comp = components[i];// check if this component has a pass attached
-
-		// TODO Transform Ray into model space to be able to perform intersection in model space!
-		auto* compTransformation = transformSystem->get(comp.getEntityId());
-		glm::mat4 worldSpaceMatrix;
-		glm::mat4 invWorldSpaceMatrix;
-		if (compTransformation != nullptr)
-		{
-			// TODO: accelerate!
-			worldSpaceMatrix = compTransformation->getWorldSpaceMatrix();
-			invWorldSpaceMatrix = glm::inverse(compTransformation->getWorldSpaceMatrix());
-		}
-
-		// transform the ray into model space
-		Ray modelSpaceRay(
-			glm::vec3(invWorldSpaceMatrix * glm::vec4(ray.getOrigin(), 1.f)),
-			invWorldSpaceMatrix * ray.getDir()
-			);
-
-		for (unsigned int k = 0; k < comp.getNumDrawCalls(); ++k)
-		{
-			DrawCall& drawCall = comp.getDrawCall(k);
-			if (drawCall.getWorldSpaceAABB().intersects(ray))
-			{
-				glm::vec3* p1, *p2, *p3;
-				p1 = p2 = p3 = nullptr;
-				// create a uniform triangle stream
-				G2::TriangleStream triangleStream(
-					G2Core::Semantics::POSITION,
-					drawCall.getIaoIndex() == -1 ? nullptr : &comp.getIndexArray(drawCall.getIaoIndex()),
-					&comp.getVertexArray(drawCall.getVaoIndex()),
-					drawCall.getDrawMode()
-					);
-				// stream all data as triangles
-				while (triangleStream.hasNext())
-				{
-					// stream triangle
-					triangleStream.next(&p1, &p2, &p3);
-					// run the intersection which will update the closestMatch variable
-					_intersect(closestMatch, worldSpaceMatrix, ray, modelSpaceRay, *p1, *p2, *p3);
-				}
-			}
-		}
-	}
-	return closestMatch;
-}
-
 Intersection
-G2::RenderSystem::intersectTmp(G2::Ray const& ray)
+G2::RenderSystem::intersect(G2::Ray const& ray)
 {
 	Intersection closestMatch, intersection;
 
@@ -1155,35 +1099,6 @@ G2::RenderSystem::intersectTmp(G2::Ray const& ray)
 	return closestMatch;
 }
 
-void
-G2::RenderSystem::_intersect(
-	std::pair<glm::vec4, bool>& closestMatch, 
-	glm::mat4 const& worldSpaceMatrix,
-	G2::Ray const& worldSpaceRay, 
-	G2::Ray const& modelSpaceRay, 
-	glm::vec3 const& p1, 
-	glm::vec3 const& p2, 
-	glm::vec3 const& p3)
-{
-	// intersect the triangle with the model space ray
-	auto& intersectionResult = G2::TriangeTools::intersectRayTriangle(modelSpaceRay, p1, p2, p3);
-	if (intersectionResult.second)
-	{
-		// intersection found
-		// transform the intersection point into world space
-		intersectionResult.first = worldSpaceMatrix * intersectionResult.first;
-		// calculate distances in world space for closest match
-		float dist = glm::length2(closestMatch.first - glm::vec4(worldSpaceRay.getOrigin(), 1.f));
-		// calculate distances in world space for intersection point (already in world space)
-		float newDist = glm::length2(intersectionResult.first - glm::vec4(worldSpaceRay.getOrigin(), 1.f));
-		if (newDist < dist)
-		{
-			// nearer - since it's already in world space, we just write it into the function global closest match
-			closestMatch.first = intersectionResult.first;
-			closestMatch.second = intersectionResult.second;
-		}
-	}
-}
 void
 RenderSystem::_updateRenderStatesGroup(RenderComponent* component, RenderStates* newRenderStates) 
 {

@@ -18,12 +18,15 @@ namespace G2
 
 			void runPhase(std::string const& name, FrameInfo const& frameInfo);
 			/** This function will set the active CameraComponent to use 
-			 * for rendering.
+			 * for rendering the main scene.
 			 * @param entityId The ID of the Entity class instance, where the 
 			 * CameraComponent is attached to.
+			 * @note You have to set at least once a render camera in each application.
 			 */
 			void setRenderCamera(unsigned int entityId);
-
+			/** Returns the currently used main render camera.
+			 * @return The currently used main render camera or nullptr, if no render camera is defined.
+			 */
 			CameraComponent* getRenderCamera(); 
 
 		private:

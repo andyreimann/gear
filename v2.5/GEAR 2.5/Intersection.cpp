@@ -34,8 +34,8 @@ bool Intersection::rayTriangle(
 	glm::vec3 const& p2,
 	glm::vec3 const& p3)
 {
-	glm::vec3 intersectionPt;
-	bool intersects = glm::intersectRayTriangle(modelSpaceRay.getOrigin(), glm::vec3(modelSpaceRay.getDir()), p1, p2, p3, intersectionPt);
+	glm::vec3 barycentricPos;
+	bool intersects = glm::intersectRayTriangle(modelSpaceRay.getOrigin(), glm::vec3(modelSpaceRay.getDir()), p1, p2, p3, barycentricPos);
 	if(!intersects)
 	{
 		return false;
@@ -44,9 +44,9 @@ bool Intersection::rayTriangle(
 	{
 		glm::vec3 v1 = p2 - p1;
 		glm::vec3 v2 = p3 - p1;
-		// transform point and normal vector into world space
+		// transform point and normal vector into world space (https://github.com/g-truc/glm/issues/6)
 		intersection.set(
-			glm::vec3(worldSpaceMatrix * glm::vec4(intersectionPt,1.f)), 
+			glm::vec3(worldSpaceMatrix * glm::vec4(modelSpaceRay.getOrigin() + glm::vec3(modelSpaceRay.getDir()) * barycentricPos.z, 1.f)),
 			glm::vec3(worldSpaceMatrix * glm::vec4(glm::cross(v1, v2),0.f)));
 		return true;
 	}

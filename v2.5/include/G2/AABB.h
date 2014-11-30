@@ -36,9 +36,10 @@ namespace G2
 			 * @note The AABB will not check if the given coordinates are already the min and max values!
 			 */
 			AABB( glm::vec3 const& Min, glm::vec3 const& Max);
-			/// Transforms the AABB and creates a new one by merging it from all corners of this one.
-			/// @param m The matrix to transform all corners of this AABB with.
-			/// @return A transformed AABB.
+			/** Transforms the AABB and creates a new one by merging it from all corners of this one.
+			 * @param m The matrix to transform all corners of this AABB with.
+			 * @return A transformed AABB.
+			 */
 			AABB transform(glm::mat4 const& m) const;
 			/** This function will add a Point to the AABBox and will change internal parameters if needed.
 			 * @param pt The Point to add.
@@ -140,11 +141,6 @@ namespace G2
 			glm::vec3 getMax() const;
 
 		private:
-			///** Updates a maybe attached TransformComponent with the current
-			// * center point.
-			// * If no TransformComponent is attached, the call is silently ignored.
-			// */
-			//void syncTransformComponent();
 
 			glm::vec3	mCenter;			//!< The center point of the AABB
 			glm::vec3	mHalfExtends;		//!< The half extends in each axis of the AABB
