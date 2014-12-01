@@ -137,3 +137,133 @@ WrapMode::parse(std::string const& name)
 	}
 	return WRAP_MODE_INVALID;
 }
+
+RenderLayer::RenderLayerMask
+G2Core::RenderLayer::getByRenderLayer(std::string const& renderLayer)
+{
+	if (renderLayer == "TERRAIN")
+	{
+		return TERRAIN;
+	}
+	else if (renderLayer == "WATER")
+	{
+		return WATER;
+	}
+	else if (renderLayer == "TRANSPARENT_MESH")
+	{
+		return TRANSPARENT_MESH;
+	}
+	else if (renderLayer == "STATIC_MESH")
+	{
+		return STATIC_MESH;
+	}
+	else if (renderLayer == "DYNAMIC_MESH")
+	{
+		return DYNAMIC_MESH;
+	}
+	else if (renderLayer == "LAYER_5")
+	{
+		return LAYER_5;
+	}
+	else if (renderLayer == "LAYER_6")
+	{
+		return LAYER_6;
+	}
+	else if (renderLayer == "LAYER_7")
+	{
+		return LAYER_7;
+	}
+	else if (renderLayer == "LAYER_8")
+	{
+		return LAYER_8;
+	}
+	else if (renderLayer == "LAYER_9")
+	{
+		return LAYER_9;
+	}
+	else if (renderLayer == "LAYER_10")
+	{
+		return LAYER_10;
+	}
+	else if (renderLayer == "LAYER_11")
+	{
+		return LAYER_11;
+	}
+	else if (renderLayer == "LAYER_12")
+	{
+		return LAYER_12;
+	}
+	else if (renderLayer == "LAYER_13")
+	{
+		return LAYER_13;
+	}
+	else if (renderLayer == "LAYER_14")
+	{
+		return LAYER_14;
+	}
+	else if (renderLayer == "LAYER_15")
+	{
+		return LAYER_15;
+	}
+	else if (renderLayer == "LAYER_16")
+	{
+		return LAYER_16;
+	}
+	else if (renderLayer == "LAYER_17")
+	{
+		return LAYER_17;
+	}
+	else if (renderLayer == "LAYER_18")
+	{
+		return LAYER_18;
+	}
+	else if (renderLayer == "LAYER_19")
+	{
+		return LAYER_19;
+	}
+	else if (renderLayer == "LAYER_20")
+	{
+		return LAYER_20;
+	}
+	else if (renderLayer == "LAYER_21")
+	{
+		return LAYER_21;
+	}
+	else if (renderLayer == "LAYER_22")
+	{
+		return LAYER_22;
+	}
+	else if (renderLayer == "LAYER_23")
+	{
+		return LAYER_23;
+	}
+	else if (renderLayer == "LAYER_24")
+	{
+		return LAYER_24;
+	}
+	else if (renderLayer == "LAYER_25")
+	{
+		return LAYER_25;
+	}
+	else if (renderLayer == "LAYER_26")
+	{
+		return LAYER_26;
+	}
+	else if (renderLayer == "LAYER_27")
+	{
+		return LAYER_27;
+	}
+	else if (renderLayer == "LAYER_28")
+	{
+		return LAYER_28;
+	}
+	else if (renderLayer == "LAYER_29")
+	{
+		return LAYER_29;
+	}
+	else if (renderLayer == "LAYER_30")
+	{
+		return LAYER_30;
+	}
+	return 0;
+}

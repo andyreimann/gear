@@ -161,8 +161,20 @@ namespace G2
 			* @param value The SkipPassRenderComponent parameter.
 			*/
 			void setSkipPassRenderComponent(bool const& value) { mSkipPassRenderComponent = value; }
+			/** Returns a value of a setting coming from a Settings block of an Effect file.
+			* @param name The name of the Setting to retrieve.
+			* @param defaultValue The default value to return in case the setting is not present.
+			*/
+			G2::Setting const& getSetting(std::string const& name, std::string const& defaultValue = "") const;
+			/** Returns the RenderLayerMask of the Pass.
+			* The RenderLayerMask contains the information which G2Core::RenderLayer the Pass should render.
+			* All RenderComponent objects assigned to different RenderLayer will not be drawn.
+			* @return The RenderLayerMask of the Pass.
+			*/
+			G2Core::RenderLayer::RenderLayerMask getRenderLayerMask() const { return mValidRenderLayers; }
+
 		protected:
-			std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
+			mutable std::unordered_map<std::string,Setting> mSettings;				// The settings of the pass
 			std::vector<std::shared_ptr<Shader>>	mShaderPermutations;	// The vector containing all available Shader-Permutations
 			
 			RenderTarget							mRenderTarget;			// The render target of the Pass
@@ -176,5 +188,7 @@ namespace G2
 			float									mPolygonOffsetUnits;	// The polygon offset units to use while rendering the Pass
 			float									mFlipYLevel;			// The flip y level used when rendering with PointOfView mode MAIN_CAMERA_FLIP_Y
 			bool									mSkipPassRenderComponent; // Defines whether the RenderComponent the Pass is attached to should be rendered during the Pass rendering or not (default is false).
+			G2Core::RenderLayer::RenderLayerMask	mValidRenderLayers;		// The valid RenderLayers to render on this Pass
+
 	};
 };

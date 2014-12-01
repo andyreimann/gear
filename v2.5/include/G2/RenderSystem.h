@@ -115,10 +115,12 @@ namespace G2
 			void setClearColor(glm::vec4 const& value) { mClearColor = value; }
 			/** This function performs an intersection of a ray and all G2::RenderComponent objects.
 			* @param ray The ray which is used for the intersection calculation.
+			* @param renderLayers The bit combined G2Core::RenderLayer::Name layers to intersect with. Only objects assigned to at least one of the 
+			* set G2Core::RenderLayer::Name layers will be taken into account.
 			* @return The Intersection containing the information.
 			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
 			*/
-			Intersection intersect(G2::Ray const& ray);
+			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS);
 
 			~RenderSystem();
 		private:
@@ -165,6 +167,7 @@ namespace G2
 				glm::vec4 const& cameraPosition,
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem,
+				G2Core::RenderLayer::RenderLayerMask validRenderLayers,
 				G2::Pass const* pass = nullptr,
 				unsigned int entityIdToSkip = Entity::UNINITIALIZED_ENTITY_ID
 			);

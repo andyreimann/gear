@@ -15,6 +15,7 @@ Pass::Pass(
 	Sampler::Name renderTargetSampler,
 	RenderTargetType::Name renderTargetType) 
 	: mSettings(settings),
+	mValidRenderLayers(G2Core::Flags::ALL_FLAGS), // enables all RenderLayers
 	mShaderPermutations(shaderPermutations),
 	mRenderTarget(renderTargetSampler,
 				  // TODO implement case RT_1D here as well!
@@ -77,6 +78,31 @@ Pass::Pass(
 	{
 		mNumRenderIterations = 1;
 	}
+	// includes have precedence
+	std::list<std::string> renderLayerIncludesList = getSetting("RenderLayerIncludes", "").toList(",");
+	if (renderLayerIncludesList.size() > 0)
+	{
+		mValidRenderLayers = G2Core::Flags::NO_FLAGS;
+		for (auto it = renderLayerIncludesList.begin(); it != renderLayerIncludesList.end(); ++it)
+		{
+			mValidRenderLayers |= G2Core::RenderLayer::getByRenderLayer(*it);
+		}
+	}
+	std::list<std::string> renderLayerExcludesList = getSetting("RenderLayerExcludes", "").toList(",");
+	if (renderLayerExcludesList.size() > 0)
+	{
+		for (auto it = renderLayerExcludesList.begin(); it != renderLayerExcludesList.end(); ++it)
+		{
+			mValidRenderLayers &= ~G2Core::RenderLayer::getByRenderLayer(*it);
+		}
+	}
+	for (int i = 0; i <= 30; ++i)
+	{
+		if ((mValidRenderLayers & (1 << i)) == (1 << i))
+		{
+			std::cout << "Flag " << (1 << i) << " set" << std::endl;
+		}
+	}
 }
 
 Pass::Pass(Pass && rhs)
@@ -102,9 +128,11 @@ Pass& Pass::operator=(Pass && rhs)
 	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
 	mFlipYLevel = rhs.mFlipYLevel;
 	mSkipPassRenderComponent = rhs.mSkipPassRenderComponent;
+	mValidRenderLayers = rhs.mValidRenderLayers;
 	// 3. Stage: modify src to a well defined state
 	rhs.mNumRenderIterations = 0;
 	rhs.mPov = PointOfView::POV_INVALID;
+	rhs.mValidRenderLayers = G2Core::Flags::ALL_FLAGS;
 	return *this;
 }
 
@@ -183,6 +211,12 @@ Pass::Builder::addFragmentShaderParts(std::vector<std::shared_ptr<AbstractShader
 	{
 		fragmentShaderParts.push_back(*it);
 	}
+}
+
+G2::Setting const&
+G2::Pass::getSetting(std::string const& name, std::string const& defaultValue /*= ""*/) const
+{
+	return Setting::get(name, mSettings, defaultValue);
 }
 
 PointOfView::Name

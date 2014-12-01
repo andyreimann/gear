@@ -61,7 +61,7 @@ Ubershader "GEAR/Multipass" {
               RenderTargetHeight 192
               PointOfView MAIN_CAMERA
               OutputFormat RGBA
-              SkipPassRenderComponent false
+              SkipPassRenderComponent false   
            }
 
            #VERTEXPROGRAM

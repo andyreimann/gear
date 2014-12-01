@@ -161,7 +161,7 @@ RenderSystem::_renderForward(
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
 
-	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem);
+	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem, G2Core::Flags::ALL_FLAGS);
 					
 	if(mPostProcessingEffects.size() > 0)
 	{
@@ -225,7 +225,7 @@ RenderSystem::_renderDeferred(
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
 
-	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem);
+	_renderAllComponents(&mainCamera->getFrustum(), mainCamera->getProjectionMatrix(), cameraSpaceMatrix, inverseCameraRotation, cameraPosition, transformSystem, lightSystem, G2Core::Flags::ALL_FLAGS);
 			
 	mDeferredShadingTarget->unbind();
 
@@ -345,7 +345,7 @@ RenderSystem::_renderPasses(
 						entityIdToSkip = G2::Entity::UNINITIALIZED_ENTITY_ID;
 					}
 
-					_renderAllComponents(&frustum, passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, glm::vec4(cameraPosition, 1.f), transformSystem, lightSystem, &(*it), entityIdToSkip);
+					_renderAllComponents(&frustum, passProjectionMatrix, passCameraSpaceMatrix, inverseCameraRotation, glm::vec4(cameraPosition, 1.f), transformSystem, lightSystem, it->getRenderLayerMask(), &(*it), entityIdToSkip);
 					
 					it->getRenderTarget().unbind();
 				}
@@ -368,6 +368,7 @@ RenderSystem::_renderAllComponents(
 				glm::vec4 const& cameraPosition,
 				TransformSystem* transformSystem,
 				LightSystem* lightSystem,
+				G2Core::RenderLayer::RenderLayerMask validRenderLayers,
 				G2::Pass const* pass,
 				unsigned int entityIdToSkip
 )
@@ -382,7 +383,9 @@ RenderSystem::_renderAllComponents(
 		for (int k = 0; k < renderComponentIds.size() ; ++k) 
 		{
 			RenderComponent* comp = get(renderComponentIds[k]);
-			if(comp->getEntityId() == entityIdToSkip || comp->material.isTransparent())
+			if( comp->getEntityId() == entityIdToSkip || 
+				comp->material.isTransparent() || 
+				(comp->getRenderLayerMask() & validRenderLayers) == 0)
 			{
 				continue;
 			}
@@ -415,7 +418,8 @@ RenderSystem::_renderAllComponents(
 	{
 		// TODO No frustum culling so far for transparent objects!
 		RenderComponent* comp = get(mZSortedTransparentEntityIdsToDrawCall[i].first);
-		if(comp->getEntityId() == entityIdToSkip)
+		if(comp->getEntityId() == entityIdToSkip || 
+		   (comp->getRenderLayerMask() & validRenderLayers) == 0)
 		{
 			continue;
 		}
@@ -1036,21 +1040,26 @@ RenderSystem::onComponentRemoved(unsigned int entityId)
 }
 
 Intersection
-G2::RenderSystem::intersect(G2::Ray const& ray)
+G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers)
 {
 	Intersection closestMatch, intersection;
 
 	auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem, TransformComponent>();
 
-	for (int i = 0; i < components.size(); ++i)
+	for(int i = 0; i < components.size(); ++i)
 	{
 		auto& comp = components[i];// check if this component has a pass attached
+
+		if((renderLayers & comp.getRenderLayerMask()) == 0)
+		{
+			continue; // none of the requested RenderLayers is assigned - skip
+		}
 
 		// TODO Transform Ray into model space to be able to perform intersection in model space!
 		auto* compTransformation = transformSystem->get(comp.getEntityId());
 		glm::mat4 worldSpaceMatrix;
 		glm::mat4 invWorldSpaceMatrix;
-		if (compTransformation != nullptr)
+		if(compTransformation != nullptr)
 		{
 			// TODO: accelerate!
 			worldSpaceMatrix = compTransformation->getWorldSpaceMatrix();

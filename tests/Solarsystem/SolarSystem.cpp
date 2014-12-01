@@ -65,6 +65,17 @@ SolarSystem::initPlanets()
 	double realDaysPerSecond = 365.0 / 80.;
 	double realSecondInSeconds = 1.0 / 86400.0 / realDaysPerSecond; // one day in reality is one second here
 
+	auto sunEffect = mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Sun.g2fx");
+	
+	
+	
+	
+	//auto it = sunEffect->getPasses().begin();
+	//++it;
+	//auto list = it->getSetting("RenderLayerIncludes", "").toList(",");
+
+
+
 	// 88 days = one circle
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Sun",
@@ -75,7 +86,7 @@ SolarSystem::initPlanets()
 		24.8 * 86400. * realSecondInSeconds,
 		3.,
 		mTexImporter.import(ASSET_PATH + "SolarSystem/sunmap.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST_MIPMAP_LINEAR, G2Core::FilterMode::NEAREST),
-		mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Sun.g2fx")
+		sunEffect
 		)));
 	mPlanets.back()->getPlanetMesh()->getComponent<G2::RenderComponent>()
 		->material.setAmbient(glm::vec4(0.9f, 0.9f, 0.8f, 1.f));

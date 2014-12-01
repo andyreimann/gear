@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include <glm/glm.hpp>
+#include <list>
 
 namespace G2 
 {
@@ -20,43 +21,12 @@ namespace G2
 		long toLong() const { return std::stol(value); }
 		double toDouble() const { return std::stod(value); }
 		float toFloat() const { return std::stof(value); }
-		bool toBool() const 
-		{ 
-			std::string tmp = value;
-			std::transform(tmp.begin(), tmp.end(),tmp.begin(), ::toupper);
-			if(tmp == "ON" ||
-			   tmp == "TRUE" ||
-			   tmp == "ENABLED" ||
-			   tmp == "1")
-			{
-				return true;
-			}
-			return false;
-		}
-		glm::vec2 toVec2() const 
-		{ 
-			std::stringstream tmp;
-			tmp << value;
-			glm::vec2 v;
-			tmp >> v.x >> v.y;
-			return v;
-		}
-		glm::vec3 toVec3() const 
-		{ 
-			std::stringstream tmp;
-			tmp << value;
-			glm::vec3 v;
-			tmp >> v.x >> v.y >> v.z;
-			return v;
-		}
-		glm::vec4 toVec4() const 
-		{ 
-			std::stringstream tmp;
-			tmp << value;
-			glm::vec4 v;
-			tmp >> v.x >> v.y >> v.z >> v.w;
-			return v;
-		}
+		bool toBool() const;
+		glm::vec2 toVec2() const;
+		glm::vec3 toVec3() const;
+		glm::vec4 toVec4() const;
+
+		std::list<std::string> toList(std::string const& delimiter) const;
 		
 		std::string key;
 		std::string value;

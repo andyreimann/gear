@@ -8,6 +8,16 @@
 
 namespace G2Core
 {
+
+	namespace Flags
+	{
+		enum Name
+		{
+			NO_FLAGS = 0,
+			ALL_FLAGS = -1,
+		};
+	}
+
 	struct GfxResource
 	{
 		COREDLL_API GfxResource() : valid(true) {}
@@ -220,7 +230,7 @@ namespace G2Core
 		* FrameBufferAttachmentPoint enum value.
 		* @param outputFormat The name to parse. 
 		* @note Strings like 'COLOR' and 'RGB' will additionally be parsed to the enum value 'COLOR_0', 'COLOR_0', 
-		* @return The parsed Semantic enum value.
+		* @return The parsed RenderLayerFrameBufferAttachmentPoint enum value.
 		*/
 		COREDLL_API FrameBufferAttachmentPoint::Name getByDataFormat(std::string const& outputFormat);
 	};
@@ -300,41 +310,87 @@ namespace G2Core
 	namespace FaceCulling
 	{
 		enum Name {
-			BACK_FACE = 0x0405,
-			FRONT_FACE = 0x0404,
-			FRONT_AND_BACK_FACE = 0x0408,
+			BACK_FACE,
+			FRONT_FACE,
+			FRONT_AND_BACK_FACE,
 		};
 	};
 	namespace PolygonDrawMode
 	{
 		enum Name {
-			FILL = 0x1B02,
-			LINE = 0x1B01,
-			POINT = 0x1B00,
+			FILL,
+			LINE,
+			POINT,
 		};
 	};
 	namespace BlendFactor
 	{
 		enum Name {
-			ONE = 1, // OpenGL default
-			ZERO = 0,
-			SRC_COLOR = 0x0300,
-			ONE_MINUS_SRC_COLOR = 0x0301,
-			DST_COLOR = 0x0306,
-			ONE_MINUS_DST_COLOR = 0x0307,
-			SRC_ALPHA = 0x0302,
-			ONE_MINUS_SRC_ALPHA = 0x0303,
-			DST_ALPHA = 0x0304,
-			ONE_MINUS_DST_ALPHA = 0x0305,
-			CONSTANT_COLOR = 0x8001,
-			ONE_MINUS_CONSTANT_COLOR = 0x8002,
-			CONSTANT_ALPHA = 0x8003,
-			ONE_MINUS_CONSTANT_ALPHA = 0x8004,
-			SRC_ALPHA_SATURATE = 0x0308,
-			SRC1_COLOR = 0x88F9,
-			ONE_MINUS_SRC1_COLOR = 0x88FA,
-			SRC1_ALPHA = 0x8589,
-			ONE_MINUS_SRC1_ALPHA = 0x88FB,
+			ONE,
+			ZERO,
+			SRC_COLOR,
+			ONE_MINUS_SRC_COLOR,
+			DST_COLOR,
+			ONE_MINUS_DST_COLOR,
+			SRC_ALPHA,
+			ONE_MINUS_SRC_ALPHA,
+			DST_ALPHA,
+			ONE_MINUS_DST_ALPHA,
+			CONSTANT_COLOR,
+			ONE_MINUS_CONSTANT_COLOR,
+			CONSTANT_ALPHA,
+			ONE_MINUS_CONSTANT_ALPHA,
+			SRC_ALPHA_SATURATE,
+			SRC1_COLOR,
+			ONE_MINUS_SRC1_COLOR,
+			SRC1_ALPHA,
+			ONE_MINUS_SRC1_ALPHA,
 		};
+	};
+
+	namespace RenderLayer
+	{
+		typedef int RenderLayerMask;
+
+
+		enum Name {
+			TERRAIN = 1,
+			WATER = 2,
+			TRANSPARENT_MESH = 4,
+			STATIC_MESH = 8,
+			DYNAMIC_MESH = 16,
+			LAYER_5 = 32,
+			LAYER_6 = 64,
+			LAYER_7 = 128,
+			LAYER_8 = 256,
+			LAYER_9 = 512,
+			LAYER_10 = 1024,
+			LAYER_11 = 2048,
+			LAYER_12 = 4096,
+			LAYER_13 = 8192,
+			LAYER_14 = 16384,
+			LAYER_15 = 32768,
+			LAYER_16 = 65536,
+			LAYER_17 = 131072,
+			LAYER_18 = 262144,
+			LAYER_19 = 524288,
+			LAYER_20 = 1048576,
+			LAYER_21 = 2097152,
+			LAYER_22 = 4194304,
+			LAYER_23 = 8388608,
+			LAYER_24 = 16777216,
+			LAYER_25 = 33554432,
+			LAYER_26 = 67108864,
+			LAYER_27 = 134217728,
+			LAYER_28 = 268435456,
+			LAYER_29 = 536870912,
+			LAYER_30 = 1073741824,
+		};
+		/** This function will parse the given string to the appropriate
+		* RenderLayer enum value.
+		* @param renderLayer The name to parse.
+		* @return The parsed RenderLayer enum value or 0 if no valid RenderLayer enum value was detected.
+		*/
+		COREDLL_API RenderLayer::RenderLayerMask getByRenderLayer(std::string const& renderLayer);
 	};
 };

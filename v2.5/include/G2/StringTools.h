@@ -16,16 +16,16 @@ namespace G2
 		class String : public NonInstanceable
 		{
 			public:
-
-			static std::string trim(std::string const& str);
-			/** Checks if the given string ends with the given suffix.
-			 * @param str The string to search in.
-			 * @param suffix The suffix to search for.
-			 * @return True if the given string ends with the suffix, false if not.
-			 */
-			static bool endsWith(std::string const& str, std::string const& suffix);
-
-
+				/** Trims all whitespace characters from the given string from the start and the end as well as multiple whitespaces after each other.
+				 * @param str The string to remove all whitespace characters from the start and end.
+				 */
+				static std::string trim(std::string const& str);
+				/** Checks if the given string ends with the given suffix.
+				 * @param str The string to search in.
+				 * @param suffix The suffix to search for.
+				 * @return True if the given string ends with the suffix, false if not.
+				 */
+				static bool endsWith(std::string const& str, std::string const& suffix);
 
 			private:
 				~String();

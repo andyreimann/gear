@@ -29,6 +29,13 @@ namespace G2
 		public:
 
 			RenderComponent();
+			/** Creates a RenderComponent assigned to the given G2Core::RenderLayer contained in the 
+			 * G2Core::RenderLayer::RenderLayerMask.
+			 * A RenderComponent can be assigned to multiple G2Core::RenderLayer if that is needed,
+			 * however some features might require a RenderComponent to be assigned to a specific G2Core::RenderLayer.
+			 * @param renderLayers The bit combined G2Core::RenderLayer::Name layers, the RenderComponent is assigned to.
+			 */
+			RenderComponent(G2Core::RenderLayer::RenderLayerMask renderLayers);
 			/** Move constructor to move a RenderComponent.
 			 */
 			RenderComponent(RenderComponent && rhs);
@@ -138,7 +145,16 @@ namespace G2
 			 * as well as the IndexArrayObject index.
 			 */
 			void addDrawCall(DrawCall const& drawCall);
-
+			/** Returns the RenderLayerMask of the RenderComponent.
+			 * The RenderLayerMask contains the information on which G2Core::RenderLayer the RenderComponent is assigned to.
+			 * @return The RenderLayerMask of the RenderComponent.
+			 */
+			G2Core::RenderLayer::RenderLayerMask getRenderLayerMask() const { return mRenderLayerMask; }
+			/** Returns the DrawCall object at the given index.
+			 * @param index The index to get the DrawCall for.
+			 * @note Make sure that the DrawCall at the given index exists.
+			 * @return The DrawCall at the given index.
+			 */
 			DrawCall& getDrawCall(int index) {return mDrawCalls[index]; }
 
 			Material						material;		// The Material of the RenderComponent
@@ -163,5 +179,6 @@ namespace G2
 			std::shared_ptr<G2::Effect>		mEffect;				// The UberShader of the RenderComponent (default is an empty UberShader!)
 			ShaderCache						mShaderCache;			// The cache used for the Shader
 			std::shared_ptr<RenderStatesGroup> mRenderStatesGroup;	// The group of entities sharing the same RenderStates the RenderComponent belongs to (set and maintained by the RenderSystem!)
+			G2Core::RenderLayer::RenderLayerMask mRenderLayerMask;	// The RenderLayers the RenderComponent is assigned to		
 	};
 };

@@ -5,12 +5,22 @@ using namespace G2;
 
 RenderComponent::RenderComponent() 
 	: billboarding(false),
+	mRenderLayerMask(G2Core::Flags::ALL_FLAGS),
 	mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
 {
 }
 
+G2::RenderComponent::RenderComponent(G2Core::RenderLayer::RenderLayerMask renderLayers)
+	: billboarding(false),
+	mRenderLayerMask(renderLayers),
+	mRenderSystem(ECSManager::getShared().getSystem<RenderSystem, RenderComponent>())
+{
+
+}
+
 RenderComponent::RenderComponent(RenderComponent && rhs) 
-	: mRenderSystem(ECSManager::getShared().getSystem<RenderSystem,RenderComponent>())
+	: mRenderSystem(ECSManager::getShared().getSystem<RenderSystem, RenderComponent>()),
+	mRenderLayerMask(0)
 {
 	// eliminates redundant code
 	*this = std::move(rhs); // rvalue property is kept with std::move!
@@ -28,13 +38,15 @@ RenderComponent::operator=(RenderComponent && rhs)
 	mShaderCache = std::move(rhs.mShaderCache);
 	mRenderSystem = rhs.mRenderSystem;
 	mRenderStatesGroup = rhs.mRenderStatesGroup;
+	mRenderLayerMask = rhs.mRenderLayerMask;
 	
 	rhs.mVaos.clear();
 	rhs.mIaos.clear();
 	rhs.mDrawCalls.clear();
 	rhs.mRenderSystem = nullptr;
 	rhs.mRenderStatesGroup = std::shared_ptr<RenderStatesGroup>();
-	
+	rhs.mRenderLayerMask = G2Core::Flags::ALL_FLAGS;
+
 	return static_cast<RenderComponent&>(BaseComponent::operator=(std::move(rhs)));
 }
 
