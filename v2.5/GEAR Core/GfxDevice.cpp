@@ -103,6 +103,12 @@ GfxDevice::loadFunctionPointer(std::string const& name)
 	return func;
 }
 
+
+G2::GfxDevice::~GfxDevice()
+{
+	FreeLibrary(mGfxLibHandle);
+}
+
 G2::GfxDevice* G2_gfxDevice()
 {
 	return gGfxDevice;

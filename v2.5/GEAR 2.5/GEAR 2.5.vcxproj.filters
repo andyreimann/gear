@@ -269,9 +269,6 @@
     <ClInclude Include="RenderStatesGroup.h">
       <Filter>RenderStates</Filter>
     </ClInclude>
-    <ClInclude Include="TriangeTools.h">
-      <Filter>Tools\Triangles</Filter>
-    </ClInclude>
     <ClInclude Include="NormalMapGenerator.h">
       <Filter>ImageProcessing\NormalMaps\NormalMapGenerator</Filter>
     </ClInclude>
@@ -303,6 +300,13 @@
       <Filter>Importer\Effect\EffectBlockImporter</Filter>
     </ClInclude>
     <ClInclude Include="RootImporter.h" />
+    <ClInclude Include="BlockParser.h" />
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="TriangleStream.h" />
+    <ClInclude Include="TriangleTools.h" />
+    <ClInclude Include="ProjectionTools.h">
+      <Filter>Tools\Projection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -548,9 +552,6 @@
     <ClCompile Include="RenderStatesGroup.cpp">
       <Filter>RenderStates</Filter>
     </ClCompile>
-    <ClCompile Include="TriangeTools.cpp">
-      <Filter>Tools\Triangles</Filter>
-    </ClCompile>
     <ClCompile Include="ZSorter.cpp">
       <Filter>ECS</Filter>
     </ClCompile>
@@ -582,6 +583,12 @@
       <Filter>Curves\BSplineCurve</Filter>
     </ClCompile>
     <ClCompile Include="RootImporter.cpp" />
+    <ClCompile Include="Intersection.cpp" />
+    <ClCompile Include="TriangleStream.cpp" />
+    <ClCompile Include="TriangleTools.cpp" />
+    <ClCompile Include="ProjectionTools.cpp">
+      <Filter>Tools\Projection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -809,8 +816,8 @@
     <Filter Include="Importer\Effect\EffectBlockImporter\Root">
       <UniqueIdentifier>{ebd57b98-9bc4-48fe-9ea8-615b7f0c423c}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <Filter Include="Tools\Projection">
+      <UniqueIdentifier>{d7f0c3b2-5419-4157-8217-b1b0a14aebb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

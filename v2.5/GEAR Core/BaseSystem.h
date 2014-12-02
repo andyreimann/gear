@@ -167,6 +167,8 @@ namespace G2
 			 * @return A const reference to all components registered in this particular BastSystem.
 			 */
 			std::vector<COMPONENT> const& getComponents() const { return components; } 
+
+			virtual ~BaseSystem() {}
 		protected:
 			/** This function is called from the BaseSystem whenever a new component was added to the BaseSystem.
 			 * @param entityId The ID of the Entity, that was added.

@@ -89,6 +89,8 @@ namespace G2
 				return getSystem<COMPONENT>()->get(entityId);
 			}
 
+			virtual ~BaseComponent() {}
+
 		protected:
 			static SYSTEM* system; // The responsible system class of the BaseComponent
 		private:

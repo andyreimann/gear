@@ -393,6 +393,11 @@ MD5Importer::_importAnimation(std::shared_ptr<MD5Mesh::Builder> builder, FILE* f
 			_buildFrameSkeleton(jointInfos, baseFrame, animFrameData, builder->animationData.skeletonFrames.frames[frameIndex], numJoints);
 		}
 	}
+
+	// TEST 
+	delete jointInfos;
+	delete animFrameData;
+	delete baseFrame;
 }
 
 void 

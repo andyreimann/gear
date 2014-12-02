@@ -12,6 +12,8 @@
 
 int main(int argc, char *argv[])
 {
+	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
+
 	G2_loadGfxDevice("GEARGL.dll");
 
 	G2::SDL::Window window("Solarsystem", 1600, 768, false);

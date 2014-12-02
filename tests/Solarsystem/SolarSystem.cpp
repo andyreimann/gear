@@ -1,18 +1,17 @@
-
-#include <GL/glew.h>
-
 #include "SolarSystem.h"
 
 #include <G2/CameraComponent.h>
 #include <G2/LightComponent.h>
 #include <G2/Effect.h>
 #include <G2/Shader.h>
+#include <G2/ProjectionTools.h>
 
 
 SolarSystem::SolarSystem(G2::SDL::Window& window) :
 	mWindow(&window),
 	mCamera(&window),
-	mCameraAnimation(false)
+	mCameraAnimation(false),
+	mStop(false)
 {
 	init();
 }
@@ -129,13 +128,13 @@ SolarSystem::initPlanets()
 		)));
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Mars",
-		mFbxImporter.import(ASSET_PATH + "SolarSystem/moon.FBX", true, true, false),
+		mFbxImporter.import(ASSET_PATH + "SolarSystem/asteroid001_mdl.fbx", true, true, false),
 		glm::vec3(22.8f, 0.0f, 0.0f),
 		glm::vec3(scale * 6772.f),
 		glm::vec3(0.f, 1.f, 0.f),
 		687. * 86400. * realSecondInSeconds,
 		3.,
-		mTexImporter.import(ASSET_PATH + "SolarSystem/marsmap.jpg", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST_MIPMAP_LINEAR, G2Core::FilterMode::NEAREST),
+		mTexImporter.import(ASSET_PATH + "SolarSystem/asteroid_txt_diff.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST_MIPMAP_LINEAR, G2Core::FilterMode::NEAREST),
 		mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Moon.g2fx")
 		)));
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
@@ -242,8 +241,6 @@ SolarSystem::updatePostProcessShader()
 
 		int viewport[4] = { 0, 0, mGodRayPostProcess->getSetting("RenderTargetWidth", "-1").toInt(), mGodRayPostProcess->getSetting("RenderTargetHeight", "-1").toInt() };
 
-		glm::detail::tvec3<double> screenCoord;
-
 
 		double modelView[16];
 		double projection[16];
@@ -256,15 +253,13 @@ SolarSystem::updatePostProcessShader()
 			projection[i] = glm::value_ptr(camComponent->getProjectionMatrix())[i];
 		}
 
-		gluProject(0.f,
-			0.f,
-			0.f,
-			modelView,
-			projection,
-			viewport,
-			&screenCoord.x,
-			&screenCoord.y,
-			&screenCoord.z);
+		glm::vec3 screenCoord;
+		G2::Tools::Projection::project(
+			glm::vec3(0.f),
+			camTrans->getWorldSpaceMatrix(),
+			camComponent->getProjectionMatrix(),
+			glm::detail::tvec4<int>(0, 0, mGodRayPostProcess->getSetting("RenderTargetWidth", "-1").toInt(), mGodRayPostProcess->getSetting("RenderTargetHeight", "-1").toInt()),
+			screenCoord);
 
 		shader->setProperty("exposure", 0.007f);
 		shader->setProperty("decay", 1.0f);
@@ -287,7 +282,7 @@ SolarSystem::updatePostProcessShader()
 void
 SolarSystem::onRenderFrame(G2::FrameInfo const& frame)
 {
-	//updatePostProcessShader();
+	frame.stopRenderingAfterThisFrame = mStop;
 
 	if (mCameraAnimation)
 	{
@@ -369,7 +364,11 @@ SolarSystem::onPhaseStarted(std::string const& phase, G2::FrameInfo const& frame
 void
 SolarSystem::onKeyDown(G2::KeyCode key)
 {
-	if (key == G2::KC_A)
+	if (key == G2::KC_ESCAPE)
+	{
+		mStop = true;
+	}
+	else if (key == G2::KC_A)
 	{
 
 		std::vector<G2::CurveSample> curveSamples;

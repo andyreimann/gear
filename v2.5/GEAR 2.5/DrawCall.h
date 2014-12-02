@@ -25,7 +25,7 @@ namespace G2
 			/** Constructs a new DrawCall object.
 			 * The AABBCalculationMode defaults to AABBCalculationMode::AUTOMATIC.
 			 * The DrawCall is enabled by default.
-			 * The draw mode is set to GL_TRIANGLES by default.
+			 * The draw mode is set to TRIANGLES by default.
 			 */
 			DrawCall();
 			/// Copy constructor.

@@ -173,6 +173,10 @@ namespace G2
 			/// the TransformComponent or not.
 			/// @return The updated flag.
 			bool updated() const { return mUpdated; }
+			/** This function will return the last known id, with which the TransformComponent was updated.
+			* @return The last known id, with which the TransformComponent was updated..
+			*/
+			long const& getLastUpdateId() const { return mLastUpdateId; }
 			/** This function will update the world and local space matrix of the TransformComponent.
 			 * Normally the world space matrices of all TransformComponent objects are updated
 			 * each frame from the TransformSystem in the 'postUpdate' phase.

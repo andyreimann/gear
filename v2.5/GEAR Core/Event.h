@@ -63,6 +63,16 @@ namespace G2
 			/** Default constructor of the Event.
 			 */
 			Event() {}
+
+			~Event() 
+			{
+				typename std::vector<HandlerBase<ARGS ...>*>::iterator it = mEventListeners_.begin();
+				while (it != mEventListeners_.end())
+				{
+					delete *it;
+					++it;
+				}
+			}
 			/** This function will invoke the Event and call all registered listeners functions
 			 * with the given arguments.
 			 * @param args The list of arguments.
@@ -98,6 +108,7 @@ namespace G2
 					Handler<TargetT, ARGS ...> handler(t, nullptr);
 					if((**it) == handler) 
 					{
+						delete *it;
 						it = mEventListeners_.erase(it);
 					}
 					++it;
@@ -116,6 +127,7 @@ namespace G2
 					Handler<TargetT, ARGS ...> handler(t, nullptr);
 					if((**it).isSameObject(handler)) 
 					{
+						delete *it;
 						it = mEventListeners_.erase(it);
 						continue;
 					}

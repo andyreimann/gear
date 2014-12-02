@@ -46,6 +46,6 @@ class SolarSystem
 
 		std::vector<G2::CurveSample> mCameraSamples;
 		bool						mCameraAnimation;
-
+		bool						mStop;
 };
 

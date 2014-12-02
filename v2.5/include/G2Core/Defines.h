@@ -21,6 +21,8 @@ namespace G2Core
 	struct GfxResource
 	{
 		COREDLL_API GfxResource() : valid(true) {}
+		COREDLL_API virtual ~GfxResource() {}
+
 		bool valid;
 	};
 

@@ -21,15 +21,19 @@ TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 
 			// recalculate the local space matrix if not already done this frame
 			comp.updateWorldSpaceMatrix(frameInfo.frame);
-			auto* renderComponent = renderSystem->get(comp.getEntityId());
-			if(renderComponent != nullptr)
+			if (comp.updated())
 			{
-				// update all world space AABBs
-				// TODO Only when transformComponent is really updated!!!!!!!
-				for(unsigned int c = 0; c < renderComponent->getNumDrawCalls(); ++c)
+				// TransformComponent was updated this frame
+				auto* renderComponent = renderSystem->get(comp.getEntityId());
+				if(renderComponent != nullptr)
 				{
-					DrawCall& drawCall = renderComponent->getDrawCall(c);
-					drawCall.mWorldSpaceAABB = std::move(drawCall.getModelSpaceAABB().transform(comp.getWorldSpaceMatrix()));
+					// update all world space AABBs
+					for(unsigned int c = 0; c < renderComponent->getNumDrawCalls(); ++c)
+					{
+						DrawCall& drawCall = renderComponent->getDrawCall(c);
+
+						drawCall.mWorldSpaceAABB = std::move(drawCall.getModelSpaceAABB().transform(comp.getWorldSpaceMatrix()));
+					}
 				}
 			}
 		}

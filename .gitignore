@@ -259,3 +259,5 @@ v2.5/GEAR SDL Context/obj/x64/Debug/GEAR SDL Context.vcxprojResolveAssemblyRefer
 v2.5/GEAR SDL Context/obj/x64/Release/GEAR SDL Context.vcxprojResolveAssemblyReference.cache
 v2.5/GEAR Terrains/obj/x64/Debug/GEAR Terrains.vcxprojResolveAssemblyReference.cache
 v2.5/GEAR Terrains/obj/x64/Release/GEAR Terrains.vcxprojResolveAssemblyReference.cache
+tests/bin/Assets/SolarSystem/asteroid001_mdl.fbm/asteroid_txt_diff.png
+tests/bin/Assets/SolarSystem/asteroid001_mdl.fbm/asteroid_txt_norm.png

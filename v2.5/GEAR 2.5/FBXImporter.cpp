@@ -322,7 +322,7 @@ FBXImporter::_loadCacheRecursive(FbxNode * pNode,
 					lMesh->SetUserDataPtr(lMeshCache.Release());
 				}
 #else
-				logger << "[FBXImporter] Would create vao offset " << nextVaoOffset << endl;
+				logger << "[FBXImporter] Create vao offset " << nextVaoOffset << endl;
 				FBXMesh::Builder::MeshMetaData singleMeshMetaData(lMesh, nextVaoOffset);
 
 				if(singleMeshMetaData.vertices.size() > 0)

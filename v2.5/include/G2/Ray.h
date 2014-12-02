@@ -19,8 +19,8 @@ namespace G2
 			 */
 			Ray(glm::vec3 const& origin, glm::vec4 const& dir);
 
-			static Ray createMouseProjectionRay(int mouseX, 
-												int mouseY, 
+			static Ray createScreenProjectionRay(int screenX, 
+												int screenY,
 												glm::vec3 const& camViewDir,
 												glm::mat4 const& camModelView, 
 												glm::mat4 const& camProjection, 

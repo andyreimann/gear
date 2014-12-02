@@ -806,6 +806,10 @@ FBXAnimationSystem::_computeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh
 			double lBlendWeight = lSkinDeformer->GetControlPointBlendWeights()[lBWIndex];
 			pVertexArray[lBWIndex] = lVertexArrayDQ[lBWIndex] * lBlendWeight + lVertexArrayLinear[lBWIndex] * (1 - lBlendWeight);
 		}
+
+		// TEST
+		delete[] lVertexArrayLinear;
+		delete[] lVertexArrayDQ;
 	}
 }
 

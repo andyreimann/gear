@@ -1,5 +1,6 @@
 #pragma once
-#include "GlGfxApi.h"
+
+#include "Defines.h"
 
 #include <Cg/cgGL.h>
 
@@ -26,6 +27,7 @@ namespace G2GL
 	struct GlResource : G2Core::GfxResource
 	{
 		GlResource(Type type) : type(type) {}
+		virtual ~GlResource() {}
 		Type type;
 	};
 
@@ -41,7 +43,8 @@ namespace G2GL
 
 	struct ShaderResource : GlResource
 	{
-		ShaderResource(Type type) : GlResource(type) {}
+		ShaderResource(Type type);
+		virtual ~ShaderResource() {}
 
 		BindShader bindShader;
 		SetShaderUniformMat4 setShaderUniformMat4;
@@ -56,45 +59,14 @@ namespace G2GL
 
 	struct CgShaderResource : ShaderResource
 	{
-		CgShaderResource()
-			: vertexShaderId(nullptr),
-			geometryShaderId(nullptr),
-			fragmentShaderId(nullptr),
-			ShaderResource(G2GL::CG_SHADER) {}
-		~CgShaderResource()
-		{
-			cgDestroyProgram(vertexShaderId);
-			if(geometryShaderId != nullptr)
-			{
-				cgDestroyProgram(geometryShaderId);
-			}
-			cgDestroyProgram(fragmentShaderId);
-		}
+		CgShaderResource();
+		~CgShaderResource();
 		/** This function will try to cache and get the location of the 
 		 * uniform variable for the given name.
 		 * @param name The name of the uniform to get the location for.
 		 * @return The location of the uniform or -1 if it could not be found.
 		 */
-		std::pair<CGparameter,CGprogram> const& getAndCacheUniformLocation(std::string const& name)
-		{
-			auto it = uniformCache.find(name);
-			if(it != uniformCache.end()) 
-			{
-				return it->second;
-			}
-
-			CGparameter location = cgGetNamedParameter(vertexShaderId, name.c_str());
-			if(location == nullptr) 
-			{
-				location = cgGetNamedParameter(fragmentShaderId, name.c_str());
-				uniformCache[name] = std::make_pair(location,fragmentShaderId);
-			}
-			else 
-			{
-				uniformCache[name] = std::make_pair(location,vertexShaderId);
-			}
-			return uniformCache[name];
-		}
+		std::pair<CGparameter,CGprogram> const& getAndCacheUniformLocation(std::string const& name);
 
 		CGprogram vertexShaderId;
 		CGprogram geometryShaderId;
@@ -110,35 +82,13 @@ namespace G2GL
 			fragmentShaderId(0),
 			programId(0),
 			ShaderResource(G2GL::GLSL_SHADER) {}
-		~GlslShaderResource()
-		{
-			GLCHECK( glDetachShader(programId, vertexShaderId) );
-			GLCHECK( glDetachShader(programId, geometryShaderId) );
-			GLCHECK( glDetachShader(programId, fragmentShaderId) );
-	
-			GLCHECK( glDeleteShader(fragmentShaderId) );
-			GLCHECK( glDeleteShader(geometryShaderId) );
-			GLCHECK( glDeleteShader(vertexShaderId) );
-
-			GLCHECK( glDeleteProgram(programId) );
-		}
+		~GlslShaderResource();
 		/** This function will try to cache and get the location of the 
 		 * uniform variable for the given name.
 		 * @param name The name of the uniform to get the location for.
 		 * @return The location of the uniform or -1 if it could not be found.
 		 */
-		int getAndCacheUniformLocation(std::string const& name)
-		{
-			auto it = uniformCache.find(name);
-			if(it != uniformCache.end()) 
-			{
-				return it->second;
-			}
-			GLCHECK( int location = glGetUniformLocation(programId, name.c_str()) );
-			// here we also cache not found uniforms to not endless search for them
-			uniformCache[name] = location;
-			return location;
-		}
+		int getAndCacheUniformLocation(std::string const& name);
 		int			vertexShaderId;	// The vertex shader id
 		int			geometryShaderId;	// The geometry shader id
 		int			fragmentShaderId;	// The fragment shader id
@@ -152,13 +102,7 @@ namespace G2GL
 			: vboId(vboId), 
 			GlResource(G2GL::VBO) {}
 
-		~VertexBufferObjectResource()
-		{
-			if(vboId != GL_INVALID_VALUE)
-			{
-				GLCHECK( glDeleteBuffers(1, &vboId) );
-			}
-		}
+		~VertexBufferObjectResource();
 
 		unsigned int vboId;
 	};
@@ -169,20 +113,7 @@ namespace G2GL
 			: vaoId(vaoId), 
 			GlResource(G2GL::VAO) {}
 
-		~VertexArrayObjectResource()
-		{
-			for(auto it = vbos.begin(); it != vbos.end(); ++it)
-			{
-				if(it->second != nullptr)
-				{
-					delete it->second;
-				}
-			}
-			if(vaoId != GL_INVALID_VALUE)
-			{
-				GLCHECK( glDeleteVertexArrays(1, &vaoId) );
-			}
-		}
+		~VertexArrayObjectResource();
 
 		unsigned int vaoId;
 		std::unordered_map<G2Core::Semantics::Name,VertexBufferObjectResource*> vbos; // the contained VertexBufferObjects
@@ -195,13 +126,7 @@ namespace G2GL
 			: iboId(iboId), 
 			GlResource(G2GL::IBO) {}
 
-		~IndexBufferObjectResource()
-		{
-			if(iboId != GL_INVALID_VALUE)
-			{
-				GLCHECK( glDeleteBuffers(1, &iboId) );
-			}
-		}
+		~IndexBufferObjectResource();
 
 		unsigned int iboId;
 	};
@@ -216,14 +141,7 @@ namespace G2GL
 			fboId(fboId),
 			renderBufferId(renderBufferId) {}
 
-		~RenderTargetResource()
-		{
-			GLCHECK( glDeleteFramebuffers( 1, &fboId ) );
-			if(renderBufferId != GL_INVALID_VALUE)
-			{
-				GLCHECK( glDeleteRenderbuffers( 1, &renderBufferId ) );
-			}
-		}
+		~RenderTargetResource();
 
 		unsigned int width;
 		unsigned int height;
@@ -242,10 +160,7 @@ namespace G2GL
 			minFilter(minFilter),
 			magFilter(magFilter) {}
 
-		~TextureResource()
-		{
-			GLCHECK( glDeleteTextures( 1, &texId ) );
-		}
+		virtual ~TextureResource();
 		
 		unsigned int texId;
 		unsigned int texType;

@@ -5,6 +5,8 @@
 #include <glm/ext.hpp>
 #include "Defines.h"
 
+#include "ProjectionTools.h"
+
 using namespace G2;
 
 Ray::Ray(glm::vec3 const& origin, glm::vec4 const& dir)
@@ -38,34 +40,13 @@ Ray::getDir() const
 }
 
 G2::Ray
-Ray::createMouseProjectionRay(int mouseX, int mouseY, 
+Ray::createScreenProjectionRay(int screenX, int screenY,
 							  glm::vec3 const& camViewDir, 
 							  glm::mat4 const& camModelView, 
 							  glm::mat4 const& camProjection, 
 							  glm::detail::tvec4<int> const& viewport) {
-	double ox, oy, oz;
-		
-	double mv[16];
-	float const* mvValues = glm::value_ptr(camModelView);
-	for (int i = 0; i < 16 ; ++i)
-	{
-		mv[i] = mvValues[i];
-	}
-	double p[16];
-	float const* pValues = glm::value_ptr(camProjection);
-	for (int i = 0; i < 16 ; ++i)
-	{
-		p[i] = pValues[i];
-	}
-	int vp[4];
-	
-	assert(false); // adjust to use non-opengl functions
-
-	//glGetIntegerv(GL_VIEWPORT, &(vp[0]));
-
-	//gluUnProject(mouseX, /*invert y coord*/viewport.z-mouseY, 0, mv, p, vp, &ox, &oy, &oz);
-
+	glm::vec3 obj;
+	G2::Tools::Projection::unProject(glm::vec3((float)screenX, /*invert y coord*/(float)(viewport.z - screenY), 0.f), camModelView, camProjection, viewport, obj);
 	glm::vec3 dir = camViewDir;
-
-	return Ray(glm::vec3(ox,oy,oz), glm::vec4(dir, 0.f));
+	return Ray(obj, glm::vec4(dir, 0.f));
 }
