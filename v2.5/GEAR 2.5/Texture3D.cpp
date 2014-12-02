@@ -23,8 +23,6 @@ Texture3D::Texture3D(G2Core::FilterMode::Name minFilter,
 	mCompressed(compress),
 	mBytes(0)
 {
-	init();
-
 	mTexResource = G2_gfxDevice()->createTexture3D(
 		mWidth, mHeight, mDepth,
 		getBaseFormatByInternalFormat(format), format,
@@ -56,17 +54,4 @@ Texture3D& Texture3D::operator=(Texture3D && rhs)
 
 Texture3D::~Texture3D() 
 {
-}
-
-bool Texture3D::gInitialized = false;
-
-void
-Texture3D::init() 
-{
-	// lazy initialization
-	if(!gInitialized) 
-	{
-		glEnable(GL_TEXTURE_3D);
-		gInitialized = true;
-	}
 }

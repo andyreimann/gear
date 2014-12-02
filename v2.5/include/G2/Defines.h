@@ -3,7 +3,6 @@
 #pragma once
 #include <G2Core/KeyCodes.h>
 
-#include <GL/glew.h>
 #include <sstream>
 #include <iostream>
 #include <Windows.h>
@@ -60,15 +59,7 @@
 // more see http://sourceforge.net/p/predef/wiki/Compilers/
 // COMPILER DETECTION END ///////////////////////////////////////////////////////////
 
-#define GLDEBUG(x) \
-x; \
-{ \
-	GLenum e = glGetError(); \
-	if( e != GL_NO_ERROR) \
-	{ \
-		std::cout << "Error at line number " << __LINE__ << ", in file " << __FILE__ << ". glGetError() returned " << gluErrorString(e) << " for call " << #x << "\n"; \
-	} \
-}
+
 
 #include <assert.h>
 #define MESSAGE_ASSERT(m, e) assert((m && e ))
@@ -114,6 +105,7 @@ namespace G2
 	const Bool G2_TRUE	= 1;
 	const Bool G2_FALSE	= 0;
 
+	/*
 	const unsigned RED          = GL_RED;								//!< Format description: channels: 1, datatype: ubyte, bytes per channel: 1
 	const unsigned RG			= GL_RG;								//!< Format description: channels: 2, datatype: ubyte, bytes per channel: 1
 	
@@ -261,5 +253,5 @@ namespace G2
 	const int CUBE_MAP_NEG_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
 	const int CUBE_MAP_POS_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
 	const int CUBE_MAP_NEG_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-	
+	*/
 }; 

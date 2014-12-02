@@ -163,7 +163,6 @@ Window::processEvents(int frame)
 							e.window.windowID, e.window.data1,
 							e.window.data2);
 					G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,e.window.data1, e.window.data2));
-					GLDEBUG( glViewport(0, 0, e.window.data1, e.window.data2) );
 					G2::EventDistributer::onViewportResize(e.window.data1,e.window.data2);
 					break;
 				case SDL_WINDOWEVENT_MINIMIZED:

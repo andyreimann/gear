@@ -31,7 +31,7 @@ namespace G2
 			SAMPLER_15 = 15,
 			SAMPLER_16 = 16,
 			NUM_SAMPLERS,
-			SAMPLER_INVALID = GL_INVALID_VALUE,
+			SAMPLER_INVALID,
 		};
 		/** This function will parse the given string to the appropriate
 		 * Sampler enum value.

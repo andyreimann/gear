@@ -244,7 +244,7 @@ FBXImporter::_loadCacheRecursive(FbxScene* pScene,
 			// Try to load the texture from absolute path
 			const FbxString lFileName = lFileTexture->GetFileName();
 
-			GLuint lTextureObject = 0;
+			unsigned int lTextureObject = 0;
 			bool lStatus = false;//LoadTextureFromFile(lFileName, lTextureObject);
 
 			const FbxString lAbsFbxFileName = FbxPathUtils::Resolve(pFbxFileName);
@@ -272,7 +272,7 @@ FBXImporter::_loadCacheRecursive(FbxScene* pScene,
 
 			if (lStatus)
 			{
-				GLuint * lTextureName = new GLuint(lTextureObject);
+				unsigned int * lTextureName = new unsigned int(lTextureObject);
 				lFileTexture->SetUserDataPtr(lTextureName);
 			}
 		}

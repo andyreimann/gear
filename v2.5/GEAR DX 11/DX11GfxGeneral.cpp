@@ -23,6 +23,8 @@ ID3D11Texture2D*		gBackbufferDepthStencilBuffer;
 D3D11_RASTERIZER_DESC gRasterizerStateDesc;
 ID3D11RasterizerState* gRasterizerState;
 
+D3D11_CULL_MODE gCullModeAtDisableTime;
+
 D3D11_RASTERIZER_DESC& gGetRasterizerStateDescr()
 {
 	return gRasterizerStateDesc;
@@ -202,4 +204,39 @@ void AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix)
 	data[10] *= -1.f;
 	data[11] *= -1.f;
 
+}
+
+void SetCullFaceEnabled(bool mode)
+{
+	if(mode)
+	{
+		// write cached cull mode
+		gRasterizerStateDesc.CullMode = gCullModeAtDisableTime;
+	}
+	else
+	{
+		// cache current cull mode
+		gCullModeAtDisableTime = gRasterizerStateDesc.CullMode;
+		gRasterizerStateDesc.CullMode = D3D11_CULL_NONE;
+	}
+
+	gUpdateRasterizer();
+
+	gDeviceContext->RSSetState(gRasterizerState);
+}
+
+void SetDepthWritesEnabled(bool mode)
+{
+	//assert(false); // not implemented
+}
+
+void SetDepthBias(bool enabled, float depthBias, float depthBiasClamp, float slopeScaledDepthBias)
+{
+	gRasterizerStateDesc.DepthBias = depthBias;
+	gRasterizerStateDesc.DepthBiasClamp = depthBiasClamp;
+	gRasterizerStateDesc.SlopeScaledDepthBias = slopeScaledDepthBias;
+
+	gUpdateRasterizer();
+
+	gDeviceContext->RSSetState(gRasterizerState);
 }

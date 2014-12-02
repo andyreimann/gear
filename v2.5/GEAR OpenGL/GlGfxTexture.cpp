@@ -258,7 +258,8 @@ G2Core::GfxResource* CreateTexture3D(
 	unsigned int glMinFilter = toGlFilterMode(minFilter);
 	unsigned int glMagFilter = toGlFilterMode(magFilter);
 	unsigned int glDataType = toGlDataType(dataType);
-	GLCHECK( glGenTextures(1, &texId) );
+	GLCHECK(glGenTextures(1, &texId));
+	GLCHECK( glEnable(GL_TEXTURE_3D) );
 	GLCHECK( glBindTexture(GL_TEXTURE_3D, texId) );
 	GLCHECK(glTexImage3D(GL_TEXTURE_3D, 0, glInternalFormat, width, height, depth, 0, glFormat, glDataType, data));
 	

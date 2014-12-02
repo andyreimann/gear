@@ -80,27 +80,20 @@ Pass::Pass(
 	}
 	// includes have precedence
 	std::list<std::string> renderLayerIncludesList = getSetting("RenderLayerIncludes", "").toList(",");
-	if (renderLayerIncludesList.size() > 0)
+	if(renderLayerIncludesList.size() > 0)
 	{
 		mValidRenderLayers = G2Core::Flags::NO_FLAGS;
-		for (auto it = renderLayerIncludesList.begin(); it != renderLayerIncludesList.end(); ++it)
+		for(auto it = renderLayerIncludesList.begin(); it != renderLayerIncludesList.end(); ++it)
 		{
 			mValidRenderLayers |= G2Core::RenderLayer::getByRenderLayer(*it);
 		}
 	}
 	std::list<std::string> renderLayerExcludesList = getSetting("RenderLayerExcludes", "").toList(",");
-	if (renderLayerExcludesList.size() > 0)
+	if(renderLayerExcludesList.size() > 0)
 	{
-		for (auto it = renderLayerExcludesList.begin(); it != renderLayerExcludesList.end(); ++it)
+		for(auto it = renderLayerExcludesList.begin(); it != renderLayerExcludesList.end(); ++it)
 		{
 			mValidRenderLayers &= ~G2Core::RenderLayer::getByRenderLayer(*it);
-		}
-	}
-	for (int i = 0; i <= 30; ++i)
-	{
-		if ((mValidRenderLayers & (1 << i)) == (1 << i))
-		{
-			std::cout << "Flag " << (1 << i) << " set" << std::endl;
 		}
 	}
 }
@@ -173,17 +166,15 @@ Pass::getShader(Material const& material, VertexArrayObject const& vao) const
 void 
 Pass::preRender() const
 {
-	// called from RenderSystem when rendering the pass 
-	GLDEBUG( glEnable(GL_POLYGON_OFFSET_FILL) );
-	GLDEBUG( glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits ) );
+	// called from RenderSystem when rendering the pass
+	G2_gfxDevice()->setDepthBias(true, mPolygonOffsetUnits, 0.f, mPolygonOffsetFactor);
 	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mRenderTarget.getRenderTexture()->getWidth(),mRenderTarget.getRenderTexture()->getHeight()));
-	GLDEBUG( glViewport(0,0,mRenderTarget.getRenderTexture()->getWidth(),mRenderTarget.getRenderTexture()->getHeight()));
 }
 
 void 
 Pass::postRender() const
 {
-	GLDEBUG( glDisable(GL_POLYGON_OFFSET_FILL) );
+	G2_gfxDevice()->setDepthBias(false, 0.f, 0.f, 0.f);
 }
 
 void

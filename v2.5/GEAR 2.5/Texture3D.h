@@ -46,9 +46,6 @@ namespace G2
 			 */
 			virtual ~Texture3D();
 		private:
-
-			static bool		gInitialized;
-			static void		init();
 	
 			unsigned		mWidth;			// The height of the Texture.
 			unsigned		mHeight;		// The width of the Texture.

@@ -46,7 +46,7 @@ solution "GEAR 2.5"
     location "GEAR 2.5"
     targetname "GEAR"
     files { "GEAR 2.5/**.h","GEAR 2.5/**.cpp" }
-    links { "GEAR Core", "OpenGL32", "glu32", "freeglut", "libfbxsdk-md.lib" }
+    links { "GEAR Core", "libfbxsdk-md.lib" }
 
     postbuildcommands { 
       "XCOPY \"*.h\" \"..\\include\\G2\\\" /R /I /Y", 

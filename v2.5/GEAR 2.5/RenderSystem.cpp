@@ -220,7 +220,6 @@ RenderSystem::_renderDeferred(
 	mDeferredShadingTarget->bind();
 	//mGBufferEffect->bind();
 	G2_gfxDevice()->setViewport(G2::rect(0.f,0.f,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
-	//GLDEBUG( glViewport(0,0,mainCamera->getViewportWidth(),mainCamera->getViewportHeight()));
 	
 	// TODO cache inverse camera space matrix!
 	glm::vec4 cameraPosition = glm::inverse(cameraSpaceMatrix) * glm::vec4(0.f,0.f,0.f,1.f);
@@ -439,11 +438,11 @@ RenderSystem::_renderAllComponents(
 		shader->bind();
 		// Enable blending
 
-		GLDEBUG( glDisable(GL_CULL_FACE) );
-		GLDEBUG( glDepthMask(false) );
+		G2_gfxDevice()->setCullFaceEnabled(false);
+		G2_gfxDevice()->setDepthWritesEnabled(false);
 		_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem, mZSortedTransparentEntityIdsToDrawCall[i].second);
-		GLDEBUG( glDepthMask(true) );
-		GLDEBUG( glEnable(GL_CULL_FACE) );
+		G2_gfxDevice()->setDepthWritesEnabled(true);
+		G2_gfxDevice()->setCullFaceEnabled(true);
 	}
 }
 

@@ -150,3 +150,33 @@ void AdjustCameraSpaceMatrix(glm::mat4& camSpaceMatrix)
 {
 	// nothing to do here
 }
+
+void SetCullFaceEnabled(bool mode)
+{
+	if (mode)
+	{
+		GLCHECK(glEnable(GL_CULL_FACE));
+	}
+	else
+	{
+		GLCHECK(glDisable(GL_CULL_FACE));
+	}
+}
+
+void SetDepthWritesEnabled(bool mode)
+{
+	GLCHECK(glDepthMask(mode));
+}
+
+void SetDepthBias(bool enabled, float depthBias, float depthBiasClamp, float slopeScaledDepthBias)
+{
+	if (enabled)
+	{
+		GLCHECK(glEnable(GL_POLYGON_OFFSET_FILL));
+		GLCHECK(glPolygonOffset(slopeScaledDepthBias, depthBias));
+	}
+	else
+	{
+		GLCHECK(glDisable(GL_POLYGON_OFFSET_FILL));
+	}
+}

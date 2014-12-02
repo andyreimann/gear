@@ -1,5 +1,6 @@
 #include "RoamTerrain.h"
 #include "RoamPatch.h"
+#include "Defines.h"
 
 #include <G2Core/ECSManager.h>
 #include <G2/RenderComponent.h>
@@ -121,7 +122,7 @@ RoamTerrain::setup(
 	
 	// Give the rest of the application a pointer to the actual start of the height map.
 	unsigned char* dest = mHeightMapData + mHeightMap->getWidth();
-	glGetTexImage(GL_TEXTURE_2D, 0,G2::LUMINANCE, GL_UNSIGNED_BYTE, dest);
+	GLDEBUG(glGetTexImage(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dest));
 	mHeightMap->unbind(G2Core::TexSlot::TEX_SLOT1);
 
 	// Copy the last row of the height map into the extra first row.

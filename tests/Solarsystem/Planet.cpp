@@ -27,7 +27,7 @@ Planet::Planet(
 	transformation->setPosition(position);
 	transformation->setScale(scale);
 
-	// connect moon to sun with his anker - 
+	// connect moon to sun with his anchor - 
 	// NOTE: Get the TransformComponent ptr of anchor again, because there is no
 	// guarantee that it's still valid after adding a new TransformComponent!
 	transformation->setParent(mAnchor.getComponent<G2::TransformComponent>());

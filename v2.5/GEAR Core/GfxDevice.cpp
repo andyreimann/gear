@@ -37,9 +37,10 @@ GfxDevice::loadFunctionPointers()
 	updateRenderStates = (UpdateRenderStates)loadFunctionPointer("UpdateRenderStates");
 	getPerspectiveProjection = (GetPerspectiveProjection)loadFunctionPointer("GetPerspectiveProjection");
 	adjustCameraSpaceMatrix = (AdjustCameraSpaceMatrix)loadFunctionPointer("AdjustCameraSpaceMatrix");
-	 
+	setCullFaceEnabled = (SetCullFaceEnabled)loadFunctionPointer("SetCullFaceEnabled");
+	setDepthWritesEnabled = (SetDepthWritesEnabled)loadFunctionPointer("SetDepthWritesEnabled");
+	setDepthBias = (SetDepthBias)loadFunctionPointer("SetDepthBias");
 	
-
 	// Shader
 	compileShader = (CompileShader)loadFunctionPointer("CompileShader");
 	bindShader = (BindShader)loadFunctionPointer("BindShader");

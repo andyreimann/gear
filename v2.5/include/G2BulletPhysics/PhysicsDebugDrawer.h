@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Defines.h"
+
 #include <G2/RenderComponent.h>
 
 #include <LinearMath/btIDebugDraw.h>

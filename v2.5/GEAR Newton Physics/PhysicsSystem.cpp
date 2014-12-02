@@ -1,6 +1,8 @@
 #include "PhysicsSystem.h"
 #include "PhysicsComponent.h"
 
+#include "Defines.h"
+
 #include <G2/Logger.h>
 #include <G2/TransformComponent.h>
 #include <G2/RenderComponent.h>
@@ -49,7 +51,7 @@ PhysicsSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 {
 	if(mDebugDrawEnabled && name == "render")
 	{
-		glUseProgram(0);
+		GLDEBUG(glUseProgram(0));
 		
 		auto* cameraSystem = ECSManager::getShared().getSystem<CameraSystem,CameraComponent>();
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();

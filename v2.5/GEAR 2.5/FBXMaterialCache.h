@@ -33,13 +33,13 @@ private:
 			mColor[3] = 1.0f;
 		}
 
-		GLuint mTextureName;
-		GLfloat mColor[4];
+		unsigned int mTextureName;
+		float mColor[4];
 	};
 	ColorChannel mEmissive;
 	ColorChannel mAmbient;
 	ColorChannel mDiffuse;
 	ColorChannel mSpecular;
-	GLfloat mShinness;
+	float mShinness;
 };
 

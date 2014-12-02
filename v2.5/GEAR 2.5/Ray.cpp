@@ -57,10 +57,13 @@ Ray::createMouseProjectionRay(int mouseX, int mouseY,
 	{
 		p[i] = pValues[i];
 	}
-	GLint vp[4];
-	glGetIntegerv(GL_VIEWPORT, &(vp[0]));
+	int vp[4];
+	
+	assert(false); // adjust to use non-opengl functions
 
-	gluUnProject(mouseX, /*invert y coord*/viewport.z-mouseY, 0, mv, p, vp, &ox, &oy, &oz);
+	//glGetIntegerv(GL_VIEWPORT, &(vp[0]));
+
+	//gluUnProject(mouseX, /*invert y coord*/viewport.z-mouseY, 0, mv, p, vp, &ox, &oy, &oz);
 
 	glm::vec3 dir = camViewDir;
 

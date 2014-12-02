@@ -1,3 +1,6 @@
+
+#include <GL/glew.h>
+
 #include "SolarSystem.h"
 
 #include <G2/CameraComponent.h>

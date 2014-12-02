@@ -52,7 +52,7 @@ private:
         int TriangleCount;
     };
 
-    GLuint mVBONames[VBO_COUNT];
+    unsigned int mVBONames[VBO_COUNT];
     FbxArray<SubMesh*> mSubMeshes;
     bool mHasNormal;
     bool mHasUV;

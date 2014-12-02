@@ -10,7 +10,7 @@ struct PropertyChannel
 {
     PropertyChannel() : mAnimCurve(NULL), mValue(0.0f) {}
     // Query the channel value at specific time.
-    GLfloat Get(const FbxTime & pTime) const
+    float Get(const FbxTime & pTime) const
     {
         if (mAnimCurve)
         {
@@ -23,7 +23,7 @@ struct PropertyChannel
     }
 
     FbxAnimCurve * mAnimCurve;
-    GLfloat mValue;
+	float mValue;
 };
 
 // Cache for FBX lights
@@ -46,7 +46,7 @@ public:
 private:
     static int sLightCount;         // How many lights in this scene.
 
-    GLuint mLightIndex;
+	unsigned int mLightIndex;
     FbxLight::EType mType;
     PropertyChannel mColorRed;
     PropertyChannel mColorGreen;

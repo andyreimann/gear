@@ -23,6 +23,10 @@ namespace G2
 	typedef void (*UpdateRenderStates)(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
 	typedef void (*GetPerspectiveProjection)(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY);
 	typedef void (*AdjustCameraSpaceMatrix)(glm::mat4& camSpaceMatrix);
+	typedef void (*SetCullFaceEnabled)(bool mode);
+	typedef void(*SetDepthWritesEnabled)(bool mode);
+	typedef void(*SetDepthBias)(bool enabled, float depthBias, float depthBiasClamp, float slopeScaledDepthBias);
+
 
 	// Shader
 	typedef G2Core::GfxResource* (*CompileShader)(G2Core::VertexInputLayout const& vertexInputLayout, std::string const& shadingLanguage, std::string const& vertexCode, std::string const& geometryCode, std::string const& fragmentCode);
@@ -158,6 +162,9 @@ namespace G2
 			UpdateRenderStates updateRenderStates;
 			GetPerspectiveProjection getPerspectiveProjection;
 			AdjustCameraSpaceMatrix adjustCameraSpaceMatrix;
+			SetCullFaceEnabled setCullFaceEnabled;
+			SetDepthWritesEnabled setDepthWritesEnabled;
+			SetDepthBias setDepthBias;
 
 			// Shader
 			CompileShader compileShader;

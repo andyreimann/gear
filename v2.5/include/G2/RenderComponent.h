@@ -150,6 +150,11 @@ namespace G2
 			 * @return The RenderLayerMask of the RenderComponent.
 			 */
 			G2Core::RenderLayer::RenderLayerMask getRenderLayerMask() const { return mRenderLayerMask; }
+			/** Sets the RenderLayerMask of the RenderComponent.
+			 * The RenderLayerMask contains the information on which G2Core::RenderLayer the RenderComponent is assigned to.
+			 * @param renderLayerMask The RenderLayerMask of the RenderComponent.
+			 */
+			void setRenderLayerMask(G2Core::RenderLayer::RenderLayerMask renderLayerMask) { mRenderLayerMask = renderLayerMask; }
 			/** Returns the DrawCall object at the given index.
 			 * @param index The index to get the DrawCall for.
 			 * @note Make sure that the DrawCall at the given index exists.
