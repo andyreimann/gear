@@ -686,7 +686,7 @@ std::shared_ptr<Shader>
 RenderSystem::_getPassRenderShader(RenderComponent* component, Pass const* pass) const
 {
 	// TODO add caching for pass shader as well
-	return pass->getShader(component->material,component->mVaos[0]);;
+	return pass->getShader(component->material,component->mVaos[0]);
 }
 
 void
@@ -714,7 +714,6 @@ RenderSystem::_recalculateModelSpaceAABB(RenderComponent* component, TransformSy
 			unsigned int* indices = iao.getIndexPointer();
 			for(unsigned int v = 0; v < iao.getNumElements(); ++v)
 			{
-				// TODO VAO currently does not set the componentsPerPosition! Frustum Culling is therefore not active!
 				if(componentsPerPosition == 3)
 				{
 					aabb.merge(((glm::vec3*)vertexData)[indices[v]]);
