@@ -385,7 +385,7 @@ RenderSystem::_renderAllComponents(
 			RenderComponent* comp = get(renderComponentIds[k]);
 			if( comp->getEntityId() == entityIdToSkip || 
 				comp->material.isTransparent() || 
-				(comp->getRenderLayerMask() & validRenderLayers) == 0)
+				(comp->getRenderLayerMask() & validRenderLayers) == G2Core::Flags::NO_FLAGS)
 			{
 				continue;
 			}
@@ -419,7 +419,7 @@ RenderSystem::_renderAllComponents(
 		// TODO No frustum culling so far for transparent objects!
 		RenderComponent* comp = get(mZSortedTransparentEntityIdsToDrawCall[i].first);
 		if(comp->getEntityId() == entityIdToSkip || 
-		   (comp->getRenderLayerMask() & validRenderLayers) == 0)
+		   (comp->getRenderLayerMask() & validRenderLayers) == G2Core::Flags::NO_FLAGS)
 		{
 			continue;
 		}
@@ -1050,7 +1050,7 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 	{
 		auto& comp = components[i];// check if this component has a pass attached
 
-		if((renderLayers & comp.getRenderLayerMask()) == 0)
+		if((renderLayers & comp.getRenderLayerMask()) == G2Core::Flags::NO_FLAGS)
 		{
 			continue; // none of the requested RenderLayers is assigned - skip
 		}
