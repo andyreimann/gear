@@ -41,7 +41,13 @@ extern "C"
 	GEAROPENGLDLL_API void SetShaderUniformVec2(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec2 const& value);
 	GEAROPENGLDLL_API void SetShaderUniformFloat(G2Core::GfxResource* shaderResource, std::string const& property, float value);
 	GEAROPENGLDLL_API void SetShaderUniformInt(G2Core::GfxResource* shaderResource, std::string const& property, int value);
-	
+	GEAROPENGLDLL_API G2Core::GfxResource* CreateUBO(std::string const& shadingLanguage, int size, void const* data, G2Core::BufferUsage::Name bufferUsage);
+	GEAROPENGLDLL_API void BindUBO(G2Core::GfxResource* ubo);
+	GEAROPENGLDLL_API void UnbindUBO(G2Core::GfxResource* ubo);
+	GEAROPENGLDLL_API void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint);
+	GEAROPENGLDLL_API void SetShaderUBOBlockBinding(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName);
+	GEAROPENGLDLL_API void UpdateUBOSubData(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data);
+
 	// VAO
 	GEAROPENGLDLL_API G2Core::GfxResource* CreateVAO();
 	GEAROPENGLDLL_API void UpdateVAOVertexBufferVec4(G2Core::GfxResource* vao, G2Core::Semantics::Name semantic, glm::vec4 const* data, int numElements);

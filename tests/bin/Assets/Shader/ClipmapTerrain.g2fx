@@ -69,7 +69,7 @@ Ubershader "Example/Simple" {
 
 
 
-				  outColor = material.ambient + texture(_heightMap,dataIn.texCoord);
+				  outColor = g2_ambient + texture(_heightMap,dataIn.texCoord);
            
        }
    }

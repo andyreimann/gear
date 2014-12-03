@@ -13,7 +13,6 @@ Ubershader "Example/Simple" {
        }
      #FRAGMENTPROGRAM
        #version 330
-       #INCLUDE "G2.material" // include GEAR default stuff
 
        out vec4 outColor; // here goes the final color
  

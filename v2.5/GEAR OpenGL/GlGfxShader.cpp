@@ -1,5 +1,6 @@
 #include "GlGfxApi.h"
 #include "GlGfxData.h"
+#include "GlGfxMappings.h"
 
 #include <G2/Logger.h>
 
@@ -392,30 +393,141 @@ void SetShaderUniformInt(G2Core::GfxResource* shaderResource, std::string const&
 	static_cast<G2GL::ShaderResource*>(shaderResource)->setShaderUniformInt(shaderResource, property, value);
 }
 
-//void _destroyShaderGlsl(G2Core::GfxResource& shaderResource)
-//{
-//	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(&shaderResource);
-//	GLCHECK( glDetachShader(glslRes->programId, glslRes->vertexShaderId) );
-//	GLCHECK( glDetachShader(glslRes->programId, glslRes->geometryShaderId) );
-//	GLCHECK( glDetachShader(glslRes->programId, glslRes->fragmentShaderId) );
-//	
-//	GLCHECK( glDeleteShader(glslRes->fragmentShaderId) );
-//	GLCHECK( glDeleteShader(glslRes->geometryShaderId) );
-//	GLCHECK( glDeleteShader(glslRes->vertexShaderId) );
-//
-//	GLCHECK( glDeleteProgram(glslRes->programId) );
-//}
-//
-//void _destroyShaderCg(G2Core::GfxResource& shaderResource)
-//{
-//	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(&shaderResource);
-//	cgDestroyProgram(cgRes->vertexShaderId);
-//	if(cgRes->geometryShaderId != nullptr)
-//	{
-//		cgDestroyProgram(cgRes->geometryShaderId);
-//	}
-//	cgDestroyProgram(cgRes->fragmentShaderId);
-//}
+G2Core::GfxResource* _setupUniformBufferObjectFunctionPointers(G2Core::GfxResource* res);
+
+G2Core::GfxResource* CreateUBO(std::string const& shadingLanguage, int size, void const* data, G2Core::BufferUsage::Name bufferUsage)
+{
+
+	// IDEA:
+	/**
+	 
+	 What if we just always create and update a OpenGL UBO and a Cg UBO?
+	 It almost seems that we can just create a Cg handle for an existing OpenGL UBO to 
+	 make it accessible in Cg as well :)
+
+	 */
+
+
+
+	if (shadingLanguage == "GLSL")
+	{
+		unsigned int uboId;
+		GLCHECK(glGenBuffers(1, &uboId));
+		GLCHECK(glBindBuffer(GL_UNIFORM_BUFFER, uboId));
+		GLCHECK(glBufferData(GL_UNIFORM_BUFFER, size, data, toGlBufferUsage(bufferUsage)));
+
+		// create client resource
+		G2GL::GlslUniformBufferResource* resource = new G2GL::GlslUniformBufferResource(uboId);
+		return _setupUniformBufferObjectFunctionPointers(resource);
+	}
+	else if (shadingLanguage == "CG")
+	{
+		// For uniform buffer objects in Cg, we also have to create a normal OpenGL UBO
+		CGbuffer cgUboId = cgGLCreateBuffer(gCgContext, size, data, toCgBufferUsage(bufferUsage));
+
+		unsigned int uboId = cgGLGetBufferObject(cgUboId);
+
+		G2GL::CgUniformBufferResource* resource = new G2GL::CgUniformBufferResource(uboId, cgUboId);
+		return _setupUniformBufferObjectFunctionPointers(resource);
+	}
+	return error();
+}
+
+void _bindUniformBufferGlsl(G2Core::GfxResource* ubo)
+{
+	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
+	GLCHECK(glBindBuffer(GL_UNIFORM_BUFFER, glslRes->uboId));
+}
+
+void _bindUniformBufferCg(G2Core::GfxResource* ubo)
+{
+	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+}
+
+void BindUBO(G2Core::GfxResource* ubo)
+{
+	static_cast<G2GL::UniformBufferResource*>(ubo)->bindUniformBuffer(ubo);
+}
+
+void _unbindUniformBufferGlsl(G2Core::GfxResource* ubo)
+{
+	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
+	GLCHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+}
+
+void _unbindUniformBufferCg(G2Core::GfxResource* ubo)
+{
+	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+}
+
+void UnbindUBO(G2Core::GfxResource* ubo)
+{
+	static_cast<G2GL::UniformBufferResource*>(ubo)->unbindUniformBuffer(ubo);
+}
+
+void _setUBOBindingPointGlsl(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
+{
+	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
+	glslRes->bindingPoint = (unsigned int)bindingPoint;
+	GLCHECK(glBindBufferBase(GL_UNIFORM_BUFFER, glslRes->bindingPoint, glslRes->uboId));
+}
+
+void _setUBOBindingPointCg(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
+{
+	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+	// TODO Check if it's the same
+}
+
+void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
+{
+	static_cast<G2GL::UniformBufferResource*>(ubo)->setUBOBindingPoint(ubo, bindingPoint);
+}
+
+void _setShaderUBOBlockBindingGlsl(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
+{
+	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
+	G2GL::UniformBufferResource* uboRes = static_cast<G2GL::UniformBufferResource*>(ubo);
+
+	// todo cache block index by name!
+	GLCHECK(unsigned int blockIndex = glGetUniformBlockIndex(glslRes->programId, uboBlockName.c_str()));
+	if (blockIndex != GL_INVALID_INDEX)
+	{
+		GLCHECK(glUniformBlockBinding(glslRes->programId, blockIndex, uboRes->bindingPoint));
+	}
+}
+
+void _setShaderUBOBlockBindingCg(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
+{
+	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
+	G2GL::CgUniformBufferResource* uboRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+
+	// todo cache block index by name!
+	CGparameter uniformBuffer = cgGetNamedProgramUniformBuffer(cgRes->vertexShaderId, uboBlockName.c_str());
+	cgSetUniformBufferParameter(uniformBuffer, uboRes->cgUboId);
+}
+
+void SetShaderUBOBlockBinding(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
+{
+	static_cast<G2GL::ShaderResource*>(shaderResource)->setShaderUBOBlockBinding(shaderResource, ubo, uboBlockName);
+}
+
+void _updateUBOSubDataGlsl(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data)
+{
+	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
+	GLCHECK(glBufferSubData(GL_UNIFORM_BUFFER, byteOffset, byteSize, data));
+
+}
+
+void _updateUBOSubDataCg(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data)
+{
+	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+	cgSetBufferSubData(cgRes->cgUboId, byteOffset, byteSize, data);
+}
+
+void UpdateUBOSubData(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data)
+{
+	static_cast<G2GL::UniformBufferResource*>(ubo)->updateUBOSubData(ubo, byteOffset, byteSize, data);
+}
 
 G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 {
@@ -431,6 +543,7 @@ G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 		r->setShaderUniformVec2 = _setShaderUniformVec2Glsl;
 		r->setShaderUniformFloat = _setShaderUniformFloatGlsl;
 		r->setShaderUniformInt = _setShaderUniformIntGlsl;
+		r->setShaderUBOBlockBinding = _setShaderUBOBlockBindingGlsl;
 		break;
 	case G2GL::CG_SHADER:
 		r->bindShader = _bindShaderCg;
@@ -441,6 +554,7 @@ G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 		r->setShaderUniformVec2 = _setShaderUniformVec2Cg;
 		r->setShaderUniformFloat = _setShaderUniformFloatCg;
 		r->setShaderUniformInt = _setShaderUniformIntCg;
+		r->setShaderUBOBlockBinding = _setShaderUBOBlockBindingCg;
 		break;
 	default:
 		r->bindShader = nullptr;
@@ -451,6 +565,31 @@ G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 		r->setShaderUniformVec2 = nullptr;
 		r->setShaderUniformFloat = nullptr;
 		r->setShaderUniformInt = nullptr;
+		break;
+	}
+	return res;
+}
+
+G2Core::GfxResource* _setupUniformBufferObjectFunctionPointers(G2Core::GfxResource* res)
+{
+	G2GL::UniformBufferResource* r = static_cast<G2GL::UniformBufferResource*>(res);
+	switch (type(res))
+	{
+	case G2GL::GLSL_UBO:
+		r->bindUniformBuffer = _bindUniformBufferGlsl;
+		r->unbindUniformBuffer = _unbindUniformBufferGlsl;
+		r->setUBOBindingPoint = _setUBOBindingPointGlsl;
+		r->updateUBOSubData = _updateUBOSubDataGlsl;
+		break;
+	case G2GL::CG_UBO:
+		r->bindUniformBuffer = _bindUniformBufferCg;
+		r->unbindUniformBuffer = _unbindUniformBufferCg;
+		r->setUBOBindingPoint = _setUBOBindingPointCg;
+		r->updateUBOSubData = _updateUBOSubDataCg;
+		break;
+	default:
+		r->bindUniformBuffer = nullptr;
+		r->unbindUniformBuffer = nullptr;
 		break;
 	}
 	return res;

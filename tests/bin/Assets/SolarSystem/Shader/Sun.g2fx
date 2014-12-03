@@ -42,7 +42,7 @@ Ubershader "GEAR/Multipass" {
               out vec4 outColor; // here goes the final color
               void main() 
               {
-                outColor = material.diffuse;
+                outColor = g2_diffuse;
               }
         }
         Pass {
@@ -61,7 +61,7 @@ Ubershader "GEAR/Multipass" {
               RenderTargetHeight 192
               PointOfView MAIN_CAMERA
               OutputFormat RGBA
-              SkipPassRenderComponent false   
+              SkipPassRenderComponent false
            }
 
            #VERTEXPROGRAM
@@ -90,7 +90,7 @@ Ubershader "GEAR/Multipass" {
               out vec4 outColor; // here goes the final color
               void main() 
               {
-                outColor = material.ambient /* texture(_diffuseTex, dataIn.texCoord)*/;
+                outColor = g2_ambient /* texture(_diffuseTex, dataIn.texCoord)*/;
               }
         }
      }

@@ -127,3 +127,39 @@ TextureResource::~TextureResource()
 {
 	GLCHECK(glDeleteTextures(1, &texId));
 }
+
+G2GL::UniformBufferResource::UniformBufferResource(Type type) :
+	GlResource(type)
+{}
+
+G2GL::GlslUniformBufferResource::GlslUniformBufferResource(int uboId) :
+	UniformBufferResource(GLSL_UBO),
+	uboId(uboId)
+{}
+
+G2GL::GlslUniformBufferResource::~GlslUniformBufferResource()
+{
+	if (uboId != GL_INVALID_VALUE)
+	{
+		GLCHECK(glDeleteBuffers(1, &uboId));
+	}
+}
+
+G2GL::CgUniformBufferResource::CgUniformBufferResource(int glUboId, CGbuffer cgUboId) :
+	UniformBufferResource(CG_UBO),
+	glUboId(glUboId),
+	cgUboId(cgUboId)
+{}
+
+G2GL::CgUniformBufferResource::~CgUniformBufferResource()
+{
+	//if (glUboId != GL_INVALID_VALUE)
+	//{
+	//	GLCHECK(glDeleteBuffers(1, &glUboId));
+	//}
+	if (cgUboId != nullptr)
+	{
+		// should destroy the GL buffer as well :)
+		cgDestroyBuffer(cgUboId);
+	}
+}

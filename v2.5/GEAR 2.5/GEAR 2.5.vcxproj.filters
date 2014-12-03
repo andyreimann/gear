@@ -307,6 +307,9 @@
     <ClInclude Include="ProjectionTools.h">
       <Filter>Tools\Projection</Filter>
     </ClInclude>
+    <ClInclude Include="UniformBufferObject.h">
+      <Filter>Buffer\UBO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MacroResource.cpp">
@@ -589,6 +592,9 @@
     <ClCompile Include="ProjectionTools.cpp">
       <Filter>Tools\Projection</Filter>
     </ClCompile>
+    <ClCompile Include="UniformBufferObject.cpp">
+      <Filter>Buffer\UBO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -818,6 +824,9 @@
     </Filter>
     <Filter Include="Tools\Projection">
       <UniqueIdentifier>{d7f0c3b2-5419-4157-8217-b1b0a14aebb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer\UBO">
+      <UniqueIdentifier>{b32d2d86-49d4-4011-b26b-44d3314daecf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

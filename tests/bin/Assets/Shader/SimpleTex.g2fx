@@ -34,7 +34,7 @@ Ubershader "GEAR/Default" {
    
         void main() 
         {
-          outColor = texture(_diffuseTex, dataIn.texCoord) * material.diffuse;
+          outColor = texture(_diffuseTex, dataIn.texCoord) * g2_diffuse;
         }
    }
  }

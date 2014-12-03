@@ -52,6 +52,12 @@ GfxDevice::loadFunctionPointers()
 	setShaderUniformFloat = (SetShaderUniformFloat)loadFunctionPointer("SetShaderUniformFloat");
 	setShaderUniformInt = (SetShaderUniformInt)loadFunctionPointer("SetShaderUniformInt");
 	freeGfxResource = (FreeGfxResource)loadFunctionPointer("FreeGfxResource");
+	createUBO = (CreateUBO)loadFunctionPointer("CreateUBO");
+	bindUBO = (BindUBO)loadFunctionPointer("BindUBO");
+	unbindUBO = (UnbindUBO)loadFunctionPointer("UnbindUBO");
+	setUBOBindingPoint = (SetUBOBindingPoint)loadFunctionPointer("SetUBOBindingPoint");
+	setShaderUBOBlockBinding = (SetShaderUBOBlockBinding)loadFunctionPointer("SetShaderUBOBlockBinding");
+	updateUBOSubData = (UpdateUBOSubData)loadFunctionPointer("UpdateUBOSubData");
 
 	// VAO
 	createVAO = (CreateVAO)loadFunctionPointer("CreateVAO");

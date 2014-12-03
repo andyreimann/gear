@@ -11,6 +11,15 @@
 
 namespace G2 
 {
+
+	struct MaterialUBOStructure
+	{
+		glm::vec4 ambient;
+		glm::vec4 diffuse;
+		glm::vec4 specular;
+		float shininess;
+	};
+
 	class Texture;
 	/** This class holds all informations needed to describe a Material used for rendering VertexArrayObjects.
 	 * @created:	2014/01/22

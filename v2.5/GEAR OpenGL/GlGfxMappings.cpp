@@ -17,12 +17,34 @@ std::unordered_map<G2Core::DataType::Name, unsigned int> dataTypeMapping;
 std::unordered_map<G2Core::PolygonDrawMode::Name, unsigned int> polygonDrawModeMapping;
 std::unordered_map<G2Core::FaceCulling::Name, unsigned int> faceCullingModeMapping;
 std::unordered_map<G2Core::BlendFactor::Name, unsigned int> blendFuncMapping;
+std::unordered_map<G2Core::BufferUsage::Name, unsigned int> bufferUsageMappingGl;
+std::unordered_map<G2Core::BufferUsage::Name, CGbufferusage> bufferUsageMappingCg;
 
 void _initMappings()
 {
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_ONLY]	= GL_READ_ONLY;
 	bufferAccessMapping[G2Core::BufferAccessMode::READ_WRITE]	= GL_READ_WRITE;
 	bufferAccessMapping[G2Core::BufferAccessMode::WRITE_ONLY] = GL_WRITE_ONLY;
+
+	bufferUsageMappingGl[G2Core::BufferUsage::STREAM_DRAW] = GL_STREAM_DRAW;
+	bufferUsageMappingGl[G2Core::BufferUsage::STREAM_READ] = GL_STREAM_READ;
+	bufferUsageMappingGl[G2Core::BufferUsage::STREAM_COPY] = GL_STREAM_COPY;
+	bufferUsageMappingGl[G2Core::BufferUsage::STATIC_DRAW] = GL_STATIC_DRAW;
+	bufferUsageMappingGl[G2Core::BufferUsage::STATIC_READ] = GL_STATIC_READ;
+	bufferUsageMappingGl[G2Core::BufferUsage::STATIC_COPY] = GL_STATIC_COPY;
+	bufferUsageMappingGl[G2Core::BufferUsage::DYNAMIC_DRAW] = GL_DYNAMIC_DRAW;
+	bufferUsageMappingGl[G2Core::BufferUsage::DYNAMIC_READ] = GL_DYNAMIC_READ;
+	bufferUsageMappingGl[G2Core::BufferUsage::DYNAMIC_COPY] = GL_DYNAMIC_COPY;
+
+	bufferUsageMappingCg[G2Core::BufferUsage::STREAM_DRAW] = CG_BUFFER_USAGE_STREAM_DRAW;
+	bufferUsageMappingCg[G2Core::BufferUsage::STREAM_READ] = CG_BUFFER_USAGE_STREAM_READ;
+	bufferUsageMappingCg[G2Core::BufferUsage::STREAM_COPY] = CG_BUFFER_USAGE_STREAM_COPY;
+	bufferUsageMappingCg[G2Core::BufferUsage::STATIC_DRAW] = CG_BUFFER_USAGE_STATIC_DRAW;
+	bufferUsageMappingCg[G2Core::BufferUsage::STATIC_READ] = CG_BUFFER_USAGE_STATIC_READ;
+	bufferUsageMappingCg[G2Core::BufferUsage::STATIC_COPY] = CG_BUFFER_USAGE_STATIC_COPY;
+	bufferUsageMappingCg[G2Core::BufferUsage::DYNAMIC_DRAW] = CG_BUFFER_USAGE_DYNAMIC_DRAW;
+	bufferUsageMappingCg[G2Core::BufferUsage::DYNAMIC_READ] = CG_BUFFER_USAGE_DYNAMIC_READ;
+	bufferUsageMappingCg[G2Core::BufferUsage::DYNAMIC_COPY] = CG_BUFFER_USAGE_DYNAMIC_COPY;
 
 	baseDataFormatMapping[G2Core::DataFormat::Base::RED] = GL_RED;
 	baseDataFormatMapping[G2Core::DataFormat::Base::RG] = GL_RG;
@@ -219,4 +241,16 @@ unsigned int
 toGlBlendFunc(G2Core::BlendFactor::Name blendFunc)
 {
 	return blendFuncMapping[blendFunc];
+}
+
+unsigned int
+toGlBufferUsage(G2Core::BufferUsage::Name usage)
+{
+	return bufferUsageMappingGl[usage];
+}
+
+CGbufferusage
+toCgBufferUsage(G2Core::BufferUsage::Name usage)
+{
+	return bufferUsageMappingCg[usage];
 }

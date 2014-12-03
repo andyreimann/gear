@@ -58,7 +58,7 @@ Ubershader "GEAR/Multipass" {
                 {
                   //discard;
                 }
-                outColor = material.ambient + material.diffuse;
+                outColor = g2_ambient + g2_diffuse;
               }
         }
      }
@@ -124,7 +124,7 @@ Ubershader "GEAR/Multipass" {
             vec4 spec = vec4(0.0);
             vec3 n = normalize(dataIn.normal);
             vec3 e = normalize(dataIn.eye);
-            outColor = material.ambient * texture(_reflectionMap, dataIn.texCoord);
+            outColor = g2_ambient * texture(_reflectionMap, dataIn.texCoord);
 
             float intensity = max(dot(n,l), 0.0);
             if (intensity > 0.0) 
@@ -134,9 +134,9 @@ Ubershader "GEAR/Multipass" {
                       light[i].attenuation.z * dist * dist);
               vec3 h = normalize(l + e);
               float intSpec = max(dot(h,n), 0.0);
-              spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+              spec = att * light[i].specular * g2_specular * pow(intSpec, g2_shininess);
             }
-            outColor += max(intensity * light[i].diffuse * material.diffuse + spec, material.ambient);
+            outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, g2_ambient);
           }
         }
    }

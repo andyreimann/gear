@@ -96,6 +96,22 @@ namespace G2Core
 		};
 	};
 
+	namespace BufferUsage
+	{
+		enum Name
+		{
+			STREAM_DRAW,
+			STREAM_READ,
+			STREAM_COPY,
+			STATIC_DRAW,
+			STATIC_READ,
+			STATIC_COPY,
+			DYNAMIC_DRAW,
+			DYNAMIC_READ,
+			DYNAMIC_COPY,
+		};
+	};
+
 	namespace DrawMode 
 	{
 		enum Name 
@@ -395,4 +411,14 @@ namespace G2Core
 		*/
 		COREDLL_API RenderLayer::RenderLayerMask getByRenderLayer(std::string const& renderLayer);
 	};
+
+	namespace UniformBufferBindingPoint
+	{
+		enum Name 
+		{
+			UBO_MATERIAL = 0,
+			UBO_LIGHTS = 1,
+			UBO_MATRICES = 2,
+		};
+	}
 };

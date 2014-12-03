@@ -66,9 +66,9 @@ Ubershader "GEAR/Default" {
             vec3 h = normalize(light.dir + e);
             // compute the specular term into spec
             float intSpec = max(dot(h,n), 0.0);
-            spec = material.specular * pow(intSpec,material.shininess);
+            spec = g2_specular * pow(intSpec,g2_shininess);
           }
-          outColor = max(intensity * material.diffuse * texture(_voxelTex, dataIn.texCoord) + spec, material.ambient);
+          outColor = max(intensity * g2_diffuse * texture(_voxelTex, dataIn.texCoord) + spec, g2_ambient);
         }
    }
  }

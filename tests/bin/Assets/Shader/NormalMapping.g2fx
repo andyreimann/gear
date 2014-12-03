@@ -98,7 +98,7 @@ Ubershader "GEAR/Default" {
           vec4 spec = vec4(0.0);
 
           // set color to ambient material term
-          outColor = material.ambient;
+          outColor = g2_ambient;
 
           for(int i = 0; i < G2ActiveLights; ++i)
           {
@@ -138,8 +138,8 @@ Ubershader "GEAR/Default" {
                 vec3 h = normalize(lightDir + e);
                 // compute the specular term into spec
                 float intSpec = max(dot(h,normal), 0.0);
-                spec = shadowMultiplier * light[i].specular * material.specular * pow(intSpec,material.shininess);
-                outColor += max(shadowMultiplier * intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+                spec = shadowMultiplier * light[i].specular * g2_specular * pow(intSpec,g2_shininess);
+                outColor += max(shadowMultiplier * intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
               }
               else
               {
@@ -173,10 +173,10 @@ Ubershader "GEAR/Default" {
                     vec3 eyeVecTangentSpace = toTangentSpace(e,tbnMatrix); 
                     vec3 reflection = reflect(lightDirTangentSpace, normal);
                     float intSpec = max(dot(reflection,eyeVecTangentSpace), 0.0);
-                    spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+                    spec = att * light[i].specular * g2_specular * pow(intSpec, g2_shininess);
                 }
               }
-              outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+              outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
             }
             else
             {
@@ -212,9 +212,9 @@ Ubershader "GEAR/Default" {
 
                   float intSpec = max(dot(reflect(-eyeVecTangentSpace, normal),lightDir), 0.0);
                   //float intSpec = max(dot(h,normal), 0.0);
-                  spec = att * light[i].specular * material.specular * pow(intSpec, material.shininess);
+                  spec = att * light[i].specular * g2_specular * pow(intSpec, g2_shininess);
                 }
-                outColor += max(intensity * light[i].diffuse * material.diffuse + spec, light[i].ambient);
+                outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
               }
             }
           }

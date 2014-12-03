@@ -7,9 +7,11 @@
 #include "RenderStatesGroup.h"
 #include "ZSorter.h"
 #include "Intersection.h"
+#include "UniformBufferObject.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
+#include <G2Core/GfxDevice.h>
 
 #include <memory>
 #include <glm/glm.hpp>
@@ -71,6 +73,7 @@ namespace G2
 	class RenderSystem : public BaseSystem<RenderSystem,RenderComponent> 
 	{
 			friend class RenderComponent;
+			friend class Shader;
 		public:
 
 			RenderSystem();
@@ -121,6 +124,9 @@ namespace G2
 			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
 			*/
 			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS);
+
+			UniformBufferObject* getMaterialUBO() { return &mMaterialUBO; }
+
 
 			~RenderSystem();
 		private:
@@ -248,6 +254,10 @@ namespace G2
 			 * @param effect The post processing Effect to set the uniforms on.
 			 */
 			void _updatePostProcessingUniforms(std::shared_ptr<Effect> const& effect) const;
+
+
+
+			void _connectShaderToUniformBlocks(Shader* boundShader);
 			
 			glm::vec4										mClearColor;			// The clear color to use for rendering
 			RenderType::Name								mRenderType;
@@ -276,6 +286,9 @@ namespace G2
 			RenderStatesGroups								mRenderSortedComponents;		// All components sorted by render states
 
 			glm::vec2										mLastWindowSize;				// The last known window size
+
+			UniformBufferObject								mMaterialUBO;
+			MaterialUBOStructure							mMaterialUBOData;
 	};
 };
 

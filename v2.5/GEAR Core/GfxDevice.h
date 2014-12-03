@@ -39,6 +39,13 @@ namespace G2
 	typedef void (*SetShaderUniformFloat)(G2Core::GfxResource* shaderResource, std::string const& property, float value);
 	typedef void (*SetShaderUniformInt)(G2Core::GfxResource* shaderResource, std::string const& property, int value);
 	typedef void (*FreeGfxResource)(G2Core::GfxResource* shaderResource);
+	typedef G2Core::GfxResource* (*CreateUBO)(std::string const& shadingLanguage, int byteSize, void const* data, G2Core::BufferUsage::Name bufferUsage);
+	typedef void (*BindUBO)(G2Core::GfxResource* ubo);
+	typedef void (*UnbindUBO)(G2Core::GfxResource* ubo);
+	typedef void (*SetUBOBindingPoint)(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint);
+	typedef void (*SetShaderUBOBlockBinding)(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName);
+	typedef void (*UpdateUBOSubData)(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data);
+
 
 	// VAO
 	typedef G2Core::GfxResource* (*CreateVAO)();
@@ -177,6 +184,12 @@ namespace G2
 			SetShaderUniformFloat setShaderUniformFloat;
 			SetShaderUniformInt setShaderUniformInt;
 			FreeGfxResource freeGfxResource;
+			CreateUBO createUBO;
+			BindUBO bindUBO;
+			UnbindUBO unbindUBO;
+			SetUBOBindingPoint setUBOBindingPoint;				//! connect UBO with binding point
+			SetShaderUBOBlockBinding setShaderUBOBlockBinding;	//! connect shader uniform with binding point
+			UpdateUBOSubData updateUBOSubData;
 
 			// VAO
 			CreateVAO createVAO;

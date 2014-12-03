@@ -18,6 +18,7 @@ class SolarSystem
 
 		void initPlanets();
 		void initSky();
+		void initPostProcessing();
 
 
 		void createTexturedPlane(glm::vec3 const& center, float width, float height);

@@ -3,25 +3,26 @@
 #include "FBXImporter.h"
 #include "Logger.h"
 #include "FBXAnimationComponent.h"
+#include "TextureImporter.h"
 
 using namespace G2;
 
 std::shared_ptr<FBXMesh>
-FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations) 
+FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter)
 {
 	
 	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
-		return it->second->build(importNormals, importTexCoords, importAnimations);
+		return it->second->build(importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter);
 	}
 	// should never occur
 	return std::shared_ptr<FBXMesh>();
 }
 
 std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> 
-FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations) 
+FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter)
 {
 	if(isCached(meshFileName))
 	{
@@ -41,6 +42,7 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool import
 		return std::make_pair(meshFileName, std::shared_ptr<FBXMesh::Builder>());
 	}
 
+	builder->meshFilePath = meshFileName;
 	size_t pos = meshFileName.find_last_of("/");
 	if( pos != std::string::npos)
 	{
@@ -234,16 +236,25 @@ FBXImporter::_loadCacheRecursive(FbxScene* pScene,
 	const int lTextureCount = pScene->GetTextureCount();
 	for (int lTextureIndex = 0; lTextureIndex < lTextureCount; ++lTextureIndex)
 	{
+
+		FbxFileTexture * lFileTexture = FbxCast<FbxFileTexture>(pScene->GetTexture(lTextureIndex));
+
+		if(lFileTexture != nullptr)
+		{
+			builder->meshTextures.push_back(lFileTexture);
+		}
+
+		const char* pTextureUses[] = { "Standard", "Shadow Map", "Light Map",
+			"Spherical Reflexion Map", "Sphere Reflexion Map", "Bump Normal Map" };
+
+		logger << "[FBXImporter] Warning: Texture loading is not supported but type is " << lFileTexture->GetTextureUse() << " and use is " << pTextureUses[lFileTexture->GetTextureUse()] << " and name is " << lFileTexture->GetFileName() << "!" << endl;
 		
-		logger << "[FBXImporter] Warning: Texture loading is not supported!" << endl;
-		break;
-		FbxTexture * lTexture = pScene->GetTexture(lTextureIndex);
-		FbxFileTexture * lFileTexture = FbxCast<FbxFileTexture>(lTexture);
+		continue;
 		if (lFileTexture && !lFileTexture->GetUserDataPtr())
 		{
 			// Try to load the texture from absolute path
 			const FbxString lFileName = lFileTexture->GetFileName();
-
+			lFileTexture->TextureTypeUse;
 			unsigned int lTextureObject = 0;
 			bool lStatus = false;//LoadTextureFromFile(lFileName, lTextureObject);
 

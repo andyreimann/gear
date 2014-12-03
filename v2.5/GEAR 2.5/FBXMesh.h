@@ -8,6 +8,7 @@
 #include "FBXVBOMesh.h"
 #include "FBXLightCache.h"
 #include "AABB.h"
+#include "Sampler.h"
 
 #include <G2Core/Entity.h>
 
@@ -16,6 +17,7 @@
 
 namespace G2 
 {
+	class TextureImporter;
 	/** This class holds all the data needed to visualize a FBXMesh.
 	 * Since it is a derivation of the Entity, it takes advantage of the
 	 * features of the ECS.
@@ -62,11 +64,16 @@ namespace G2
 				/** Unload the cache and release the memory under this node recursively.
 				 */
 				void unloadCacheRecursive(FbxNode * pNode);
+
+				static G2::Sampler::Name toSampler(int fbxTextureUse);
+				static G2Core::WrapMode::Name toWrapMode(int fbxTextureWrapMode);
+
 				~Builder();
 
-				std::shared_ptr<FBXMesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations);
+				std::shared_ptr<FBXMesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte);
 
 				std::string				name;
+				std::string				meshFilePath;
 				FbxScene*				fbxScene; // This object holds most objects imported from files.
 				FbxImporter *			fbxImporter;
 				bool					isAnimated;
@@ -84,6 +91,8 @@ namespace G2
 				//FbxTime				currentTime;
 
 				std::vector<MeshMetaData> meshMetaData; // The Meta Data for the Meshes, the FBXMesh holds
+
+				std::vector<FbxFileTexture*> meshTextures; // The texture objects contained in the FBX-Model
 			};
 
 			/** This constructs a new FBXMesh.

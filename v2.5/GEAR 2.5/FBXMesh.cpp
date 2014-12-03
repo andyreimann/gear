@@ -6,6 +6,7 @@
 #include "NameComponent.h"
 #include "FBXLightCache.h"
 #include "FBXMaterialCache.h"
+#include "TextureImporter.h"
 
 using namespace G2;
 
@@ -117,7 +118,7 @@ FBXMesh::operator=(FBXMesh && rhs)
 }
 
 std::shared_ptr<FBXMesh>
-FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations) 
+FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte)
 {
 	// create mesh
 	std::shared_ptr<FBXMesh> mesh = std::shared_ptr<FBXMesh>(new FBXMesh);
@@ -161,7 +162,27 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 		}
 		if(meshData.hasUvs && importTexCoords)
 		{
-			renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &meshData.uvs[0]);
+			if (flipTexU || flipTexV)
+			{
+				std::vector<glm::vec2> uvCopy = meshData.uvs; // copy
+				std::transform(uvCopy.begin(), uvCopy.end(), uvCopy.begin(), [flipTexU,flipTexV](glm::vec2& uv) 
+				{ 
+					if (flipTexU)
+					{
+						uv.x = 1.0f - uv.x;
+					}
+					if (flipTexV)
+					{
+						uv.y = 1.0f - uv.y;
+					}
+					return uv; 
+				});
+				renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &uvCopy[0]);
+			}
+			else
+			{
+				renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &meshData.uvs[0]);
+			}
 		}
 		if(meshData.indices.size() > 0)
 		{
@@ -185,6 +206,36 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 	nameComponent->name = name;
 	
 	logger << "FBXMesh will have " << renderComponent->getNumVertexArrays() << " VAOs\n";
+
+	if (texImporte != nullptr && renderComponent != nullptr)
+	{
+		for (int i = 0; i < meshTextures.size(); ++i)
+		{
+			FbxFileTexture* fbxTex = meshTextures[i];
+			G2::Sampler::Name sampler = toSampler(fbxTex->GetTextureUse());
+
+			if (sampler != G2::Sampler::SAMPLER_INVALID && renderComponent->material.getTexture(sampler).get() == nullptr)
+			{
+				// sampler is valid and RenderComponent has not yet set a texture at that sampler
+				const FbxString lAbsFolderName = FbxPathUtils::GetFolderName(FbxPathUtils::Resolve(meshFilePath.c_str()));
+				const FbxString lResolvedFileName = FbxPathUtils::Bind(lAbsFolderName, fbxTex->GetRelativeFileName());
+
+				auto tex = texImporte->import(
+					lResolvedFileName.Buffer(), 
+					G2Core::DataFormat::Internal::R32G32B32A32_F, 
+					G2Core::FilterMode::LINEAR, 
+					G2Core::FilterMode::LINEAR, 
+					false, 
+					toWrapMode(fbxTex->GetWrapModeU()), 
+					toWrapMode(fbxTex->GetWrapModeV())
+				);
+				if(tex.get() != nullptr)
+				{
+					renderComponent->material.setTexture(sampler, tex);
+				}
+			}
+		}
+	}
 
 	return mesh;
 }
@@ -426,5 +477,38 @@ FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int v
 			++lVertexCount;
 		}
 		subMeshMetaData[lMaterialIndex].triangleCount += 1;
+	}
+}
+
+G2::Sampler::Name
+G2::FBXMesh::Builder::toSampler(int fbxTextureUse)
+{
+	switch (fbxTextureUse)
+	{
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eStandard:
+		return Sampler::DIFFUSE;
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eBumpNormalMap:
+		return Sampler::NORMAL;
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eShadowMap:
+		return Sampler::SHADOW;
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eLightMap:					//! Light map
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eSphericalReflectionMap:	//! Spherical reflection map: Object reflects the contents of the scene
+	case fbxsdk_2015_1::FbxTexture::ETextureUse::eSphereReflectionMap:		//! Sphere reflection map: Object reflects the contents of the scene from only one point of view
+	default:
+		return Sampler::SAMPLER_INVALID; // not supported right now
+	}
+}
+
+G2Core::WrapMode::Name
+G2::FBXMesh::Builder::toWrapMode(int fbxTextureWrapMode)
+{
+	switch (fbxTextureWrapMode)
+	{
+	case fbxsdk_2015_1::FbxTexture::EWrapMode::eClamp:
+		return G2Core::WrapMode::CLAMP_TO_EDGE;
+	case fbxsdk_2015_1::FbxTexture::EWrapMode::eRepeat:
+		return G2Core::WrapMode::REPEAT;
+	default:
+		return G2Core::WrapMode::REPEAT;
 	}
 }

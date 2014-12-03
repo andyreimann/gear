@@ -42,7 +42,8 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 
 RenderSystem::RenderSystem() :
 	mClearColor(0.25f, 0.25f, 0.25f, 1.f),
-	mLastWindowSize(1.f,1.f)
+	mLastWindowSize(1.f,1.f),
+	mMaterialUBO("GLSL", 13 * sizeof(float), nullptr, G2Core::BufferUsage::STREAM_DRAW, G2Core::UniformBufferBindingPoint::UBO_MATERIAL)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
 
@@ -640,10 +641,15 @@ RenderSystem::_uploadLight(std::shared_ptr<Shader>& shader, LightComponent* ligh
 void
 RenderSystem::_uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
-	shader->setProperty(std::string("material.ambient"), material->getAmbient());
-	shader->setProperty(std::string("material.diffuse"), material->getDiffuse());
-	shader->setProperty(std::string("material.specular"), material->getSpecular());
-	shader->setProperty(std::string("material.shininess"), material->getShininess());
+	// fill UBO struct
+	mMaterialUBOData.ambient = material->getAmbient();
+	mMaterialUBOData.diffuse = material->getDiffuse();
+	mMaterialUBOData.specular = material->getSpecular();
+	mMaterialUBOData.shininess = material->getShininess();
+	// Upload to UBO
+	mMaterialUBO.bind();
+	mMaterialUBO.updateSubData(0, 13 * sizeof(float), &mMaterialUBOData);
+	mMaterialUBO.unbind();
 }
 
 std::shared_ptr<Shader>
@@ -1158,5 +1164,14 @@ RenderSystem::_deleteEmptyRenderStatesGroups()
 			mRenderSortedComponents.pop_back();
 			--i;
 		}
+	}
+}
+
+void
+G2::RenderSystem::_connectShaderToUniformBlocks(Shader* boundShader)
+{
+	if (boundShader != nullptr)
+	{
+		boundShader->_setUBOBlockBinding("G2Material", &mMaterialUBO);
 	}
 }

@@ -1,10 +1,13 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "Shader.h"
+#include "UniformBufferObject.h"
 
 using namespace G2;
 
+#include "RenderComponent.h"
 #include <G2Core/GfxDevice.h>
+#include <G2Core/ECSManager.h>
 
 Shader::Shader() 
 {
@@ -24,16 +27,22 @@ Shader::setConditions(std::vector<MacroCondition> const& conditions)
 void
 Shader::initWithMetaData(ShaderMetaData const& metaData) 
 {
+	bind();
 	for (int i = 0; i < metaData.samplers.size() ; ++i) 
 	{
 		ShaderMetaData::SamplerMetaData const& samplerMetaData = metaData.samplers[i];
-		bind();
 		if(samplerMetaData.samplerSlot != Sampler::SAMPLER_INVALID)
 		{
 			// BIND SAMPLER
 			setProperty(std::move(samplerMetaData.name),samplerMetaData.samplerSlot);
 		}
 	}
+
+	// connect this Shader to all existing default UniformBufferObjects
+	// coming from the default includes GEAR provides
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->_connectShaderToUniformBlocks(this);
 }
 
 
@@ -92,4 +101,10 @@ Shader::compile(std::string const& shadingLanguage, std::string const& vertexCod
 	mVertexInputLayout = vertexInputLayout;
 	mGfxHandle = G2_gfxDevice()->compileShader(vertexInputLayout,shadingLanguage,vertexCode,geometryCode,fragmentCode);
 	return mGfxHandle->valid;
+}
+
+void
+G2::Shader::_setUBOBlockBinding(std::string const& blockName, UniformBufferObject* ubo)
+{
+	G2_gfxDevice()->setShaderUBOBlockBinding(mGfxHandle, ubo->mUniformBufferResource, blockName);
 }

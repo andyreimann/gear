@@ -15,6 +15,7 @@
 namespace G2 
 {
 	class Effect;
+	class UniformBufferObject;
 	/** This class defines a generic Shader, written in any supported shading language.
 	 * It is designed to hold as few informations as possible to be really lightweight.
 	 * @created:	2014/02/10
@@ -73,6 +74,9 @@ namespace G2
 			 * @param value The value to set the Property to.
 			 */
 			void setProperty(std::string const& property, int value);
+
+			void _setUBOBlockBinding(std::string const& blockName, UniformBufferObject* ubo);
+
 			/** This function will set the MacroConditions, which are checked at runtime
 			 * to find the Shader, which is best for rendering an Object.
 			 * @param conditions A vector containing all MacroConditions.

@@ -23,6 +23,8 @@ namespace G2GL
 		TEX_2D_ARRAY,
 		TEX_CUBE,
 		TEX_3D,
+		GLSL_UBO,
+		CG_UBO,
 	};
 	struct GlResource : G2Core::GfxResource
 	{
@@ -40,6 +42,7 @@ namespace G2GL
 	typedef void (*SetShaderUniformFloat)(G2Core::GfxResource* shaderResource, std::string const& property, float value);
 	typedef void (*SetShaderUniformInt)(G2Core::GfxResource* shaderResource, std::string const& property, int value);
 	typedef void (*FreeGfxResource)(G2Core::GfxResource* resource);
+	typedef void(*SetShaderUBOBlockBinding)(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName);
 
 	struct ShaderResource : GlResource
 	{
@@ -55,6 +58,7 @@ namespace G2GL
 		SetShaderUniformFloat setShaderUniformFloat;
 		SetShaderUniformInt setShaderUniformInt;
 		FreeGfxResource freeGfxResource;
+		SetShaderUBOBlockBinding setShaderUBOBlockBinding;
 	};
 
 	struct CgShaderResource : ShaderResource
@@ -238,6 +242,45 @@ namespace G2GL
 		unsigned int wrapS;
 		unsigned int wrapT;
 		unsigned int wrapR;
+	};
+
+	typedef void(*BindUniformBuffer)(G2Core::GfxResource* ubo);
+	typedef void(*UnbindUniformBuffer)(G2Core::GfxResource* ubo);
+	typedef void(*SetUBOBindingPoint)(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint);
+	typedef void(*UpdateUBOSubData)(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data);
+
+	struct UniformBufferResource : GlResource
+	{
+		UniformBufferResource(Type type);
+		virtual ~UniformBufferResource() {}
+
+		BindUniformBuffer bindUniformBuffer;
+		UnbindUniformBuffer unbindUniformBuffer;
+		SetUBOBindingPoint setUBOBindingPoint;
+		UpdateUBOSubData updateUBOSubData;
+
+		unsigned int bindingPoint;
+	};
+
+
+	struct GlslUniformBufferResource : UniformBufferResource
+	{
+		GlslUniformBufferResource(int uboId);
+
+		virtual ~GlslUniformBufferResource();
+
+		unsigned int uboId;
+	};
+
+
+	struct CgUniformBufferResource : UniformBufferResource
+	{
+		CgUniformBufferResource(int glUboId, CGbuffer cgUboId);
+
+		virtual ~CgUniformBufferResource();
+
+		unsigned int	glUboId;		// The normal OpenGL UniformBufferObject
+		CGbuffer		cgUboId;		// The Cg variant of the same UniformBufferObject for usage in Cg
 	};
 
 };

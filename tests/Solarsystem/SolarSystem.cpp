@@ -52,6 +52,7 @@ SolarSystem::init()
 
 	initPlanets();
 	initSky();
+	initPostProcessing();
 }
 
 void
@@ -59,7 +60,7 @@ SolarSystem::initPlanets()
 {
 	auto* light = mSun.addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
 
-	light->diffuse = glm::vec4(1.f,1.f,1.f,1.f);
+	light->diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
 	light->linearAttenuation = 1.f;
 
 	float sunScale = 0.01f;
@@ -68,10 +69,10 @@ SolarSystem::initPlanets()
 	double realSecondInSeconds = 1.0 / 86400.0 / realDaysPerSecond; // one day in reality is one second here
 
 	auto sunEffect = mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Sun.g2fx");
-	
-	
-	
-	
+
+
+
+
 	//auto it = sunEffect->getPasses().begin();
 	//++it;
 	//auto list = it->getSetting("RenderLayerIncludes", "").toList(",");
@@ -96,7 +97,7 @@ SolarSystem::initPlanets()
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Mercury",
 		mFbxImporter.import(ASSET_PATH + "SolarSystem/moon.FBX", true, true, false),
-		glm::vec3(5.79f, 0.0f, 0.0f),	
+		glm::vec3(5.79f, 0.0f, 0.0f),
 		glm::vec3(scale * 4879.f),
 		glm::vec3(0.f, 1.f, 0.f),
 		88. * 86400. * realSecondInSeconds,
@@ -128,7 +129,7 @@ SolarSystem::initPlanets()
 		)));
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Mars",
-		mFbxImporter.import(ASSET_PATH + "SolarSystem/asteroid001_mdl.fbx", true, true, false),
+		mFbxImporter.import(ASSET_PATH + "SolarSystem/asteroid001_mdl.fbx", true, true, false, false, true, &mTexImporter),
 		glm::vec3(22.8f, 0.0f, 0.0f),
 		glm::vec3(scale * 6772.f),
 		glm::vec3(0.f, 1.f, 0.f),
@@ -183,27 +184,6 @@ SolarSystem::initPlanets()
 		)));
 
 	//createTexturedPlane(glm::vec3(20.f,0.f,0.f), 10.f, 10.f);
-
-	//mGodRayPostProcess = mEffectImporter.import(ASSET_PATH + "Shader/BlurShader.g2fx");
-	mGodRayPostProcess = mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRays.g2fx");
-
-	
-	
-
-
-
-	//G2::ECSManager::getShared()
-	//	.getSystem<G2::RenderSystem, G2::RenderComponent>()
-	//	->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRayBlur.g2fx"));
-
-
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->addPostProcessingEffect(mGodRayPostProcess);
-
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/SceneCombine.g2fx"));
 }
 
 void
@@ -228,6 +208,25 @@ SolarSystem::initSky()
 	// connect skybox to main cameras inverse translation
 	skyTransformation->setParent(mCamera.getComponent<G2::TransformComponent>());
 	// load skybox end
+}
+
+void
+SolarSystem::initPostProcessing()
+{
+	mGodRayPostProcess = mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRays.g2fx");
+
+	//G2::ECSManager::getShared()
+	//	.getSystem<G2::RenderSystem, G2::RenderComponent>()
+	//	->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/GodRayBlur.g2fx"));
+
+
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->addPostProcessingEffect(mGodRayPostProcess);
+
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->addPostProcessingEffect(mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/SceneCombine.g2fx"));
 }
 
 void
