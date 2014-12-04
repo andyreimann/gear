@@ -4,6 +4,8 @@
 #include "Sampler.h"
 #include "VersionTracker.h"
 
+#include <G2Core/ShaderViews.h>
+
 #include <glm/glm.hpp>
 
 #include <map>
@@ -11,15 +13,6 @@
 
 namespace G2 
 {
-
-	struct MaterialUBOStructure
-	{
-		glm::vec4 ambient;
-		glm::vec4 diffuse;
-		glm::vec4 specular;
-		float shininess;
-	};
-
 	class Texture;
 	/** This class holds all informations needed to describe a Material used for rendering VertexArrayObjects.
 	 * @created:	2014/01/22
@@ -52,7 +45,7 @@ namespace G2
 			/** This function will return the ambient material term. 
 			* @return The current ambient material term.
 			*/
-			glm::vec4 const& getAmbient() const { return mAmbient; }
+			glm::vec4 const& getAmbient() const { return mMaterialData.ambient; }
 			/** This function will set the ambient material term to the given value.
 			* @param ambient The current ambient material term.
 			* @return The Material itself.
@@ -61,7 +54,7 @@ namespace G2
 			/** This function will return the diffuse material term. 
 			* @return The current diffuse material term.
 			*/
-			glm::vec4 const& getDiffuse() const { return mDiffuse; }
+			glm::vec4 const& getDiffuse() const { return mMaterialData.diffuse; }
 			/** This function will set the diffuse material term to the given value.
 			* @param diffuse The current diffuse material term.
 			* @return The Material itself.
@@ -75,7 +68,7 @@ namespace G2
 			/** This function will return the specular material term. 
 			* @return The current specular material term.
 			*/
-			glm::vec4 const& getSpecular() const { return mSpecular; }
+			glm::vec4 const& getSpecular() const { return mMaterialData.specular; }
 			/** This function will set the specular material term to the given value.
 			* @param specular The current specular material term.
 			* @return The Material itself.
@@ -84,7 +77,7 @@ namespace G2
 			/** This function will return the shininess for the specular highlights. 
 			* @return The current shininess for the specular highlights.
 			*/
-			float const& getShininess() const { return mShininess; }
+			float const& getShininess() const { return mMaterialData.shininess; }
 			/** This function will set the shininess for the specular highlights to the given value.
 			* @param shininess The current shininess for the specular highlights.
 			* @return The Material itself.
@@ -110,7 +103,11 @@ namespace G2
 			* @return The current Textures.
 			*/
 			std::map<Sampler::Name,std::shared_ptr<Texture>> const& getTextures() const { return mTextures; }
-
+			/** Returns the ShaderView of the Material.
+			 * The ShaderView is the view on the data of the material as it is seen by a Shader.
+			 * @return The ShaderView of the Material.
+			 */
+			G2Core::ShaderView::Material* getShaderView() { return &mMaterialData;  }
 		private:
 			void _updateTransparencyFlag();
 			/** This function will set the entity id the Material is connected to.
@@ -120,14 +117,9 @@ namespace G2
 			 */
 			void _connectToEntityId(unsigned int entityId);
 
-			// private members
-			unsigned int			mEntityId;		// The id of the Entity, the Material is connected to.
-			bool					mIsTransparent; // The flag for the transparency of the Material
-			glm::vec4				mAmbient;		// The ambient material term
-			glm::vec4				mDiffuse;		// The diffuse material term
-			glm::vec4				mSpecular;		// The specular material term
-			float					mShininess;		// The shininess for the specular highlights
-			
+			unsigned int			mEntityId;							// The id of the Entity, the Material is connected to.
+			bool					mIsTransparent;						// The flag for the transparency of the Material			
+			G2Core::ShaderView::Material mMaterialData;					// The actual data of the material already in the correct layout to directly upload it to a shader
 			std::map<Sampler::Name,std::shared_ptr<Texture>> mTextures;	// The diffuse map of the Material
 			bool					mChanged;
 	};

@@ -10,13 +10,13 @@
 using namespace G2;
 
 Material::Material() 
-	: mAmbient(0.2f,0.2f,0.2f,1.0f),
-	mDiffuse(1.0f,1.0f,1.0f,1.0f),
-	mSpecular(0.0f,0.0f,0.0f,1.0f),
-	mShininess(0.0f),
-	mIsTransparent(false),
+	: mIsTransparent(false),
 	mEntityId(Entity::UNINITIALIZED_ENTITY_ID)
 {
+	mMaterialData.ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	mMaterialData.diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	mMaterialData.specular = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	mMaterialData.shininess = 0.f;
 }
 
 Material::Material(Material && rhs) 
@@ -33,11 +33,7 @@ Material& Material::operator=(Material && rhs)
 	// 2. Stage: transfer data from src to target
 	mEntityId = rhs.mEntityId;
 	mIsTransparent = rhs.mIsTransparent;
-	mAmbient = std::move(rhs.mAmbient);
-	mDiffuse = std::move(rhs.mDiffuse);
-	mSpecular = std::move(rhs.mSpecular);
-	mTextures = std::move(rhs.mTextures);
-	mShininess = rhs.mShininess;
+	mMaterialData = std::move(rhs.mMaterialData);
 	// copy and increment the version!
 	setVersion(rhs.getVersion()+1);
 	rhs.mEntityId = Entity::UNINITIALIZED_ENTITY_ID;
@@ -53,7 +49,7 @@ Material::isTransparent() const
 Material&
 Material::setShininess(float const& shininess)
 {
-	mShininess = shininess;
+	mMaterialData.shininess = shininess;
 	updateVersion();
 	return *this;
 }
@@ -61,7 +57,7 @@ Material::setShininess(float const& shininess)
 Material&
 Material::setSpecular(glm::vec4 const& specular)
 {
-	mSpecular = specular;
+	mMaterialData.specular = specular;
 	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
@@ -69,7 +65,7 @@ Material::setSpecular(glm::vec4 const& specular)
 
 Material&
 Material::setDiffuse(glm::vec4 const& diffuse) {
-	mDiffuse = diffuse;
+	mMaterialData.diffuse = diffuse;
 	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
@@ -78,7 +74,7 @@ Material::setDiffuse(glm::vec4 const& diffuse) {
 Material&
 Material::setAmbient(glm::vec4 const& ambient)
 {
-	mAmbient = ambient;
+	mMaterialData.ambient = ambient;
 	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
@@ -88,7 +84,7 @@ void
 Material::_updateTransparencyFlag()
 {
 	float threshold = 1.f - std::numeric_limits<int>::epsilon();
-	if(mAmbient.w < threshold || mDiffuse.w < threshold || mSpecular.w < threshold)
+	if (mMaterialData.ambient.w < threshold || mMaterialData.diffuse.w < threshold || mMaterialData.specular.w < threshold)
 	{
 		if(mIsTransparent != true)
 		{
@@ -109,8 +105,8 @@ Material::_updateTransparencyFlag()
 Material&
 Material::setAmbientAndDiffuse(glm::vec4 const& color) 
 {
-	mAmbient = color;
-	mDiffuse = color;
+	mMaterialData.ambient = color;
+	mMaterialData.diffuse = color;
 	_updateTransparencyFlag();
 	updateVersion();
 	return *this;
@@ -119,10 +115,10 @@ Material::setAmbientAndDiffuse(glm::vec4 const& color)
 bool
 Material::operator==(Material const& rhs) 
 {
-	return  mAmbient == rhs.getAmbient() &&
-			mDiffuse == rhs.getDiffuse() &&
-			mSpecular == rhs.getSpecular() &&
-			mShininess == rhs.getShininess();
+	return  mMaterialData.ambient == rhs.getAmbient() &&
+		mMaterialData.diffuse == rhs.getDiffuse() &&
+		mMaterialData.specular == rhs.getSpecular() &&
+		mMaterialData.shininess == rhs.getShininess();
 }
 
 void

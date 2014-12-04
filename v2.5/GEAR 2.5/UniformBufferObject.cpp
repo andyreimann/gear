@@ -40,7 +40,10 @@ UniformBufferObject::operator=(UniformBufferObject && rhs)
 
 UniformBufferObject::~UniformBufferObject()
 {
-	_deleteBuffer();
+	if (mUniformBufferResource != nullptr)
+	{
+		G2_gfxDevice()->freeGfxResource(mUniformBufferResource);
+	}
 }
 
 void
@@ -59,13 +62,4 @@ void
 UniformBufferObject::unbind()
 {
 	G2_gfxDevice()->unbindUBO(mUniformBufferResource);
-}
-
-void
-UniformBufferObject::_deleteBuffer()
-{
-	if (mUniformBufferResource != nullptr)
-	{
-		G2_gfxDevice()->freeGfxResource(mUniformBufferResource);
-	}
 }

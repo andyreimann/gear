@@ -43,7 +43,7 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 RenderSystem::RenderSystem() :
 	mClearColor(0.25f, 0.25f, 0.25f, 1.f),
 	mLastWindowSize(1.f,1.f),
-	mMaterialUBO("GLSL", 13 * sizeof(float), nullptr, G2Core::BufferUsage::STREAM_DRAW, G2Core::UniformBufferBindingPoint::UBO_MATERIAL)
+	mMaterialUBO("GLSL", sizeof(G2Core::ShaderView::Material), nullptr, G2Core::BufferUsage::STREAM_DRAW, G2Core::UniformBufferBindingPoint::UBO_MATERIAL)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
 
@@ -641,14 +641,9 @@ RenderSystem::_uploadLight(std::shared_ptr<Shader>& shader, LightComponent* ligh
 void
 RenderSystem::_uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
-	// fill UBO struct
-	mMaterialUBOData.ambient = material->getAmbient();
-	mMaterialUBOData.diffuse = material->getDiffuse();
-	mMaterialUBOData.specular = material->getSpecular();
-	mMaterialUBOData.shininess = material->getShininess();
-	// Upload to UBO
+	// Upload material shader view to UBO
 	mMaterialUBO.bind();
-	mMaterialUBO.updateSubData(0, 13 * sizeof(float), &mMaterialUBOData);
+	mMaterialUBO.updateSubData(0, sizeof(G2Core::ShaderView::Material), material->getShaderView());
 	mMaterialUBO.unbind();
 }
 

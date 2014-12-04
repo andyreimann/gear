@@ -288,7 +288,6 @@ namespace G2
 			glm::vec2										mLastWindowSize;				// The last known window size
 
 			UniformBufferObject								mMaterialUBO;
-			MaterialUBOStructure							mMaterialUBOData;
 	};
 };
 

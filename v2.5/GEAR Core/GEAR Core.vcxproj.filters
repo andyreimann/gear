@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -6,6 +6,9 @@
     </Filter>
     <Filter Include="include\G2Core">
       <UniqueIdentifier>{5A957500-4663-6906-2FF7-D92C1B64456B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderViews">
+      <UniqueIdentifier>{a775ec06-1127-4ff6-9b92-e0e308d6cb7a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,50 +27,8 @@
     <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="TextureMetaData.h" />
     <ClInclude Include="VertexInputLayout.h" />
-    <ClInclude Include="include\G2Core\BaseComponent.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\BaseSystem.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\Defines.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\ECSManager.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\Entity.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\Event.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\EventDistributer.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\FrameInfo.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\G2Core.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\GfxDevice.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\KeyCodes.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\MouseButton.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\NonCopyable.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\TextureMetaData.h">
-      <Filter>include\G2Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\G2Core\VertexInputLayout.h">
-      <Filter>include\G2Core</Filter>
+    <ClInclude Include="ShaderViews.h">
+      <Filter>ShaderViews</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
