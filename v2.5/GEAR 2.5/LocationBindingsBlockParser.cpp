@@ -85,7 +85,7 @@ LocationBindingsBlockParser::parse()
                 semantic = Tools::String::trim(line.substr(startPos+1, endPos-startPos-1));
             }
 
-            G2Core::Semantics::Name parsedSemantic = G2Core::Semantics::parse(semantic);
+            G2Core::Semantics::Name parsedSemantic = G2Core::Semantics::fromString(semantic);
 
             if(parsedSemantic == G2Core::Semantics::SEMANTIC_INVALID)
             {

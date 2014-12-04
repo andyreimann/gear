@@ -27,8 +27,8 @@ Pass::Pass(
 							(unsigned)Setting::get("RenderTargetHeight", mSettings, "512").toInt(), 
 							Texture::getBaseFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value), 
 							Texture::getInternalFormatByString(Setting::get("OutputFormat", mSettings, "RGB").value),
-							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
-							G2Core::WrapMode::parse(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value), 
+							G2Core::WrapMode::fromString(Setting::get("RenderTargetWrapS", mSettings, "REPEAT").value), 
+							G2Core::WrapMode::fromString(Setting::get("RenderTargetWrapT", mSettings, "REPEAT").value),
 							false,
 							G2Core::DataType::UNSIGNED_BYTE,
 							nullptr))
@@ -85,7 +85,7 @@ Pass::Pass(
 		mValidRenderLayers = G2Core::Flags::NO_FLAGS;
 		for(auto it = renderLayerIncludesList.begin(); it != renderLayerIncludesList.end(); ++it)
 		{
-			mValidRenderLayers |= G2Core::RenderLayer::getByRenderLayer(*it);
+			mValidRenderLayers |= G2Core::RenderLayer::fromString(*it);
 		}
 	}
 	std::list<std::string> renderLayerExcludesList = getSetting("RenderLayerExcludes", "").toList(",");
@@ -93,7 +93,7 @@ Pass::Pass(
 	{
 		for(auto it = renderLayerExcludesList.begin(); it != renderLayerExcludesList.end(); ++it)
 		{
-			mValidRenderLayers &= ~G2Core::RenderLayer::getByRenderLayer(*it);
+			mValidRenderLayers &= ~G2Core::RenderLayer::fromString(*it);
 		}
 	}
 }

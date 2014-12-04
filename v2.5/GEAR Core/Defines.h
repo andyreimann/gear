@@ -33,7 +33,16 @@ namespace G2Core
 			DEPTH = 1,
 			STENCIL = 2,
 			COLOR = 4,
+			BUFFER_INVALID,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(Buffer::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or BUFFER_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API Buffer::Name fromString(std::string const& name);
 	};
 	typedef unsigned int BufferFlags;
 	
@@ -60,12 +69,14 @@ namespace G2Core
 			NUM_SEMANTICS,
 			SEMANTIC_INVALID
 		};
-		/** This function will parse the given string to the appropriate
-		 * Semantic enum value.
-		 * @param name The name to parse. Should match the name of the enum.
-		 * @return The parsed Semantic enum value.
-		 */
-		COREDLL_API Semantics::Name parse(std::string const& name);
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(Semantics::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or SEMANTIC_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API Semantics::Name fromString(std::string const& name);
 	};
 	
 	namespace SemanticDataTypes
@@ -83,6 +94,14 @@ namespace G2Core
 			NUM_SEMANTIC_DATATYPES,
 			SEMANTIC_DATATYPE_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(SemanticDataTypes::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or SEMANTIC_DATATYPE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API SemanticDataTypes::Name fromString(std::string const& name);
 	};
 
 	// TODO This initialization will be removed soon: the GFX Layer implementation for OpenGL will create a mapping instead
@@ -93,23 +112,41 @@ namespace G2Core
 			READ_ONLY,
 			WRITE_ONLY,
 			READ_WRITE,
+			BUFFER_ACCESS_MODE_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(BufferAccessMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or BUFFER_ACCESS_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API BufferAccessMode::Name fromString(std::string const& name);
 	};
 
 	namespace BufferUsage
 	{
 		enum Name
 		{
-			STREAM_DRAW,
-			STREAM_READ,
-			STREAM_COPY,
-			STATIC_DRAW,
-			STATIC_READ,
-			STATIC_COPY,
-			DYNAMIC_DRAW,
-			DYNAMIC_READ,
-			DYNAMIC_COPY,
+			STREAM_DRAW, // The user will be changing the data after every use. Or almost every use. The user will be writing data to the buffer, but the user will not read it.
+			STREAM_READ, // The user will be changing the data after every use. Or almost every use. The user will not be writing data, but the user will be reading it back.
+			STREAM_COPY, // The user will be changing the data after every use. Or almost every use. The user will be neither writing nor reading the data.
+			STATIC_DRAW, // The user will set the data once. The user will be writing data to the buffer, but the user will not read it.
+			STATIC_READ, // The user will set the data once. The user will not be writing data, but the user will be reading it back.
+			STATIC_COPY, // The user will set the data once. The user will be neither writing nor reading the data.
+			DYNAMIC_DRAW, // The user will set the data occasionally. The user will be writing data to the buffer, but the user will not read it.
+			DYNAMIC_READ, // The user will set the data occasionally. The user will not be writing data, but the user will be reading it back.
+			DYNAMIC_COPY, // The user will set the data occasionally. The user will be neither writing nor reading the data.
+			BUFFER_USAGE_INVALID,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(BufferUsage::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or BUFFER_USAGE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API BufferUsage::Name fromString(std::string const& name);
 	};
 
 	namespace DrawMode 
@@ -124,7 +161,16 @@ namespace G2Core
 			TRIANGLE_FAN,
 			TRIANGLES,
 			QUADS,
+			DRAW_MODE_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(DrawMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or DRAW_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API DrawMode::Name fromString(std::string const& name);
 	};
 
 	namespace DataType
@@ -138,12 +184,20 @@ namespace G2Core
 			UNSIGNED_INT,		
 			INT,			
 			FLOAT,
+			DATA_TYPE_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(DataType::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or DATA_TYPE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API DataType::Name fromString(std::string const& name);
 	};
 
 	namespace DataFormat 
 	{
-
 		namespace Base
 		{
 			enum Name
@@ -155,7 +209,16 @@ namespace G2Core
 				RGBA,
 				LUMINANCE,
 				DEPTH,
+				DATA_FORMAT_BASE_INVALID
 			};
+			/** Returns the string representation of the given enum value.
+			* @return The parsed value or an empty string in case it could not be parsed.
+			*/
+			COREDLL_API std::string toString(Base::Name name);
+			/** Returns the enum representation of the given string value.
+			* @return The parsed value or DATA_FORMAT_BASE_INVALID in case it could not be parsed.
+			*/
+			COREDLL_API Base::Name fromString(std::string const& name);
 		};
 
 		namespace Internal /* sized data formats */
@@ -198,7 +261,16 @@ namespace G2Core
 				D32_F,				// GL: GL_DEPTH_COMPONENT32 DX: DXGI_FORMAT_D32_FLOAT
 
 				LUMINANCE_F,		// GL: GL_LUMINANCE DX: NOT_SUPPORTED
+				DATA_FORMAT_INTERNAL_INVALID
 			};
+			/** Returns the string representation of the given enum value.
+			* @return The parsed value or an empty string in case it could not be parsed.
+			*/
+			COREDLL_API std::string toString(Internal::Name name);
+			/** Returns the enum representation of the given string value.
+			* @return The parsed value or DATA_FORMAT_INTERNAL_INVALID in case it could not be parsed.
+			*/
+			COREDLL_API Internal::Name fromString(std::string const& name);
 		};
 	};
 
@@ -217,7 +289,16 @@ namespace G2Core
 			CUBE_MAP_NEG_Y,
 			CUBE_MAP_POS_Z,
 			CUBE_MAP_NEG_Z,
+			TEXTURE_FORMAT_INVALID,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(TextureFormat::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or TEXTURE_FORMAT_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API TextureFormat::Name fromString(std::string const& name);
 	};
 
 	namespace FrameBufferAttachmentPoint
@@ -251,13 +332,21 @@ namespace G2Core
 		* @return The parsed RenderLayerFrameBufferAttachmentPoint enum value.
 		*/
 		COREDLL_API FrameBufferAttachmentPoint::Name getByDataFormat(std::string const& outputFormat);
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(FrameBufferAttachmentPoint::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or ATTACHMENT_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API FrameBufferAttachmentPoint::Name fromString(std::string const& name);
 	};
 
 	
 	namespace WrapMode
 	{
 		enum Name {
-			CLAMP_TO_EDGE,
+			CLAMP_TO_EDGE = 0,
 			CLAMP_TO_BORDER,
 			MIRROR_CLAMP_TO_EDGE,
 			MIRRORED_REPEAT,
@@ -265,12 +354,14 @@ namespace G2Core
 			NUM_WRAP_MODES,
 			WRAP_MODE_INVALID,
 		};
-		/** This function will parse the given string to the appropriate
-		 * WrapMode enum value.
-		 * @param name The name to parse.
-		 * @return The parsed WrapMode enum value.
-		 */
-		COREDLL_API WrapMode::Name parse(std::string const& name);
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(WrapMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or WRAP_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API WrapMode::Name fromString(std::string const& name);
 	};
 	
 	namespace FilterMode
@@ -283,8 +374,16 @@ namespace G2Core
 			NEAREST_MIPMAP_LINEAR,
 			LINEAR_MIPMAP_LINEAR,
 			NUM_WRAP_MODES,
-			WRAP_MODE_INVALID,
+			FILTER_MODE_INVALID,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(FilterMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or FILTER_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API FilterMode::Name fromString(std::string const& name);
 	};
 
 	namespace TexSlot
@@ -322,7 +421,16 @@ namespace G2Core
 			TEX_SLOT30,
 			TEX_SLOT31,
 			TEX_SLOT32,
+			TEX_SLOT_INVALID,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(TexSlot::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or TEX_SLOT_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API TexSlot::Name fromString(std::string const& name);
 	};
 	
 	namespace FaceCulling
@@ -331,7 +439,16 @@ namespace G2Core
 			BACK_FACE,
 			FRONT_FACE,
 			FRONT_AND_BACK_FACE,
+			FACE_CULLING_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(FaceCulling::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or FACE_CULLING_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API FaceCulling::Name fromString(std::string const& name);
 	};
 	namespace PolygonDrawMode
 	{
@@ -339,7 +456,16 @@ namespace G2Core
 			FILL,
 			LINE,
 			POINT,
+			POLYGON_DRAW_MODE_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(PolygonDrawMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or POLYGON_DRAW_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API PolygonDrawMode::Name fromString(std::string const& name);
 	};
 	namespace BlendFactor
 	{
@@ -363,7 +489,16 @@ namespace G2Core
 			ONE_MINUS_SRC1_COLOR,
 			SRC1_ALPHA,
 			ONE_MINUS_SRC1_ALPHA,
+			BLEND_FACTOR_INVALID
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(BlendFactor::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or BLEND_FACTOR_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API BlendFactor::Name fromString(std::string const& name);
 	};
 
 	namespace RenderLayer
@@ -403,13 +538,19 @@ namespace G2Core
 			LAYER_28 = 268435456,
 			LAYER_29 = 536870912,
 			LAYER_30 = 1073741824,
+			LAYER_INVALID = 0,
 		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(RenderLayer::Name name);
 		/** This function will parse the given string to the appropriate
 		* RenderLayer enum value.
 		* @param renderLayer The name to parse.
-		* @return The parsed RenderLayer enum value or 0 if no valid RenderLayer enum value was detected.
+		* @return The parsed RenderLayer enum value or LAYER_INVALID if no valid RenderLayer enum value was detected.
 		*/
-		COREDLL_API RenderLayer::RenderLayerMask getByRenderLayer(std::string const& renderLayer);
+		COREDLL_API RenderLayer::RenderLayerMask fromString(std::string const& renderLayer);
+
 	};
 
 	namespace UniformBufferBindingPoint
@@ -419,6 +560,16 @@ namespace G2Core
 			UBO_MATERIAL = 0,
 			UBO_LIGHTS = 1,
 			UBO_MATRICES = 2,
+			UBO_POST_PROCESSING_INFO = 3,
+			UNIFORM_BUFFER_BINDING_POINT_INVALID,
 		};
-	}
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(UniformBufferBindingPoint::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or UNIFORM_BUFFER_BINDING_POINT_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API UniformBufferBindingPoint::Name fromString(std::string const& name);
+	};
 };
