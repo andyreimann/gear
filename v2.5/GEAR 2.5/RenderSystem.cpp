@@ -42,8 +42,7 @@ const glm::mat4 CubeMapFaceCameraRotations[6] = {
 
 RenderSystem::RenderSystem() :
 	mClearColor(0.25f, 0.25f, 0.25f, 1.f),
-	mLastWindowSize(1.f,1.f),
-	mMaterialUBO("GLSL", sizeof(G2Core::ShaderView::Material), nullptr, G2Core::BufferUsage::STREAM_DRAW, G2Core::UniformBufferBindingPoint::UBO_MATERIAL)
+	mLastWindowSize(1.f,1.f)
 {
 	mRenderType = RenderType::FORWARD_RENDERING;
 
@@ -642,9 +641,9 @@ void
 RenderSystem::_uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
 {
 	// Upload material shader view to UBO
-	mMaterialUBO.bind();
-	mMaterialUBO.updateSubData(0, sizeof(G2Core::ShaderView::Material), material->getShaderView());
-	mMaterialUBO.unbind();
+	mDefaultUBOs.material.bind();
+	mDefaultUBOs.material.updateSubData(0, sizeof(G2Core::ShaderView::Material), material->getShaderView());
+	mDefaultUBOs.material.unbind();
 }
 
 std::shared_ptr<Shader>
@@ -1167,6 +1166,9 @@ G2::RenderSystem::_connectShaderToUniformBlocks(Shader* boundShader)
 {
 	if (boundShader != nullptr)
 	{
-		boundShader->_setUBOBlockBinding("G2Material", &mMaterialUBO);
+		boundShader->_setUBOBlockBinding("G2Material", &mDefaultUBOs.material);
+		boundShader->_setUBOBlockBinding("G2Matrices", &mDefaultUBOs.matrices);
+		boundShader->_setUBOBlockBinding("G2LightInfo", &mDefaultUBOs.lights);
+		boundShader->_setUBOBlockBinding("G2PostProcessingInfo", &mDefaultUBOs.postProcessingInfo);
 	}
 }

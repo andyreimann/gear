@@ -7,7 +7,7 @@
 #include "RenderStatesGroup.h"
 #include "ZSorter.h"
 #include "Intersection.h"
-#include "UniformBufferObject.h"
+#include "DefaultUniformBufferObjects.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -125,7 +125,7 @@ namespace G2
 			*/
 			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS);
 
-			UniformBufferObject* getMaterialUBO() { return &mMaterialUBO; }
+			UniformBufferObject* getMaterialUBO() { return &mDefaultUBOs.material; }
 
 
 			~RenderSystem();
@@ -287,7 +287,7 @@ namespace G2
 
 			glm::vec2										mLastWindowSize;				// The last known window size
 
-			UniformBufferObject								mMaterialUBO;
+			DefaultUniformBufferObjects						mDefaultUBOs;
 	};
 };
 

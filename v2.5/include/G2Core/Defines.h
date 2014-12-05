@@ -33,13 +33,14 @@ namespace G2Core
 			DEPTH = 1,
 			STENCIL = 2,
 			COLOR = 4,
+			BUFFER_INVALID,
 		};
 		/** Returns the string representation of the given enum value.
 		* @return The parsed value or an empty string in case it could not be parsed.
 		*/
 		COREDLL_API std::string toString(Buffer::Name name);
 		/** Returns the enum representation of the given string value.
-		* @return The parsed value or COLOR in case it could not be parsed.
+		* @return The parsed value or BUFFER_INVALID in case it could not be parsed.
 		*/
 		COREDLL_API Buffer::Name fromString(std::string const& name);
 	};
@@ -353,14 +354,14 @@ namespace G2Core
 			NUM_WRAP_MODES,
 			WRAP_MODE_INVALID,
 		};
-		/** Returns the enum representation of the given string value.
-		* @return The parsed value or WRAP_MODE_INVALID in case it could not be parsed.
-		*/
-		COREDLL_API WrapMode::Name fromString(std::string const& name);
 		/** Returns the string representation of the given enum value.
 		* @return The parsed value or an empty string in case it could not be parsed.
 		*/
 		COREDLL_API std::string toString(WrapMode::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or WRAP_MODE_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API WrapMode::Name fromString(std::string const& name);
 	};
 	
 	namespace FilterMode
