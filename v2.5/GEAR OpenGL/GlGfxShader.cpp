@@ -397,18 +397,6 @@ G2Core::GfxResource* _setupUniformBufferObjectFunctionPointers(G2Core::GfxResour
 
 G2Core::GfxResource* CreateUBO(std::string const& shadingLanguage, int size, void const* data, G2Core::BufferUsage::Name bufferUsage)
 {
-
-	// IDEA:
-	/**
-	 
-	 What if we just always create and update a OpenGL UBO and a Cg UBO?
-	 It almost seems that we can just create a Cg handle for an existing OpenGL UBO to 
-	 make it accessible in Cg as well :)
-
-	 */
-
-
-
 	if (shadingLanguage == "GLSL")
 	{
 		unsigned int uboId;
@@ -476,6 +464,7 @@ void _setUBOBindingPointCg(G2Core::GfxResource* ubo, G2Core::UniformBufferBindin
 {
 	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
 	// TODO Check if it's the same
+	GLCHECK(glBindBufferBase(GL_UNIFORM_BUFFER, cgRes->bindingPoint, cgRes->uboId));
 }
 
 void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
@@ -485,25 +474,33 @@ void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPo
 
 void _setShaderUBOBlockBindingGlsl(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
 {
-	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
 	G2GL::UniformBufferResource* uboRes = static_cast<G2GL::UniformBufferResource*>(ubo);
-
-	// todo cache block index by name!
-	GLCHECK(unsigned int blockIndex = glGetUniformBlockIndex(glslRes->programId, uboBlockName.c_str()));
-	if (blockIndex != GL_INVALID_INDEX)
+	if (uboRes->type == G2GL::GLSL_UBO)
 	{
-		GLCHECK(glUniformBlockBinding(glslRes->programId, blockIndex, uboRes->bindingPoint));
+		G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
+
+		GLCHECK(unsigned int blockIndex = glGetUniformBlockIndex(glslRes->programId, uboBlockName.c_str()));
+		if (blockIndex != GL_INVALID_INDEX)
+		{
+			GLCHECK(glUniformBlockBinding(glslRes->programId, blockIndex, uboRes->bindingPoint));
+		}
 	}
 }
 
 void _setShaderUBOBlockBindingCg(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
 {
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
 	G2GL::CgUniformBufferResource* uboRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
+	if (uboRes->type == G2GL::CG_UBO)
+	{
+		G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
 
-	// todo cache block index by name!
-	CGparameter uniformBuffer = cgGetNamedProgramUniformBuffer(cgRes->vertexShaderId, uboBlockName.c_str());
-	cgSetUniformBufferParameter(uniformBuffer, uboRes->cgUboId);
+		// todo cache block index by name!
+		CGparameter uniformBuffer = cgGetNamedProgramUniformBuffer(cgRes->vertexShaderId, uboBlockName.c_str());
+		if (uniformBuffer != nullptr)
+		{
+			cgSetUniformBufferParameter(uniformBuffer, uboRes->cgUboId);
+		}
+	}
 }
 
 void SetShaderUBOBlockBinding(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)

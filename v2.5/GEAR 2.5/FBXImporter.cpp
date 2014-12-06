@@ -26,6 +26,7 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool import
 {
 	if(isCached(meshFileName))
 	{
+		logger << "[FBXImporter] Import (cached) FBX file " << meshFileName << endl;
 		return std::make_pair(meshFileName,std::shared_ptr<FBXMesh::Builder>());
 	}
 	logger << "[FBXImporter] Import FBX file " << meshFileName << endl;
@@ -236,59 +237,13 @@ FBXImporter::_loadCacheRecursive(FbxScene* pScene,
 	const int lTextureCount = pScene->GetTextureCount();
 	for (int lTextureIndex = 0; lTextureIndex < lTextureCount; ++lTextureIndex)
 	{
-
 		FbxFileTexture * lFileTexture = FbxCast<FbxFileTexture>(pScene->GetTexture(lTextureIndex));
 
 		if(lFileTexture != nullptr)
 		{
 			builder->meshTextures.push_back(lFileTexture);
 		}
-
-		const char* pTextureUses[] = { "Standard", "Shadow Map", "Light Map",
-			"Spherical Reflexion Map", "Sphere Reflexion Map", "Bump Normal Map" };
-
-		logger << "[FBXImporter] Warning: Texture loading is not supported but type is " << lFileTexture->GetTextureUse() << " and use is " << pTextureUses[lFileTexture->GetTextureUse()] << " and name is " << lFileTexture->GetFileName() << "!" << endl;
-		
-		continue;
-		if (lFileTexture && !lFileTexture->GetUserDataPtr())
-		{
-			// Try to load the texture from absolute path
-			const FbxString lFileName = lFileTexture->GetFileName();
-			lFileTexture->TextureTypeUse;
-			unsigned int lTextureObject = 0;
-			bool lStatus = false;//LoadTextureFromFile(lFileName, lTextureObject);
-
-			const FbxString lAbsFbxFileName = FbxPathUtils::Resolve(pFbxFileName);
-			const FbxString lAbsFolderName = FbxPathUtils::GetFolderName(lAbsFbxFileName);
-			if (!lStatus)
-			{
-				// Load texture from relative file name (relative to FBX file)
-				const FbxString lResolvedFileName = FbxPathUtils::Bind(lAbsFolderName, lFileTexture->GetRelativeFileName());
-				lStatus = false;//LoadTextureFromFile(lResolvedFileName, lTextureObject);
-			}
-
-			if (!lStatus)
-			{
-				// Load texture from file name only (relative to FBX file)
-				const FbxString lTextureFileName = FbxPathUtils::GetFileName(lFileName);
-				const FbxString lResolvedFileName = FbxPathUtils::Bind(lAbsFolderName, lTextureFileName);
-				lStatus = false;//LoadTextureFromFile(lResolvedFileName, lTextureObject);
-			}
-
-			if (!lStatus)
-			{
-				logger << "Failed to load texture file: " << lFileName.Buffer() << endl;
-				continue;
-			}
-
-			if (lStatus)
-			{
-				unsigned int * lTextureName = new unsigned int(lTextureObject);
-				lFileTexture->SetUserDataPtr(lTextureName);
-			}
-		}
 	}
-
 	_loadCacheRecursive(pScene->GetRootNode(), pAnimLayer, pSupportVBO, nextVaoOffset, builder);
 }
 
@@ -333,7 +288,6 @@ FBXImporter::_loadCacheRecursive(FbxNode * pNode,
 					lMesh->SetUserDataPtr(lMeshCache.Release());
 				}
 #else
-				logger << "[FBXImporter] Create vao offset " << nextVaoOffset << endl;
 				FBXMesh::Builder::MeshMetaData singleMeshMetaData(lMesh, nextVaoOffset);
 
 				if(singleMeshMetaData.vertices.size() > 0)

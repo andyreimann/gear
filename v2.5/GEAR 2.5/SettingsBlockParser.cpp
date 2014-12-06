@@ -20,7 +20,6 @@ SettingsBlockParser::parse()
 		logger << "[SettingsBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
-	logger << "[SettingsBlockParser] -> start parsing Settings block\n";
 	int curvedBracketsOpened = 0;
 
 	if(mFile->isOpen()) 
@@ -35,7 +34,6 @@ SettingsBlockParser::parse()
 			if(curvedBracketsOpened <= -1) 
 			{
 				// block content parsed
-				logger << "[SettingsBlockParser] -> done parsing Settings block\n";
 				return;
 			}
 
@@ -72,11 +70,10 @@ SettingsBlockParser::parse()
 			{
 				settingValue = settingValue.substr(1,settingValue.length()-2);
 			}
-			logger << "[SettingsBlockParser] -> Add Setting[name=" << settingName << ";value=" << settingValue << "]\n";
+			//logger << "[SettingsBlockParser] -> Add Setting[name=" << settingName << ";value=" << settingValue << "]\n";
 			mSettings[settingName] = Setting(settingName, settingValue);
 		}
 	}
-	logger << "[SettingsBlockParser] -> done parsing Settings block\n";
 }
 
 G2::Setting

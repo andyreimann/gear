@@ -38,6 +38,11 @@ TextureImporter::produceResourceBuilder(
 	G2Core::WrapMode::Name wrapS, 
 	G2Core::WrapMode::Name wrapT)
 {
+	if (isCached(fileName))
+	{
+		logger << "[TextureImporter] Import (cached) image file " << fileName << endl;
+		return std::make_pair(fileName, std::shared_ptr<Texture2D::Builder>());
+	}
 	logger << "[TextureImporter] Import image file " << fileName << endl;
 	
 	// Step 1: create builder and fill

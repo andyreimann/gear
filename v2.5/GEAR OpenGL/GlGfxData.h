@@ -251,7 +251,7 @@ namespace G2GL
 
 	struct UniformBufferResource : GlResource
 	{
-		UniformBufferResource(Type type);
+		UniformBufferResource(Type type, int uboId);
 		virtual ~UniformBufferResource() {}
 
 		BindUniformBuffer bindUniformBuffer;
@@ -260,6 +260,7 @@ namespace G2GL
 		UpdateUBOSubData updateUBOSubData;
 
 		unsigned int bindingPoint;
+		unsigned int uboId;			// OpenGL Buffer
 	};
 
 
@@ -269,7 +270,6 @@ namespace G2GL
 
 		virtual ~GlslUniformBufferResource();
 
-		unsigned int uboId;
 	};
 
 
@@ -279,7 +279,7 @@ namespace G2GL
 
 		virtual ~CgUniformBufferResource();
 
-		unsigned int	glUboId;		// The normal OpenGL UniformBufferObject
+		//unsigned int	glUboId;		// The normal OpenGL UniformBufferObject
 		CGbuffer		cgUboId;		// The Cg variant of the same UniformBufferObject for usage in Cg
 	};
 

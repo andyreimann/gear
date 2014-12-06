@@ -54,15 +54,25 @@ G2GL::CgShaderResource::getAndCacheUniformLocation(std::string const& name)
 
 G2GL::GlslShaderResource::~GlslShaderResource()
 {
-	GLCHECK(glDetachShader(programId, vertexShaderId));
-	GLCHECK(glDetachShader(programId, geometryShaderId));
-	GLCHECK(glDetachShader(programId, fragmentShaderId));
-
-	GLCHECK(glDeleteShader(fragmentShaderId));
-	GLCHECK(glDeleteShader(geometryShaderId));
-	GLCHECK(glDeleteShader(vertexShaderId));
-
-	GLCHECK(glDeleteProgram(programId));
+	if (programId != 0)
+	{
+		if (vertexShaderId != 0)
+		{
+			GLCHECK(glDetachShader(programId, vertexShaderId));
+			GLCHECK(glDeleteShader(vertexShaderId));
+		}
+		if (geometryShaderId != 0)
+		{
+			GLCHECK(glDetachShader(programId, geometryShaderId));
+			GLCHECK(glDeleteShader(geometryShaderId));
+		}
+		if (fragmentShaderId != 0)
+		{
+			GLCHECK(glDetachShader(programId, fragmentShaderId));
+			GLCHECK(glDeleteShader(fragmentShaderId));
+		}
+		GLCHECK(glDeleteProgram(programId));
+	}
 }
 
 int
@@ -128,13 +138,13 @@ TextureResource::~TextureResource()
 	GLCHECK(glDeleteTextures(1, &texId));
 }
 
-G2GL::UniformBufferResource::UniformBufferResource(Type type) :
-	GlResource(type)
+G2GL::UniformBufferResource::UniformBufferResource(Type type, int uboId) :
+	GlResource(type),
+	uboId(uboId)
 {}
 
 G2GL::GlslUniformBufferResource::GlslUniformBufferResource(int uboId) :
-	UniformBufferResource(GLSL_UBO),
-	uboId(uboId)
+	UniformBufferResource(GLSL_UBO, uboId)
 {}
 
 G2GL::GlslUniformBufferResource::~GlslUniformBufferResource()
@@ -146,8 +156,8 @@ G2GL::GlslUniformBufferResource::~GlslUniformBufferResource()
 }
 
 G2GL::CgUniformBufferResource::CgUniformBufferResource(int glUboId, CGbuffer cgUboId) :
-	UniformBufferResource(CG_UBO),
-	glUboId(glUboId),
+UniformBufferResource(CG_UBO, glUboId),
+	//glUboId(glUboId),
 	cgUboId(cgUboId)
 {}
 

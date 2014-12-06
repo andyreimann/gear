@@ -51,9 +51,17 @@ namespace G2
 			*/
 			void setEffect(std::shared_ptr<G2::Effect> const& value);
 			/** Returns the number of vertex array objects, this RenderComponent maintains.
-			 * @return The number of vertex array objects, this RenderComponent maintains.
-			 */
+			* @return The number of vertex array objects, this RenderComponent maintains.
+			*/
 			unsigned int getNumVertexArrays() const { return (unsigned int)mVaos.size(); }
+			/** Returns the number of index array objects, this RenderComponent maintains.
+			* @return The number of index array objects, this RenderComponent maintains.
+			*/
+			unsigned int getNumIndexArrays() const { return (unsigned int)mIaos.size(); }
+			/** Returns the number of triangles the RenderComponent will draw.
+			 * @note This function only takes DrawCall objects into account which have the draw mode TRIANGLES.
+			 */
+			unsigned int getNumTriangles();
 			/** Returns the VertexArrayObject at the given index.
 			 * @param index The index to get the VertexArrayObject for.
 			 * @note Make sure to not request an index, which does not exist!

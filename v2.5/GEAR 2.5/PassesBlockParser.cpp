@@ -19,7 +19,6 @@ PassesBlockParser::parse()
 		logger << "[PassesBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0";
 		return;
 	}
-	logger << "[PassesBlockParser] -> start parsing Passes block\n";
 
 	if(mFile->isOpen()) 
 	{
@@ -47,7 +46,6 @@ PassesBlockParser::parse()
 			}
 		}
 	}
-	logger << "[PassesBlockParser] -> done parsing Passes block\n";
 }
 
 std::vector<PassBlockParser> const&

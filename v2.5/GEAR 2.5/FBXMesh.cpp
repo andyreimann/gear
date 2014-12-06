@@ -136,6 +136,7 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 	// create a RenderComponent with the requested amount of VertexArrayObjects
 	auto* renderComponent = mesh->addComponent<RenderComponent>();
 	renderComponent->allocateVertexArrays((unsigned int)meshMetaData.size());
+
 	// calculate the number of IndexArrayObjects we need
 	unsigned int numIndexArrays = 0;
 	for (unsigned int i = 0; i < meshMetaData.size() ; ++i) 
@@ -149,12 +150,14 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 	renderComponent->allocateIndexArrays(numIndexArrays);
 
 	// init the VAO
+	unsigned int totalVertices = 0;
 	unsigned int currentIndexArrayIndex = 0;
 	for (unsigned int i = 0; i < meshMetaData.size() ; ++i) 
 	{
 		MeshMetaData const& meshData = meshMetaData[i];
 		renderComponent->getVertexArray(i).resizeElementCount((unsigned int)meshData.vertices.size())
 			.writeData(G2Core::Semantics::POSITION, &meshData.vertices[0]);
+		totalVertices += (unsigned int)meshData.vertices.size();
 		
 		if(meshData.hasNormals && importNormals)
 		{
@@ -200,12 +203,13 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 			.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex-1 : -1)
 			.setAABBCalculationMode(AABBCalculationMode::MANUAL));
 	}
+
+	G2::logger << "[FBXMesh] Name: " << name << "\n\tIAO: " << renderComponent->getNumIndexArrays() << "\n\tVAO: " << renderComponent->getNumVertexArrays() << "\n\tVertices: " << totalVertices << "\n\tDraw-Calls: " << renderComponent->getNumDrawCalls() << "\n\tTriangles: " << renderComponent->getNumTriangles() << G2::endl;
+
 #endif
 	
 	auto* nameComponent = mesh->addComponent<NameComponent>();
 	nameComponent->name = name;
-	
-	logger << "FBXMesh will have " << renderComponent->getNumVertexArrays() << " VAOs\n";
 
 	if (texImporte != nullptr && renderComponent != nullptr)
 	{

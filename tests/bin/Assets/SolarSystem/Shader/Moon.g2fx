@@ -71,7 +71,6 @@ Ubershader "GEAR/Default" {
           vec4 diffuse = g2_diffuse * texture(_diffuseTex, dataIn.texCoord);
 
           int i = 0;
-          //while(light[i].enabled == true)
           for(int i = 0; i < G2ActiveLights; ++i)
           {
               // point light

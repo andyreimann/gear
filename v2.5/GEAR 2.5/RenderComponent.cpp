@@ -59,6 +59,31 @@ G2::RenderComponent::~RenderComponent()
 	}
 }
 
+unsigned int
+G2::RenderComponent::getNumTriangles()
+{
+	int numTris = 0;
+
+	for (unsigned int i = 0; i < getNumDrawCalls(); ++i)
+	{
+		auto& drawCall = getDrawCall(i);
+		if (drawCall.getDrawMode() != G2Core::DrawMode::TRIANGLES)
+		{
+			continue;
+		}
+		if (drawCall.getIaoIndex() != -1)
+		{
+			auto& iao = getIndexArray(drawCall.getIaoIndex());
+			numTris += iao.getNumElements() / 3;
+		}
+		else
+		{
+			auto& vao = getVertexArray(drawCall.getVaoIndex());
+			numTris += vao.getNumElements() / 3;
+		}
+	}
+	return numTris;
+}
 void
 RenderComponent::addDrawCall(DrawCall const& drawCall) 
 {

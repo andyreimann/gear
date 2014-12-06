@@ -28,7 +28,6 @@ PropertiesBlockParser::parse(ShaderMetaData* shaderMetaData)
         logger << "[PropertiesBlockParser] -> Error 1001: given filehandle is 0\n";
         return;
     }
-    logger << "[PropertiesBlockParser] -> start parsing Properties block\n";
     int curvedBracketsOpened = 0;
 
     if(mFile->isOpen()) 
@@ -43,7 +42,6 @@ PropertiesBlockParser::parse(ShaderMetaData* shaderMetaData)
             if(curvedBracketsOpened <= -1) 
             {
                 // block content parsed
-                logger << "[PropertiesBlockParser] -> done parsing Properties block\n";
                 return;
             }
 
@@ -79,12 +77,11 @@ PropertiesBlockParser::parse(ShaderMetaData* shaderMetaData)
                 defaultValue = Tools::String::trim(line.substr(startPos+1, endPos-startPos-1));
             }
             
-            logger << "[PropertiesBlockParser] -> Add Property[name=" << name << ";nname=" << niceName << ";dt=" << datatype << ";default=" << defaultValue << "]\n";
+            //logger << "[PropertiesBlockParser] -> Add Property[name=" << name << ";nname=" << niceName << ";dt=" << datatype << ";default=" << defaultValue << "]\n";
 
             checkAndCreateMetaData(name, niceName, datatype, defaultValue, shaderMetaData);
         }
     }
-    logger << "[SettingsBlockParser] -> done parsing Settings block\n";
 }
 
 void

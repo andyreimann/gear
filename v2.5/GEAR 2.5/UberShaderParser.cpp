@@ -26,9 +26,6 @@ UberShaderParser::parse(std::string const& fileName)
 
     std::stringstream log;
 
-    std::cout << "[UberShaderParser] -> parse file '" << fileName << "'" << std::endl;
-    //qDebug(log.str().c_str());
-
     FileResource file(fileName);
 
     if(!file.isOpen()) {
@@ -64,8 +61,6 @@ UberShaderParser::parse(std::string const& fileName)
                     uberShaderName = line.substr(startPos+1, endPos-startPos-1);
                 }
 
-                std::cout << "[UberShaderParser] -> parse '" << blockName << "' block with name '" << uberShaderName << "'" << std::endl;
-                //qDebug(log.str().c_str());
                 currentState = READ_BLOCK_CONTENT;
                 UberShaderBlockParser blockParser(builder.get(), &file);
                 blockParser.parse();
@@ -75,8 +70,6 @@ UberShaderParser::parse(std::string const& fileName)
                 break;
         }
     }
-    std::cout << "[UberShaderParser] -> done parsing" << std::endl;
-    //qDebug("[UberShaderParser] -> done parsing");
 
     builder->buildAndCompile();
     return builder;

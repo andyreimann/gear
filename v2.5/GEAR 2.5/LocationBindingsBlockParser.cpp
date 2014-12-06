@@ -29,8 +29,6 @@ LocationBindingsBlockParser::parse()
         logger << "[LocationBindingsBlockParser] -> Error 1001: given filehandle is 0\n";
         return;
     }
-    logger << "[LocationBindingsBlockParser] -> start parsing LocationBindings block\n";
-
     
     int curvedBracketsOpened = 0;
 
@@ -47,8 +45,6 @@ LocationBindingsBlockParser::parse()
 
             if(curvedBracketsOpened <= -1) 
             {
-                // block content parsed
-                logger << "[LocationBindingsBlockParser] -> done parsing LocationBindings block\n";
                 return;
             }
 
@@ -94,10 +90,9 @@ LocationBindingsBlockParser::parse()
                 continue; // ignore this location binding
             }
 
-            logger << "[LocationBindingsBlockParser] -> Add LocationBinding[semantic=" << semantic << ";name=" << name << ";nname=" << niceName << ";dt=" << datatype << "]\n";
+            //logger << "[LocationBindingsBlockParser] -> Add LocationBinding[semantic=" << semantic << ";name=" << name << ";nname=" << niceName << ";dt=" << datatype << "]\n";
 
             mLocationBindings.push_back(LocationBinding(parsedSemantic, name, niceName, datatype));
         }
     }
-    logger << "[LocationBindingsBlockParser] -> done parsing LocationBindings block\n";
 }

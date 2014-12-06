@@ -76,8 +76,7 @@ Ubershader "GEAR/Default" {
           outColor = g2_ambient;
 
           int i = 0;
-          while(light[i].enabled == true)
-          //for(int i = 0; i < G2ActiveLights; ++i)
+          for(int i = 0; i < G2ActiveLights; ++i)
           {
             if(light[i].position.w == 0.0)
             {
@@ -184,7 +183,6 @@ Ubershader "GEAR/Default" {
               }
 
             }
-            ++i;
           }
         }
    }

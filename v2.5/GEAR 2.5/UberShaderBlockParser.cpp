@@ -44,9 +44,6 @@ UberShaderBlockParser::parse()
 				return;
 			}
 
-			logger << "[UberShaderBlockParser] -> parse '" << blockName << "' block\n";
-			//qDebug(log.str().c_str());
-
 			if(blockName == "LocationBindings") 
 			{
 				mLocationBindingBlockParser.parse();

@@ -22,9 +22,7 @@ PassBlockParser::parse()
 		return;
 	}
 	mBuilder->passes.push_back(Pass::Builder());
-	logger << "[PassBlockParser] -> start parsing Pass block\n";
 	mShaderBlockParser->parse(&mBuilder->passes.back().metaData);
-	logger << "[PassBlockParser] -> done parsing Pass block\n";
 
 
 }

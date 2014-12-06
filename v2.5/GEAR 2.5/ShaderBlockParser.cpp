@@ -38,7 +38,6 @@ ShaderBlockParser::parse(ShaderMetaData* shaderMetaData)
 		logger << "[ShaderBlockParser] -> Error 1001: given filehandle or Effect::Builder is 0\n";
 		return;
 	}
-	logger << "[ShaderBlockParser] -> start parsing Shader block\n";
 	int curvedBracketsOpened = 0;
 
 	if(mFile->isOpen()) 
@@ -54,7 +53,6 @@ ShaderBlockParser::parse(ShaderMetaData* shaderMetaData)
 			{
 				// block content parsed
 				flushShaderPart(std::shared_ptr<AbstractShaderPart>());
-				logger << "[ShaderBlockParser] -> done parsing Shader block\n";
 				return;
 			}
 
