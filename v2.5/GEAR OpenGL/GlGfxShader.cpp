@@ -4,73 +4,6 @@
 
 #include <G2/Logger.h>
 
-CGcontext gCgContext = nullptr;
-CGprofile gCgVertexShaderProfile;
-CGprofile gCgGeometryShaderProfile;
-CGprofile gCgFragmentShaderProfile;
-
-void _cgErrorHandler(CGcontext context, CGerror error, void* appData) 
-{
-	if(error != CG_NO_ERROR)
-	{
-		const char* strPtr = cgGetErrorString(error);
-		G2::logger << "[CgRuntime] Cg Error: \n" << std::string(strPtr != nullptr ? strPtr : "");
-		
-		if(error == CG_COMPILER_ERROR)
-		{
-			strPtr = cgGetLastListing(context);
-			G2::logger << std::string(strPtr != nullptr ? strPtr : "");
-		}
-		G2::logger << G2::endl;
-	}
-}
-
-void _initCgRuntime()
-{
-	if(gCgContext == nullptr) {
-		G2::logger << "[CgRuntime] Initialize Cg-Runtime-OpenGL" << G2::endl;
-		//qDebug("[Cg] Initialize Cg");
-		// register the error handler
-		cgSetErrorHandler( &_cgErrorHandler, NULL);
-		// create a new Cg Context
-		gCgContext = cgCreateContext();
-
-		// Register the default state assignment for OpenGL
-		cgGLRegisterStates(gCgContext);
-		// This will allow the Cg runtime to manage texture binding
-		cgGLSetManageTextureParameters(gCgContext, CG_TRUE);
-		
-		gCgVertexShaderProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
-		if(gCgVertexShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			G2::logger << "[CgRuntime] Error: Could not get valid Vertex-Profile." << G2::endl;
-			return;
-		}
-		
-		gCgGeometryShaderProfile = cgGLGetLatestProfile(CG_GL_GEOMETRY);
-		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// WARNING
-			G2::logger << "[CgRuntime] Warning: Could not get valid Geometry-Profile." << G2::endl;
-		}
-		
-		gCgFragmentShaderProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
-		if(gCgFragmentShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			// ERROR
-			G2::logger << "[CgRuntime] Error: Could not get valid Fragment-Profile." << G2::endl;
-			return;
-		}
-		cgGLSetOptimalOptions(gCgVertexShaderProfile);	
-		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN)
-		{
-			cgGLSetOptimalOptions(gCgGeometryShaderProfile);	
-		}
-		cgGLSetOptimalOptions(gCgFragmentShaderProfile);
-	}
-}
-
 std::string
 _glslGetShaderInfoLog(int shader)
 {
@@ -175,37 +108,6 @@ G2Core::GfxResource* CompileShader(G2Core::VertexInputLayout const& vertexInputL
 		resource->programId = programId;
 		return _setupShaderFunctionPointers(resource);
 	}
-	else if(shadingLanguage == "CG")
-	{
-
-		if(gCgGeometryShaderProfile == CG_PROFILE_UNKNOWN && geometryCode != "")
-		{
-			return error(); // geometry shader given but not supported!
-		}
-	
-		const char* sourcePtr = vertexCode.c_str();
-	
-		CGprogram vertexShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgVertexShaderProfile, "main", 0);
-		CGprogram geometryShaderId = nullptr;
-		if(geometryCode != "")
-		{
-			sourcePtr = geometryCode.c_str();
-			geometryShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgGeometryShaderProfile, "main", 0);
-			cgGLLoadProgram(geometryShaderId);
-		}
-		sourcePtr = fragmentCode.c_str();
-		CGprogram fragmentShaderId = cgCreateProgram(gCgContext, CG_SOURCE, sourcePtr, gCgFragmentShaderProfile, "main", 0);
-	
-		cgGLLoadProgram(vertexShaderId);
-		cgGLLoadProgram(fragmentShaderId);
-
-		// create client resource
-		G2GL::CgShaderResource* resource = new G2GL::CgShaderResource;
-		resource->vertexShaderId = vertexShaderId;
-		resource->geometryShaderId = geometryShaderId;
-		resource->fragmentShaderId = fragmentShaderId;
-		return _setupShaderFunctionPointers(resource);
-	}
 	return error();
 }
 
@@ -213,23 +115,6 @@ void _bindShaderGlsl(G2Core::GfxResource const* shaderResource)
 {
 	G2GL::GlslShaderResource const* glslRes = static_cast<G2GL::GlslShaderResource const*>(shaderResource);
 	GLCHECK( glUseProgram(glslRes->programId) );
-}
-
-void _bindShaderCg(G2Core::GfxResource const* shaderResource)
-{
-	G2GL::CgShaderResource const* cgRes = static_cast<G2GL::CgShaderResource const*>(shaderResource);
-			
-	GLCHECK( glUseProgram(0) );
-	cgGLEnableProfile(gCgVertexShaderProfile);
-	cgGLEnableProfile(gCgFragmentShaderProfile);
-	if(cgRes->geometryShaderId != nullptr)
-	{
-		cgGLEnableProfile(gCgGeometryShaderProfile);
-		cgGLBindProgram(cgRes->geometryShaderId);
-	}
-
-	cgGLBindProgram(cgRes->vertexShaderId);
-	cgGLBindProgram(cgRes->fragmentShaderId);
 }
 
 void BindShader(G2Core::GfxResource const* shaderResource)
@@ -244,17 +129,6 @@ void _setShaderUniformMat4Glsl(G2Core::GfxResource* shaderResource, std::string 
 	GLCHECK( glUniformMatrix4fv(glslRes->getAndCacheUniformLocation(property), 1, GL_FALSE, glm::value_ptr(value)) );
 }
 
-void _setShaderUniformMat4Cg(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat4 const& value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgGLSetMatrixParameterfc(location.first, glm::value_ptr(value));
-}
-
 
 void SetShaderUniformMat4(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat4 const& value)
 {
@@ -265,17 +139,6 @@ void _setShaderUniformMat3Glsl(G2Core::GfxResource* shaderResource, std::string 
 {
 	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);;
 	GLCHECK( glUniformMatrix3fv(glslRes->getAndCacheUniformLocation(property), 1, GL_FALSE, glm::value_ptr(value)) );
-}
-
-void _setShaderUniformMat3Cg(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat3 const& value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgGLSetMatrixParameterfc(location.first, glm::value_ptr(value));
 }
 
 void SetShaderUniformMat3(G2Core::GfxResource* shaderResource, std::string const& property, glm::mat3 const& value)
@@ -289,17 +152,6 @@ void _setShaderUniformVec4Glsl(G2Core::GfxResource* shaderResource, std::string 
 	GLCHECK( glUniform4fv(glslRes->getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
 }
 
-void _setShaderUniformVec4Cg(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec4 const& value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgSetParameter4fv(location.first, glm::value_ptr(value));
-}
-
 void SetShaderUniformVec4(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec4 const& value)
 {
 	static_cast<G2GL::ShaderResource*>(shaderResource)->setShaderUniformVec4(shaderResource, property, value);
@@ -309,17 +161,6 @@ void _setShaderUniformVec3Glsl(G2Core::GfxResource* shaderResource, std::string 
 {
 	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);;
 	GLCHECK( glUniform3fv(glslRes->getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
-}
-
-void _setShaderUniformVec3Cg(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec3 const& value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgSetParameter3fv(location.first, glm::value_ptr(value));
 }
 
 void SetShaderUniformVec3(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec3 const& value)
@@ -333,17 +174,6 @@ void _setShaderUniformVec2Glsl(G2Core::GfxResource* shaderResource, std::string 
 	GLCHECK( glUniform2fv(glslRes->getAndCacheUniformLocation(property), 1, glm::value_ptr(value)) );
 }
 
-void _setShaderUniformVec2Cg(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec2 const& value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgSetParameter2fv(location.first, glm::value_ptr(value));
-}
-
 void SetShaderUniformVec2(G2Core::GfxResource* shaderResource, std::string const& property, glm::vec2 const& value)
 {
 	static_cast<G2GL::ShaderResource*>(shaderResource)->setShaderUniformVec2(shaderResource, property, value);
@@ -355,17 +185,6 @@ void _setShaderUniformFloatGlsl(G2Core::GfxResource* shaderResource, std::string
 	GLCHECK( glUniform1f(glslRes->getAndCacheUniformLocation(property), value) );
 }
 
-void _setShaderUniformFloatCg(G2Core::GfxResource* shaderResource, std::string const& property, float value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgSetParameter1f(location.first, value);
-}
-
 void SetShaderUniformFloat(G2Core::GfxResource* shaderResource, std::string const& property, float value)
 {
 	static_cast<G2GL::ShaderResource*>(shaderResource)->setShaderUniformFloat(shaderResource, property, value);
@@ -375,17 +194,6 @@ void _setShaderUniformIntGlsl(G2Core::GfxResource* shaderResource, std::string c
 {
 	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
 	GLCHECK( glUniform1i(glslRes->getAndCacheUniformLocation(property), value) );
-}
-
-void _setShaderUniformIntCg(G2Core::GfxResource* shaderResource, std::string const& property, int value)
-{
-	G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-	auto location = cgRes->getAndCacheUniformLocation(property);
-	if(location.first == nullptr) 
-	{
-		return;
-	}
-	cgSetParameter1i(location.first, value);
 }
 
 void SetShaderUniformInt(G2Core::GfxResource* shaderResource, std::string const& property, int value)
@@ -408,16 +216,6 @@ G2Core::GfxResource* CreateUBO(std::string const& shadingLanguage, int size, voi
 		G2GL::GlslUniformBufferResource* resource = new G2GL::GlslUniformBufferResource(uboId);
 		return _setupUniformBufferObjectFunctionPointers(resource);
 	}
-	else if (shadingLanguage == "CG")
-	{
-		// For uniform buffer objects in Cg, we also have to create a normal OpenGL UBO
-		CGbuffer cgUboId = cgGLCreateBuffer(gCgContext, size, data, toCgBufferUsage(bufferUsage));
-
-		unsigned int uboId = cgGLGetBufferObject(cgUboId);
-
-		G2GL::CgUniformBufferResource* resource = new G2GL::CgUniformBufferResource(uboId, cgUboId);
-		return _setupUniformBufferObjectFunctionPointers(resource);
-	}
 	return error();
 }
 
@@ -425,11 +223,6 @@ void _bindUniformBufferGlsl(G2Core::GfxResource* ubo)
 {
 	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
 	GLCHECK(glBindBuffer(GL_UNIFORM_BUFFER, glslRes->uboId));
-}
-
-void _bindUniformBufferCg(G2Core::GfxResource* ubo)
-{
-	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
 }
 
 void BindUBO(G2Core::GfxResource* ubo)
@@ -441,11 +234,6 @@ void _unbindUniformBufferGlsl(G2Core::GfxResource* ubo)
 {
 	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
 	GLCHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-void _unbindUniformBufferCg(G2Core::GfxResource* ubo)
-{
-	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
 }
 
 void UnbindUBO(G2Core::GfxResource* ubo)
@@ -460,13 +248,6 @@ void _setUBOBindingPointGlsl(G2Core::GfxResource* ubo, G2Core::UniformBufferBind
 	GLCHECK(glBindBufferBase(GL_UNIFORM_BUFFER, glslRes->bindingPoint, glslRes->uboId));
 }
 
-void _setUBOBindingPointCg(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
-{
-	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
-	// TODO Check if it's the same
-	GLCHECK(glBindBufferBase(GL_UNIFORM_BUFFER, cgRes->bindingPoint, cgRes->uboId));
-}
-
 void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPoint::Name bindingPoint)
 {
 	static_cast<G2GL::UniformBufferResource*>(ubo)->setUBOBindingPoint(ubo, bindingPoint);
@@ -475,31 +256,12 @@ void SetUBOBindingPoint(G2Core::GfxResource* ubo, G2Core::UniformBufferBindingPo
 void _setShaderUBOBlockBindingGlsl(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
 {
 	G2GL::UniformBufferResource* uboRes = static_cast<G2GL::UniformBufferResource*>(ubo);
-	if (uboRes->type == G2GL::GLSL_UBO)
+	G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
+
+	GLCHECK(unsigned int blockIndex = glGetUniformBlockIndex(glslRes->programId, uboBlockName.c_str()));
+	if (blockIndex != GL_INVALID_INDEX)
 	{
-		G2GL::GlslShaderResource* glslRes = static_cast<G2GL::GlslShaderResource*>(shaderResource);
-
-		GLCHECK(unsigned int blockIndex = glGetUniformBlockIndex(glslRes->programId, uboBlockName.c_str()));
-		if (blockIndex != GL_INVALID_INDEX)
-		{
-			GLCHECK(glUniformBlockBinding(glslRes->programId, blockIndex, uboRes->bindingPoint));
-		}
-	}
-}
-
-void _setShaderUBOBlockBindingCg(G2Core::GfxResource* shaderResource, G2Core::GfxResource* ubo, std::string const& uboBlockName)
-{
-	G2GL::CgUniformBufferResource* uboRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
-	if (uboRes->type == G2GL::CG_UBO)
-	{
-		G2GL::CgShaderResource* cgRes = static_cast<G2GL::CgShaderResource*>(shaderResource);
-
-		// todo cache block index by name!
-		CGparameter uniformBuffer = cgGetNamedProgramUniformBuffer(cgRes->vertexShaderId, uboBlockName.c_str());
-		if (uniformBuffer != nullptr)
-		{
-			cgSetUniformBufferParameter(uniformBuffer, uboRes->cgUboId);
-		}
+		GLCHECK(glUniformBlockBinding(glslRes->programId, blockIndex, uboRes->bindingPoint));
 	}
 }
 
@@ -513,12 +275,6 @@ void _updateUBOSubDataGlsl(G2Core::GfxResource* ubo, unsigned int byteOffset, un
 	G2GL::GlslUniformBufferResource* glslRes = static_cast<G2GL::GlslUniformBufferResource*>(ubo);
 	GLCHECK(glBufferSubData(GL_UNIFORM_BUFFER, byteOffset, byteSize, data));
 
-}
-
-void _updateUBOSubDataCg(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data)
-{
-	G2GL::CgUniformBufferResource* cgRes = static_cast<G2GL::CgUniformBufferResource*>(ubo);
-	cgSetBufferSubData(cgRes->cgUboId, byteOffset, byteSize, data);
 }
 
 void UpdateUBOSubData(G2Core::GfxResource* ubo, unsigned int byteOffset, unsigned int byteSize, void* data)
@@ -542,17 +298,6 @@ G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 		r->setShaderUniformInt = _setShaderUniformIntGlsl;
 		r->setShaderUBOBlockBinding = _setShaderUBOBlockBindingGlsl;
 		break;
-	case G2GL::CG_SHADER:
-		r->bindShader = _bindShaderCg;
-		r->setShaderUniformMat4 = _setShaderUniformMat4Cg;
-		r->setShaderUniformMat3 = _setShaderUniformMat3Cg;
-		r->setShaderUniformVec4 = _setShaderUniformVec4Cg;
-		r->setShaderUniformVec3 = _setShaderUniformVec3Cg;
-		r->setShaderUniformVec2 = _setShaderUniformVec2Cg;
-		r->setShaderUniformFloat = _setShaderUniformFloatCg;
-		r->setShaderUniformInt = _setShaderUniformIntCg;
-		r->setShaderUBOBlockBinding = _setShaderUBOBlockBindingCg;
-		break;
 	default:
 		r->bindShader = nullptr;
 		r->setShaderUniformMat4 = nullptr;
@@ -562,6 +307,7 @@ G2Core::GfxResource* _setupShaderFunctionPointers(G2Core::GfxResource* res)
 		r->setShaderUniformVec2 = nullptr;
 		r->setShaderUniformFloat = nullptr;
 		r->setShaderUniformInt = nullptr;
+		r->setShaderUBOBlockBinding = nullptr;
 		break;
 	}
 	return res;
@@ -577,12 +323,6 @@ G2Core::GfxResource* _setupUniformBufferObjectFunctionPointers(G2Core::GfxResour
 		r->unbindUniformBuffer = _unbindUniformBufferGlsl;
 		r->setUBOBindingPoint = _setUBOBindingPointGlsl;
 		r->updateUBOSubData = _updateUBOSubDataGlsl;
-		break;
-	case G2GL::CG_UBO:
-		r->bindUniformBuffer = _bindUniformBufferCg;
-		r->unbindUniformBuffer = _unbindUniformBufferCg;
-		r->setUBOBindingPoint = _setUBOBindingPointCg;
-		r->updateUBOSubData = _updateUBOSubDataCg;
 		break;
 	default:
 		r->bindUniformBuffer = nullptr;

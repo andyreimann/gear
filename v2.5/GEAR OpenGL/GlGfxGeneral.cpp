@@ -69,9 +69,6 @@ Init(void* data)
 
 	G2::logger << "Have " << bufs << " buffers and " << samples << " samples" << G2::endl;
 
-	// init CG Runtime
-	_initCgRuntime();
-
 	// init IL
 	ilInit();
 

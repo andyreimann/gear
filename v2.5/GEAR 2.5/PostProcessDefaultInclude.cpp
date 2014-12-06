@@ -19,16 +19,4 @@ PostProcessDefaultInclude::PostProcessDefaultInclude(std::string const& shadingL
 		};
 		mPart = std::string(code);
 	}
-	else if(shadingLanguage == "CG") 
-	{
-		const char* code =
-		{
-			"struct G2PostProcessingInfo {\n"\
-			"	float2 pixelSize;			// The size of one screen pixel in window coordinates\n"\
-			"	float2 windowSize;		// The width (=x) and height (=y) of the window in pixels\n"\
-			"};\n"\
-			"uniform G2PostProcessingInfo postProcessInfo;\n"\
-		};
-		mPart = std::string(code);
-	}
 }

@@ -17,4 +17,3 @@ unsigned int toGlPolygonDrawMode(G2Core::PolygonDrawMode::Name drawMode);
 unsigned int toGlFaceCullingMode(G2Core::FaceCulling::Name faceCullingMode);
 unsigned int toGlBlendFunc(G2Core::BlendFactor::Name blendFunc);
 unsigned int toGlBufferUsage(G2Core::BufferUsage::Name usage);
-CGbufferusage toCgBufferUsage(G2Core::BufferUsage::Name usage);

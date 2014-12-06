@@ -31,17 +31,4 @@ MaterialDefaultInclude::MaterialDefaultInclude(std::string const& shadingLanguag
 		};
 		mPart = std::string(code);
 	}
-	else if(shadingLanguage == "CG") 
-	{
-		const char* code =
-		{
-			"uniform G2Material {\n"\
-			"	float4 ambient; // The ambientmaterial term\n"\
-			"	float4 diffuse; // The diffuse material term\n"\
-			"	float4 specular; // The specular material term\n"\
-			"	float shininess; // The shininess factor for specular highlights\n"\
-			"} material : BUFFER[0];\n"\
-		};
-		mPart = std::string(code);
-	}
 }

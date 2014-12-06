@@ -9,49 +9,6 @@ G2GL::ShaderResource::ShaderResource(Type type) : GlResource(type)
 
 }
 
-
-G2GL::CgShaderResource::CgShaderResource() : vertexShaderId(nullptr),
-geometryShaderId(nullptr),
-fragmentShaderId(nullptr),
-ShaderResource(G2GL::CG_SHADER)
-{
-
-}
-
-
-G2GL::CgShaderResource::~CgShaderResource()
-{
-	cgDestroyProgram(vertexShaderId);
-	if (geometryShaderId != nullptr)
-	{
-		cgDestroyProgram(geometryShaderId);
-	}
-	cgDestroyProgram(fragmentShaderId);
-}
-
-std::pair<CGparameter, CGprogram> const&
-G2GL::CgShaderResource::getAndCacheUniformLocation(std::string const& name)
-{
-	auto it = uniformCache.find(name);
-	if (it != uniformCache.end())
-	{
-		return it->second;
-	}
-
-	CGparameter location = cgGetNamedParameter(vertexShaderId, name.c_str());
-	if (location == nullptr)
-	{
-		location = cgGetNamedParameter(fragmentShaderId, name.c_str());
-		uniformCache[name] = std::make_pair(location, fragmentShaderId);
-	}
-	else
-	{
-		uniformCache[name] = std::make_pair(location, vertexShaderId);
-	}
-	return uniformCache[name];
-}
-
-
 G2GL::GlslShaderResource::~GlslShaderResource()
 {
 	if (programId != 0)
@@ -152,24 +109,5 @@ G2GL::GlslUniformBufferResource::~GlslUniformBufferResource()
 	if (uboId != GL_INVALID_VALUE)
 	{
 		GLCHECK(glDeleteBuffers(1, &uboId));
-	}
-}
-
-G2GL::CgUniformBufferResource::CgUniformBufferResource(int glUboId, CGbuffer cgUboId) :
-UniformBufferResource(CG_UBO, glUboId),
-	//glUboId(glUboId),
-	cgUboId(cgUboId)
-{}
-
-G2GL::CgUniformBufferResource::~CgUniformBufferResource()
-{
-	//if (glUboId != GL_INVALID_VALUE)
-	//{
-	//	GLCHECK(glDeleteBuffers(1, &glUboId));
-	//}
-	if (cgUboId != nullptr)
-	{
-		// should destroy the GL buffer as well :)
-		cgDestroyBuffer(cgUboId);
 	}
 }

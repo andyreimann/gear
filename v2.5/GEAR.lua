@@ -207,7 +207,7 @@ solution "GEAR 2.5"
     location "GEAR OpenGL"
     targetname "GEARGL"
     files { "GEAR OpenGL/**.h","GEAR OpenGL/**.cpp" }
-    links { "GEAR Core", "OpenGL32", "glu32", "freeglut", "IL", "DevIL", "cg", "cgGL" }
+    links { "GEAR Core", "OpenGL32", "glu32", "freeglut", "IL", "DevIL" }
 
     postbuildcommands { 
       "XCOPY \"*.h\" \"..\\include\\G2GL\\\" /R /I /Y", 

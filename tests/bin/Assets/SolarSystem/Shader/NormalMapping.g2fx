@@ -1,0 +1,148 @@
+Ubershader "GEAR/Default" {
+   LocationBindings {
+     inPosition ("Vertex Position", vec4) = { POSITION }
+     inNormal ("Vertex Normal", vec3) = { NORMAL }
+     inBinormal ("Vertex Binormal", vec3) = { BINORMAL }
+     inTangent ("Vertex Tangent", vec3) = { TANGENT }
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _normalTex ("The normal texture", sampler2D) = { NORMAL }
+       _shadowTex ("The shadow texture of a pointlight", samplerCube) = { SHADOW }
+       _csmTex ("The cascade shadow texture of a directional light", sampler2DArrayShadow) = { SAMPLER_6 }
+       _diffuseTex ("The diffuse texture", sampler2D) = { DIFFUSE }
+   }
+   Shader "GLSL" {
+     #VERTEXPROGRAM
+       #version 330
+       #INCLUDE "G2.matrices"
+ 
+       out Data
+       {
+          vec2 texCoord;
+          vec3 normal;
+          vec3 binormal;
+          vec3 tangent;
+          vec3 eye;
+       } dataOut; 
+ 
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
+            // transform normal, binormal and tangent vectors
+            dataOut.normal = g2_normal_matrix * inNormal;
+            dataOut.binormal = g2_normal_matrix * inBinormal;
+            dataOut.tangent = g2_normal_matrix * inTangent;
+            dataOut.eye = -vec3(g2_modelview_matrix * inPosition);
+
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+       }
+     #FRAGMENTPROGRAM
+       #version 330
+       #extension GL_EXT_texture_array : enable
+       #INCLUDE "G2.material" // include GEAR default stuff
+       #INCLUDE "G2.light" // include GEAR default stuff
+
+        in Data
+        {
+          vec2 texCoord;
+          vec3 normal;
+          vec3 binormal;
+          vec3 tangent;
+          vec3 eye;
+        } dataIn; // this data comes from the vertex program
+
+        out vec4 outColor; // here goes the final color
+
+        // Helper to transforms a given vertex into tangent space
+        vec3 toTangentSpace(vec3 vector, mat3 tbnMatrix ) 
+        {
+            return normalize(vector * tbnMatrix);
+        }
+
+        int getCascadeIndex(int lightIndex) 
+        {
+          // find the appropriate depth map to look up in based on the depth of this fragment
+          for(int i = 0; i < light[lightIndex].numCascades; ++i)
+          {
+            if(gl_FragCoord.z < light[lightIndex].zFar[i])
+            {
+              return i;
+            }
+          }
+          return 0;
+        }
+
+        float toTexDepth( vec3 d, float near, float far) 
+        {      
+          float dist = max(max(abs(d.x),abs(d.y)),abs(d.z)); 
+          float fmn = far - near;   
+          dist = ((far+near)/(fmn)) + (1.0/dist)*((-2.0*far*near)/(fmn));   
+          return (dist+1.0)/2.0;   
+        }
+   
+        void main() 
+        {
+
+          vec3 normal = normalize(dataIn.normal);
+          vec3 binormal = normalize(dataIn.binormal);
+          vec3 tangent = normalize(dataIn.tangent);
+          vec3 e = normalize(dataIn.eye);
+
+          mat3 tbnMatrix = mat3(tangent, binormal, normal);
+          // read normal from normalMap
+          vec3 normalMapNormal = (texture(_normalTex, dataIn.texCoord).xyz);
+          //Expand the normal-map into a normalized signed vector
+          normal = (normalMapNormal -0.5) * 2.0;
+
+          // set the specular term to black
+          vec4 spec = vec4(0.0);
+
+          // set color to ambient material term
+          outColor = g2_ambient;
+
+          vec4 diffuse = g2_diffuse * texture(_diffuseTex, dataIn.texCoord);
+
+          for(int i = 0; i < G2ActiveLights; ++i)
+          {
+            
+              // point light
+           
+              // calculate light direction in tangent space
+              vec3 lightDir = vec3(light[i].position)+dataIn.eye;
+              float dist = length(lightDir);
+              float texDepth = toTexDepth(lightDir, 0.11, 500.0); // TODO THIS NEEDS TO BE DYNAMIC! 
+              float shadowDepth = texture(_shadowTex, -lightDir).r; // pass l normalized for lookup
+              // transform light direction to tangent space
+              lightDir = toTangentSpace(lightDir,tbnMatrix); 
+
+              vec4 spec = vec4(0.0);
+
+              // if( texDepth >= shadowDepth && texDepth < 1.0 )
+              // {
+              //   // texel in shadow
+              //   outColor += light[i].ambient; // only ambient light component influences
+              // }
+              // else
+              {
+                float intensity = max(dot(normal,lightDir), 0.0);
+                if (intensity > 0.0) 
+                {
+                  vec3 eyeVecTangentSpace = toTangentSpace(e,tbnMatrix); 
+                  vec3 reflection = reflect(-lightDir, normal);
+
+                  float att = 1.0 / (light[i].attenuation.x +
+                          light[i].attenuation.y * dist +
+                          light[i].attenuation.z * dist * dist);
+                  //vec3 h = normalize(l + e);
+
+                  float intSpec = max(dot(reflect(-eyeVecTangentSpace, normal),lightDir), 0.0);
+                  //float intSpec = max(dot(h,normal), 0.0);
+                  spec = att * light[i].specular * g2_specular * pow(intSpec, g2_shininess);
+                }
+                outColor += max(intensity * light[i].diffuse * diffuse + spec, light[i].ambient);
+              }
+          }
+        }
+   }
+ }

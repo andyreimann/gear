@@ -138,8 +138,13 @@ SolarSystem::initPlanets()
 		687. * 86400. * realSecondInSeconds,
 		3.,
 		mTexImporter.import(ASSET_PATH + "SolarSystem/asteroid_txt_diff.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST_MIPMAP_LINEAR, G2Core::FilterMode::NEAREST),
-		mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Moon.g2fx")
+		mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/NormalMapping.g2fx")
 		)));
+	mPlanets.back()->getPlanetMesh()->getComponent<G2::RenderComponent>()->material.setTexture(
+		G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "SolarSystem/asteroid_txt_norm.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST_MIPMAP_LINEAR, G2Core::FilterMode::NEAREST)
+	);
+	mPlanets.back()->getPlanetMesh()->getComponent<G2::RenderComponent>()->calculateBinormalsAndTangents();
+
 	mPlanets.push_back(std::shared_ptr<Planet>(new Planet(
 		"Jupiter",
 		mFbxImporter.import(ASSET_PATH + "SolarSystem/moon.FBX", true, true, false),

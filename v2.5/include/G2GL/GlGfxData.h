@@ -2,8 +2,6 @@
 
 #include "Defines.h"
 
-#include <Cg/cgGL.h>
-
 #include <G2Core/GfxDevice.h>
 
 #include <unordered_map>
@@ -14,7 +12,6 @@ namespace G2GL
 	{
 		INVALID_RESOURCE = 0,
 		GLSL_SHADER,
-		CG_SHADER,
 		VAO,
 		VBO,
 		IBO,
@@ -24,7 +21,6 @@ namespace G2GL
 		TEX_CUBE,
 		TEX_3D,
 		GLSL_UBO,
-		CG_UBO,
 	};
 	struct GlResource : G2Core::GfxResource
 	{
@@ -59,23 +55,6 @@ namespace G2GL
 		SetShaderUniformInt setShaderUniformInt;
 		FreeGfxResource freeGfxResource;
 		SetShaderUBOBlockBinding setShaderUBOBlockBinding;
-	};
-
-	struct CgShaderResource : ShaderResource
-	{
-		CgShaderResource();
-		~CgShaderResource();
-		/** This function will try to cache and get the location of the 
-		 * uniform variable for the given name.
-		 * @param name The name of the uniform to get the location for.
-		 * @return The location of the uniform or -1 if it could not be found.
-		 */
-		std::pair<CGparameter,CGprogram> const& getAndCacheUniformLocation(std::string const& name);
-
-		CGprogram vertexShaderId;
-		CGprogram geometryShaderId;
-		CGprogram fragmentShaderId;
-		std::unordered_map<std::string,std::pair<CGparameter,CGprogram>> uniformCache;	// The cache for the uniform locations
 	};
 
 	struct GlslShaderResource : ShaderResource
@@ -270,17 +249,6 @@ namespace G2GL
 
 		virtual ~GlslUniformBufferResource();
 
-	};
-
-
-	struct CgUniformBufferResource : UniformBufferResource
-	{
-		CgUniformBufferResource(int glUboId, CGbuffer cgUboId);
-
-		virtual ~CgUniformBufferResource();
-
-		//unsigned int	glUboId;		// The normal OpenGL UniformBufferObject
-		CGbuffer		cgUboId;		// The Cg variant of the same UniformBufferObject for usage in Cg
 	};
 
 };

@@ -5,7 +5,6 @@
 
 #include <G2Core/GfxDevice.h>
 
-void _initCgRuntime();
 G2Core::GfxResource* error();
 G2Core::GfxResource* make(G2GL::Type type,G2Core::GfxResource* resource);
 G2GL::Type type(G2Core::GfxResource const* resource);
