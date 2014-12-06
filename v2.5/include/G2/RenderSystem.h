@@ -7,7 +7,7 @@
 #include "RenderStatesGroup.h"
 #include "ZSorter.h"
 #include "Intersection.h"
-#include "UniformBufferObject.h"
+#include "DefaultUniformBufferObjects.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -125,7 +125,7 @@ namespace G2
 			*/
 			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS);
 
-			UniformBufferObject* getMaterialUBO() { return &mMaterialUBO; }
+			UniformBufferObject* getMaterialUBO() { return &mDefaultUBOs.material; }
 
 
 			~RenderSystem();
@@ -193,19 +193,21 @@ namespace G2
 			/** This function will upload the matrices to the given shader.
 			 */
 			void _uploadMatrices(
-				std::shared_ptr<Shader>& shader, 
 				TransformComponent* transformation, 
 				glm::mat4 const& projectionMatrix, 
 				glm::mat4 const& cameraSpaceMatrix,
 				glm::mat4 const& inverseCameraRotation,
 				bool billboarding
-			);
-			/** This function will upload the lights to the given shader.
-			 */
-			void _uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index);
+				);
+			/** This function will upload the given light to all requesting shader.
+			*/
+			void _uploadAllLights(LightSystem* lightSystem, glm::mat4 const& cameraSpaceMatrix);
+			/** This function will upload the given light to all requesting shader.
+			*/
+			void _uploadLight(LightComponent* light, LightSystem* lightSystem, glm::mat4 const& cameraSpaceMatrix, int index);
 			/** This function will upload the material to the given shader.
 			 */
-			void _uploadMaterial(std::shared_ptr<Shader>& shader, Material* material);
+			void _uploadMaterial(Material* material);
 			/** This function will recalculate the model space AABBs for the given RenderComponent.
 			 */
 			void _recalculateModelSpaceAABB(RenderComponent* component, TransformSystem* transformSystem);
@@ -287,8 +289,8 @@ namespace G2
 
 			glm::vec2										mLastWindowSize;				// The last known window size
 
-			UniformBufferObject								mMaterialUBO;
-			MaterialUBOStructure							mMaterialUBOData;
+			DefaultUniformBufferObjects						mDefaultUBOs;
+			G2Core::ShaderView::Matrices					mMatricesData;			// The matrices in the format a shader needs
 	};
 };
 

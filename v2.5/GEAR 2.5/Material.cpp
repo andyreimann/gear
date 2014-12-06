@@ -34,6 +34,8 @@ Material& Material::operator=(Material && rhs)
 	mEntityId = rhs.mEntityId;
 	mIsTransparent = rhs.mIsTransparent;
 	mMaterialData = std::move(rhs.mMaterialData);
+	mTextures = std::move(rhs.mTextures);
+	mChanged = std::move(rhs.mChanged);
 	// copy and increment the version!
 	setVersion(rhs.getVersion()+1);
 	rhs.mEntityId = Entity::UNINITIALIZED_ENTITY_ID;

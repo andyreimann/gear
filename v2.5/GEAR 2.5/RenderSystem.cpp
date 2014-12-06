@@ -175,13 +175,14 @@ RenderSystem::_renderForward(
 
 	mPostProcessingRenderStates.applyStates(false);
 
+	_uploadMatrices(nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
+
 	for(int i = 0; i < mPostProcessingEffects.size(); ++i)
 	{
 		mPostProcessingEffects[i]->getShader()->bind();
 
 		G2_gfxDevice()->setViewport(G2::rect(0.f, 0.f, mPostProcessingRenderTargets[i]->getRenderTexture()->getWidth(), mPostProcessingRenderTargets[i]->getRenderTexture()->getHeight()));
 
-		_uploadMatrices(mPostProcessingEffects[i]->getShader(), nullptr, glm::mat4(), glm::mat4(), glm::mat4(), false);
 
 		if(i < mPostProcessingEffects.size() - 1)
 		{
@@ -451,21 +452,8 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 {
 	// Upload Matrices
 	auto* transformation = transformSystem->get(component->getEntityId());
-	_uploadMatrices(boundShader, transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
-
-	// Upload Lights
-	int maxLights = std::min(8,(int)lightSystem->components.size());
-	int numActive = 0;
-	for(int l = 0; l < maxLights; ++l)
-	{
-		auto& lightComponent = lightSystem->components[l];
-		if(!lightComponent.isEnabled())
-		{
-			continue;
-		}
-		_uploadLight(boundShader, &lightComponent, cameraSpaceMatrix, numActive++);
-	}
-	boundShader->setProperty(std::move(std::string("G2ActiveLights")), numActive);
+	_uploadMatrices(transformation, projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, component->billboarding);
+	_uploadAllLights(lightSystem, cameraSpaceMatrix);
 
 	// Bind Textures
 	auto const& textures = component->material.getTextures();
@@ -481,7 +469,7 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 	}
 
 	// Upload Material
-	_uploadMaterial(boundShader, &component->material);
+	_uploadMaterial(&component->material);
 
 	// Draw all attached VAO
 	if(drawCallToDraw == -1)
@@ -552,93 +540,102 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 }
 
 void
-RenderSystem::_uploadMatrices(std::shared_ptr<Shader>& shader, TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, bool billboarding) 
+RenderSystem::_uploadMatrices(TransformComponent* transformation, glm::mat4 const& projectionMatrix, glm::mat4 const& cameraSpaceMatrix, glm::mat4 const& inverseCameraRotation, bool billboarding)
 {
-
 	// TEMP UNTIL PROJECTION MATRIX UPDATES ARE TRACKED IN CAMERA!
-	shader->setProperty(std::string("matrices.projection_matrix"), projectionMatrix);
+	mMatricesData.projectionMatrix = projectionMatrix;
+	mMatricesData.viewMatrix = cameraSpaceMatrix;
 	// TEMP END
 	if(transformation != nullptr) 
 	{
-		glm::mat4 modelMatrix;
-		glm::mat4 modelViewMatrix;
 		if(!billboarding)
 		{
-			modelMatrix = transformation->getWorldSpaceMatrix();
-			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
+			mMatricesData.modelMatrix = transformation->getWorldSpaceMatrix();
 		}
 		else
 		{
-			modelMatrix = transformation->getWorldSpaceMatrix() * inverseCameraRotation;
-			modelViewMatrix = cameraSpaceMatrix * modelMatrix;
+			mMatricesData.modelMatrix = transformation->getWorldSpaceMatrix() * inverseCameraRotation;
 		}
-		shader->setProperty(std::string("matrices.model_matrix"), modelMatrix);
-		shader->setProperty(std::string("matrices.view_matrix"), cameraSpaceMatrix);
-		shader->setProperty(std::string("matrices.modelview_matrix"), modelViewMatrix);
+		mMatricesData.modelViewMatrix = mMatricesData.viewMatrix * mMatricesData.modelMatrix;
 		if(transformation->getScale() == glm::vec3(1.f,1.f,1.f))
 		{
-			shader->setProperty(std::string("matrices.normal_matrix"), glm::mat3(modelViewMatrix));
+			mMatricesData.normalMatrix = mMatricesData.modelViewMatrix;
 		}
 		else
 		{
 			// non-uniform scaling
-			shader->setProperty(std::string("matrices.normal_matrix"), glm::inverseTranspose(glm::mat3(modelViewMatrix)));
+			mMatricesData.normalMatrix = glm::mat4(glm::inverseTranspose(mMatricesData.modelViewMatrix));
 		}
 	}
 	else 
 	{
-		shader->setProperty(std::string("matrices.model_matrix"), glm::mat4());
-		shader->setProperty(std::string("matrices.view_matrix"), cameraSpaceMatrix);
-		shader->setProperty(std::string("matrices.modelview_matrix"), cameraSpaceMatrix);
-		shader->setProperty(std::string("matrices.normal_matrix"), glm::mat3(cameraSpaceMatrix));
+		mMatricesData.modelMatrix = glm::mat4();
+		mMatricesData.viewMatrix = cameraSpaceMatrix;
+		mMatricesData.modelViewMatrix = cameraSpaceMatrix;
+		mMatricesData.normalMatrix = cameraSpaceMatrix;
 	}
+	mDefaultUBOs.matrices.bind();
+	mDefaultUBOs.matrices.updateSubData(0, sizeof(G2Core::ShaderView::Matrices), &mMatricesData);
+	mDefaultUBOs.matrices.unbind();
 }
 
 void
-RenderSystem::_uploadLight(std::shared_ptr<Shader>& shader, LightComponent* light, glm::mat4 const& cameraSpaceMatrix, int index) 
+RenderSystem::_uploadAllLights(LightSystem* lightSystem, glm::mat4 const& cameraSpaceMatrix)
 {
-	glm::vec4 lightPos;
-	glm::vec3 lightDir;
+	int maxLights = std::min(8, (int)lightSystem->components.size());
+	int numActive = 0;
+	for (int l = 0; l < maxLights; ++l)
+	{
+		auto& lightComponent = lightSystem->components[l];
+		if (!lightComponent.isEnabled())
+		{
+			continue;
+		}
+		_uploadLight(&lightComponent, lightSystem, cameraSpaceMatrix, numActive++);
+	}
+	lightSystem->mLightData.activeLights = numActive;
+
+	mDefaultUBOs.lights.bind();
+	static const int preLightSize = sizeof(int) + sizeof(sizeof(glm::vec3)); //activeLights + _preStructPaddingToN4
+	mDefaultUBOs.lights.updateSubData(0, preLightSize + (sizeof(G2Core::ShaderView::Light) * numActive), &lightSystem->mLightData);
+	mDefaultUBOs.lights.unbind();
+}
+
+void
+RenderSystem::_uploadLight(LightComponent* light, LightSystem* lightSystem, glm::mat4 const& cameraSpaceMatrix, int index)
+{
+	G2Core::ShaderView::Light* lightData = &lightSystem->mLightData.light[index];
+
 	if(light->getType() != LightType::DIRECTIONAL)
 	{
-		lightPos = cameraSpaceMatrix * light->getTransformedPosition();
+		lightData->position = cameraSpaceMatrix * light->getTransformedPosition();
 	}
 	if(light->getType() != LightType::POSITIONAL)
 	{
-		lightDir = glm::normalize(glm::mat3(cameraSpaceMatrix) * light->getTransformedDirection());
+		lightData->direction = glm::normalize(glm::mat3(cameraSpaceMatrix) * light->getTransformedDirection());
 	}
-
-	std::stringstream baseStr;
-	baseStr << "light[" << index << "]";
-	std::string base = baseStr.str();
 	// set coloring
-	shader->setProperty(base + ".ambient", light->ambient);
-	shader->setProperty(base + ".diffuse", light->diffuse);
-	shader->setProperty(base + ".specular", light->specular);
-	// set positional
-	shader->setProperty(base + ".position", lightPos);
-	shader->setProperty(base + ".direction", lightDir);
-	shader->setProperty(base + ".range", 0.f); // only needed for spotlight/point light
-	shader->setProperty(base + ".attenuation", glm::vec4(light->attenuation,light->linearAttenuation,light->exponentialAttenuation,0.f)); // only needed for spotlight/point light
+	lightData->ambient = light->ambient;
+	lightData->diffuse = light->diffuse;
+	lightData->specular = light->specular;
+	lightData->range = 0.f; // only needed for spotlight/point light
+	lightData->attenuation = glm::vec4(light->attenuation, light->linearAttenuation, light->exponentialAttenuation, 0.f);
 	// set special
-	shader->setProperty(base + ".cosCutoff", std::cosf(light->cutOffDegrees * (float)M_PI / 180.f)); // only needed for spotlight
+	lightData->cosCutoff = std::cosf(light->cutOffDegrees * (float)M_PI / 180.f); // only needed for spotlight
 	// set shadow
 	std::shared_ptr<LightEffectState> const& lightEffectState = light->getLightEffectState();
-	shader->setProperty(base + ".type", lightEffectState->shadowTechnique);
-	shader->setProperty(base + ".numCascades", (int)lightEffectState->cascades);
+
+	lightData->type = lightEffectState->shadowTechnique;
+	lightData->numCascades = (int)lightEffectState->cascades;
 	for(unsigned int i = 0; i < lightEffectState->cascades; ++i)
 	{
-		std::stringstream farStr;
-		farStr << base << ".zFar[" << i << "]";
-		shader->setProperty(farStr.str(), lightEffectState->farClipsHomogenous[i]);
-		std::stringstream eyeToLightClipStr;
-		eyeToLightClipStr << base << ".eyeToLightClip[" << i << "]";
-		shader->setProperty(eyeToLightClipStr.str(), lightEffectState->eyeToLightClip[i]);
+		lightData->zFar[i] = lightEffectState->farClipsHomogenous[i];
+		lightData->eyeToLightClip[i] = lightEffectState->eyeToLightClip[i];
 	}
 }
 
 void
-RenderSystem::_uploadMaterial(std::shared_ptr<Shader>& shader, Material* material) 
+RenderSystem::_uploadMaterial(Material* material) 
 {
 	// Upload material shader view to UBO
 	mDefaultUBOs.material.bind();

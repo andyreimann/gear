@@ -26,9 +26,9 @@ Ubershader "GEAR/Default" {
  
        void main(void) 
        {
-            dataOut.normal = matrices.normal_matrix * texture(_normalTex, inTexCoord).rgb;
-            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+            dataOut.normal = g2_normal_matrix * texture(_normalTex, inTexCoord).rgb;
+            dataOut.eye = -vec3(g2_modelview_matrix * inPosition);
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
             dataOut.color = inColor;
             dataOut.texCoord = inTexCoord;
        }

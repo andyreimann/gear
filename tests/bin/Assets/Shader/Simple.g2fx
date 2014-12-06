@@ -9,7 +9,7 @@ Ubershader "Example/Simple" {
 
        void main(void) {
 
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition;
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition;
        }
      #FRAGMENTPROGRAM
        #version 330

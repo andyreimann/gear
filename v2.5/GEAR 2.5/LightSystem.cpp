@@ -10,8 +10,7 @@ LightSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
 	if(name == "postUpdate") 
 	{
-		
-		for (int i = 0; i < components.size() ; ++i) 
+		for (int i = 0; i < components.size(); ++i) 
 		{
 			LightComponent& comp = components[i];
 

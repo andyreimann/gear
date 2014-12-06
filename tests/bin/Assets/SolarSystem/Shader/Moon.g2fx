@@ -26,9 +26,9 @@ Ubershader "GEAR/Default" {
        void main(void) 
        {
             dataOut.texCoord = inTexCoord;
-            dataOut.normal = matrices.normal_matrix * inNormal;
-            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition;
+            dataOut.normal = g2_normal_matrix * inNormal;
+            dataOut.eye = -vec3(g2_modelview_matrix * inPosition);
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition;
             dataOut.color = inColor;
        }
 
@@ -39,19 +39,6 @@ Ubershader "GEAR/Default" {
        #INCLUDE "G2.light" // include GEAR default stuff
 
         out vec4 outColor; // here goes the final color
-
-        int getCascadeIndex(int lightIndex) 
-        {
-          // find the appropriate depth map to look up in based on the depth of this fragment
-          for(int i = 0; i < light[lightIndex].numCascades; ++i)
-          {
-            if(gl_FragCoord.z < light[lightIndex].zFar[i])
-            {
-              return i;
-            }
-          }
-          return 0;
-        }
 
         float toTexDepth( vec3 d, float near, float far) 
         {      
@@ -83,6 +70,8 @@ Ubershader "GEAR/Default" {
 
           vec4 diffuse = g2_diffuse * texture(_diffuseTex, dataIn.texCoord);
 
+          int i = 0;
+          //while(light[i].enabled == true)
           for(int i = 0; i < G2ActiveLights; ++i)
           {
               // point light

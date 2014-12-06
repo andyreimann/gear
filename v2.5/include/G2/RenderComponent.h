@@ -185,5 +185,6 @@ namespace G2
 			ShaderCache						mShaderCache;			// The cache used for the Shader
 			std::shared_ptr<RenderStatesGroup> mRenderStatesGroup;	// The group of entities sharing the same RenderStates the RenderComponent belongs to (set and maintained by the RenderSystem!)
 			G2Core::RenderLayer::RenderLayerMask mRenderLayerMask;	// The RenderLayers the RenderComponent is assigned to		
+
 	};
 };

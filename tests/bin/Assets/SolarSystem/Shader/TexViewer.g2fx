@@ -20,8 +20,8 @@ Ubershader "GEAR/TexViewer" {
        void main(void) 
        {
             dataOut.texCoord = inTexCoord;
-            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
-            gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition;
+            dataOut.eye = -vec3(g2_modelview_matrix * inPosition);
+            gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition;
        }
 
      #FRAGMENTPROGRAM

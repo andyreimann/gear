@@ -36,9 +36,9 @@ Ubershader "GEAR/Multipass" {
 
              void main(void) 
              {
-                  dataOut.eye = vec3(matrices.modelview_matrix * inPosition);
-                  dataOut.clipPlane = matrices.modelview_matrix * vec4(0.0,1,0.0,dot(vec3(0,1,0),vec3(0,-3.5,0)));
-                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+                  dataOut.eye = vec3(g2_modelview_matrix * inPosition);
+                  dataOut.clipPlane = g2_modelview_matrix * vec4(0.0,1,0.0,dot(vec3(0,1,0),vec3(0,-3.5,0)));
+                  gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
              }
            #FRAGMENTPROGRAM
               #version 330
@@ -75,10 +75,10 @@ Ubershader "GEAR/Multipass" {
  
        void main(void) 
        {
-            dataOut.normal = matrices.normal_matrix * inNormal;
-            dataOut.eye = -vec3(matrices.modelview_matrix * inPosition);
+            dataOut.normal = g2_normal_matrix * inNormal;
+            dataOut.eye = -vec3(g2_modelview_matrix * inPosition);
             dataOut.texCoord = inTexCoord;
-            gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+            gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
             dataOut.color = inColor;
        }
      #FRAGMENTPROGRAM

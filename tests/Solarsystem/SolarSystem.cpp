@@ -70,6 +70,8 @@ SolarSystem::initPlanets()
 
 	auto sunEffect = mEffectImporter.import(ASSET_PATH + "SolarSystem/Shader/Sun.g2fx");
 
+	auto iefjdfg = sizeof(G2Core::ShaderView::Light);
+	auto iefjdfsg = sizeof(G2Core::ShaderView::Lights);
 
 
 

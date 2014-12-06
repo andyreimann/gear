@@ -44,7 +44,7 @@ Ubershader "Example/Simple" {
             pos.x += _camX;
             pos.z += _camZ;
 
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * pos; // write position of vertex using GEAR default filled matrices
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * pos; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
        #version 330

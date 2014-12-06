@@ -14,7 +14,6 @@ Ubershader "GEAR/GodraysBlur" {
      }
      #VERTEXPROGRAM
        #version 330
-       #INCLUDE "G2.matrices"
        #INCLUDE "G2.postprocess"
  
        out Data

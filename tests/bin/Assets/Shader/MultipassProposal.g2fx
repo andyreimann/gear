@@ -44,7 +44,7 @@ Ubershader "GEAR/Multipass" {
              void main(void) 
              {
                   dataOut.texCoord = inTexCoord;
-                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+                  gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
              }
            #FRAGMENTPROGRAM
               #version 330
@@ -74,7 +74,7 @@ Ubershader "GEAR/Multipass" {
        void main(void) 
        {
             dataOut.texCoord = inTexCoord;
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
        #version 330

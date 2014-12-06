@@ -28,6 +28,13 @@ void
 Shader::initWithMetaData(ShaderMetaData const& metaData) 
 {
 	bind();
+
+	// connect this Shader to all existing default UniformBufferObjects
+	// coming from the default includes GEAR provides
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->_connectShaderToUniformBlocks(this);
+
 	for (int i = 0; i < metaData.samplers.size() ; ++i) 
 	{
 		ShaderMetaData::SamplerMetaData const& samplerMetaData = metaData.samplers[i];
@@ -37,12 +44,6 @@ Shader::initWithMetaData(ShaderMetaData const& metaData)
 			setProperty(std::move(samplerMetaData.name),samplerMetaData.samplerSlot);
 		}
 	}
-
-	// connect this Shader to all existing default UniformBufferObjects
-	// coming from the default includes GEAR provides
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->_connectShaderToUniformBlocks(this);
 }
 
 

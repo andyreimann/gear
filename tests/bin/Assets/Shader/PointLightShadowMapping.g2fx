@@ -30,7 +30,7 @@ Ubershader "GEAR/Multipass" {
 
              void main(void) 
              {
-                  gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+                  gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
              }
            #FRAGMENTPROGRAM
               #version 330
@@ -39,7 +39,7 @@ Ubershader "GEAR/Multipass" {
               out vec4 outColor; // here goes the final color
               void main() 
               {
-                outColor = material.diffuse;
+                outColor = g2_diffuse;
               }
         }
      }
@@ -49,7 +49,7 @@ Ubershader "GEAR/Multipass" {
  
        void main(void) 
        {
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
        }
      #FRAGMENTPROGRAM
        #version 330

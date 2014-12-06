@@ -1,6 +1,8 @@
 #pragma once
 #include <G2Core/BaseSystem.h>
 
+#include <G2Core/ShaderViews.h>
+
 namespace G2 
 {
 	class LightComponent;
@@ -14,5 +16,7 @@ namespace G2
 		friend class RenderSystem;
 		public:
 			void runPhase(std::string const& name, FrameInfo const& frameInfo);
+		private:
+			G2Core::ShaderView::Lights mLightData;
 	};
 };
