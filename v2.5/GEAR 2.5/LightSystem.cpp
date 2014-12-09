@@ -8,7 +8,7 @@ using namespace G2;
 void
 LightSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
-	if(name == "postUpdate") 
+	if (name == G2Core::ECSPhase::POSTUPDATE)
 	{
 		for (int i = 0; i < components.size(); ++i) 
 		{

@@ -63,7 +63,7 @@ void fbxMatrixAdd(FbxAMatrix& pDstMatrix, FbxAMatrix& pSrcMatrix)
 void
 FBXAnimationSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
-	if(name == "postUpdate") 
+	if (name == G2Core::ECSPhase::POSTUPDATE)
 	{
 		// update all animations
 		

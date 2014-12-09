@@ -572,4 +572,12 @@ namespace G2Core
 		*/
 		COREDLL_API UniformBufferBindingPoint::Name fromString(std::string const& name);
 	};
+
+	namespace ECSPhase
+	{
+		std::string const PREUPDATE = "preUpdate";
+		std::string const UPDATE = "update";
+		std::string const POSTUPDATE = "postUpdate";
+		std::string const RENDER = "render";
+	};
 };

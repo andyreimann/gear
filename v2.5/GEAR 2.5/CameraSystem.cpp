@@ -12,7 +12,7 @@ using namespace G2;
 void
 CameraSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
-	if(name == "postUpdate") 
+	if (name == G2Core::ECSPhase::POSTUPDATE)
 	{
 		// calculate inverse camera rotation matrix for every camera once per frame
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();

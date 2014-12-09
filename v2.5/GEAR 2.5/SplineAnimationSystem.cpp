@@ -8,7 +8,7 @@ using namespace G2;
 void
 SplineAnimationSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
-	if(name == "preUpdate")
+	if (name == G2Core::ECSPhase::PREUPDATE)
 	{
 		auto* transformSystem = ECSManager::getShared().getSystem<TransformSystem,TransformComponent>();
 		for(auto i = 0; i < components.size(); ++i) 

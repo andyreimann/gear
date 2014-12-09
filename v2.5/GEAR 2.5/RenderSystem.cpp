@@ -73,7 +73,7 @@ RenderSystem::~RenderSystem()
 void
 RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
-	if(name == "postUpdate") 
+	if(name == G2Core::ECSPhase::POSTUPDATE) 
 	{
 		// calculate only those AABBs, which are scheduled for recalculation
 		// TODO Animated meshes will not schedule a recalculation so far! Should be configurable!
@@ -96,7 +96,7 @@ RenderSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 		}
 		mRecalcAABBEntityIds.clear();
 	}
-	else if(name == "render") 
+	else if (name == G2Core::ECSPhase::RENDER)
 	{
 		//G2::logger << "R in " << frameInfo.frame << G2::endl;
 		// get pointer to all needed systems once per frame -> less dynamic casts!

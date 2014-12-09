@@ -15,7 +15,7 @@ using namespace G2;
 void
 MD5AnimationSystem::runPhase(std::string const& name, FrameInfo const& frameInfo)
 {
-	if(name == "postUpdate") 
+	if (name == G2Core::ECSPhase::POSTUPDATE)
 	{
 		// update all animations
 		

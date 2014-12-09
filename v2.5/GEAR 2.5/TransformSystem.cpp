@@ -10,7 +10,7 @@ using namespace G2;
 void
 TransformSystem::runPhase(std::string const& name, FrameInfo const& frameInfo) 
 {
-	if(name == "update") 
+	if (name == G2Core::ECSPhase::UPDATE)
 	{
 		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem,RenderComponent>();
 		for(auto i = 0; i < components.size(); ++i) 
