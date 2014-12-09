@@ -1,6 +1,7 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "FileResource.h"
+#include "Logger.h"
 
 using namespace G2;
 
@@ -8,7 +9,8 @@ FileResource::FileResource(std::string const& name)
 	: mLoaded(false),
 	mName(name),
 	mFileHandle(mName)
-{ }
+{
+}
 
 FileResource::FileResource(FileResource const& rhs) 
 	: mLoaded(rhs.mLoaded),

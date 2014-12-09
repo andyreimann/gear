@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="obj">
+      <UniqueIdentifier>{2098880B-8CA1-887C-151D-9F7C8125947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x32">
+      <UniqueIdentifier>{2C737350-9852-F2EB-A16A-7DC20DC9584D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x32\Debug">
+      <UniqueIdentifier>{A22EAAB1-0EEF-25E8-D729-6F6543A96AC4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x32\Release">
+      <UniqueIdentifier>{5CD64BFB-C861-B9BF-D172-3CB43D7D15C0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x64">
+      <UniqueIdentifier>{91737350-FD52-F2EB-066B-7DC272C9584D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x64\Debug">
+      <UniqueIdentifier>{C7266410-33E7-DF46-FC21-29C468A12423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj\x64\Release">
+      <UniqueIdentifier>{C16B64F0-2DF7-D1B4-3608-55A9A2122EB5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ComponentList">
+      <UniqueIdentifier>{d27fe2ea-1686-472f-b58f-cb1f3105b965}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="obj\x64\Debug\ui_geareditor.h">
+      <Filter>obj\x64\Debug</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GEAREditor.cpp" />
+    <ClCompile Include="GLContext.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_GEAREditor.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_GLContext.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\qrc_geareditor.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ComponentListItemModel.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ComponentListView.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_GEAREditor.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_GLContext.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\qrc_geareditor.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ComponentListItemModel.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_GEAREditor.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_GLContext.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\qrc_geareditor.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ComponentListItemModel.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ComponentListView.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_GEAREditor.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_GLContext.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\qrc_geareditor.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentListItemModel.cpp">
+      <Filter>ComponentList</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentListView.cpp">
+      <Filter>ComponentList</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="GEAREditor.h" />
+    <CustomBuild Include="GLContext.h" />
+    <CustomBuild Include="geareditor.qrc" />
+    <CustomBuild Include="geareditor.ui" />
+    <CustomBuild Include="ComponentListItemModel.h">
+      <Filter>ComponentList</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ComponentListView.h">
+      <Filter>ComponentList</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

@@ -74,6 +74,8 @@ EditorUI::~EditorUI()
 		->onComponentRemovedEvent.unHookAll(this);
 	G2::ECSManager::getShared().getSystem<EditorSystem, EditorComponent>()
 		->onComponentRemovedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>()
+		->onComponentRemovedEvent.unHookAll(this);
 }
 
 void

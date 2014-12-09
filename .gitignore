@@ -261,3 +261,36 @@ v2.5/GEAR Terrains/obj/x64/Debug/GEAR Terrains.vcxprojResolveAssemblyReference.c
 v2.5/GEAR Terrains/obj/x64/Release/GEAR Terrains.vcxprojResolveAssemblyReference.cache
 tests/bin/Assets/SolarSystem/asteroid001_mdl.fbm/asteroid_txt_diff.png
 tests/bin/Assets/SolarSystem/asteroid001_mdl.fbm/asteroid_txt_norm.png
+v2.5/bin/x64/Debug/GEARGL.dll
+v2.5/bin/x64/Debug/GEARSdlContext.dll
+v2.5/bin/x64/Debug/GEARTerrains.dll
+v2.5/bin/x64/Debug/SDL2.dll
+v2.5/bin/x64/Debug/SILLY_d.dll
+v2.5/bin/x64/Debug/boost_filesystem-vc120-mt-gd-1_57.dll
+v2.5/bin/x64/Debug/boost_system-vc120-mt-gd-1_57.dll
+v2.5/bin/x64/Debug/expat_d.dll
+v2.5/bin/x64/Debug/freetype_d.dll
+v2.5/bin/x64/Debug/glew_d.dll
+v2.5/bin/x64/Debug/jpeg_d.dll
+v2.5/bin/x64/Debug/libpng_d.dll
+v2.5/bin/x64/Debug/newton.dll
+v2.5/bin/x64/Debug/pcre_d.dll
+v2.5/bin/x64/Debug/DevIL.dll
+v2.5/bin/x64/Debug/GEARCameras.dll
+v2.5/bin/x64/Debug/GEARCegui.dll
+v2.5/bin/x64/Debug/GEARCore.dll
+v2.5/bin/x64/Debug/GEARDX11.dll
+v2.5/bin/x64/Debug/GEAREditor.dll
+v2.5/bin/x64/Debug/zlib_d.dll
+v2.5/bin/x64/Debug/CEGUICoreWindowRendererSet_d.dll
+v2.5/bin/x64/Debug/CEGUIExpatParser_d.dll
+v2.5/bin/x64/Debug/CEGUIOpenGLRenderer-0_d.dll
+v2.5/bin/x64/Debug/CEGUISILLYImageCodec_d.dll
+v2.5/GEAR Studio/obj/
+v2.5/bin/x64/Debug/CEGUIBase-0_d.dll
+tests/bin/x64/Debug/boost_filesystem-vc120-mt-gd-1_57.dll
+tests/bin/x64/Debug/boost_system-vc120-mt-gd-1_57.dll
+v2.5/GEAR Studio/GEAR Studio.vcxproj
+v2.5/GEAR Studio/GEAR Studio.vcxproj.user
+boost/boost_1_57_0/
+boost/boost_1_57_0.zip
