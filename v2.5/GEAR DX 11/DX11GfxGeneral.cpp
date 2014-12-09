@@ -49,8 +49,6 @@ ID3D11DeviceContext* gDeviceContextPtr()
 	return gDeviceContext;
 }
 
-void _initCgRuntime();
-
 G2Core::GfxResource* error()
 {
 	G2Core::GfxResource* res = new G2Core::GfxResource;
@@ -92,8 +90,6 @@ Init(void* data)
 	gUpdateRasterizer();
 
 	gDeviceContext->RSSetState(gRasterizerState);
-	// init CG Runtime
-	_initCgRuntime(gDevice);
 
 	return true;
 }

@@ -28,6 +28,9 @@ class SolarSystem
 
 		void onKeyDown(G2::KeyCode key);
 
+		G2::Editor::RootEditor			mEditor;
+		bool							mEditorOn;
+
 		G2::SDL::Window*			mWindow;
 		G2Cameras::EditorCamera		mCamera;
 

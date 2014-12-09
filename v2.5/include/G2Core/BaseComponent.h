@@ -93,7 +93,7 @@ namespace G2
 
 		protected:
 			static SYSTEM* system; // The responsible system class of the BaseComponent
-		private:
+
 			/** This function will return the appropriate system 
 			 * for the current component class.
 			 * The component itself uses an internal caching to accelerate the 

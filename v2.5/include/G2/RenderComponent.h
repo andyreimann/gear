@@ -168,7 +168,16 @@ namespace G2
 			 * @note Make sure that the DrawCall at the given index exists.
 			 * @return The DrawCall at the given index.
 			 */
-			DrawCall& getDrawCall(int index) {return mDrawCalls[index]; }
+			DrawCall& getDrawCall(int index) { return mDrawCalls[index]; }
+			/** Enables all DrawCalls.
+			*/
+			void enable();
+			/** Disables all DrawCall.
+			*/
+			void disable();
+			/** Enables or disables all DrawCalls contained in this RenderComponent.
+			*/
+			void setDrawcallEnabled(bool mode);
 
 			Material						material;		// The Material of the RenderComponent
 			bool							billboarding;	// The billboarding mode to use when rendering

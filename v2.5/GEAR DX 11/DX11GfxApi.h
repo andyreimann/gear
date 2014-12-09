@@ -3,7 +3,6 @@
 #include "DX11GfxData.h"
 #include <G2Core/GfxDevice.h>
 
-void _initCgRuntime(ID3D11Device* device);
 G2Core::GfxResource* error();
 G2Core::GfxResource* make(G2DX11::Type type,G2Core::GfxResource* resource);
 G2DX11::Type type(G2Core::GfxResource const* resource);

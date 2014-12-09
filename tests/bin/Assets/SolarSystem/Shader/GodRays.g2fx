@@ -13,6 +13,7 @@ Ubershader "GEAR/Default" {
         RenderTarget SAMPLER_7
         RenderTargetWidth 512
         RenderTargetHeight 384
+        RenderLayerExcludes LAYER_30
      }
      #VERTEXPROGRAM
        #version 330

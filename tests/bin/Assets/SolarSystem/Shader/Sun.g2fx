@@ -25,6 +25,7 @@ Ubershader "GEAR/Multipass" {
               FovY 90.0
               PolygonOffsetFactor 1.0
               PolygonOffsetUnits 100.0
+              RenderLayerExcludes LAYER_30
            }
 
            #VERTEXPROGRAM
@@ -62,6 +63,7 @@ Ubershader "GEAR/Multipass" {
               PointOfView MAIN_CAMERA
               OutputFormat RGBA
               SkipPassRenderComponent false
+              RenderLayerExcludes LAYER_30
            }
 
            #VERTEXPROGRAM

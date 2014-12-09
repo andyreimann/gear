@@ -18,7 +18,10 @@ CeguiSystem::CeguiSystem()
 	// This will replace any current root window, although do note that the previous window hierarchy is not actually destroyed 
 	// - it is just detached from the GUIContext - you can easily switch between GUI 'pages' by flipping between them using the GUIContext::setRootWindow function.
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow( wmgr.createWindow( "DefaultWindow", "root" ));
-	
+
+
+	CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
+	context.injectMousePosition(0.f, 0.f);
 
 	// http://static.cegui.org.uk/docs/current/rendering_tutorial.html
 	// Bootstrap CEGUI::System with an OpenGL3Renderer object that uses the
@@ -77,8 +80,15 @@ CeguiSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo)
 void
 CeguiSystem::_onMouseMove(glm::detail::tvec2<int> const& mouseCoords) 
 {
-	int dx = mouseCoords.x - mMouseCoords.x;
-	int dy = mouseCoords.y - mMouseCoords.y;
+
+
+	int fromX = std::max<int>(0, std::min<int>(mViewport.x,mMouseCoords.x));
+	int fromY = std::max<int>(0, std::min<int>(mViewport.y,mMouseCoords.y));
+	int toX = std::max<int>(0, std::min<int>(mViewport.x,mouseCoords.x));
+	int toY = std::max<int>(0, std::min<int>(mViewport.y,mouseCoords.y));
+
+	int dx = toX - fromX;
+	int dy = toY - fromY;
 	CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
 	//if(mMouseCoordsInjected)
 	//{
@@ -91,9 +101,21 @@ CeguiSystem::_onMouseMove(glm::detail::tvec2<int> const& mouseCoords)
 	//}
 
 	//G2::logger << "["<<mouseCoords.x<<":"<<mouseCoords.y<<"] ";
-	context.injectMousePosition((float)mouseCoords.x, (float)mouseCoords.y);
+
+
+	//if (mMouseCoords.x < 0)
+	//{
+	//	dx = 0;
+	//}
+	//if (mMouseCoords.y < 0)
+	//{
+	//	dy = 0;
+	//}
+	context.injectMousePosition((float)std::max<int>(0, std::min<int>(mViewport.x, mouseCoords.x)), (float)std::max<int>(0, std::min<int>(mViewport.y, mouseCoords.y)));
 
 	mMouseCoords = mouseCoords;
+
+	//context.injectMouseMove((float)dx, (float)dy);
 }
 
 void

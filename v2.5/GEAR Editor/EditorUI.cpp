@@ -12,6 +12,11 @@
 #include <G2Core/ECSManager.h>
 #include <G2Cegui/CeguiComponent.h>
 
+#include <G2/RenderComponent.h>
+#include <G2/CameraComponent.h>
+#include <G2/SplineAnimation.h>
+#include <G2/TransformComponent.h>
+
 #include <CEGUI/RendererModules/OpenGL/RendererBase.h>
 
 
@@ -20,22 +25,61 @@ using namespace G2::Editor;
 
 EditorUI::EditorUI(RootEditor* editor) 
 	: mEditor(editor),
-	mSelectedEntityId(-1)
+	mSelectedEntry(nullptr)
 {
-	initCeguiResources();	
+
+	_init();
+
+	G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->onComponentAddedEvent.hook(this, &EditorUI::_onRenderComponentAdded);
+	G2::ECSManager::getShared().getSystem<G2::SplineAnimationSystem, G2::SplineAnimation>()
+		->onComponentAddedEvent.hook(this, &EditorUI::_onSplineAnimationAdded);
+	G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>()
+		->onComponentAddedEvent.hook(this, &EditorUI::_onCameraComponentAdded);
+	G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>()
+		->onComponentAddedEvent.hook(this, &EditorUI::_onTransformComponentAdded);
+	G2::ECSManager::getShared().getSystem<EditorSystem, EditorComponent>()
+		->onComponentAddedEvent.hook(this, &EditorUI::_onEditorComponentAdded);
+
+	G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->onComponentRemovedEvent.hook(this, &EditorUI::_onRenderComponentRemoved);
+	G2::ECSManager::getShared().getSystem<G2::SplineAnimationSystem, G2::SplineAnimation>()
+		->onComponentRemovedEvent.hook(this, &EditorUI::_onSplineAnimationRemoved);
+	G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>()
+		->onComponentRemovedEvent.hook(this, &EditorUI::_onCameraComponentRemoved);
+	G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>()
+		->onComponentRemovedEvent.hook(this, &EditorUI::_onTransformComponentRemoved);
+	G2::ECSManager::getShared().getSystem<EditorSystem, EditorComponent>()
+		->onComponentRemovedEvent.hook(this, &EditorUI::_onEditorComponentRemoved);
 }
 
 EditorUI::~EditorUI() 
 {
-	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentAdded.unHookAll(this);
-	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentRemoved.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->onComponentAddedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::SplineAnimationSystem, G2::SplineAnimation>()
+		->onComponentAddedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>()
+		->onComponentAddedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<EditorSystem, EditorComponent>()
+		->onComponentAddedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>()
+		->onComponentAddedEvent.unHookAll(this);
+
+	G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->onComponentRemovedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::SplineAnimationSystem, G2::SplineAnimation>()
+		->onComponentRemovedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>()
+		->onComponentRemovedEvent.unHookAll(this);
+	G2::ECSManager::getShared().getSystem<EditorSystem, EditorComponent>()
+		->onComponentRemovedEvent.unHookAll(this);
 }
 
 void
-EditorUI::setup() 
+EditorUI::_init() 
 {
-	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentAdded.hook(this, &EditorUI::_onRenderComponentAdded);
-	G2::ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->onRenderComponentRemoved.hook(this, &EditorUI::_onRenderComponentRemoved);
+	_initCeguiResources();
 	// create (load) the scheme file
 	// (this auto-loads the looknfeel and imageset files automatically)
 	CEGUI::SchemeManager::getSingleton().createFromFile( "TaharezLook.scheme" );
@@ -81,6 +125,12 @@ EditorUI::setup()
 		)
 	);
 
+	mNumTrianglesValue = static_cast<CEGUI::DefaultWindow*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/TrianglesBox/Value"));
+	mNumDrawCallsValue = static_cast<CEGUI::DefaultWindow*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/DrawCallsBox/Value"));
+	mNumVaosValue = static_cast<CEGUI::DefaultWindow*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/VaosBox/Value"));
+	mNumIaosValue = static_cast<CEGUI::DefaultWindow*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/IaosBox/Value"));
+	mEffectFileValue = static_cast<CEGUI::Editbox*>(ceguiComponent->getWindow()->getChild("PropertiesWindow/Rendering/EffectFileBox/Value"));
+
 	/*
 	dTestTex = G2::TextureImporter().import(mEditor->getEditorAssetsFolder() + "cegui/imagesets/TaharezLook.png", G2::LINEAR, G2::LINEAR);
 
@@ -109,13 +159,6 @@ EditorUI::setup()
 
 }
 
-struct ComponentEntryMetaData
-{
-	ComponentEntryMetaData(unsigned int entityId, unsigned int rowId) : entityId(entityId), rowId(rowId) {}
-	unsigned int entityId;
-	unsigned int rowId;
-};
-
 bool
 EditorUI::_onComponentSelectionChanged(const CEGUI::EventArgs &e) 
 {
@@ -131,23 +174,23 @@ EditorUI::_onComponentSelectionChanged(const CEGUI::EventArgs &e)
 	{
 		return false;
 	}
-	mSelectedEntityId = ((ComponentEntryMetaData*)selected->getUserData())->entityId;
 
 	// update properties window
-	_updateProperties(mSelectedEntityId);
+	mSelectedEntry = (ComponentEntryMetaData*)selected->getUserData();
+	_updateProperties();
 
-	onComponentSelectionChanged(mSelectedEntityId); // fire for other observers
+	onComponentSelectionChanged(mSelectedEntry->entityId); // fire for other observers
 	return true;
 }
 
 bool
 EditorUI::_onWireframeModeChanged(const CEGUI::EventArgs &e) 
 {
-	if(mSelectedEntityId == -1)
+	if (mSelectedEntry == nullptr)
 	{
 		mWireframeModeToggle->setSelected(false);
 	}
-	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()->get(mSelectedEntityId);
+	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()->get(mSelectedEntry->entityId);
 	if(renderComp != nullptr)
 	{
 		if(mWireframeModeToggle->isSelected())
@@ -163,52 +206,210 @@ EditorUI::_onWireframeModeChanged(const CEGUI::EventArgs &e)
 }
 
 void
-EditorUI::_updateProperties(unsigned int entityId) 
+EditorUI::_updateProperties()
 {
-	// initialize all the properties to the state of the currently selected entity
-	RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>()->get(mSelectedEntityId);
-	if(renderComp != nullptr)
+	if (mSelectedEntry == nullptr)
 	{
-		mWireframeModeToggle->setSelected(renderComp->getPolygonDrawMode() == G2Core::PolygonDrawMode::LINE);
+		return; // TODO reset
+	}
+	if ((mSelectedEntry->existingComponents & ComponentFlag::RENDER_COMPONENT) == ComponentFlag::RENDER_COMPONENT)
+	{
+		// initialize all the properties to the state of the currently selected entity
+		RenderComponent* renderComp = ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()->get(mSelectedEntry->entityId);
+
+		mWireframeModeToggle->setEnabled(true);
+
+		if (renderComp != nullptr)
+		{
+			std::stringstream str;
+			str << renderComp->getNumTriangles();
+			mNumTrianglesValue->setText(str.str());
+			str.str("");
+			str << renderComp->getNumDrawCalls();
+			mNumDrawCallsValue->setText(str.str());
+			str.str("");
+			str << renderComp->getNumVertexArrays();
+			mNumVaosValue->setText(str.str());
+			str.str("");
+			str << renderComp->getNumIndexArrays();
+			mNumIaosValue->setText(str.str());
+
+			if (renderComp->getEffect().get() != nullptr)
+			{
+				mEffectFileValue->setText(renderComp->getEffect()->getSetting("SourceFile", "default").value);
+			}
+			else
+			{
+				mEffectFileValue->setText("");
+			}
+
+			mWireframeModeToggle->setSelected(renderComp->getPolygonDrawMode() == G2Core::PolygonDrawMode::LINE);
+		}
+		else
+		{
+			mNumTrianglesValue->setText("0");
+			mNumDrawCallsValue->setText("0");
+			mNumVaosValue->setText("0");
+			mNumIaosValue->setText("0");
+			mEffectFileValue->setText("");
+			mWireframeModeToggle->setSelected(false);
+		}
 	}
 	else
 	{
-		mWireframeModeToggle->setSelected(false);
+		mNumTrianglesValue->setText("0");
+		mNumDrawCallsValue->setText("0");
+		mNumVaosValue->setText("0");
+		mNumIaosValue->setText("0");
+		mEffectFileValue->setText("");
+		mWireframeModeToggle->setEnabled(false);
 	}
 }
 
 void
-EditorUI::_onRenderComponentAdded(unsigned int entityId) 
+EditorUI::_onRenderComponentAdded(G2::RenderSystem* system, unsigned int entityId)
 {
-	std::stringstream str;
-	str << entityId;
-	unsigned int rowId = mComponentList->addRow(); // create empty
-	// fill with data
-	mComponentList->setItem(new CEGUI::ListboxTextItem(str.str(), 0, new ComponentEntryMetaData(entityId, rowId)), 0, rowId);
-
-	auto* nameComponent = G2::ECSManager::getShared().getSystem<G2::NameSystem,G2::NameComponent>()->get(entityId);
-	if(nameComponent != nullptr)
+	if (mEntityIdsToIgnore.find(entityId) != mEntityIdsToIgnore.end() ||
+		_tryMergeEntry(entityId, G2::Editor::ComponentFlag::RENDER_COMPONENT, "MESH"))
 	{
-		mComponentList->setItem(new CEGUI::ListboxTextItem(nameComponent->name), 1, rowId);
+		return;
 	}
-	else 
-	{
-		mComponentList->setItem(new CEGUI::ListboxTextItem("G2::RenderComponent"), 1, rowId);
-	}
+	_createEntry(entityId, ComponentFlag::RENDER_COMPONENT, "MESH");
 }
 
 void
-EditorUI::_onRenderComponentRemoved(unsigned int entityId) 
+EditorUI::_onSplineAnimationAdded(G2::SplineAnimationSystem* system, unsigned int entityId)
 {
-	for(unsigned int i = 0; i < mComponentList->getChildCount(); ++i)
+	if (mEntityIdsToIgnore.find(entityId) != mEntityIdsToIgnore.end() || 
+		_tryMergeEntry(entityId, G2::Editor::ComponentFlag::SPLINE_ANIMATION, "SPL"))
 	{
-		ComponentEntryMetaData* userData = ((ComponentEntryMetaData*)mComponentList->getChildAtIdx(i)->getUserData());
-		if(userData != nullptr && userData->entityId == entityId)
+		return;
+	}
+	_createEntry(entityId, ComponentFlag::SPLINE_ANIMATION, "SPL");
+}
+
+void
+EditorUI::_onCameraComponentAdded(G2::CameraSystem* system, unsigned int entityId)
+{
+	if (mEntityIdsToIgnore.find(entityId) != mEntityIdsToIgnore.end() ||
+		_tryMergeEntry(entityId, G2::Editor::ComponentFlag::CAMERA_COMPONENT, "CAM"))
+	{
+		return;
+	}
+	_createEntry(entityId, ComponentFlag::CAMERA_COMPONENT, "CAM");
+}
+
+void
+EditorUI::_onTransformComponentAdded(G2::TransformSystem* system, unsigned int entityId)
+{
+	if (mEntityIdsToIgnore.find(entityId) != mEntityIdsToIgnore.end() ||
+		_tryMergeEntry(entityId, G2::Editor::ComponentFlag::TRANSFORM_COMPONENT, "TRANS"))
+	{
+		return;
+	}
+	_createEntry(entityId, ComponentFlag::TRANSFORM_COMPONENT, "TRANS");
+}
+
+void
+G2::Editor::EditorUI::_onEditorComponentAdded(EditorSystem* system, unsigned int entityId)
+{
+	mEntityIdsToIgnore.insert(entityId);
+}
+
+void
+EditorUI::_onRenderComponentRemoved(G2::RenderSystem* system, unsigned int entityId)
+{
+	_removeEntry(entityId, ComponentFlag::RENDER_COMPONENT);
+}
+
+void
+EditorUI::_onSplineAnimationRemoved(G2::SplineAnimationSystem* system, unsigned int entityId)
+{
+	_removeEntry(entityId, ComponentFlag::SPLINE_ANIMATION);
+}
+
+void
+EditorUI::_onCameraComponentRemoved(G2::CameraSystem* system, unsigned int entityId)
+{
+	_removeEntry(entityId, ComponentFlag::CAMERA_COMPONENT);
+}
+
+void
+EditorUI::_onTransformComponentRemoved(G2::TransformSystem* system, unsigned int entityId)
+{
+	_removeEntry(entityId, ComponentFlag::TRANSFORM_COMPONENT);
+}
+
+void
+G2::Editor::EditorUI::_onEditorComponentRemoved(EditorSystem* system, unsigned int entityId)
+{
+	mEntityIdsToIgnore.erase(entityId);
+}
+
+bool
+G2::Editor::EditorUI::_tryMergeEntry(unsigned int entityId, G2::Editor::ComponentFlag::Name entryFlag, std::string const& displayName)
+{
+	for (unsigned int i = 0; i < mComponentList->getRowCount(); ++i)
+	{
+		CEGUI::uint lRowId = mComponentList->getRowID(i);
+		CEGUI::uint lCol1 = mComponentList->getColumnWithID(0);
+		CEGUI::uint lCol2 = mComponentList->getColumnWithID(1);
+		 
+		ComponentEntryMetaData* userData = (ComponentEntryMetaData*)(mComponentList->getItemAtGridReference(CEGUI::MCLGridRef(i, lCol1))->getUserData());
+		if (userData != nullptr && userData->entityId == entityId)
 		{
-			mComponentList->removeRow(mComponentList->getRowWithID(userData->rowId));
-			return;
+			userData->existingComponents |= entryFlag;
+			auto* listEntry = mComponentList->getItemAtGridReference(CEGUI::MCLGridRef(i, lCol2));
+			listEntry->setText(listEntry->getText() + " " + displayName);
+			return true;
 		}
 	}
+	return false;
+}
+
+void
+G2::Editor::EditorUI::_createEntry(unsigned int entityId, G2::Editor::ComponentFlag::Name entryFlag, std::string const& displayName)
+{
+	unsigned int rowId = mComponentList->addRow(); // create empty row
+	// create first column of row
+	{
+		std::stringstream str;
+		str << entityId;
+
+		// fill with data
+		mComponentList->setItem(new CEGUI::ListboxTextItem(str.str(), 0, new ComponentEntryMetaData(entityId, rowId, entryFlag)), 0, rowId);
+	}
+	// create second column of row
+	{
+		std::stringstream str;
+		str << "Entity ";
+		auto* nameComponent = G2::ECSManager::getShared().getSystem<G2::NameSystem, G2::NameComponent>()->get(entityId);
+		if (nameComponent != nullptr)
+		{
+			str << "[" << nameComponent->name << "] " << displayName;
+			mComponentList->setItem(new CEGUI::ListboxTextItem(str.str()), 1, rowId);
+		}
+		else
+		{
+			str << " " << displayName;
+			mComponentList->setItem(new CEGUI::ListboxTextItem(str.str()), 1, rowId);
+		}
+	}
+}
+
+bool
+G2::Editor::EditorUI::_removeEntry(unsigned int entityId, G2::Editor::ComponentFlag::Name entryFlag)
+{
+	for (unsigned int i = 0; i < mComponentList->getChildCount(); ++i)
+	{
+		ComponentEntryMetaData* userData = ((ComponentEntryMetaData*)mComponentList->getChildAtIdx(i)->getUserData());
+		if (userData != nullptr && userData->entityId == entityId)
+		{
+			userData->existingComponents &= ~entryFlag;
+			return true;
+		}
+	}
+	return false;
 }
 
 void
@@ -226,7 +427,7 @@ EditorUI::hide()
 }
 
 void
-EditorUI::initCeguiResources() 
+EditorUI::_initCeguiResources() 
 {
 	// init the CeguiSystem of gear to bootstrap the OpenGL renderer
 	G2::ECSManager::getShared().getSystem<G2::UI::CeguiSystem,G2::UI::CeguiComponent>();

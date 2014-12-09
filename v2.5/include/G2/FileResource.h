@@ -35,6 +35,10 @@ namespace G2
 			bool eof() const;
 
 			std::string getLine();
+			/** This function will return the Name.
+			* @return The Name.
+			*/
+			std::string const& getName() const { return mName; }
 
 			/** normal destructor
 			 */

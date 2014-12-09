@@ -184,7 +184,7 @@ solution "GEAR 2.5"
     location "GEAR DX 11"
     targetname "GEARDX11"
     files { "GEAR DX 11/**.h","GEAR DX 11/**.cpp" }
-    links { "GEAR Core", "GEAR 2.5", "d3d11", "d3dx11", "d3dx10", "cg", "cgD3D11" }
+    links { "GEAR Core", "GEAR 2.5", "d3d11", "d3dx11", "d3dx10" }
     includedirs { "C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Include" }
 
     postbuildcommands { 

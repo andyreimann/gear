@@ -4,72 +4,42 @@
 
 #include <G2/RenderComponent.h>
 #include <G2/CameraComponent.h>
+#include <G2/SplineAnimation.h>
 
 #include <G2Core/EventDistributer.h>
 
 using namespace G2::Editor;
 
 EditorSystem::EditorSystem() 
-	: mEditor(nullptr)
+	: mEditor(nullptr),
+	mPendingVisibilityChange(false),
+	mVisibilityMode(false)
 {
-	G2::EventDistributer::onRenderFrame.hook(this, &EditorSystem::_onRenderFrame);
 }
 
 EditorSystem::~EditorSystem() 
 {
-	G2::EventDistributer::onRenderFrame.unHook(this, &EditorSystem::_onRenderFrame);
 }
 
 void
 EditorSystem::runPhase(std::string const& name, G2::FrameInfo const& frameInfo) 
 {
-	//if(mEditor == nullptr)
-	//{
-	//	return;
-	//}
 	if(name == "update")
 	{
-		// reset all seen render components
-		for(auto it = mRenderComponentsProcessed.begin(); it != mRenderComponentsProcessed.end(); ++it)
-		{
-			it->second = false;
-		}
-		auto* cameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem,G2::CameraComponent>();
 		auto* renderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem,G2::RenderComponent>();
 		
-		auto const& renderComponents = renderSystem->getComponents();
-		
-		for(int i = 0; i < renderComponents.size(); ++i)
+		if (mPendingVisibilityChange)
 		{
-			if(get(renderComponents[i].getEntityId()) != nullptr)
+			for (int i = 0; i < components.size(); ++i)
 			{
-				// rendercomponent has EditorComponent -> ignore
-				continue;
+				auto& editorComp = components[i];
+				auto* renderComp = renderSystem->get(editorComp.getEntityId());
+				if (renderComp)
+				{
+					renderComp->setDrawcallEnabled(mVisibilityMode);
+				}
 			}
-			auto it = mRenderComponentsProcessed.find(renderComponents[i].getEntityId());
-			if(it != mRenderComponentsProcessed.end())
-			{
-				// already previously seen
-				it->second = true;
-			}
-			else 
-			{
-				// newly added
-				mRenderComponentsProcessed.insert(std::make_pair(renderComponents[i].getEntityId(), true));
-				// fire event
-				onRenderComponentAdded(renderComponents[i].getEntityId());
-			}
-		}
-		for(auto it = mRenderComponentsProcessed.begin(); it != mRenderComponentsProcessed.end();)
-		{
-			if(it->second == false)
-			{
-				// not there anymore
-				onRenderComponentRemoved(it->first);
-				it = mRenderComponentsProcessed.erase(it);
-				continue;
-			}
-			++it;
+			mPendingVisibilityChange = false;
 		}
 	}
 }
@@ -97,4 +67,19 @@ void
 EditorSystem::_releaseResources() 
 {
 	mEditor = nullptr;
+}
+
+void
+G2::Editor::EditorSystem::scheduleVisibilityChange(bool mode)
+{
+	mPendingVisibilityChange = true;
+	mVisibilityMode = mode;
+}
+
+G2::Entity
+G2::Editor::EditorSystem::createEditorEntity()
+{
+	G2::Entity entity;
+	entity.addComponent<EditorComponent>();
+	return std::move(entity);
 }

@@ -59,12 +59,15 @@ namespace G2
 			template<typename ... ARGS>
 			COMPONENT* create(unsigned int entityId, ARGS ... args)
 			{
-				std::lock_guard<std::mutex> lock(componentsMutex);
-				COMPONENT component(args ...);
-				component.mEntityId = entityId;
-				components.push_back(std::move(component)); // use move semantic with fallback to copy semantic
-				entityIdToVectorIndex.insert(std::make_pair(entityId,(unsigned int)components.size()-1));
+				{
+					std::lock_guard<std::mutex> lock(componentsMutex);
+					COMPONENT component(args ...);
+					component.mEntityId = entityId;
+					components.push_back(std::move(component)); // use move semantic with fallback to copy semantic
+					entityIdToVectorIndex.insert(std::make_pair(entityId, (unsigned int)components.size() - 1));
+				}
 				onComponentAdded(entityId);
+				onComponentAddedEvent((DERIVED_SYSTEM*)this, entityId);
 				return get(entityId);
 			}
 			/** This generic function will return a pointer to the Component
@@ -102,20 +105,23 @@ namespace G2
 				{
 					return;
 				}
-				std::lock_guard<std::mutex> lock(componentsMutex);
 				auto it = entityIdToVectorIndex.find(entityId);
 				if(it != entityIdToVectorIndex.end()) 
 				{
-					unsigned int vectorIndexTmp = it->second;
-					// swap vector indices
-					entityIdToVectorIndex.find(components.back().mEntityId)->second = it->second;
-					// swap components
-					std::swap(components[vectorIndexTmp], components.back());
-					// drop last component
-					components.pop_back();
-					// drop linkage for component
-					entityIdToVectorIndex.erase(entityId);
+					{
+						std::lock_guard<std::mutex> lock(componentsMutex);
+						unsigned int vectorIndexTmp = it->second;
+						// swap vector indices
+						entityIdToVectorIndex.find(components.back().mEntityId)->second = it->second;
+						// swap components
+						std::swap(components[vectorIndexTmp], components.back());
+						// drop last component
+						components.pop_back();
+						// drop linkage for component
+						entityIdToVectorIndex.erase(entityId);
+					}
 					onComponentRemoved(entityId);
+					onComponentAddedEvent((DERIVED_SYSTEM*)this, entityId);
 				}
 			}
 			/** This function allows you to reserve size for components managed 
@@ -169,6 +175,10 @@ namespace G2
 			std::vector<COMPONENT> const& getComponents() const { return components; } 
 
 			virtual ~BaseSystem() {}
+
+			Event<DERIVED_SYSTEM*, unsigned int>	onComponentAddedEvent;
+			Event<DERIVED_SYSTEM*, unsigned int>	onComponentRemovedEvent;
+
 		protected:
 			/** This function is called from the BaseSystem whenever a new component was added to the BaseSystem.
 			 * @param entityId The ID of the Entity, that was added.
@@ -180,7 +190,6 @@ namespace G2
 			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!
 			 */
 			virtual void onComponentRemoved(unsigned int entityId) {}
-
 			std::mutex										componentsMutex;		// The mutex to access the BaseComponent objects.
 			std::unordered_map<unsigned int,unsigned int>	entityIdToVectorIndex;	// The map holding the vector indices for every existing entity id.
 			std::vector<COMPONENT>							components; 			// The existing components in sequentially in memory

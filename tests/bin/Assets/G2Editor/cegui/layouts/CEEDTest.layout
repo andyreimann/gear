@@ -52,14 +52,87 @@
                 <Property name="AlwaysOnTop" value="true" />
             </AutoWindow>
             <Window type="VerticalLayoutContainer" name="Rendering" >
-                <Property name="Area" value="{{0,10},{0,0},{1,0},{0,66}}" />
+                <Property name="Area" value="{{0,10},{0,0},{1,0},{0,276}}" />
                 <Window type="TaharezLook/Checkbox" name="CBWireframe" >
-                    <Property name="Area" value="{{0,0},{0,2},{0,128},{0,34}}" />
+                    <Property name="Area" value="{{0,133},{0,219},{0,218},{0,251}}" />
                     <Property name="Text" value="Wireframe" />
                 </Window>
                 <Window type="TaharezLook/Checkbox" name="CBSomething" >
-                    <Property name="Area" value="{{0,0},{0,34},{0,128},{0,66}}" />
+                    <Property name="Area" value="{{0,11},{0,219},{0,96},{0,251}}" />
                     <Property name="Text" value="Whatever" />
+                </Window>
+                <Window type="TaharezLook/GroupBox" name="DrawCallsBox" >
+                    <Property name="Area" value="{{0,-1},{0,0},{0.3,160},{0.3,-126}}" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Window type="TaharezLook/Label" name="Label" >
+                        <Property name="Area" value="{{0,-2},{0,-3},{0,83},{0,13}}" />
+                        <Property name="Text" value="Draw calls:" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="TooltipText" value="Number of draw calls this object invokes." />
+                    </Window>
+                    <Window type="TaharezLook/Label" name="Value" >
+                        <Property name="Area" value="{{0,83},{0,-3},{0,220},{0,13}}" />
+                        <Property name="Text" value="0" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                </Window>
+                <Window type="TaharezLook/GroupBox" name="TrianglesBox" >
+                    <Property name="Area" value="{{0,-1},{0,35},{0.3,160},{0.3,-91}}" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Window type="TaharezLook/Label" name="Label" >
+                        <Property name="Area" value="{{0,-2},{0,-3},{0,83},{0,13}}" />
+                        <Property name="Text" value="Triangles:" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                    <Window type="TaharezLook/Label" name="Value" >
+                        <Property name="Area" value="{{0,83},{0,-3},{0,220},{0,13}}" />
+                        <Property name="Text" value="0" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                </Window>
+                <Window type="TaharezLook/GroupBox" name="VaosBox" >
+                    <Property name="Area" value="{{0,-1},{0,70},{0.3,160},{0.3,-56}}" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Window type="TaharezLook/Label" name="Label" >
+                        <Property name="Area" value="{{0,-2},{0,-3},{0,83},{0,13}}" />
+                        <Property name="Text" value="VAO:" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                    <Window type="TaharezLook/Label" name="Value" >
+                        <Property name="Area" value="{{0,83},{0,-3},{0,220},{0,13}}" />
+                        <Property name="Text" value="0" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                </Window>
+                <Window type="TaharezLook/GroupBox" name="IaosBox" >
+                    <Property name="Area" value="{{0,-1},{0,104},{0.3,160},{0.3,-22}}" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Window type="TaharezLook/Label" name="Label" >
+                        <Property name="Area" value="{{0,-2},{0,-3},{0,83},{0,13}}" />
+                        <Property name="Text" value="IAO:" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="TooltipText" value="Number of draw calls this object invokes." />
+                    </Window>
+                    <Window type="TaharezLook/Label" name="Value" >
+                        <Property name="Area" value="{{0,83},{0,-3},{0,220},{0,13}}" />
+                        <Property name="Text" value="0" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    </Window>
+                </Window>
+                <Window type="TaharezLook/GroupBox" name="EffectFileBox" >
+                    <Property name="Area" value="{{0,0},{0,138},{0.3,161},{0.3,21}}" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Window type="TaharezLook/Label" name="Label" >
+                        <Property name="Area" value="{{0,-2},{0,-3},{0,83},{0,23}}" />
+                        <Property name="Text" value="Effectfile:" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="TooltipText" value="Number of draw calls this object invokes." />
+                    </Window>
+                    <Window type="TaharezLook/Editbox" name="Value" >
+                        <Property name="Area" value="{{0,83},{0,-3},{0,222},{0,23}}" />
+                        <Property name="Font" value="DejaVuSans-08" />
+                        <Property name="ReadOnly" value="true" />
+                    </Window>
                 </Window>
             </Window>
         </Window>

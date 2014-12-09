@@ -4,6 +4,7 @@ Ubershader "Example/Simple" {
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
+       #version 330
        #INCLUDE "G2.matrices" // include GEAR default stuff
        #INCLUDE "G2.material" // include GEAR default stuff
  
@@ -13,10 +14,11 @@ Ubershader "Example/Simple" {
  
        void main(void) {
 
-           	gl_Position = (matrices.projection_matrix * matrices.modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
-				    dataOut.color = material.ambient;
+           	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
+				    dataOut.color = g2_ambient;
        }
      #FRAGMENTPROGRAM
+       #version 330
 
        out vec4 outColor; // here goes the final color
  

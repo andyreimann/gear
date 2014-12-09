@@ -84,6 +84,33 @@ G2::RenderComponent::getNumTriangles()
 	}
 	return numTris;
 }
+
+void
+G2::RenderComponent::enable()
+{
+	for (auto it = mDrawCalls.begin(); it != mDrawCalls.end(); ++it)
+	{
+		it->enable();
+	}
+}
+
+void
+G2::RenderComponent::disable()
+{
+	for (auto it = mDrawCalls.begin(); it != mDrawCalls.end(); ++it)
+	{
+		it->disable();
+	}
+}
+
+void
+G2::RenderComponent::setDrawcallEnabled(bool mode)
+{
+	for (auto it = mDrawCalls.begin(); it != mDrawCalls.end(); ++it)
+	{
+		it->setEnabled(mode);
+	}
+}
 void
 RenderComponent::addDrawCall(DrawCall const& drawCall) 
 {

@@ -9,12 +9,13 @@ namespace G2
 {
 	class RenderSystem;
 	class CameraSystem;
+	class TransformSystem;
 
 	namespace Editor 
 	{
 		class RootEditor;
 		class EditorSystem;
-		/** This class defines...
+		/** This class is responsible for the editorial content placed directly in the scene.
 		 * @created:	2014/06/15
 		 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 		 */
@@ -24,6 +25,11 @@ namespace G2
 			public:
 				/// This constructs a new EditorGeometryManager.
 				EditorGeometryManager(RootEditor* editor);
+				/** This will enable/disable the visibility of all
+				 * editorial entities, which are placed directly in the scene.
+				 * @param mode If true, everything will be shown, hidden otherwise.
+				 */
+				void setEditorGeometryVisibility(bool mode);
 
 				~EditorGeometryManager();
 			private:
@@ -31,16 +37,23 @@ namespace G2
 				void _releaseResources();
 				void _setAsSelected(unsigned int entityId);
 				void _onRenderFrame(G2::FrameInfo const& frameInfo);
+
+				void _initEditorGrid();
 				
+				// POINTER TO CORE SYSTEMS START
 				G2::RenderSystem*	mRenderSystem;
 				G2::CameraSystem*	mCameraSystem;
+				G2::TransformSystem* mTransformSystem;
 				EditorSystem*		mEditorSystem;
+				// POINTER TO CORE SYSTEMS END
 
-				RootEditor*			mEditor;
-				G2::EffectImporter	mEffectImporter;
+				RootEditor*			mEditor;					// Pointer to the root editor instance.
+				G2::EffectImporter	mEffectImporter;			// an effect importer instance
 
-				std::unordered_map<unsigned int,G2::Entity>		mCameraFrustumEntities;	// The cached frustum entity ids for all cameras in the scene
-				G2::Entity										mSelectedRCVis;
+				G2::Entity			mSelectedEntityHighlight;
+
+				std::shared_ptr<G2::Effect>	mSolidFx;			// The effect for solid ambient lighting
+				G2::Entity			mEditorGrid;				// The entity of the editor grid in 3D
 		};
 	};
 };

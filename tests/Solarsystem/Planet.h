@@ -1,5 +1,7 @@
 #pragma once
 #include <G2/GEAR.h>
+#include <G2Cameras/EditorCamera.h>
+#include <G2Editor/Editor.h>
 
 static std::string ASSET_PATH = "../../Assets/";
 
@@ -35,5 +37,6 @@ class Planet
 		double							mAnchorRotationSpeed;	// The rotation speed around the anchor
 		double							mAxisRotationSpeed;		// The rotation speed around the axis
 		double							mSpeed;
+		
 };
 

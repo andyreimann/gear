@@ -67,14 +67,14 @@ namespace G2
 			DrawCall& setDrawMode(G2Core::DrawMode::Name drawMode) { mDrawMode = drawMode; return *this; }
 			/** Enables this DrawCall.
 			 */
-			DrawCall& enable() { mEnabled = true; return *this; }
+			DrawCall& enable();
 			/** Disables this DrawCall.
 			 */
-			DrawCall& disable() { mEnabled = true; return *this; }
+			DrawCall& disable();
 			/** Enables or disables this DrawCall.
 			 * @param enabled True if you want to enable this DrawCall, false otherwise.
 			 */
-			DrawCall& setEnabled(bool enabled) { mEnabled = enabled; return *this; }
+			DrawCall& setEnabled(bool enabled);
 			/** This function will set the model space AABB to the given one.
 			* @param value The model space AABB.
 			 * @note This model space AABB may be overwritten, if the configured AABBCalculationMode is set to a value distinct from AABBCalculationMode::MANUAL.

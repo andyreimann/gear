@@ -1,5 +1,7 @@
 #include "Planet.h"
 
+#include <G2/NameComponent.h>
+
 Planet::Planet(
 	std::string const& name,
 	std::shared_ptr<G2::FBXMesh> planetMesh,
@@ -20,6 +22,7 @@ Planet::Planet(
 	G2::EventDistributer::onRenderFrame.hook(this, &Planet::_onRenderFrame);
 	G2::EventDistributer::onKeyDown.hook(this, &Planet::_onKeyDown);
 
+	mPlanetMesh->addComponent<G2::NameComponent>(mName);
 	// set transformation
 	mAnchor.addComponent<G2::TransformComponent>();
 
@@ -52,11 +55,11 @@ Planet::_onRenderFrame(G2::FrameInfo const& frameInfo)
 {
 	// rotate around anchor
 	auto* transformation = mAnchor.getComponent<G2::TransformComponent>();
-	transformation->rotateY(mAnchorRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed);
+	transformation->rotateY((float)(mAnchorRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed));
 
 	// rotate around it's own axis
 	transformation = mPlanetMesh->getComponent<G2::TransformComponent>();
-	transformation->rotateAxis(mAxisRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed, mRotationAxis);
+	transformation->rotateAxis((float)(mAxisRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed), mRotationAxis);
 }
 
 void

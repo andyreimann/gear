@@ -94,3 +94,21 @@ DrawCall::setAABBCalculationMode(AABBCalculationMode mode)
 
 	return *this;
 }
+
+DrawCall&
+G2::DrawCall::enable()
+{
+	mEnabled = true; return *this;
+}
+
+DrawCall&
+G2::DrawCall::disable()
+{
+	mEnabled = false; return *this;
+}
+
+DrawCall&
+G2::DrawCall::setEnabled(bool enabled)
+{
+	mEnabled = enabled; return *this;
+}

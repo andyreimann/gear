@@ -23,7 +23,8 @@ G2::TransformComponent::TransformComponent() :
 	mLastUpdateId(-1),
 	mUpdated(false),
 	mIsViewSpace(false)
-{ }
+{
+}
 
 G2::TransformComponent::TransformComponent(TransformMode::Name mode) : 
 	mParentEntityId(0),
@@ -193,7 +194,7 @@ TransformComponent::updateWorldSpaceMatrix(long updateId)
 		return; // already called this frame
 	}
 
-	auto* parentTransformComponent = system->get(mParentEntityId);
+	auto* parentTransformComponent = getSystem<TransformComponent>()->get(mParentEntityId);
 
 	if(!_isDirty())
 	{
@@ -220,7 +221,7 @@ TransformComponent::updateWorldSpaceMatrix(long updateId)
 		}
 		mWorldSpace = mLocalSpace;
 		
-		auto* parentTransformComponent = system->get(mParentEntityId);
+		auto* parentTransformComponent = getSystem<TransformComponent>()->get(mParentEntityId);
 		if(parentTransformComponent != nullptr)
 		{
 			// TODO: implement component sorting in TransformSystem to not update parents here!
@@ -291,7 +292,7 @@ TransformComponent::_setDirty()
 	mIsDirty = true;
 	for (int i = 0; i < mChildEntityIds.size() ; ++i) 
 	{
-		auto* tc = system->get(mChildEntityIds[i]);
+		auto* tc = getSystem<TransformComponent>()->get(mChildEntityIds[i]);
 		if(tc != nullptr)
 		{
 			tc->_setDirty();
@@ -307,7 +308,7 @@ TransformComponent::_hasCircularDependency(unsigned int initialParentEntityId) c
 		// circular dependency detected
 		return true;
 	}
-	auto* parent = system->get(mParentEntityId);
+	auto* parent = getSystem<TransformComponent>()->get(mParentEntityId);
 	if(parent != nullptr) 
 	{
 		return parent->_hasCircularDependency(initialParentEntityId);

@@ -77,6 +77,7 @@ UberShaderBlockParser::parse()
 
 
 				mBuilder->settings = blockParser.getSettingsBlockParser().getSettings();
+				mBuilder->settings.insert(std::make_pair("SourceFile", Setting("SourceFile", mFile->getName())));
 
 				// transport location bindings to builder
 				mBuilder->locationBindings = mLocationBindingBlockParser.getLocationBindings();

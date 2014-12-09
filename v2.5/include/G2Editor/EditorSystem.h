@@ -11,6 +11,9 @@
 
 namespace G2 
 {
+	class RenderSystem;
+	class SplineAnimationSystem;
+
 	namespace Editor 
 	{
 		class EditorComponent;
@@ -34,9 +37,13 @@ namespace G2
 				/// normal destructor
 				EDITORDLL_API ~EditorSystem();
 				
-				G2::Event<unsigned int>	onRenderComponentAdded;
-				G2::Event<unsigned int>	onRenderComponentRemoved;
+				EDITORDLL_API void scheduleVisibilityChange(bool mode);
+				/** Creates a new entity together with a EditorComponent already attached.
+				 * You should always use this function if you plan to create an editor Entity.
+				 */
+				static G2::Entity createEditorEntity();
 			private:
+
 				void _onRenderFrame(G2::FrameInfo const& frameInfo);
 				void _setRootEditor(RootEditor* editor);
 				/** This function is called by the RootEditor on destruction.
@@ -45,7 +52,9 @@ namespace G2
 				void _releaseResources();
 
 				RootEditor*										mEditor;
-				std::unordered_map<unsigned int,bool>			mRenderComponentsProcessed; // state of the
+
+				bool											mPendingVisibilityChange;
+				bool											mVisibilityMode;
 		};
 	};
 };

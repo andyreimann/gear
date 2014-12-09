@@ -21,7 +21,7 @@ RootEditor::RootEditor(G2::AbstractWindow* window, std::string const& editorAsse
 	G2::EventDistributer::onViewportResize.hook(this, &RootEditor::_onViewportResize);
 	mEditorCamera.setInternals(70.f, 0.1f, 1000.f);
 	mEditorCamera.pause();
-	mEditorUI.setup();
+	//mEditorUI.setup();
 	mEditorUI.hide();
 }
 
@@ -41,6 +41,7 @@ RootEditor::start()
 	mEditorCamera.unpause();
 	ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->_setRootEditor(this);
 	mEditorUI.show();
+	mEditorGeometryManager.setEditorGeometryVisibility(true);
 	G2::ECSManager::getShared().updateInvokeOrder<G2::RenderSystem,G2::RenderComponent,G2::UI::CeguiSystem,G2::UI::CeguiComponent>();
 }
 
@@ -53,6 +54,7 @@ RootEditor::stop()
 	ECSManager::getShared().getSystem<EditorSystem,EditorComponent>()->_releaseResources();
 	mEditorGeometryManager._releaseResources();
 	mEditorUI.hide();
+	mEditorGeometryManager.setEditorGeometryVisibility(false);
 }
 
 void

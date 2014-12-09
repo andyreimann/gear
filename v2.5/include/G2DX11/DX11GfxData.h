@@ -1,8 +1,6 @@
 #pragma once
 #include "DX11GfxApi.h"
 
-#include <Cg/cgD3D11.h>
-
 #include <G2Core/GfxDevice.h>
 
 #include <unordered_map>
@@ -14,7 +12,6 @@ namespace G2DX11
 	{
 		INVALID_RESOURCE = 0,
 		HLSL_SHADER,
-		CG_SHADER,
 		VAO,
 		VBO,
 		IBO,
@@ -83,54 +80,6 @@ namespace G2DX11
 
 		ID3D10Blob* vertexShaderBlob;
 		InputLayoutShaderFragment inputLayoutShaderFragment;
-	};
-
-	struct CgShaderResource : ShaderResource
-	{
-		CgShaderResource(ID3D10Blob* vertexShaderBlob, InputLayoutShaderFragment const& inputLayoutShaderFragment)
-			: vertexShaderId(nullptr),
-			geometryShaderId(nullptr),
-			fragmentShaderId(nullptr),
-			ShaderResource(G2DX11::CG_SHADER,vertexShaderBlob, inputLayoutShaderFragment) {}
-		~CgShaderResource()
-		{
-			cgDestroyProgram(vertexShaderId);
-			if(geometryShaderId != nullptr)
-			{
-				cgDestroyProgram(geometryShaderId);
-			}
-			cgDestroyProgram(fragmentShaderId);
-		}
-		/** This function will try to cache and get the location of the 
-		 * uniform variable for the given name.
-		 * @param name The name of the uniform to get the location for.
-		 * @return The location of the uniform or -1 if it could not be found.
-		 */
-		std::pair<CGparameter,CGprogram> const& getAndCacheUniformLocation(std::string const& name)
-		{
-			auto it = uniformCache.find(name);
-			if(it != uniformCache.end()) 
-			{
-				return it->second;
-			}
-
-			CGparameter location = cgGetNamedParameter(vertexShaderId, name.c_str());
-			if(location == nullptr) 
-			{
-				location = cgGetNamedParameter(fragmentShaderId, name.c_str());
-				uniformCache[name] = std::make_pair(location,fragmentShaderId);
-			}
-			else 
-			{
-				uniformCache[name] = std::make_pair(location,vertexShaderId);
-			}
-			return uniformCache[name];
-		}
-
-		CGprogram vertexShaderId;
-		CGprogram geometryShaderId;
-		CGprogram fragmentShaderId;
-		std::unordered_map<std::string,std::pair<CGparameter,CGprogram>> uniformCache;	// The cache for the uniform locations
 	};
 
 	struct VertexBufferObjectResource : DX11Resource

@@ -8,12 +8,20 @@
 
 
 SolarSystem::SolarSystem(G2::SDL::Window& window) :
+	mEditor(&window, ASSET_PATH + "G2Editor/"),
+	mEditorOn(false),
 	mWindow(&window),
 	mCamera(&window),
 	mCameraAnimation(false),
 	mStop(false)
 {
 	init();
+
+	if (mEditorOn)
+	{
+		mCamera.pause();
+		mEditor.start();
+	}
 }
 
 
@@ -373,6 +381,20 @@ SolarSystem::onKeyDown(G2::KeyCode key)
 	if (key == G2::KC_ESCAPE)
 	{
 		mStop = true;
+	}
+	else if (key == G2::KC_F2)
+	{
+		mEditorOn = !mEditorOn;
+		if (mEditorOn)
+		{
+			mCamera.pause();
+			mEditor.start();
+		}
+		else
+		{
+			mCamera.unpause();
+			mEditor.stop();
+		}
 	}
 	else if (key == G2::KC_A)
 	{
