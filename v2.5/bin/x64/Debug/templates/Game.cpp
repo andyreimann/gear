@@ -31,8 +31,20 @@ Game::~Game()
 void
 Game::startSceneAsync(std::string const& name) 
 {
-	// generated code goes here for loading the scene
 	getShared()._scheduleSceneLoading(name);
+}
+
+bool
+Game::hasEntity(std::string const& name) const
+{
+	return mManagedEntities.find(name) != std::end(mManagedEntities);
+}
+
+G2::Entity*
+Game::getEntity(std::string const& name) 
+{
+	auto it = mManagedEntities.find(name);
+	return it != std::end(mManagedEntities) ? &(*it) : nullptr;
 }
 
 void
@@ -50,7 +62,25 @@ Game::_onRenderFrame(G2::FrameInfo const&)
 {
 	if(mLoadScene)
 	{
-		// TODO Unload entire ECSManager
-		// TODO load mCurrentScene
+		// destroy all currently loaded entities and all components, which are attached to them
+		// Note that there should not be a need to actually clean up any System class.
+		mManagedEntities = std::unordered_map<std::string,G2::Entity>();
+		// load mCurrentScene
+		_auto_generated_loadCurrentScene();
+	}
+}
+
+void
+Game::_auto_generated_loadCurrentScene()
+{
+	// IDEA: We should move this function implementation into a separate source file and keep all the rest,
+	// so that the GEAR Studio only has to regenerate the implementation of this function every time.
+	if(mCurrentScene == "")
+	{
+		// do smth.
+	}
+	else if(mCurrentScene == "")
+	{
+		// do smth.
 	}
 }
