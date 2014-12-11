@@ -8,6 +8,6 @@ namespace ##NS##
 	class ##COMPONENT## : public BaseComponent<##SYSTEM##> 
 	{
 		public:
-			DLL_API ##COMPONENT##() {}
+			##COMPONENT##() {}
 	};
 };

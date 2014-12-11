@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="obj">
@@ -22,17 +22,13 @@
     <Filter Include="obj\x64\Release">
       <UniqueIdentifier>{C16B64F0-2DF7-D1B4-3608-55A9A2122EB5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ComponentList">
-      <UniqueIdentifier>{d27fe2ea-1686-472f-b58f-cb1f3105b965}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="obj\x64\Debug\ui_geareditor.h">
-      <Filter>obj\x64\Debug</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ComponentListItemModel.cpp" />
+    <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="main.cpp" />
@@ -96,23 +92,13 @@
     <ClCompile Include="obj\x64\Release\qrc_geareditor.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentListItemModel.cpp">
-      <Filter>ComponentList</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentListView.cpp">
-      <Filter>ComponentList</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="ComponentListItemModel.h" />
+    <CustomBuild Include="ComponentListView.h" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
     <CustomBuild Include="geareditor.qrc" />
     <CustomBuild Include="geareditor.ui" />
-    <CustomBuild Include="ComponentListItemModel.h">
-      <Filter>ComponentList</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ComponentListView.h">
-      <Filter>ComponentList</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

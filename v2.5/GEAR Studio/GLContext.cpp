@@ -25,17 +25,10 @@ GLContext::~GLContext()
 
 void GLContext::initializeGL() 
 {
+	// Initialize the GEAR Gfx device - this cannot hapen earlier
 	G2_gfxDevice()->init(nullptr);
 
 	setMouseTracking(true);
-	
-	
-	mEditorCamera
-		.translate(0.f,5.f)
-		.rotate(25.f, 0.f)
-		.zoom(-15.f)
-		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
-	mEditorCamera.setInternals(70.f,0.01f,1000.f);
 	
 	mMouseButtonMapping.insert(std::make_pair(Qt::LeftButton,G2::MOUSE_LEFT));
 	mMouseButtonMapping.insert(std::make_pair(Qt::MiddleButton,G2::MOUSE_MIDDLE));
@@ -159,6 +152,19 @@ GLContext::initKeyMap()
 void
 GLContext::loadDefaultScene()
 {
+	// create a new EditorCamera
+	mEditorCamera = G2Cameras::EditorCamera(this);
+	// set it as the main camera
+	G2::ECSManager::getShared()
+		.getSystem<G2::RenderSystem, G2::RenderComponent>()
+		->setRenderCamera(mEditorCamera.getId())
+
+	mEditorCamera
+		.translate(0.f, 5.f)
+		.rotate(25.f, 0.f)
+		.zoom(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+	mEditorCamera.setInternals(70.f, 0.01f, 1000.f);
 
 	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
 	G2::ECSManager::getShared()

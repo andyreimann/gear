@@ -6,13 +6,19 @@
 
 #include <unordered_map>
 
+/** This is the OpenGL Context class of the GEAR Editor rendersurface.
+* @created	2014/12/09
+* @author Andy Reimann <a.reimann@moorlands-grove.de>
+*/
 class GLContext : public QGLWidget, public G2::AbstractWindow
 {
 	Q_OBJECT // must include this if you use Qt signals/slots
 
 	public:
 		GLContext(QWidget *parent = 0);
-
+		/** Loads a default scene which is only needed for developing
+		 * purpose. Later this class shouldn't load any resources.
+		 */
 		void loadDefaultScene();
 
 		~GLContext();
