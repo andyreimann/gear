@@ -37,7 +37,7 @@ Game::startSceneAsync(std::string const& name)
 bool
 Game::hasEntity(std::string const& name) const
 {
-	return mManagedEntities.find(name) != std::end(mManagedEntities);
+	return mManagedEntities.count(name) == 1;
 }
 
 G2::Entity*
