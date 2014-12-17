@@ -101,7 +101,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>249</width>
+          <width>69</width>
           <height>631</height>
          </rect>
         </property>
@@ -123,7 +123,7 @@
   </action>
   <action name="actionProject">
    <property name="text">
-    <string>Scene</string>
+    <string>Project</string>
    </property>
   </action>
   <action name="actionOpen_2">

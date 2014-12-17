@@ -283,8 +283,8 @@ solution "GEAR 2.5"
     location "GEAR Studio"
     targetname "GEARStudio"
     targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-    files { "GEAR Studio/**.h","GEAR Studio/**.cpp","GEAR Studio/**.ui","GEAR Studio/**.qrc" }
-    links { "GEAR Core", "GEAR 2.5", "GEAR Cameras", "GEAR CEGUI", "OpenGL32", "glu32", "libfbxsdk-md.lib" }
+    files { "GEAR Studio/*.h","GEAR Studio/*.cpp","GEAR Studio/**.ui","GEAR Studio/**.qrc" }
+    links { "GEAR Core", "GEAR 2.5", "GEAR Cameras", "GEAR CEGUI", "OpenGL32", "glu32", "libfbxsdk-md.lib", "jsoncpp" }
     includedirs { "C:/Qt/Qt5.3.2/5.3/msvc2013_64_opengl/include" }
 
     postbuildcommands { 

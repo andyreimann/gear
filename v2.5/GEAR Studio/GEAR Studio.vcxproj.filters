@@ -31,6 +31,8 @@
     <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
     <ClCompile Include="GLContext.cpp" />
+    <ClCompile Include="Project.cpp" />
+    <ClCompile Include="ProjectCreation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
       <Filter>obj\x32\Debug</Filter>
@@ -42,6 +44,12 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_GLContext.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_Project.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_ProjectCreation.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\qrc_geareditor.cpp">
@@ -59,6 +67,12 @@
     <ClCompile Include="obj\x32\Release\moc_GLContext.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_Project.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ProjectCreation.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\qrc_geareditor.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -72,6 +86,12 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_GLContext.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_Project.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ProjectCreation.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\qrc_geareditor.cpp">
@@ -89,6 +109,12 @@
     <ClCompile Include="obj\x64\Release\moc_GLContext.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_Project.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ProjectCreation.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\qrc_geareditor.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -98,6 +124,9 @@
     <CustomBuild Include="ComponentListView.h" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
+    <CustomBuild Include="Project.h" />
+    <CustomBuild Include="ProjectCreation.h" />
+    <CustomBuild Include="ProjectCreation.ui" />
     <CustomBuild Include="geareditor.qrc" />
     <CustomBuild Include="geareditor.ui" />
   </ItemGroup>

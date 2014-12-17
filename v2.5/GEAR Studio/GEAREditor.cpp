@@ -1,8 +1,10 @@
 #include "GEAREditor.h"
 #include "ComponentListItemModel.h"
+#include "ProjectCreation.h"
 
 GEAREditor::GEAREditor(QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent),
+	mStudioProperties("settings.conf")
 {
 	ui.setupUi(this);
 
@@ -12,6 +14,9 @@ GEAREditor::GEAREditor(QWidget *parent)
 
 	auto* model = new ComponentListItemModel();
 	ui.componentListView->setModel(model);
+	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
+
+
 }
 
 GEAREditor::~GEAREditor()
@@ -25,4 +30,14 @@ GEAREditor::connectToGEARCore()
 	((ComponentListItemModel*)ui.componentListView->model())->startListening();
 	// lost default scene
 	((GLContext*)ui.renderSurface)->loadDefaultScene();
+}
+
+void
+GEAREditor::newProject()
+{
+	std::cout << "Creating new Project" << std::endl;
+	mNewProjectDialog = std::unique_ptr<ProjectCreation>(new ProjectCreation(this));
+	mNewProjectDialog->mStudioProperties = &mStudioProperties;
+	mNewProjectDialog->show();
+
 }

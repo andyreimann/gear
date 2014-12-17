@@ -155,10 +155,6 @@ GLContext::loadDefaultScene()
 	// create a new EditorCamera
 	mEditorCamera = G2Cameras::EditorCamera(this);
 	// set it as the main camera
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->setRenderCamera(mEditorCamera.getId())
-
 	mEditorCamera
 		.translate(0.f, 5.f)
 		.rotate(25.f, 0.f)

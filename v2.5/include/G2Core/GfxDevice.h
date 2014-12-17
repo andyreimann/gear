@@ -151,7 +151,7 @@ namespace G2
 			/// This constructs a new GfxDevice.
 			COREDLL_API GfxDevice(std::string const& gfxDevicelib);
 
-			~GfxDevice();;
+			~GfxDevice();
 
 			// START GFX LIB FUNCTION POINTERS
 
