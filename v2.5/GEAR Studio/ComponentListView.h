@@ -14,5 +14,10 @@ class ComponentListView : public QListView
 	public:
 		ComponentListView(QWidget *parent = 0);
 		~ComponentListView(void);
+
+	protected slots:
+	virtual void currentChanged(const QModelIndex & current, const QModelIndex & previous);
+		
+
 };
 

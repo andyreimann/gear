@@ -72,10 +72,10 @@ class TestScene
 		std::vector<G2::Entity> mBalls;
 
 
-		std::shared_ptr<G2::MD5Mesh> mSampleMesh;
+		G2::Entity mSampleMesh;
 		G2::Entity mSampleMesh2;
 		G2::Entity mSampleMesh3;
-		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
+		std::vector<G2::Entity> mMd5Meshes;
 		std::vector<G2::Entity> mFbxMeshes;
 
 		G2::Editor::RootEditor	mEditor;

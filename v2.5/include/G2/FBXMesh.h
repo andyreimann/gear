@@ -15,96 +15,75 @@
 #include <fbxsdk.h>
 #include <glm/glm.hpp>
 
-namespace G2 
+namespace G2
 {
 	class TextureImporter;
-	/** This class holds all the data needed to visualize a FBXMesh.
-	 * Since it is a derivation of the Entity, it takes advantage of the
-	 * features of the ECS.
-	 * Instances are usually created using the FBXImporter class.
-	 * @created:	2014/02/18
-	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
-	 */
-	class FBXMesh : public Entity
+	namespace FBXMesh
 	{
-		public:
-
-			struct Builder : public ResourceBuilder<Builder,G2::Entity>
+		struct Builder : public ResourceBuilder < Builder, G2::Entity >
+		{
+			struct MeshMetaData
 			{
-				struct MeshMetaData
+				MeshMetaData(FbxMesh const*	mesh, unsigned int vaoOffset);
+
+				struct SubMeshMetaData
 				{
-					MeshMetaData(FbxMesh const*	mesh, unsigned int vaoOffset);
+					SubMeshMetaData()
+						: indexOffset(0),
+						triangleCount(0)
+					{}
 
-					struct SubMeshMetaData
-					{
-						SubMeshMetaData() 
-							: indexOffset(0), 
-							triangleCount(0) 
-						{}
-
-						int indexOffset;
-						int triangleCount;
-					};
-
-					unsigned int			vaoOffset;		// ENGINE RELATED index into the VAO array of the resulting RenderComponent
-					FbxMesh const*			mesh;			// The mesh, the Meta Data belongs to
-					bool					allByControlPoint; // Vertices are controlled by the control points or not
-					bool					hasNormals;		// Indicates whether the Mesh has normals or not
-					bool					hasUvs;			// Indicates whether the Mesh has texture coordinates or not
-					std::vector<glm::vec3>  vertices;		// The initial vertices
-					std::vector<glm::vec3>  normals;		// The initial normals
-					std::vector<glm::vec2>  uvs;			// The initial texture coordinates
-					G2::AABB				modelSpaceAABB; // The initial model space axis aligned bounding box
-					std::vector<unsigned int> indices;		// The indices
-
-					std::vector<SubMeshMetaData> subMeshMetaData; // Meta data for how to render the resulting index buffer (is rendered in multiple draw calls)
+					int indexOffset;
+					int triangleCount;
 				};
-				
-				void deleteScene();
-				/** Unload the cache and release the memory under this node recursively.
-				 */
-				void unloadCacheRecursive(FbxNode * pNode);
 
-				static G2::Sampler::Name toSampler(int fbxTextureUse);
-				static G2Core::WrapMode::Name toWrapMode(int fbxTextureWrapMode);
+				unsigned int			vaoOffset;		// ENGINE RELATED index into the VAO array of the resulting RenderComponent
+				FbxMesh const*			mesh;			// The mesh, the Meta Data belongs to
+				bool					allByControlPoint; // Vertices are controlled by the control points or not
+				bool					hasNormals;		// Indicates whether the Mesh has normals or not
+				bool					hasUvs;			// Indicates whether the Mesh has texture coordinates or not
+				std::vector<glm::vec3>  vertices;		// The initial vertices
+				std::vector<glm::vec3>  normals;		// The initial normals
+				std::vector<glm::vec2>  uvs;			// The initial texture coordinates
+				G2::AABB				modelSpaceAABB; // The initial model space axis aligned bounding box
+				std::vector<unsigned int> indices;		// The indices
 
-				~Builder();
-
-				G2::Entity buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte, G2::Entity* target = nullptr);
-
-				std::string				name;
-				std::string				meshFilePath;
-				FbxScene*				fbxScene; // This object holds most objects imported from files.
-				FbxImporter *			fbxImporter;
-				bool					isAnimated;
-
-				FbxArray<FbxString*>	animStackNameArray;
-				FbxArray<FbxNode*>		cameraArray;
-				FbxTime					cacheStart, cacheStop;
-				FbxTime					start, stop; // the initial start and stop times
-				FbxArray<FbxPose*>		poseArray;
-
-				// things needed for animation and rendering
-				int						poseIndex;	// The index of the currently used pose
-				FbxAnimLayer *			initialAnimLayer;
-				FbxAnimStack *			initialAnimationStack;
-				//FbxTime				currentTime;
-
-				std::vector<MeshMetaData> meshMetaData; // The Meta Data for the Meshes, the FBXMesh holds
-
-				std::vector<FbxFileTexture*> meshTextures; // The texture objects contained in the FBX-Model
+				std::vector<SubMeshMetaData> subMeshMetaData; // Meta data for how to render the resulting index buffer (is rendered in multiple draw calls)
 			};
 
-			/** This constructs a new FBXMesh.
+			void deleteScene();
+			/** Unload the cache and release the memory under this node recursively.
 			 */
-			FBXMesh();
+			void unloadCacheRecursive(FbxNode * pNode);
 
-			FBXMesh(FBXMesh && rhs);
+			static G2::Sampler::Name toSampler(int fbxTextureUse);
+			static G2Core::WrapMode::Name toWrapMode(int fbxTextureWrapMode);
 
-			FBXMesh& operator=(FBXMesh && rhs);
+			~Builder();
 
+			G2::Entity buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte, G2::Entity* target = nullptr);
 
-		protected:
-		private:
+			std::string				name;
+			std::string				meshFilePath;
+			FbxScene*				fbxScene; // This object holds most objects imported from files.
+			FbxImporter *			fbxImporter;
+			bool					isAnimated;
+
+			FbxArray<FbxString*>	animStackNameArray;
+			FbxArray<FbxNode*>		cameraArray;
+			FbxTime					cacheStart, cacheStop;
+			FbxTime					start, stop; // the initial start and stop times
+			FbxArray<FbxPose*>		poseArray;
+
+			// things needed for animation and rendering
+			int						poseIndex;	// The index of the currently used pose
+			FbxAnimLayer *			initialAnimLayer;
+			FbxAnimStack *			initialAnimationStack;
+			//FbxTime				currentTime;
+
+			std::vector<MeshMetaData> meshMetaData; // The Meta Data for the Meshes, the FBXMesh holds
+
+			std::vector<FbxFileTexture*> meshTextures; // The texture objects contained in the FBX-Model
+		};
 	};
 };

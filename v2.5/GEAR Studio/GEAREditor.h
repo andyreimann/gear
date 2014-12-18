@@ -5,6 +5,8 @@
 #include "ui_geareditor.h"
 #include "Project.h"
 
+#include "MeshPropertiesTab.h"
+
 #include <G2/PropertiesFile.h>
 
 #include <memory>
@@ -30,6 +32,7 @@ class GEAREditor : public QMainWindow
 
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
+		void _onSceneLoaded(Scene* scene);
 
 
 		Ui::GEAREditorClass ui;								// The Qt UI object for the main editor.
@@ -37,10 +40,12 @@ class GEAREditor : public QMainWindow
 		G2::PropertiesFile mStudioProperties;				// The properties of the entire GEAR Studio read from the settings.conf file
 		std::shared_ptr<Project> mProject;					// The currently loaded Project
 
+		MeshPropertiesTab* mMeshTab;
+
 	private slots:
 		void newProject();		// Menu callback for creating a new project
 		void openProject();		// Menu callback for opening an existing project
-
+		void createManagedEntity();
 
 };
 

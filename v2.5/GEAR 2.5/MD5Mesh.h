@@ -10,19 +10,11 @@
 
 namespace G2 
 {
-	/** This class holds all the data needed to visualize a MD5Mesh.
-	 * Since it is a derivation of the Entity, it takes advantage of the
-	 * features of the ECS.
-	 * Instances are usually created using the MD5Importer class.
-	 * @created:	2014/02/18
-	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
-	 */
-	class MD5Mesh : public Entity
+	namespace MD5Mesh
 	{
-		public:
-			struct Builder : public ResourceBuilder<Builder, std::shared_ptr<MD5Mesh>>
+			struct Builder : public ResourceBuilder<Builder, G2::Entity>
 			{
-				std::shared_ptr<MD5Mesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations);
+				G2::Entity buildResource(bool importNormals, bool importTexCoords, bool importAnimations, G2::Entity* target);
 
 				struct SubMesh 
 				{
@@ -52,20 +44,7 @@ namespace G2
 				Skeleton			 baseSkeleton; // build mesh vertex coords with this skeleton to get the default pose!
 				AnimationData		 animationData; // comes from anim file!
 				std::vector<SubMesh> subMeshes;
+				void createMeshData(G2::Entity* entity, std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords);
 			};
-			/** This constructs a new MD5Mesh.
-			 */
-			MD5Mesh();
-			
-			/** Move constructor.
-			 */
-			MD5Mesh(MD5Mesh && rhs);
-			/** Move assignment operator.
-			 */
-			MD5Mesh& operator=(MD5Mesh && rhs);
-
-		private:
-
-			void createMeshData(std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords);
 	};
 };

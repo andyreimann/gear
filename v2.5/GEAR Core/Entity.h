@@ -94,13 +94,13 @@ namespace G2
 
 			COREDLL_API static unsigned int UNINITIALIZED_ENTITY_ID;
 
+			COREDLL_API static unsigned int LAST_ENTITY_ID;
+
 		private:
 
 			Entity& operator=(Entity const& rhs);
 
 			unsigned int	mId; // The unique ID of the entity
-			
-			static unsigned int LAST_ENTITY_ID;
 			
 	};
 };

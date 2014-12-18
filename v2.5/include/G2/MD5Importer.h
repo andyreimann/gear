@@ -6,22 +6,22 @@
 
 namespace G2 
 {
-// DATATYPES ONLY NEEDED FOR ANIMATION IMPORT!!!
+	// DATATYPES ONLY NEEDED FOR ANIMATION IMPORT!!!
 
-/* Joint info */
-struct AnimationJointInfo {
-	char name[64];
-	int parent;
-	int flags;
-	int startIndex;
-};
+	/* Joint info */
+	struct AnimationJointInfo {
+		char name[64];
+		int parent;
+		int flags;
+		int startIndex;
+	};
 
-/* Base frame joint */
-struct AnimationBaseFrameJoint {
-	glm::vec3 pos;
-	glm::quat orient;
-};
-// END
+	/* Base frame joint */
+	struct AnimationBaseFrameJoint {
+		glm::vec3 pos;
+		glm::quat orient;
+	};
+	// END
 
 	/** This class implements the generic resource importer interface
 	 * to provide an importer for MD5Mesh objects from files.
@@ -29,7 +29,7 @@ struct AnimationBaseFrameJoint {
 	 * @created:	2014/02/18
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class MD5Importer : public Importer<MD5Importer,std::shared_ptr<MD5Mesh>, MD5Mesh::Builder>
+	class MD5Importer : public Importer<MD5Importer, G2::Entity, MD5Mesh::Builder>
 	{
 		public:
 			/** This function will load and import the given MD5 files
@@ -40,15 +40,16 @@ struct AnimationBaseFrameJoint {
 			 * @param importNormals Flag indicating whether you want the resulting mesh to import animations if available.
 			 * @param animationFiles A vector containing all MD5-Animation files
 			 * to also import.
-			 * @return a shared pointer pointing to the MD5Mesh or nullptr, if some error occurred.
+			 * @param target An optional pointer to an already existing G2::Entity to attach the mesh instead of at the returned one.
+			 * @return A G2::Entity were the mesh is attached to in case you did not supply a valid pointer in the target parameter.
 			 * @note Requesting one mesh multiple times will result in cache hits.
 			 */
-			std::shared_ptr<MD5Mesh> importResource(std::string const& meshFileName, 
+			G2::Entity importResource(std::string const& meshFileName,
 													bool importNormals = true, bool importTexCoords = true, bool importAnimations = true,
-													std::vector<std::string> const& animationFiles = std::vector<std::string>());
+													std::vector<std::string> const& animationFiles = std::vector<std::string>(), G2::Entity* target = nullptr);
 			std::pair<std::string,std::shared_ptr<MD5Mesh::Builder>> produceResourceBuilder(std::string const& fileName,
 													bool importNormals = true, bool importTexCoords = true, bool importAnimations = true,
-													std::vector<std::string> const& animationFiles = std::vector<std::string>());
+													std::vector<std::string> const& animationFiles = std::vector<std::string>(), G2::Entity* target = nullptr);
 
 		private:
 			/** This function imports a MD5-Mesh file and writes the data into the given Builder.

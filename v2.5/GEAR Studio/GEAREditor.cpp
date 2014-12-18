@@ -3,7 +3,7 @@
 #include "ProjectCreation.h"
 #include "GEARStudioEvents.h"
 #include <QtWidgets/QFileDialog>
-#include <thread>
+#include <sstream>
 
 GEAREditor::GEAREditor(QWidget *parent)
 	: QMainWindow(parent),
@@ -19,13 +19,23 @@ GEAREditor::GEAREditor(QWidget *parent)
 	ui.componentListView->setModel(model);
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
+	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
 
 	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
+	GEARStudioEvents::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
+
+	ui.propertiesRoot->layout()->setAlignment(Qt::AlignTop);
+
+	// setup all the tabs and hide them
+	mMeshTab = new MeshPropertiesTab(ui.propertiesRoot);
+	ui.propertiesRoot->layout()->addWidget(mMeshTab);
+	mMeshTab->hide();
 }
 
 GEAREditor::~GEAREditor()
 {
 	GEARStudioEvents::onProjectCreated.unHookAll(this);
+	GEARStudioEvents::onSceneLoaded.unHookAll(this);
 }
 
 void
@@ -50,6 +60,7 @@ GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
 	mProject->loadLastScene();
+	ui.createEntity->setEnabled(true);
 }
 
 void
@@ -59,4 +70,25 @@ GEAREditor::openProject()
 	QString directory = QFileDialog::getExistingDirectory(this,
 		tr("Select Project Directory"), QDir::currentPath());
 	_openProjectFromDirectory(directory.toStdString());
+}
+
+void
+GEAREditor::createManagedEntity()
+{
+	if (mProject.get() != nullptr && mProject->getCurrentScene().get() != nullptr)
+	{
+		std::stringstream name;
+		unsigned int i = 1;
+		do
+		{
+			name.str("");
+			name << "Entity " << i++;
+		} while (mProject->getCurrentScene()->createNewEntity(name.str()) == nullptr);
+	}
+}
+
+void
+GEAREditor::_onSceneLoaded(Scene* scene)
+{
+	ui.sceneNameLabel->setText(scene->getName().c_str());
 }

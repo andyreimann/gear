@@ -10,26 +10,26 @@
 
 using namespace G2;
 
-std::shared_ptr<MD5Mesh>
+G2::Entity
 MD5Importer::importResource(std::string const& fileName,
 							bool importNormals, bool importTexCoords, bool importAnimations,
-							std::vector<std::string> const& animationFiles) 
+							std::vector<std::string> const& animationFiles, G2::Entity* target) 
 {
 	
 	auto it = mCache.find(fileName);
 	if(it != mCache.end())
 	{
 		// cache hit
-		return it->second->build(importNormals, importTexCoords, importAnimations);
+		return std::move(it->second->build(importNormals, importTexCoords, importAnimations, target));
 	}
 	// should never occur
-	return std::shared_ptr<MD5Mesh>();
+	return std::move(G2::Entity());
 }
 
 std::pair<std::string,std::shared_ptr<MD5Mesh::Builder>> 
 MD5Importer::produceResourceBuilder(std::string const& meshFileName,
 							bool importNormals, bool importTexCoords, bool importAnimations,
-							std::vector<std::string> const& animationFiles) 
+							std::vector<std::string> const& animationFiles, G2::Entity* target)
 {
 	if(isCached(meshFileName))
 	{

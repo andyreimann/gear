@@ -44,7 +44,7 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		void initKeyMap();
 
 		G2::FrameInfo				mFrameInfo;
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity					mLight;
 		G2::EffectImporter			mEffectImporter;
 		G2::FBXImporter				mFbxImporter;
 		G2Cameras::EditorCamera		mEditorCamera;

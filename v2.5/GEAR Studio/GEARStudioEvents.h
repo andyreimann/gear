@@ -44,4 +44,9 @@ public:
 	* ManagedEntity* A pointer to the ManagedEntity which will be removed.
 	*/
 	static G2::Event<Scene*, ManagedEntity*>			onManagedEntityRemoved;
+	/** Trigger:
+	* A ManagedEntity was somehow selected.
+	* ManagedEntity* A pointer to the ManagedEntity which was created.
+	*/
+	static G2::Event<ManagedEntity*>					onManagedEntitySelected;
 };

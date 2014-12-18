@@ -8,25 +8,10 @@
 
 using namespace G2;
 
-MD5Mesh::MD5Mesh() 
-{
-}
-
-MD5Mesh::MD5Mesh(MD5Mesh && rhs) 
-{
-	*this = std::move(rhs); // rvalue property is kept with std::move!
-}
-
-MD5Mesh&
-MD5Mesh::operator=(MD5Mesh && rhs) 
-{
-	return static_cast<MD5Mesh&>(G2::Entity::operator=(std::move(rhs)));
-}
-
 void 
-MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords)
+MD5Mesh::Builder::createMeshData(G2::Entity* entity, std::vector<Builder::SubMesh> const& meshes, bool importNormals, bool importTexCoords)
 {
-	auto* renderComponent = addComponent<RenderComponent>();
+	auto* renderComponent = entity->addComponent<RenderComponent>();
 	renderComponent->allocateVertexArrays((unsigned int)meshes.size());
 	renderComponent->allocateIndexArrays((unsigned int)meshes.size());
 
@@ -55,14 +40,18 @@ MD5Mesh::createMeshData(std::vector<Builder::SubMesh> const& meshes, bool import
 	}
 }
 
-std::shared_ptr<MD5Mesh>
-MD5Mesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations) 
+G2::Entity
+MD5Mesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations, G2::Entity* target)
 {
-	// create new MD5Mesh
-	std::shared_ptr<MD5Mesh> mesh = std::shared_ptr<MD5Mesh>(new MD5Mesh());
-
+	// create mesh
+	G2::Entity meshLocal;
+	G2::Entity* mesh = &meshLocal;
+	if (target != nullptr)
+	{
+		mesh = target; // in case the user gave a valid pointer, we don't write into the local mesh
+	}
 	// create VAO from sub meshes
-	mesh->createMeshData(subMeshes, importNormals, importTexCoords);
+	createMeshData(mesh, subMeshes, importNormals, importTexCoords);
 
 	// attach an animation component and configure it
 	if(animationData.skeletonFrames.frames.size() > 0 && importAnimations) 
@@ -89,5 +78,5 @@ MD5Mesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 	
 	auto* nameComponent = mesh->addComponent<NameComponent>();
 	nameComponent->name = name;
-	return mesh;
+	return std::move(meshLocal);
 }

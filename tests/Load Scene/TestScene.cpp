@@ -83,18 +83,17 @@ TestScene::TestScene(G2::SDL::Window& window)
 
 	//mSampleMesh = mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", animFiles);
 	
-	if(mSampleMesh.get()) 
-	{
-		auto* renderComp = mSampleMesh->getComponent<G2::RenderComponent>();
-		renderComp->material.setShininess(128.f);
-		auto* transformComponent = mSampleMesh->addComponent<G2::TransformComponent>();
-		transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
-	
-		glm::quat rot = glm::angleAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 
-		//transformComponent->setRotation(rot);
-		//transformComponent->setPosition(glm::vec3(0,1,0));
-	}
+	auto* renderComp = mSampleMesh.addComponent<G2::RenderComponent>();
+	renderComp->material.setShininess(128.f);
+	auto* transformComponent = mSampleMesh.addComponent<G2::TransformComponent>();
+	transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
+	
+	glm::quat rot = glm::angleAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
+
+	//transformComponent->setRotation(rot);
+	//transformComponent->setPosition(glm::vec3(0,1,0));
+	
 	
 	for (int k = 0; k < 0; ++k) 
 	{ 
@@ -442,13 +441,11 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 		animFiles.push_back(ASSET_PATH + "Resources/boblampclean.md5anim");
 
 		mMd5Meshes.push_back(mMeshImporter.import(ASSET_PATH + "Resources/boblampclean.md5mesh", true, true, true, animFiles));
-		if(mMd5Meshes.back().get()) 
-		{
 			
 			int row = mMd5Meshes.size() % 10;
 			int col = mMd5Meshes.size() / 10;
 
-			auto* transformComponent = mMd5Meshes.back()->addComponent<G2::TransformComponent>();
+			auto* transformComponent = mMd5Meshes.back().addComponent<G2::TransformComponent>();
 			transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
 			transformComponent->rotateAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 			transformComponent->setPosition(glm::vec3(col*0.3,0,row*0.3));
@@ -459,7 +456,6 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 				// provoke circular dependency check fail
 				mPlanes[0].getComponent<G2::TransformComponent>()->setParent(transformComponent);
 			}
-		}
 	}
 	else if(keyCode == G2::KC_F && !mEditorOn)
 	{ 
@@ -507,15 +503,12 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 			tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
 		}
 	}
-	if(mSampleMesh.get()) 
-	{
 		
 		glm::quat rot = glm::angleAxis(-(frameInfo.frame%90)/1.f, glm::vec3(1.f,0.f,0.f));
 		
-		auto* transformComponent = mSampleMesh->addComponent<G2::TransformComponent>();
+		auto* transformComponent = mSampleMesh.addComponent<G2::TransformComponent>();
 		transformComponent->setRotation(rot);
 		//transformComponent->setPosition(glm::vec3(0,1,0));
-	}
 }
 
 void

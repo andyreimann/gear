@@ -171,3 +171,9 @@ Scene::save()
 		serialize(mResource);
 	}
 }
+
+std::string
+Scene::getName() const
+{
+	return mResource["name"].asString();
+}

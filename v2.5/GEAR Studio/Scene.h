@@ -21,6 +21,7 @@ class Scene : public JsonDeserializer, JsonSerializer
 		 * @param sceneFile The scene file to load.
 		 */
 		Scene(std::string projectDirectory, std::string const& sceneFile);
+		std::string getName() const;
 		/** Loads the Scene into the editor creating all GEAR engine resources.
 		 */
 		void load();

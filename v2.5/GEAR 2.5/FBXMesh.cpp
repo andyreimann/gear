@@ -19,15 +19,6 @@ const int NORMAL_STRIDE = 3;
 // Two floats for every UV.
 const int UV_STRIDE = 2;
 
-FBXMesh::FBXMesh() 
-{
-}
-
-FBXMesh::FBXMesh(FBXMesh && rhs) 
-{
-	*this = std::move(rhs); // rvalue property is kept with std::move!
-}
-
 
 FBXMesh::Builder::~Builder() 
 {
@@ -108,13 +99,6 @@ void FBXMesh::Builder::unloadCacheRecursive(FbxNode * pNode)
 	{
 		unloadCacheRecursive(pNode->GetChild(lChildIndex));
 	}
-}
-
-FBXMesh&
-FBXMesh::operator=(FBXMesh && rhs) 
-{
-	// do assignment here
-	return static_cast<FBXMesh&>(G2::Entity::operator=(std::move(rhs)));
 }
 
 G2::Entity

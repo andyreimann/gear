@@ -80,32 +80,133 @@
    <widget class="QWidget" name="dockWidgetContents_15">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Scene:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="sceneNameLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>none</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="createEntity">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Create new Entity</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="ComponentListView" name="componentListView"/>
      </item>
     </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="propertiesWindow">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_16">
+   <widget class="QWidget" name="propertiesRoot">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QScrollArea" name="propertiesScrollArea">
-       <property name="widgetResizable">
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="readOnly">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>69</width>
-          <height>631</height>
-         </rect>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Select Property to add:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>Select...</string>
         </property>
-       </widget>
+       </item>
+       <item>
+        <property name="text">
+         <string>-----------------</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Animation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>C++ Scripts</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Material</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Mesh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Transformation</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -124,6 +225,9 @@
   <action name="actionProject">
    <property name="text">
     <string>Project</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new Project</string>
    </property>
   </action>
   <action name="actionOpen_2">

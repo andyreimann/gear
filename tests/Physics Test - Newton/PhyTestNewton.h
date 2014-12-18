@@ -57,6 +57,6 @@ class PhyTestNewton
 
 		G2::Entity mLight;
 
-		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
+		std::vector<G2::Entity> mMd5Meshes;
 		std::vector<G2::Entity> mFbxMeshes;
 };

@@ -24,6 +24,8 @@ class ComponentListItemModel : public QAbstractListModel
 		virtual bool insertRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
 		virtual bool removeRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
 		bool setData(const QModelIndex &index, QVariant const& value, ManagedEntity* entity, int role = Qt::EditRole);
+
+		ManagedEntity* entity(QModelIndex const& index);
 	private:
 		/** This callback function will be called whenever a scene is unloaded.
 		 * It will trigger a deletion of all existing rows in the model.

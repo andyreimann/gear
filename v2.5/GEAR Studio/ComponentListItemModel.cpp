@@ -111,6 +111,15 @@ ComponentListItemModel::removeRows(int row, int count, QModelIndex const& parent
 	return true;
 }
 
+ManagedEntity*
+ComponentListItemModel::entity(QModelIndex const& index)
+{
+	if (!index.isValid())
+	{
+		return nullptr;
+	}
+	return mComponents.at(index.row());
+}
 // SAMPLE OF HOW TO SEARCH FOR AN ELEMENT AND MODIFY IT
 // search for an already existing row for that EntityId
 //for (int i = 0; i < rowCount(); ++i)
