@@ -1,6 +1,9 @@
 #include "GEAREditor.h"
 #include "ComponentListItemModel.h"
 #include "ProjectCreation.h"
+#include "GEARStudioEvents.h"
+#include <QtWidgets/QFileDialog>
+#include <thread>
 
 GEAREditor::GEAREditor(QWidget *parent)
 	: QMainWindow(parent),
@@ -15,19 +18,19 @@ GEAREditor::GEAREditor(QWidget *parent)
 	auto* model = new ComponentListItemModel();
 	ui.componentListView->setModel(model);
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
+	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
 
-
+	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
 }
 
 GEAREditor::~GEAREditor()
 {
+	GEARStudioEvents::onProjectCreated.unHookAll(this);
 }
 
 void
 GEAREditor::connectToGEARCore()
 {
-	// connect to GEAR Core ECS
-	((ComponentListItemModel*)ui.componentListView->model())->startListening();
 	// lost default scene
 	((GLContext*)ui.renderSurface)->loadDefaultScene();
 }
@@ -39,5 +42,21 @@ GEAREditor::newProject()
 	mNewProjectDialog = std::unique_ptr<ProjectCreation>(new ProjectCreation(this));
 	mNewProjectDialog->mStudioProperties = &mStudioProperties;
 	mNewProjectDialog->show();
+}
 
+void
+GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
+{
+	// load the Project
+	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
+	mProject->loadLastScene();
+}
+
+void
+GEAREditor::openProject()
+{
+
+	QString directory = QFileDialog::getExistingDirectory(this,
+		tr("Select Project Directory"), QDir::currentPath());
+	_openProjectFromDirectory(directory.toStdString());
 }

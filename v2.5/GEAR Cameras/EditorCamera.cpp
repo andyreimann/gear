@@ -78,13 +78,13 @@ EditorCamera::operator=(EditorCamera && rhs)
 }
 
 EditorCamera::~EditorCamera() 
-{
-	G2::EventDistributer::onMouseMove.unHook(this, &EditorCamera::onMouseMove);
-	G2::EventDistributer::onMouseUp.unHook(this, &EditorCamera::onMouseUp);
-	G2::EventDistributer::onMouseDown.unHook(this, &EditorCamera::onMouseDown);
-	G2::EventDistributer::onMouseWheel.unHook(this, &EditorCamera::onMouseWheel);
-	G2::EventDistributer::onKeyUp.unHook(this, &EditorCamera::onKeyUp);
-	G2::EventDistributer::onKeyDown.unHook(this, &EditorCamera::onKeyDown);
+{ 
+	G2::EventDistributer::onMouseMove.unHookAll(this);
+	G2::EventDistributer::onMouseUp.unHookAll(this);
+	G2::EventDistributer::onMouseDown.unHookAll(this);
+	G2::EventDistributer::onMouseWheel.unHookAll(this);
+	G2::EventDistributer::onKeyUp.unHookAll(this);
+	G2::EventDistributer::onKeyDown.unHookAll(this);
 }
 
 EditorCamera&  

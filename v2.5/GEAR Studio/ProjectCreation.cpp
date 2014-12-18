@@ -1,4 +1,6 @@
 #include "ProjectCreation.h"
+#include "GEARStudioEvents.h"
+
 #include <json/json.h>
 
 #include <QtWidgets/QFileDialog>
@@ -76,6 +78,7 @@ ProjectCreation::createProject()
 		// generate a project file
 		generateProjectFile(ui.projectName->text().toStdString(), folder + "/project.json", "scenes/main.json");
 
+		GEARStudioEvents::onProjectCreated(folder);
 	}
 	catch (const boost::filesystem::filesystem_error& ex)
 	{
@@ -138,13 +141,45 @@ ProjectCreation::generateSceneFile(std::string sceneName, std::string const& des
 	Json::Value root;
 	root["gear_studio_ver"] = 1.0;
 	root["name"] = sceneName;
-	root["rendersystem"]["size_hint"] = "100";
+	root["rendersystem"]["size_hint"] = 100;
 	root["rendersystem"]["default_effect"] = "assets/shader/Default.g2fx";
-	root["rendersystem"]["default_color"]["x"] = "0.8";
-	root["rendersystem"]["default_color"]["y"] = "0.8";
-	root["rendersystem"]["default_color"]["z"] = "0.8";
-	root["rendersystem"]["default_color"]["a"] = "1.0";
+	root["rendersystem"]["default_color"]["x"] = 0.8f;
+	root["rendersystem"]["default_color"]["y"] = 0.8f;
+	root["rendersystem"]["default_color"]["z"] = 0.8f;
+	root["rendersystem"]["default_color"]["a"] = 1.f;
 	root["entities"] = Json::Value(Json::arrayValue);
+
+	Json::Value sampleEntity;
+	sampleEntity["name"] = "Sample Entity";
+	sampleEntity["components"] = Json::Value(Json::arrayValue);
+
+	Json::Value renderComponent;
+	renderComponent["type"] = "G2::RenderComponent";
+	renderComponent["mesh"] = "assets/meshes/unit-sphere.fbx";
+	sampleEntity["components"].append(renderComponent);
+
+	Json::Value lightComponent;
+	lightComponent["type"] = "G2::LightComponent";
+	lightComponent["light"]["type"] = "DIRECTIONAL";
+	lightComponent["light"]["diffuse"]["x"] = 1.f;
+	lightComponent["light"]["diffuse"]["y"] = 1.f;
+	lightComponent["light"]["diffuse"]["z"] = 1.f;
+	lightComponent["light"]["diffuse"]["a"] = 1.f;
+	lightComponent["light"]["attenuation"]["constant"] = 1.f;
+	lightComponent["light"]["attenuation"]["linear"] = 1.f;
+	lightComponent["light"]["attenuation"]["exponential"] = 0.f;
+
+	sampleEntity["components"].append(lightComponent);
+
+	Json::Value transformComponent;
+	transformComponent["type"] = "G2::TransformComponent";
+	transformComponent["rotation"]["angle"] = -10.f;
+	transformComponent["rotation"]["axis"]["x"] = 1.f;
+	transformComponent["rotation"]["axis"]["y"] = 0.f;
+	transformComponent["rotation"]["axis"]["z"] = 0.f;
+	sampleEntity["components"].append(transformComponent);
+
+	root["entities"].append(sampleEntity);
 
 	std::ofstream out(destinationFile);
 	out << root;

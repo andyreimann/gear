@@ -25,14 +25,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="GEARStudioEvents.h" />
+    <ClInclude Include="JsonDeserializer.h" />
+    <ClInclude Include="JsonSerializer.h" />
+    <ClInclude Include="ManagedEntity.h" />
+    <ClInclude Include="Project.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComponentListItemModel.cpp" />
     <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
+    <ClCompile Include="GEARStudioEvents.cpp" />
     <ClCompile Include="GLContext.cpp" />
+    <ClCompile Include="JsonDeserializer.cpp" />
+    <ClCompile Include="JsonSerializer.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="ProjectCreation.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
       <Filter>obj\x32\Debug</Filter>
@@ -44,9 +54,6 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_GLContext.cpp">
-      <Filter>obj\x32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="obj\x32\Debug\moc_Project.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ProjectCreation.cpp">
@@ -67,9 +74,6 @@
     <ClCompile Include="obj\x32\Release\moc_GLContext.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="obj\x32\Release\moc_Project.cpp">
-      <Filter>obj\x32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_ProjectCreation.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -86,9 +90,6 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_GLContext.cpp">
-      <Filter>obj\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="obj\x64\Debug\moc_Project.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ProjectCreation.cpp">
@@ -109,9 +110,6 @@
     <ClCompile Include="obj\x64\Release\moc_GLContext.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="obj\x64\Release\moc_Project.cpp">
-      <Filter>obj\x64\Release</Filter>
-    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_ProjectCreation.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -124,7 +122,6 @@
     <CustomBuild Include="ComponentListView.h" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
-    <CustomBuild Include="Project.h" />
     <CustomBuild Include="ProjectCreation.h" />
     <CustomBuild Include="ProjectCreation.ui" />
     <CustomBuild Include="geareditor.qrc" />

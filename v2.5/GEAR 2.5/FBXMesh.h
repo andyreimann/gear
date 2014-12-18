@@ -72,6 +72,8 @@ namespace G2
 
 				std::shared_ptr<FBXMesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte);
 
+				G2::Entity* _test_buildResource(G2::Entity* target, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte);
+
 				std::string				name;
 				std::string				meshFilePath;
 				FbxScene*				fbxScene; // This object holds most objects imported from files.

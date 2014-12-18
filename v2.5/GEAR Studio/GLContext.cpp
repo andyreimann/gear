@@ -148,6 +148,7 @@ GLContext::initKeyMap()
 	mKeyMap.insert(std::make_pair(Qt::Key_Up,G2::KC_UP));
 	mKeyMap.insert(std::make_pair(Qt::Key_Down,G2::KC_DOWN));
 }
+#include <thread>
 
 void
 GLContext::loadDefaultScene()
@@ -161,25 +162,4 @@ GLContext::loadDefaultScene()
 		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mEditorCamera.setInternals(70.f, 0.01f, 1000.f);
-
-	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(ASSET_PATH + "Shader/Default.g2fx");
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->setDefaultEffect(effect);
-	G2::ECSManager::getShared()
-		.getSystem<G2::RenderSystem, G2::RenderComponent>()
-		->setClearColor(glm::vec4(0.f, 0.f, 0.f, 1.f));
-
-	mLight = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
-
-
-	mLight->addComponent<G2::NameComponent>("Light");
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-
-	light->getType();
-	light->diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
-	light->linearAttenuation = 1.f;
-
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
-	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f, 0.f, 0.f));
 }

@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_geareditor.h"
+#include "Project.h"
 
 #include <G2/PropertiesFile.h>
 
@@ -33,8 +34,14 @@ class GEAREditor : public QMainWindow
 
 		G2::PropertiesFile mStudioProperties;				// The properties of the entire GEAR Studio
 
-	private slots:
+
+		void _openProjectFromDirectory(std::string const& projectDirectory);
+
+		std::shared_ptr<Project> mProject;
+
+		private slots:
 		void newProject();
+		void openProject();
 
 
 };

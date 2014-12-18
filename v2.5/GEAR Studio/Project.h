@@ -1,34 +1,33 @@
 #pragma once
-#include <json/json.h>
+#include "JsonSerializer.h"
+#include "JsonDeserializer.h"
+#include "Scene.h"
+
+#include <memory>
 
 
-/** This class holds all information about a project.
+/** This class holds all information about a Project.
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
-class Project
+class Project : public JsonDeserializer, JsonSerializer
 {
 	public:
 		/** This will create a new Project instance from a given project file.
-		 * @param projectFile The project file to load.
+		 * @param projectDirectory The project directory to load.
 		 */
-		Project(std::string const& projectFile);
-		/** Returns if the last loading process of the Project was finished sucessfully.
-		 * @return True if the Project encountered an error during loading, false if not.
+		Project(std::string const& projectDirectory);
+
+		/** This will load all resources from the last scene, which was opened.
 		 */
-		bool error() const { return mParseError;  }
- 
-		std::string const& getLastErrorMessage() const { return mParseErrorMsg;  }
-
-
-
-	private:
-
-		void _parse();
+		void loadLastScene();
 		
-		std::string mProjectFile;
-		Json::Value mProjectResource;
-		std::string	mParseErrorMsg;
-		bool		mParseError;
+		void loadScene(std::string const& sceneFile);
+
+		~Project();
+	private:
+		std::string mProjectDirectory;
+
+		std::shared_ptr<Scene> mCurrentScene;
 
 };

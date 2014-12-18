@@ -1,5 +1,6 @@
 #pragma once
 #include "Defines.h"
+#include "GEARStudioEvents.h"
 
 #include <G2/RenderComponent.h>
 #include <G2/SplineAnimation.h>
@@ -23,35 +24,19 @@ class ComponentListItemModel : public QAbstractListModel
 	public:
 		ComponentListItemModel(QObject *parent = 0);
 		~ComponentListItemModel();
-		/** Connects the ComponentListModel to the GEAR Entity-Component-System
-		 * meaning that it will start receiving callbacks whenever Components are added/removed.
-		 */
-		void startListening();
-
 
 		virtual int rowCount(QModelIndex const& parent = QModelIndex()) const override;
 		virtual QVariant data(QModelIndex const& index, int role = Qt::DisplayRole) const override;
 		virtual bool insertRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
 		virtual bool removeRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
 
-		bool setData(const QModelIndex &index, QVariant const& value, unsigned int entityId, G2::Studio::ComponentFlag::Name type, int role = Qt::EditRole);
+		bool setData(const QModelIndex &index, QVariant const& value, unsigned int entityId, int role = Qt::EditRole);
 	private:
-		// GEAR CALLBACKS FOR CORE COMPONENTS START
-		void _onRenderComponentAdded(G2::RenderSystem* system, unsigned int entityId);
-		void _onSplineAnimationAdded(G2::SplineAnimationSystem* system, unsigned int entityId);
-		void _onCameraComponentAdded(G2::CameraSystem* system, unsigned int entityId);
-		void _onTransformComponentAdded(G2::TransformSystem* system, unsigned int entityId);
 
-		void _onRenderComponentRemoved(G2::RenderSystem* system, unsigned int entityId);
-		void _onSplineAnimationRemoved(G2::SplineAnimationSystem* system, unsigned int entityId);
-		void _onCameraComponentRemoved(G2::CameraSystem* system, unsigned int entityId);
-		void _onTransformComponentRemoved(G2::TransformSystem* system, unsigned int entityId);
-		// GEAR CALLBACKS FOR CORE COMPONENTS END
+		void _onSceneUnloaded(Scene* scene);
+		void _onManagedEntityCreated(Scene* scene, ManagedEntity* entity);
 
-		void _onCoreComponentAdded(unsigned int entityId, G2::Studio::ComponentFlag::Name type);
-		void _onCoreComponentRemoved(unsigned int entityId, G2::Studio::ComponentFlag::Name type);
-
-		std::string _buildDisplayName(unsigned int entityId, G2::Studio::ComponentMask types) const;
+		std::string _buildDisplayName(ManagedEntity* entity) const;
 
 		struct ComponentState
 		{

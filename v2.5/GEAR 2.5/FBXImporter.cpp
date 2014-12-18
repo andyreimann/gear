@@ -21,6 +21,13 @@ FBXImporter::importResource(std::string const& fileName, bool importNormals, boo
 	return std::shared_ptr<FBXMesh>();
 }
 
+G2::Entity*
+G2::FBXImporter::_test_importResource(G2::Entity* targetEntity, std::string const& fileName, bool importNormals /*= true*/, bool importTexCoords /*= true*/, bool importAnimations /*= true*/, bool flipTexU /*= false*/, bool flipTexV /*= false*/, TextureImporter* texImporter /*= nullptr*/)
+{
+	return produceResourceBuilder(fileName, importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter)
+		.second->_test_buildResource(targetEntity, importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter);
+}
+
 std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> 
 FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter)
 {
