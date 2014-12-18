@@ -33,17 +33,17 @@ namespace G2
 			 * @note Thread safe.
 			 */
 			template<typename ... ARGS>
-			std::shared_ptr<RESOURCE_TYPE> import(ARGS ... args) 
+			RESOURCE_TYPE import(ARGS ... args) 
 			{
 				cache(args ...);
 				mResourceMutex.lock();
-				std::shared_ptr<RESOURCE_TYPE> resource =  ((CONCRETE_IMPORTER*)this)->importResource(args ...);
+				RESOURCE_TYPE resource =  std::move(((CONCRETE_IMPORTER*)this)->importResource(args ...));
 				mResourceMutex.unlock();
 				if(!mCachingEnabled)
 				{
 					clearCache();
 				}
-				return resource;
+				return std::move(resource);
 			}
 			/** This generic function will call the importResource function with the given variadic template.
 			 * @param args The variadic template, which is passed to the derived importers importResource function.

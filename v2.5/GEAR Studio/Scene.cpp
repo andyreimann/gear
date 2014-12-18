@@ -6,6 +6,9 @@
 #include <G2/TransformComponent.h>
 #include <G2/LightComponent.h>
 
+#include <boost/algorithm/string/predicate.hpp>
+#include <algorithm>
+
 Scene::Scene(std::string projectDirectory, std::string const& sceneFile) :
 	JsonDeserializer(sceneFile),
 	JsonSerializer(sceneFile),
@@ -16,7 +19,7 @@ Scene::Scene(std::string projectDirectory, std::string const& sceneFile) :
 ManagedEntity*
 Scene::createNewEntity(std::string const& name)
 {
-	if (mLoadedEntities.count(name) == 0)
+	if(get(name) == nullptr)
 	{
 		mLoadedEntities[name] = std::move(ManagedEntity(name));
 		auto* entity = &mLoadedEntities[name];
@@ -25,6 +28,17 @@ Scene::createNewEntity(std::string const& name)
 	}
 	return nullptr;
 }
+
+ManagedEntity*
+Scene::get(std::string const& name)
+{
+	if (mLoadedEntities.count(name) == 1)
+	{
+		return &mLoadedEntities[name];
+	}
+	return nullptr;
+}
+
 
 void
 Scene::_init3D()
@@ -92,7 +106,14 @@ Scene::_initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* e
 		if ("G2::RenderComponent" == type)
 		{
 			auto* comp = entity->addComponent<G2::RenderComponent>();
-			mFbxImporter._test_importResource(entity, mProjectDirectory + "/" + componentDesc["mesh"].asString());
+
+			std::string meshPath = componentDesc["mesh"].asString();
+			std::transform(meshPath.begin(), meshPath.end(), meshPath.begin(), ::tolower);
+			if (boost::algorithm::ends_with(meshPath, "fbx"))
+			{
+				// load with FBX importer
+				mFbxImporter._test_importResource(entity, mProjectDirectory + "/" + componentDesc["mesh"].asString());
+			}
 		}
 		else if ("G2::LightComponent" == type)
 		{
@@ -135,5 +156,18 @@ Scene::load()
 	{
 		// init every object
 		_init3D();
+	}
+}
+
+void
+Scene::save()
+{
+	if (!error())
+	{
+		// save all ManagedEntities of the scene into a new Json
+
+
+
+		serialize(mResource);
 	}
 }

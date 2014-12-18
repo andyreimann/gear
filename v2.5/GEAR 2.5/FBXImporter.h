@@ -13,7 +13,7 @@ namespace G2
 	 * @created:	2014/02/18
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class FBXImporter : public Importer<FBXImporter, FBXMesh, FBXMesh::Builder>
+	class FBXImporter : public Importer<FBXImporter, std::shared_ptr<FBXMesh>, FBXMesh::Builder>
 	{
 		public:
 			

@@ -29,19 +29,17 @@ class GEAREditor : public QMainWindow
 		~GEAREditor();
 
 	private:
-		Ui::GEAREditorClass ui;
-		std::unique_ptr<ProjectCreation> mNewProjectDialog;
-
-		G2::PropertiesFile mStudioProperties;				// The properties of the entire GEAR Studio
-
-
 		void _openProjectFromDirectory(std::string const& projectDirectory);
 
-		std::shared_ptr<Project> mProject;
 
-		private slots:
-		void newProject();
-		void openProject();
+		Ui::GEAREditorClass ui;								// The Qt UI object for the main editor.
+		std::unique_ptr<ProjectCreation> mNewProjectDialog;	// A pointer to the dialog for creating a new Project.
+		G2::PropertiesFile mStudioProperties;				// The properties of the entire GEAR Studio read from the settings.conf file
+		std::shared_ptr<Project> mProject;					// The currently loaded Project
+
+	private slots:
+		void newProject();		// Menu callback for creating a new project
+		void openProject();		// Menu callback for opening an existing project
 
 
 };

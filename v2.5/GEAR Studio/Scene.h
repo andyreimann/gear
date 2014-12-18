@@ -21,13 +21,22 @@ class Scene : public JsonDeserializer, JsonSerializer
 		 * @param sceneFile The scene file to load.
 		 */
 		Scene(std::string projectDirectory, std::string const& sceneFile);
-
+		/** Loads the Scene into the editor creating all GEAR engine resources.
+		 */
 		void load();
+		/** Saves the Scene in it's current state into it's Json file.
+		 */
+		void save();
 		/** This function will try to create a new entity in the scene with the given name.
 		 * @param name The name of the entity to create.
 		 * @return A pointer to the newly created entity or nullptr, if an entity with the given name already exists.
 		 */
 		ManagedEntity* createNewEntity(std::string const& name);
+		/** Returns a pointer to a ManagedEntity of the Scene.
+		 * @param name The name of the ManagedEntity to get a pointer for.
+		 * @return A pointer to the ManagedEntity if one could be find, nullptr otherwise.
+		 */
+		ManagedEntity* get(std::string const& name);
 	private:
 
 		void _init3D();

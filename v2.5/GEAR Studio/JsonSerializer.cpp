@@ -1,4 +1,5 @@
 #include "JsonSerializer.h"
+#include <fstream>
 
 JsonSerializer::JsonSerializer(std::string const& file) :
 	mFile(file)
@@ -8,5 +9,8 @@ JsonSerializer::JsonSerializer(std::string const& file) :
 bool
 JsonSerializer::serialize(Json::Value const& resource)
 {
-	return false;
+	std::ofstream out(mFile);
+	out << resource;
+	out.close();
+	return true;
 }

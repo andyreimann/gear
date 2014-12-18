@@ -11,10 +11,37 @@
 class GEARStudioEvents
 {
 public:
-	static G2::Event<std::string const&>				onProjectCreated; // std::string=project directory
-	static G2::Event<Scene*>							onSceneUnloaded; 
+	/** Trigger: 
+	 * New project created by User.
+	 * std::string const& The directory of the created Project
+	 */
+	static G2::Event<std::string const&>				onProjectCreated;
+	/** Trigger:
+	* A Scene will be unloaded either due to the stop of the application or due to a new scene to load.
+	* Scene* A pointer to the Scene which will be unloaded after the callback.
+	*/
+	static G2::Event<Scene*>							onSceneUnloaded;
+	/** Trigger:
+	* A new Scene was loaded.
+	* Scene* A pointer to the Scene which was loaded before the callback.
+	*/
 	static G2::Event<Scene*>							onSceneLoaded;
+	/** Trigger:
+	* A new ManagedEntity was created within the currently loaded Scene.
+	* Scene* A pointer to the Scene which is currently loaded.
+	* ManagedEntity* A pointer to the ManagedEntity which was created.
+	*/
 	static G2::Event<Scene*, ManagedEntity*>			onManagedEntityCreated;
+	/** Trigger:
+	* A ManagedEntity was modified within the currently loaded Scene.
+	* Scene* A pointer to the Scene which is currently loaded.
+	* ManagedEntity* A pointer to the ManagedEntity which was modified.
+	*/
 	static G2::Event<Scene*, ManagedEntity*>			onManagedEntityModified;
+	/** Trigger:
+	* A ManagedEntity will be removed from the currently loaded Scene after the callback.
+	* Scene* A pointer to the Scene which is currently loaded.
+	* ManagedEntity* A pointer to the ManagedEntity which will be removed.
+	*/
 	static G2::Event<Scene*, ManagedEntity*>			onManagedEntityRemoved;
 };

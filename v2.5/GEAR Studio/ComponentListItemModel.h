@@ -2,12 +2,6 @@
 #include "Defines.h"
 #include "GEARStudioEvents.h"
 
-#include <G2/RenderComponent.h>
-#include <G2/SplineAnimation.h>
-#include <G2/CameraComponent.h>
-#include <G2/TransformComponent.h>
-#include <G2/RenderComponent.h>
-
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QList>
 
@@ -24,30 +18,26 @@ class ComponentListItemModel : public QAbstractListModel
 	public:
 		ComponentListItemModel(QObject *parent = 0);
 		~ComponentListItemModel();
-
+		
 		virtual int rowCount(QModelIndex const& parent = QModelIndex()) const override;
 		virtual QVariant data(QModelIndex const& index, int role = Qt::DisplayRole) const override;
 		virtual bool insertRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
 		virtual bool removeRows(int row, int count, QModelIndex const& parent = QModelIndex()) override;
-
-		bool setData(const QModelIndex &index, QVariant const& value, unsigned int entityId, int role = Qt::EditRole);
+		bool setData(const QModelIndex &index, QVariant const& value, ManagedEntity* entity, int role = Qt::EditRole);
 	private:
-
+		/** This callback function will be called whenever a scene is unloaded.
+		 * It will trigger a deletion of all existing rows in the model.
+		 */
 		void _onSceneUnloaded(Scene* scene);
+		/** This callback function will be called whenever a ManagedEntity is newly added to the Scene.
+		* It will trigger an insertion of a new row in the model.
+		*/
 		void _onManagedEntityCreated(Scene* scene, ManagedEntity* entity);
+		/** This callback function will be called whenever a ManagedEntity is newly added to the Scene.
+		* It will trigger a remove operation of an existing row in the model.
+		*/
+		void _onManagedEntityRemoved(Scene* scene, ManagedEntity* entity);
 
-		std::string _buildDisplayName(ManagedEntity* entity) const;
-
-		struct ComponentState
-		{
-			ComponentState()
-				: name(""), entityId(G2::Entity::UNINITIALIZED_ENTITY_ID), types(G2Core::Flags::NO_FLAGS) {}
-
-			std::string		name;				// the name
-			unsigned int	entityId;			// The entity id
-			G2::Studio::ComponentMask types;	// The existing core components attached to the entity id
-		};
-
-		QList<ComponentState> mComponents;
+		QList<ManagedEntity*> mComponents;
 };
 
