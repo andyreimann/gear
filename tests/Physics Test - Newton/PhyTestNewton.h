@@ -46,7 +46,7 @@ class PhyTestNewton
 
 		std::vector<G2::Entity> mPlanes;
 
-		std::vector<std::shared_ptr<G2::FBXMesh>> mWalls;
+		std::vector<G2::Entity> mWalls;
 
 		bool		mExitRendering;
 			
@@ -55,8 +55,8 @@ class PhyTestNewton
 		G2::FBXImporter		mFBXImporter;
 		G2::EffectImporter  mEffectImporter;
 
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity mLight;
 
 		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
-		std::vector<std::shared_ptr<G2::FBXMesh>> mFbxMeshes;
+		std::vector<G2::Entity> mFbxMeshes;
 };

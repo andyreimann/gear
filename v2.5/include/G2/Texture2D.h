@@ -18,7 +18,7 @@ namespace G2
 		friend class RenderTarget;
 		public:
 
-			struct Builder : public ResourceBuilder<Builder,Texture2D>
+			struct Builder : public ResourceBuilder<Builder,std::shared_ptr<Texture2D>>
 			{
 
 				std::shared_ptr<Texture2D> buildResource(

@@ -11,7 +11,7 @@ class Planet
 
 		Planet(
 			std::string const& name,
-			std::shared_ptr<G2::FBXMesh> planetMesh,
+			G2::Entity& planetMesh,
 			glm::vec3 const& position,
 			glm::vec3 const& scale,
 			glm::vec3 const& rotationAxis,
@@ -21,7 +21,7 @@ class Planet
 			std::shared_ptr<G2::Effect> effect
 		);
 
-		std::shared_ptr<G2::FBXMesh>& getPlanetMesh() { return mPlanetMesh; }
+		G2::Entity* getPlanetMesh() { return &mPlanetMesh; }
 
 		~Planet();
 	private:
@@ -32,7 +32,7 @@ class Planet
 
 		std::string						mName;					// The name of the planet
 		G2::Entity						mAnchor;				// The anchor of the planet in the solar system
-		std::shared_ptr<G2::FBXMesh>	mPlanetMesh;			// The mesh entity of the Planet
+		G2::Entity						mPlanetMesh;			// The mesh entity of the Planet
 		glm::vec3						mRotationAxis;			// The rotation axis of the planet
 		double							mAnchorRotationSpeed;	// The rotation speed around the anchor
 		double							mAxisRotationSpeed;		// The rotation speed around the axis

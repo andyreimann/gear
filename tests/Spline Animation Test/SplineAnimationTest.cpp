@@ -39,13 +39,13 @@ SplineAnimationTest::SplineAnimationTest(G2::SDL::Window& window)
 	mLight = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	
 	light->getType();
 	light->diffuse = glm::vec4(1.f,1.f,1.f,1.f);
 	light->linearAttenuation = 1.f;
 	 
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f,0.f,0.f));
 
 	mEditor.start();
@@ -122,7 +122,7 @@ SplineAnimationTest::createSpline(std::shared_ptr<G2::Curve> curve, std::string 
 	desc.loops = true;
 
 
-	auto* splineAnimation = mSplines.back()->addComponent<G2::SplineAnimation>(curve);
+	auto* splineAnimation = mSplines.back().addComponent<G2::SplineAnimation>(curve);
 	
 	
 	std::vector<glm::vec3> geometry = splineAnimation->debugSamplePath(0.05f);

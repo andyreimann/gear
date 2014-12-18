@@ -25,7 +25,7 @@ namespace G2
 			 * resource build process.
 			 */
 			template<typename ... ARGS>
-			std::shared_ptr<RESOURCE> build(ARGS ... args) {
+			RESOURCE build(ARGS ... args) {
 				return ((DERIVED_BUILDER*)this)->buildResource(args ...);
 			}
 

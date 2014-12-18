@@ -117,136 +117,16 @@ FBXMesh::operator=(FBXMesh && rhs)
 	return static_cast<FBXMesh&>(G2::Entity::operator=(std::move(rhs)));
 }
 
-G2::Entity*
-G2::FBXMesh::Builder::_test_buildResource(G2::Entity* mesh, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte)
-{
-	if (isAnimated && importAnimations)
-	{
-		// prepare animationData
-		FBXAnimationData animData(cacheStart, cacheStop, animStackNameArray, 24.0);
-		// prepare animation state
-		FBXAnimationState animState(poseIndex, initialAnimLayer, initialAnimationStack, start, stop, false);
-
-		auto* fbxAnimationComponent = mesh->addComponent<FBXAnimationComponent>(fbxScene, animState, animData);
-	}
-
-#ifdef USE_META_DATA
-	// create a RenderComponent with the requested amount of VertexArrayObjects
-	auto* renderComponent = mesh->addComponent<RenderComponent>();
-	renderComponent->allocateVertexArrays((unsigned int)meshMetaData.size());
-
-	// calculate the number of IndexArrayObjects we need
-	unsigned int numIndexArrays = 0;
-	for (unsigned int i = 0; i < meshMetaData.size(); ++i)
-	{
-		MeshMetaData const& meshData = meshMetaData[i];
-		if (meshData.indices.size() > 0)
-		{
-			++numIndexArrays;
-		}
-	}
-	renderComponent->allocateIndexArrays(numIndexArrays);
-
-	// init the VAO
-	unsigned int totalVertices = 0;
-	unsigned int currentIndexArrayIndex = 0;
-	for (unsigned int i = 0; i < meshMetaData.size(); ++i)
-	{
-		MeshMetaData const& meshData = meshMetaData[i];
-		renderComponent->getVertexArray(i).resizeElementCount((unsigned int)meshData.vertices.size())
-			.writeData(G2Core::Semantics::POSITION, &meshData.vertices[0]);
-		totalVertices += (unsigned int)meshData.vertices.size();
-
-		if (meshData.hasNormals && importNormals)
-		{
-			renderComponent->getVertexArray(i).writeData(G2Core::Semantics::NORMAL, &meshData.normals[0]);
-		}
-		if (meshData.hasUvs && importTexCoords)
-		{
-			if (flipTexU || flipTexV)
-			{
-				std::vector<glm::vec2> uvCopy = meshData.uvs; // copy
-				std::transform(uvCopy.begin(), uvCopy.end(), uvCopy.begin(), [flipTexU, flipTexV](glm::vec2& uv)
-				{
-					if (flipTexU)
-					{
-						uv.x = 1.0f - uv.x;
-					}
-					if (flipTexV)
-					{
-						uv.y = 1.0f - uv.y;
-					}
-					return uv;
-				});
-				renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &uvCopy[0]);
-			}
-			else
-			{
-				renderComponent->getVertexArray(i).writeData(G2Core::Semantics::TEXCOORD_0, &meshData.uvs[0]);
-			}
-		}
-		if (meshData.indices.size() > 0)
-		{
-			IndexArrayObject& iao = renderComponent->getIndexArray(currentIndexArrayIndex);
-			iao.writeIndices(&meshData.indices[0], (unsigned int)meshData.indices.size());
-
-			++currentIndexArrayIndex;
-		}
-		// add a draw call
-		renderComponent->addDrawCall(DrawCall()
-			.setDrawMode(G2Core::DrawMode::TRIANGLES)
-			.setEnabled(true)
-			.setVaoIndex(i)
-			.setModelSpaceAABB(meshData.modelSpaceAABB)
-			.setIaoIndex(meshData.indices.size() > 0 ? currentIndexArrayIndex - 1 : -1)
-			.setAABBCalculationMode(AABBCalculationMode::MANUAL));
-	}
-
-	G2::logger << "[FBXMesh] Name: " << name << "\n\tIAO: " << renderComponent->getNumIndexArrays() << "\n\tVAO: " << renderComponent->getNumVertexArrays() << "\n\tVertices: " << totalVertices << "\n\tDraw-Calls: " << renderComponent->getNumDrawCalls() << "\n\tTriangles: " << renderComponent->getNumTriangles() << G2::endl;
-
-#endif
-
-	auto* nameComponent = mesh->addComponent<NameComponent>();
-	nameComponent->name = name;
-
-	if (texImporte != nullptr && renderComponent != nullptr)
-	{
-		for (int i = 0; i < meshTextures.size(); ++i)
-		{
-			FbxFileTexture* fbxTex = meshTextures[i];
-			G2::Sampler::Name sampler = toSampler(fbxTex->GetTextureUse());
-
-			if (sampler != G2::Sampler::SAMPLER_INVALID && renderComponent->material.getTexture(sampler).get() == nullptr)
-			{
-				// sampler is valid and RenderComponent has not yet set a texture at that sampler
-				const FbxString lAbsFolderName = FbxPathUtils::GetFolderName(FbxPathUtils::Resolve(meshFilePath.c_str()));
-				const FbxString lResolvedFileName = FbxPathUtils::Bind(lAbsFolderName, fbxTex->GetRelativeFileName());
-
-				auto tex = texImporte->import(
-					lResolvedFileName.Buffer(),
-					G2Core::DataFormat::Internal::R32G32B32A32_F,
-					G2Core::FilterMode::LINEAR,
-					G2Core::FilterMode::LINEAR,
-					false,
-					toWrapMode(fbxTex->GetWrapModeU()),
-					toWrapMode(fbxTex->GetWrapModeV())
-					);
-				if (tex.get() != nullptr)
-				{
-					renderComponent->material.setTexture(sampler, tex);
-				}
-			}
-		}
-	}
-
-	return mesh;
-}
-
-std::shared_ptr<FBXMesh>
-FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte)
+G2::Entity
+FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte, G2::Entity* target)
 {
 	// create mesh
-	std::shared_ptr<FBXMesh> mesh = std::shared_ptr<FBXMesh>(new FBXMesh);
+	G2::Entity meshLocal;
+	G2::Entity* mesh = &meshLocal;
+	if (target != nullptr)
+	{
+		mesh = target; // in case the user gave a valid pointer, we don't write into the local mesh
+	}
 	if(isAnimated && importAnimations)
 	{
 		// prepare animationData
@@ -366,7 +246,7 @@ FBXMesh::Builder::buildResource(bool importNormals, bool importTexCoords, bool i
 		}
 	}
 
-	return mesh;
+	return std::move(meshLocal);
 }
 
 FBXMesh::Builder::MeshMetaData::MeshMetaData(FbxMesh const* mesh, unsigned int vaoOffset) 

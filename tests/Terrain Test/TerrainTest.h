@@ -49,12 +49,12 @@ class TerrainTest
 		//G2::Terrain::Terrain		mTerrain;
 
 		G2::Entity					mTerrainComponent;
-		std::shared_ptr<G2::FBXMesh> mSkySphere;
+		G2::Entity mSkySphere;
 		
 		G2::Entity					mSpline;
 		G2::Entity					mSplinePoints;
 		
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity mLight;
 
 		G2::Editor::RootEditor	mEditor;
 };

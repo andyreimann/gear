@@ -18,7 +18,7 @@ namespace G2
 	class Effect 
 	{
 		public:
-			struct Builder : public ResourceBuilder<Builder,Effect>
+			struct Builder : public ResourceBuilder<Builder, std::shared_ptr<Effect>>
 			{
 				std::shared_ptr<Effect> buildResource();
 

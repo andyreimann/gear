@@ -29,7 +29,7 @@ namespace G2
 	{
 		public:
 
-			struct Builder : public ResourceBuilder<Builder,FBXMesh>
+			struct Builder : public ResourceBuilder<Builder,G2::Entity>
 			{
 				struct MeshMetaData
 				{
@@ -70,9 +70,7 @@ namespace G2
 
 				~Builder();
 
-				std::shared_ptr<FBXMesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte);
-
-				G2::Entity* _test_buildResource(G2::Entity* target, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte);
+				G2::Entity buildResource(bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporte, G2::Entity* target = nullptr);
 
 				std::string				name;
 				std::string				meshFilePath;

@@ -52,9 +52,9 @@ class TestScene
 
 		std::vector<GameObject> mPlanes;
 
-		std::vector<std::shared_ptr<G2::FBXMesh>> mWalls;
+		std::vector<G2::Entity> mWalls;
 
-		std::shared_ptr<G2::FBXMesh> mReflecting;
+		G2::Entity mReflecting;
 
 		bool		mExitRendering;
 		
@@ -66,17 +66,17 @@ class TestScene
 		G2::EffectImporter  mEffectImporter;
 
 		int							 mLightType;
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity mLight;
 
 		
-		std::vector<std::shared_ptr<G2::FBXMesh>> mBalls;
+		std::vector<G2::Entity> mBalls;
 
 
 		std::shared_ptr<G2::MD5Mesh> mSampleMesh;
-		std::shared_ptr<G2::FBXMesh> mSampleMesh2;
-		std::shared_ptr<G2::FBXMesh> mSampleMesh3;
+		G2::Entity mSampleMesh2;
+		G2::Entity mSampleMesh3;
 		std::vector<std::shared_ptr<G2::MD5Mesh>> mMd5Meshes;
-		std::vector<std::shared_ptr<G2::FBXMesh>> mFbxMeshes;
+		std::vector<G2::Entity> mFbxMeshes;
 
 		G2::Editor::RootEditor	mEditor;
 		bool					mEditorOn;

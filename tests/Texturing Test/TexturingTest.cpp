@@ -37,13 +37,13 @@ TexturingTest::TexturingTest(G2::SDL::Window& window)
 	mLight = mFbxImporter.import(ASSET_PATH + "Resources/monkey.fbx");
 
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	
 	light->getType();
 	light->diffuse = glm::vec4(1.f,1.f,1.f,1.f);
 	light->linearAttenuation = 1.f;
 	 
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f,0.f,0.f));
 
 	

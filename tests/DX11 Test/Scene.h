@@ -40,10 +40,10 @@ class Scene
 		G2::EffectImporter  mEffectImporter;
 		bool mExitRendering;
 
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity			mLight;
 		G2::Entity			mTriangle;
 
 		G2::FBXImporter		mMeshImporter;
-		std::vector<std::shared_ptr<G2::FBXMesh>> mMeshes;
+		std::vector<G2::Entity> mMeshes;
 };
 

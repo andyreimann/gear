@@ -20,7 +20,7 @@ namespace G2
 	class MD5Mesh : public Entity
 	{
 		public:
-			struct Builder : public ResourceBuilder<Builder,MD5Mesh>
+			struct Builder : public ResourceBuilder<Builder, std::shared_ptr<MD5Mesh>>
 			{
 				std::shared_ptr<MD5Mesh> buildResource(bool importNormals, bool importTexCoords, bool importAnimations);
 

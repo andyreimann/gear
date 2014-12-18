@@ -7,29 +7,22 @@
 
 using namespace G2;
 
-std::shared_ptr<FBXMesh>
-FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter)
+G2::Entity
+FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter, G2::Entity* target)
 {
-	
+
 	auto it = mCache.find(fileName);
-	if(it != mCache.end())
+	if (it != mCache.end())
 	{
 		// cache hit
-		return it->second->build(importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter);
+		return std::move(it->second->build(importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter, target));
 	}
 	// should never occur
-	return std::shared_ptr<FBXMesh>();
-}
-
-G2::Entity*
-G2::FBXImporter::_test_importResource(G2::Entity* targetEntity, std::string const& fileName, bool importNormals /*= true*/, bool importTexCoords /*= true*/, bool importAnimations /*= true*/, bool flipTexU /*= false*/, bool flipTexV /*= false*/, TextureImporter* texImporter /*= nullptr*/)
-{
-	return produceResourceBuilder(fileName, importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter)
-		.second->_test_buildResource(targetEntity, importNormals, importTexCoords, importAnimations, flipTexU, flipTexV, texImporter);
+	return G2::Entity();
 }
 
 std::pair<std::string,std::shared_ptr<FBXMesh::Builder>> 
-FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter)
+FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter, G2::Entity* target)
 {
 	if(isCached(meshFileName))
 	{

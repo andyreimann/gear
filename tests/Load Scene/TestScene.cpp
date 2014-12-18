@@ -56,7 +56,7 @@ TestScene::TestScene(G2::SDL::Window& window)
 	mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	
 	//light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
@@ -72,7 +72,7 @@ TestScene::TestScene(G2::SDL::Window& window)
 	//					.setRestitution(0.5f)
 	//);
 	
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 	//lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 	lightTransformation->rotateAxis(-90.0f, glm::vec3(1.f,0.f,0.f));
 	//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
@@ -101,24 +101,21 @@ TestScene::TestScene(G2::SDL::Window& window)
 		for (int i = 0; i < 1; ++i) 
 		{
 			mFbxMeshes.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/humanoid.fbx"));
-			if(mFbxMeshes.back().get()) 
-			{
-				auto* transformComponent = mFbxMeshes.back()->addComponent<G2::TransformComponent>();
+				auto* transformComponent = mFbxMeshes.back().addComponent<G2::TransformComponent>();
 				transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
 				transformComponent->setPosition(glm::vec3(i*0.6,0,k*0.3));
-			}
 		}
 	}
 	
 	//mSampleMesh3 = mMeshImporter2.import("../../Resources/humanoid.fbx");
-	if(mSampleMesh3.get()) 
-	{
-		auto* transformComponent = mSampleMesh3->addComponent<G2::TransformComponent>();
-		transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
-		transformComponent->setPosition(glm::vec3(1,0,0));
-		auto* animComponent = mSampleMesh3->getComponent<G2::FBXAnimationComponent>();
-		animComponent->tempSetPoseIndex(0);
-	}
+	//if(mSampleMesh3.get()) 
+	//{
+	//	auto* transformComponent = mSampleMesh3.addComponent<G2::TransformComponent>();
+	//	transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
+	//	transformComponent->setPosition(glm::vec3(1,0,0));
+	//	auto* animComponent = mSampleMesh3.getComponent<G2::FBXAnimationComponent>();
+	//	animComponent->tempSetPoseIndex(0);
+	//}
 
 	for(int i = 0; i < 0; ++i)
 	{
@@ -130,8 +127,8 @@ TestScene::TestScene(G2::SDL::Window& window)
 			{
 				
 				mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-				auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
-				mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+				auto* renderComp = mBalls.back().getComponent<G2::RenderComponent>();
+				mBalls.back().addComponent<G2::Physics::PhysicsComponent>(
 					G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 					G2::Physics::RigidBodyDescriptor()
 						.setMass(0.1f)
@@ -221,13 +218,13 @@ TestScene::createWalls()
 {	
 	float rot = 5.f;
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	auto* transformation = mWalls.back().addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(5.f, 0.5f, 5.f));
 	transformation->rotateX(10.f);
 	transformation->setPosition(glm::vec3(0.f, -20.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
-	auto* renderComp = mWalls.back()->getComponent<G2::RenderComponent>();
+	auto* renderComp = mWalls.back().getComponent<G2::RenderComponent>();
 	renderComp->calculateBinormalsAndTangents();
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
@@ -237,19 +234,19 @@ TestScene::createWalls()
 	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/NormalMapping.g2fx"));
 	renderComp->material.setTexture(G2::Sampler::NORMAL, mTexImporter.import(ASSET_PATH + "Resources/normalmap.png", G2Core::DataFormat::Internal::R32G32B32A32_F, G2Core::FilterMode::NEAREST, G2Core::FilterMode::NEAREST, false));
 
-	mWalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+	mWalls.back().addComponent<G2::Physics::PhysicsComponent>(
 		G2::Physics::CollisionShapeDescriptor::box(glm::vec3(5.f, 0.5f, 5.f)),
 		G2::Physics::RigidBodyDescriptor().setMass(0.f).setFriction(0.5f).setRestitution(0.7f),
 		glm::vec3(0.f, -20.f, 0.f)
 	);
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/monkey.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation = mWalls.back().addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(1.f, 1.f, 1.f));
 	transformation->setPosition(glm::vec3(0.f, -15.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp = mWalls.back().addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(0.f,1.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.2f,0.2f,0.13f,0.3));
@@ -257,12 +254,12 @@ TestScene::createWalls()
 	renderComp->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/Glass.g2fx"));
 	
 	mWalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-	transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	transformation = mWalls.back().addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(3.f, 3.f, 3.f));
 	transformation->setPosition(glm::vec3(0.f, -17.5f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
-	renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	renderComp = mWalls.back().addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,1.f,1.f,1.f));
 	renderComp->material.setShininess(255.f);
 	renderComp->material.setAmbient(glm::vec4(0.0f,0.0f,0.0f,1.0));
@@ -302,16 +299,16 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 	}
 	if(keyCode == G2::KC_G && !mEditorOn)
 	{
-		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
+		mWalls.back().getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
 	}
 	if(keyCode == G2::KC_H && !mEditorOn)
 	{
-		mWalls.back()->getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
+		mWalls.back().getComponent<G2::RenderComponent>()->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
 	}
 	else if(keyCode == G2::KC_U && !mEditorOn) 
 	{ 
 		
-		auto* light = mLight->getComponent<G2::LightComponent>();
+		auto* light = mLight.getComponent<G2::LightComponent>();
 		mLightType = light->getType()+1;
 
 		mLight = mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx");
@@ -322,27 +319,27 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		}
 		if(mLightType == G2::LightType::POSITIONAL)
 		{
-			light = mLight->addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
-			mLight->addComponent<G2::RenderComponent>()->setEffect(
+			light = mLight.addComponent<G2::LightComponent>(G2::LightType::POSITIONAL);
+			mLight.addComponent<G2::RenderComponent>()->setEffect(
 				mEffectImporter.import(ASSET_PATH + "Shader/PointLightShadowMapping.g2fx")
 			);
 		}
 		else if(mLightType == G2::LightType::SPOT)
 		{
-			light = mLight->addComponent<G2::LightComponent>(G2::LightType::SPOT);
+			light = mLight.addComponent<G2::LightComponent>(G2::LightType::SPOT);
 			light->cutOffDegrees = 40.f;
 		}
 		else if(mLightType == G2::LightType::DIRECTIONAL)
 		{
-			light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-			auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+			light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+			auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 			lightTransformation->rotateAxis(40.0f, glm::vec3(1.f,0.f,1.f));
 		}
 
 		
 	
 	
-		auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>(
+		auto* physics = mLight.addComponent<G2::Physics::PhysicsComponent>(
 			G2::Physics::CollisionShapeDescriptor::box(glm::vec3(0.1f,0.1f,0.1f)), 
 			G2::Physics::RigidBodyDescriptor().setMass(10.f)
 		);
@@ -353,7 +350,7 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 		//light->linearAttenuation = 1.f;
 	
-		auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+		auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 		lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 		//lightTransformation->setPosition(glm::vec3(0.f,1.5f,0.f));
 		//lightTransformation->setScale(glm::vec3(0.1f,0.1f,0.1f));
@@ -377,8 +374,8 @@ TestScene::onKeyUp(G2::KeyCode keyCode)
 		for(int i = 0; i < 1; ++i)
 		{
 			mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-			auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
-			auto* physics = mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+			auto* renderComp = mBalls.back().getComponent<G2::RenderComponent>();
+			auto* physics = mBalls.back().addComponent<G2::Physics::PhysicsComponent>(
 				G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 				G2::Physics::RigidBodyDescriptor().setMass(0.1f).setFriction(0.75f).setRestitution(0.5f),
 				glm::vec3((rand() % 1000) / 1000.0f*(0.1f),3+(i*2),(rand() % 1000) / 1000.0f*(0.1f))
@@ -411,35 +408,33 @@ TestScene::onKeyDown(G2::KeyCode keyCode) {
 
 	else if(keyCode == G2::KC_UP && !mEditorOn)
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,-0.1f));
 	}
 	else if(keyCode == G2::KC_DOWN && !mEditorOn) 
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,0.1f));
 	}
 	else if(keyCode == G2::KC_LEFT && !mEditorOn) 
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(-0.1f,0.f,0.f));
 	}
 	else if(keyCode == G2::KC_RIGHT && !mEditorOn)
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.1f,0.f,0.f));
 	}
 	else if(keyCode == G2::KC_M && !mEditorOn)
 	{ 
 		mFbxMeshes.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/humanoid.fbx"));
-		if(mFbxMeshes.back().get()) 
-		{
-			auto* transformComponent = mFbxMeshes.back()->addComponent<G2::TransformComponent>();
+
+			auto* transformComponent = mFbxMeshes.back().addComponent<G2::TransformComponent>();
 			transformComponent->setScale(glm::vec3(0.01f,0.01f,0.01f));
 			transformComponent->setPosition(glm::vec3(0.0,0,mFbxMeshes.size()*0.3));
-			auto* animComp = mFbxMeshes.back()->getComponent<G2::FBXAnimationComponent>();
+			auto* animComp = mFbxMeshes.back().getComponent<G2::FBXAnimationComponent>();
 			animComp->tempSetPoseIndex(mFbxMeshes.size()%3);
-		}
 	}
 	else if(keyCode == G2::KC_K && !mEditorOn)
 	{ 
@@ -506,7 +501,7 @@ TestScene::onRenderFrame(G2::FrameInfo const& frameInfo)
 
 	for (int i = 0; i < mFbxMeshes.size() ; ++i) 
 	{
-		auto* tcomp = mFbxMeshes[i].get()->getComponent<G2::TransformComponent>();
+		auto* tcomp = mFbxMeshes[i].getComponent<G2::TransformComponent>();
 		if(tcomp != nullptr)
 		{
 			tcomp->rotate(glm::angleAxis(10.0f*(float)frameInfo.timeSinceLastFrame, glm::vec3(0.f,1.f,0.f)));
@@ -588,8 +583,8 @@ TestScene::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& mo
 		glm::vec4 pos = glm::inverse(transformComp->getWorldSpaceMatrix()) * glm::vec4(0.f,0.f,0.f,1.f);
 		
 		mBalls.push_back(mMeshImporter2.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-		auto* renderComp = mBalls.back()->getComponent<G2::RenderComponent>();
-		mBalls.back()->addComponent<G2::Physics::PhysicsComponent>(
+		auto* renderComp = mBalls.back().getComponent<G2::RenderComponent>();
+		mBalls.back().addComponent<G2::Physics::PhysicsComponent>(
 			G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 			G2::Physics::RigidBodyDescriptor()
 				.setMass(0.1f)
@@ -609,7 +604,7 @@ void
 TestScene::generateGeometryForFrusta() 
 {
 	
-	auto* light = mLight->getComponent<G2::LightComponent>();
+	auto* light = mLight.getComponent<G2::LightComponent>();
 
 	//for( int i = 0; i < light->getShadowDescriptor().numCascades; ++i)
 	{

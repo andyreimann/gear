@@ -92,9 +92,9 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 
 	// Mesh importer should return G2::Entity WITHOUT a shared pointer!!!!!
 	// Shared pointer should be included into template arguments of baseImporter class
-	ManagedEntity e;...
-	G2::Entity g;
-	e = std::move(g);
+	//ManagedEntity e;...
+	//G2::Entity g;
+	//e = std::move(g);
 }
 
 void
@@ -111,8 +111,8 @@ Scene::_initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* e
 			std::transform(meshPath.begin(), meshPath.end(), meshPath.begin(), ::tolower);
 			if (boost::algorithm::ends_with(meshPath, "fbx"))
 			{
-				// load with FBX importer
-				mFbxImporter._test_importResource(entity, mProjectDirectory + "/" + componentDesc["mesh"].asString());
+				// load with FBX importer and let him attach the imported mesh to the entity pointer
+				mFbxImporter.import(mProjectDirectory + "/" + componentDesc["mesh"].asString(), true, true, true, false, false, nullptr, entity);
 			}
 		}
 		else if ("G2::LightComponent" == type)

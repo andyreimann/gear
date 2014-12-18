@@ -40,7 +40,7 @@ class SolarSystem
 		G2::FBXImporter				mFbxImporter;
 
 		G2::Entity					mSun;
-		std::shared_ptr<G2::FBXMesh> mSkySphere;
+		G2::Entity					mSkySphere;
 
 
 		std::vector<std::shared_ptr<Planet>> mPlanets;

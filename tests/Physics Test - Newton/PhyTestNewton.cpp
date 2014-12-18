@@ -53,14 +53,14 @@ PhyTestNewton::PhyTestNewton(G2::SDL::Window& window)
 	mLight = mFBXImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 	
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 	light->configureShadows(G2::ShadowDescriptor::cascadedShadowMaps(3,ASSET_PATH + "Shader/CSM.g2fx"));
 
 	light->diffuse = glm::vec4(0.3,0.6,0.f,0.f);
 	light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
 	
-	auto* physics = mLight->addComponent<G2::Physics::PhysicsComponent>();
+	auto* physics = mLight.addComponent<G2::Physics::PhysicsComponent>();
 	physics->add(
 		G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 		G2::Physics::RigidBodyDescriptor()
@@ -69,7 +69,7 @@ PhyTestNewton::PhyTestNewton(G2::SDL::Window& window)
 	);
 	physics->addCollisionListener(this, &PhyTestNewton::onLightCollide);
 	
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 	lightTransformation->setPosition(glm::vec3(0.123f,0.7f,1.0123f));
 
 	//mFBXImporter.setCachingMode(false);
@@ -84,8 +84,8 @@ PhyTestNewton::PhyTestNewton(G2::SDL::Window& window)
 				float dx = (rand() % 1000) / 10000.f;
 				float dz = (rand() % 1000) / 10000.f;
 				mFbxMeshes.push_back(mFBXImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-				auto* renderComp = mFbxMeshes.back()->getComponent<G2::RenderComponent>();
-				physics = mFbxMeshes.back()->addComponent<G2::Physics::PhysicsComponent>();
+				auto* renderComp = mFbxMeshes.back().getComponent<G2::RenderComponent>();
+				physics = mFbxMeshes.back().addComponent<G2::Physics::PhysicsComponent>();
 				physics->add(
 					G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 					G2::Physics::RigidBodyDescriptor()
@@ -134,17 +134,17 @@ PhyTestNewton::createWalls()
 	float rot = 5.f;
 
 	mWalls.push_back(mFBXImporter.import(ASSET_PATH + "Resources/unit-cube.fbx"));
-	auto* transformation = mWalls.back()->addComponent<G2::TransformComponent>();
+	auto* transformation = mWalls.back().addComponent<G2::TransformComponent>();
 	transformation->setScale(glm::vec3(5.f, 0.5f, 5.f));
 	transformation->setPosition(glm::vec3(0.f, -20.f, 0.f));
 	//transformation->rotateX(45.f);
 	transformation->updateWorldSpaceMatrix(0);
-	auto* renderComp = mWalls.back()->addComponent<G2::RenderComponent>();
+	auto* renderComp = mWalls.back().addComponent<G2::RenderComponent>();
 	renderComp->material.setSpecular(glm::vec4(1.f,0.f,0.f,1.f));
 	renderComp->material.setShininess(128.f);
 	renderComp->material.setAmbient(glm::vec4(0.5f,0.f,0.f,1.f));
 	renderComp->material.setDiffuse(glm::vec4(1.f,1.f,1.f,1.f));
-	auto* physics = mWalls.back()->addComponent<G2::Physics::PhysicsComponent>();
+	auto* physics = mWalls.back().addComponent<G2::Physics::PhysicsComponent>();
 	physics->add(
 		G2::Physics::CollisionShapeDescriptor::box(glm::vec3(5.f, 0.5f, 5.f)),
 		G2::Physics::RigidBodyDescriptor()
@@ -153,13 +153,13 @@ PhyTestNewton::createWalls()
 		glm::vec3(0.f, -20.f, 0.f)
 	);
 	
-	G2::Physics::PhysicsMaterialInteraction& material = mPhysicsSystem->getMaterialInteraction(physics->getMaterial(0), mLight->getComponent<G2::Physics::PhysicsComponent>()->getMaterial(0));
+	G2::Physics::PhysicsMaterialInteraction& material = mPhysicsSystem->getMaterialInteraction(physics->getMaterial(0), mLight.getComponent<G2::Physics::PhysicsComponent>()->getMaterial(0));
 	material.restitution = 0.7f;
 	material.staticFriction = 0.75f;
 	material.kineticFriction = 0.75f;
 	
 
-	mLight->addComponent<G2::Physics::PhysicsComponent>();
+	mLight.addComponent<G2::Physics::PhysicsComponent>();
 }
 
 void 
@@ -177,22 +177,22 @@ PhyTestNewton::onKeyDown(G2::KeyCode keyCode) {
 	}
 	else if(keyCode == G2::KC_UP)
 	{
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,-0.1f));
 	}
 	else if(keyCode == G2::KC_DOWN) 
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.f,0.f,0.1f));
 	}
 	else if(keyCode == G2::KC_LEFT) 
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(-0.1f,0.f,0.f));
 	}
 	else if(keyCode == G2::KC_RIGHT)
 	{ 
-		auto* trans = mLight->getComponent<G2::TransformComponent>();
+		auto* trans = mLight.getComponent<G2::TransformComponent>();
 		trans->translate(glm::vec3(0.1f,0.f,0.f));
 	}
 }
@@ -225,8 +225,8 @@ PhyTestNewton::onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const
 		glm::vec4 pos = glm::inverse(transformComp->getWorldSpaceMatrix()) * glm::vec4(0.f,0.f,0.f,1.f);
 		
 		mFbxMeshes.push_back(mFBXImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx"));
-		auto* renderComp = mFbxMeshes.back()->getComponent<G2::RenderComponent>();
-		auto* physics = mFbxMeshes.back()->addComponent<G2::Physics::PhysicsComponent>();
+		auto* renderComp = mFbxMeshes.back().getComponent<G2::RenderComponent>();
+		auto* physics = mFbxMeshes.back().addComponent<G2::Physics::PhysicsComponent>();
 		physics->add(
 			G2::Physics::CollisionShapeDescriptor::sphere(0.1), 
 			G2::Physics::RigidBodyDescriptor()

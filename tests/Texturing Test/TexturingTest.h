@@ -43,7 +43,7 @@ class TexturingTest
 		G2::TextureImporter			mTexImporter;
 		G2::FBXImporter				mFbxImporter;
 		
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity mLight;
 
 		G2::Editor::RootEditor		mEditor;
 

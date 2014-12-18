@@ -206,11 +206,11 @@ SolarSystem::initSky()
 {
 	// Editor camera has far clip plane of 1000
 	mSkySphere = mFbxImporter.import(ASSET_PATH + "Resources/unit-sphere-high-res.fbx");
-	auto* skyTransformation = mSkySphere->addComponent<G2::TransformComponent>();
+	auto* skyTransformation = mSkySphere.addComponent<G2::TransformComponent>();
 	skyTransformation->setScale(glm::vec3(990.f, 990.f, 990.f));
 
-	mSkySphere->addComponent<G2::NameComponent>("sky_cam_attached");
-	auto* skyRender = mSkySphere->getComponent<G2::RenderComponent>();
+	mSkySphere.addComponent<G2::NameComponent>("sky_cam_attached");
+	auto* skyRender = mSkySphere.getComponent<G2::RenderComponent>();
 	skyRender->setFaceCulling(G2Core::FaceCulling::FRONT_FACE);
 	skyRender->setEffect(mEffectImporter.import(ASSET_PATH + "Shader/SimpleTex.g2fx"));
 	skyRender->material.setTexture(

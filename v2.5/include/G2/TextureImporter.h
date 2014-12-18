@@ -11,7 +11,7 @@ namespace G2
 	 * @created:	2014/02/18
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class TextureImporter : public Importer<TextureImporter,Texture2D, Texture2D::Builder>
+	class TextureImporter : public Importer<TextureImporter,std::shared_ptr<Texture2D>, Texture2D::Builder>
 	{
 		public:
 

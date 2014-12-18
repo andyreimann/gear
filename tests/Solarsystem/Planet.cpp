@@ -4,7 +4,7 @@
 
 Planet::Planet(
 	std::string const& name,
-	std::shared_ptr<G2::FBXMesh> planetMesh,
+	G2::Entity& planetMesh,
 	glm::vec3 const& position,
 	glm::vec3 const& scale,
 	glm::vec3 const& rotationAxis,
@@ -13,7 +13,7 @@ Planet::Planet(
 	std::shared_ptr<G2::Texture> diffuseTex,
 	std::shared_ptr<G2::Effect> effect) :
 	mName(name),
-	mPlanetMesh(planetMesh),
+	mPlanetMesh(std::move(planetMesh)),
 	mRotationAxis(rotationAxis),
 	mAnchorRotationSpeed(360.0 / period),
 	mAxisRotationSpeed(axisRotationSpeed),
@@ -22,11 +22,11 @@ Planet::Planet(
 	G2::EventDistributer::onRenderFrame.hook(this, &Planet::_onRenderFrame);
 	G2::EventDistributer::onKeyDown.hook(this, &Planet::_onKeyDown);
 
-	mPlanetMesh->addComponent<G2::NameComponent>(mName);
+	mPlanetMesh.addComponent<G2::NameComponent>(mName);
 	// set transformation
 	mAnchor.addComponent<G2::TransformComponent>();
 
-	auto* transformation = mPlanetMesh->addComponent<G2::TransformComponent>();
+	auto* transformation = mPlanetMesh.addComponent<G2::TransformComponent>();
 	transformation->setPosition(position);
 	transformation->setScale(scale);
 
@@ -36,7 +36,7 @@ Planet::Planet(
 	transformation->setParent(mAnchor.getComponent<G2::TransformComponent>());
 
 	// set diffuse texture
-	auto* renderComp = mPlanetMesh->getComponent<G2::RenderComponent>();
+	auto* renderComp = mPlanetMesh.getComponent<G2::RenderComponent>();
 	renderComp->material.setTexture(G2::Sampler::DIFFUSE,diffuseTex);
 	renderComp->material.setAmbient(glm::vec4(0.f, 0.f, 0.f, 1.f));
 
@@ -58,7 +58,7 @@ Planet::_onRenderFrame(G2::FrameInfo const& frameInfo)
 	transformation->rotateY((float)(mAnchorRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed));
 
 	// rotate around it's own axis
-	transformation = mPlanetMesh->getComponent<G2::TransformComponent>();
+	transformation = mPlanetMesh.getComponent<G2::TransformComponent>();
 	transformation->rotateAxis((float)(mAxisRotationSpeed * frameInfo.timeSinceLastFrame * mSpeed), mRotationAxis);
 }
 

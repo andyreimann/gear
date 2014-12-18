@@ -29,7 +29,7 @@ struct AnimationBaseFrameJoint {
 	 * @created:	2014/02/18
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class MD5Importer : public Importer<MD5Importer,MD5Mesh, MD5Mesh::Builder>
+	class MD5Importer : public Importer<MD5Importer,std::shared_ptr<MD5Mesh>, MD5Mesh::Builder>
 	{
 		public:
 			/** This function will load and import the given MD5 files

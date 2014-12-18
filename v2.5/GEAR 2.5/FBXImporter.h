@@ -13,7 +13,7 @@ namespace G2
 	 * @created:	2014/02/18
 	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
-	class FBXImporter : public Importer<FBXImporter, std::shared_ptr<FBXMesh>, FBXMesh::Builder>
+	class FBXImporter : public Importer<FBXImporter, G2::Entity, FBXMesh::Builder>
 	{
 		public:
 			
@@ -26,26 +26,13 @@ namespace G2
 			 * @param flipTexU Flips the U-Coordinate of the UV coordinates.
 			 * @param flipTexV Flips the V-Coordinate of the UV coordinates.
 			 * @param texImporter A pointer to a texture importer to use for loading textures together with the mesh if available or nullptr otherwise.
-			 * @return a shared pointer pointing to the FBXMesh or nullptr, if some error occurred.
+			 * @param target An optional pointer to an already existing G2::Entity to attach the mesh instead of at the returned one.
+			 * @return A G2::Entity were the mesh is attached to in case you did not supply a valid pointer in the target parameter.
 			 * @note Requesting one mesh multiple times will result in cache hits.
 			 */
-			std::shared_ptr<FBXMesh> importResource(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true, bool flipTexU = false, bool flipTexV = false, TextureImporter* texImporter = nullptr);
-			std::pair<std::string, std::shared_ptr<FBXMesh::Builder>> produceResourceBuilder(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true, bool flipTexU = false, bool flipTexV = false, TextureImporter* texImporter = nullptr);
-
-			/** This function will load and import the given FBX file
-			* @note This function is for testing purpose only!
-			* @param targetEntity The target Entity object to attach the RenderComponent to.
-			* @param meshFileName The filename of the FBXMesh file to import
-			* @param importNormals Flag indicating whether you want the resulting mesh to import normals if available.
-			* @param importNormals Flag indicating whether you want the resulting mesh to import texture coordinates if available.
-			* @param importNormals Flag indicating whether you want the resulting mesh to import animations if available.
-			* @param flipTexU Flips the U-Coordinate of the UV coordinates.
-			* @param flipTexV Flips the V-Coordinate of the UV coordinates.
-			* @param texImporter A pointer to a texture importer to use for loading textures together with the mesh if available or nullptr otherwise.
-			* @note Requesting one mesh multiple times will result in cache hits.
-			*/
-			G2::Entity* _test_importResource(G2::Entity* targetEntity, std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true, bool flipTexU = false, bool flipTexV = false, TextureImporter* texImporter = nullptr);
-
+			G2::Entity importResource(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true, bool flipTexU = false, bool flipTexV = false, TextureImporter* texImporter = nullptr, G2::Entity* target = nullptr);
+			std::pair<std::string, std::shared_ptr<FBXMesh::Builder>> produceResourceBuilder(std::string const& fileName, bool importNormals = true, bool importTexCoords = true, bool importAnimations = true, bool flipTexU = false, bool flipTexV = false, TextureImporter* texImporter = nullptr, G2::Entity* target = nullptr);
+			
 			~FBXImporter();
 
 		protected:

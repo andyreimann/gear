@@ -36,26 +36,26 @@ Scene::Scene(G2::AbstractWindow* window) :
 	mLight = mMeshImporter.import(ASSET_PATH + "Resources/unit-sphere.fbx");
 
 
-	auto* light = mLight->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+	auto* light = mLight.addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
 
 	light->getType();
 	light->diffuse = glm::vec4(1.f, 1.f, 1.f, 1.f);
 	//light->specular = glm::vec4(1.f,1.f,1.f,0.f);
 	light->linearAttenuation = 1.f;
 
-	auto* lightTransformation = mLight->addComponent<G2::TransformComponent>();
+	auto* lightTransformation = mLight.addComponent<G2::TransformComponent>();
 	lightTransformation->rotateAxis(-10.0f, glm::vec3(1.f, 0.f, 0.f));
 	
 	 
 	for (int i = 0; i < 10; ++i)
 	{
 		mMeshes.push_back(mMeshImporter.import(ASSET_PATH + "Resources/monkey.fbx"));
-		auto* transformation = mMeshes.back()->addComponent<G2::TransformComponent>();
+		auto* transformation = mMeshes.back().addComponent<G2::TransformComponent>();
 		transformation->setScale(glm::vec3(1.f, 1.f, 1.f));
 		transformation->setPosition(glm::vec3(0.f, 0.f, -5-i));
 		//transformation->rotateX(45.f);
 		transformation->updateWorldSpaceMatrix(0);
-		auto* renderComp = mMeshes.back()->addComponent<G2::RenderComponent>();
+		auto* renderComp = mMeshes.back().addComponent<G2::RenderComponent>();
 	} 
 
 

@@ -223,7 +223,7 @@ RenderComponent::calculateBinormalsAndTangents(G2Core::Semantics::Name vertexSem
 		// transfer data from GPU to CPU
 		
 
-		for (int d = 0; d < getNumDrawCalls(); ++d)
+		for (unsigned int d = 0; d < getNumDrawCalls(); ++d)
 		{
 			DrawCall& drawCall = getDrawCall(d);
 

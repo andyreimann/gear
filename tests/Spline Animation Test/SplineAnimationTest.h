@@ -43,11 +43,11 @@ class SplineAnimationTest
 		G2::TextureImporter			mTexImporter;
 		G2::FBXImporter				mFbxImporter;
 		
-		std::shared_ptr<G2::FBXMesh> mLight;
+		G2::Entity					mLight;
 
 		G2::Editor::RootEditor		mEditor;
 		
-		std::vector<std::shared_ptr<G2::FBXMesh>>	mSplines;
+		std::vector<G2::Entity>	mSplines;
 		std::vector<G2::Entity>						mSplineVis;
 
 		bool						mCameraSplineEnabled;
