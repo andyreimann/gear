@@ -11,7 +11,12 @@ class ManagedEntity : public G2::Entity
 {
 	public:
 		ManagedEntity() {}
-		ManagedEntity(std::string const& name) : mName(name) {}
+		ManagedEntity(std::string const& name, Json::Value const& description = Json::Value())
+		{
+			mEntityDesc["name"] = name;
+		}
+		ManagedEntity(Json::Value const& description)
+			: mEntityDesc(description) {}
 
 		ManagedEntity(ManagedEntity && rhs)
 		{
@@ -21,22 +26,37 @@ class ManagedEntity : public G2::Entity
 		ManagedEntity& operator=(ManagedEntity && rhs)
 		{
 			// do assignment here
-			mName = rhs.mName;
-			rhs.mName = "";
-
+			mEntityDesc = std::move(rhs.mEntityDesc);
+			rhs.mEntityDesc = Json::Value();
 			return static_cast<ManagedEntity&>(G2::Entity::operator=(std::move(rhs)));
 		}
 		ManagedEntity& operator=(G2::Entity && rhs)
 		{
-			mName = "";
+			mEntityDesc = Json::Value();
 			return static_cast<ManagedEntity&>(G2::Entity::operator=(std::move(rhs)));
 		}
 
 		/** This function will return the Name.
 		* @return The Name.
 		*/
-		std::string const& getName() const { return mName; }
+		std::string getName() const { return mEntityDesc["name"].asString(); }
+		/** This function will return a reference to the properties object registered on the given technicalName.
+		 * @param technicalName The technical name to get the properties for.
+		 * @return A reference to the properties object registered on the given technicalName.
+		 * @note If the given properties entry does not exist, a new empty one will be created!
+		 */
+		Json::Value& getProperties(std::string technicalName) { return mEntityDesc["properties"][technicalName]; }
+		/** This function will check if there is a properties entry set on the given technicalName.
+		* @param technicalName The technical name to get the properties for.
+		* @return True if the given properties entry is set, false if not.
+		*/
+		bool hasProperties(std::string technicalName) { return mEntityDesc["properties"].isMember(technicalName); }
+
+		/** Returns the entire entity description.
+		 */
+		Json::Value const& getEntityDescription() const { return mEntityDesc; }
 
 	private:
-		std::string mName;
+
+		Json::Value mEntityDesc;										// The name of the ManagedEntity
 };

@@ -17,6 +17,5 @@ ComponentListView::currentChanged(const QModelIndex & current, const QModelIndex
 {
 	auto* entity = ((ComponentListItemModel*)model())->entity(current);
 
-
 	GEARStudioEvents::onManagedEntitySelected(entity);
 }

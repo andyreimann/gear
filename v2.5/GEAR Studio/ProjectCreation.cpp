@@ -151,33 +151,30 @@ ProjectCreation::generateSceneFile(std::string sceneName, std::string const& des
 
 	Json::Value sampleEntity;
 	sampleEntity["name"] = "Sample Entity";
-	sampleEntity["components"] = Json::Value(Json::arrayValue);
 
 	Json::Value renderComponent;
-	renderComponent["type"] = "G2::RenderComponent";
-	renderComponent["mesh"] = "assets/meshes/unit-sphere.fbx";
-	sampleEntity["components"].append(renderComponent);
+	renderComponent["mesh_path"] = "assets/meshes/unit-sphere.fbx";
+	sampleEntity["properties"]["mesh"] = renderComponent;
 
 	Json::Value lightComponent;
-	lightComponent["type"] = "G2::LightComponent";
-	lightComponent["light"]["type"] = "DIRECTIONAL";
-	lightComponent["light"]["diffuse"]["x"] = 1.f;
-	lightComponent["light"]["diffuse"]["y"] = 1.f;
-	lightComponent["light"]["diffuse"]["z"] = 1.f;
-	lightComponent["light"]["diffuse"]["a"] = 1.f;
-	lightComponent["light"]["attenuation"]["constant"] = 1.f;
-	lightComponent["light"]["attenuation"]["linear"] = 1.f;
-	lightComponent["light"]["attenuation"]["exponential"] = 0.f;
+	lightComponent["type"] = "DIRECTIONAL";
+	lightComponent["diffuse"]["x"] = 1.f;
+	lightComponent["diffuse"]["y"] = 1.f;
+	lightComponent["diffuse"]["z"] = 1.f;
+	lightComponent["diffuse"]["a"] = 1.f;
+	lightComponent["attenuation"]["constant"] = 1.f;
+	lightComponent["attenuation"]["linear"] = 1.f;
+	lightComponent["attenuation"]["exponential"] = 0.f;
 
-	sampleEntity["components"].append(lightComponent);
+	sampleEntity["properties"]["light"] = lightComponent;
 
 	Json::Value transformComponent;
-	transformComponent["type"] = "G2::TransformComponent";
+	transformComponent["type"] = "SRT";
 	transformComponent["rotation"]["angle"] = -10.f;
 	transformComponent["rotation"]["axis"]["x"] = 1.f;
 	transformComponent["rotation"]["axis"]["y"] = 0.f;
 	transformComponent["rotation"]["axis"]["z"] = 0.f;
-	sampleEntity["components"].append(transformComponent);
+	sampleEntity["properties"]["transf"] = transformComponent;
 
 	root["entities"].append(sampleEntity);
 

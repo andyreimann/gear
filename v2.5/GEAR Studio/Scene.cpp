@@ -44,7 +44,6 @@ void
 Scene::_init3D()
 {
 	// load default effect
-
 	auto* renderSystem = G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem, G2::RenderComponent>();
 
@@ -76,78 +75,69 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 {
 	if (entityDesc.isMember("name"))
 	{
-		auto* entity = createNewEntity(entityDesc["name"].asString());
-		if (entity == nullptr)
-		{
-			return;
-		}
-		Json::Value const& components = entityDesc["components"];
-		for (int i = 0; i < components.size(); ++i)  // Iterates over the sequence elements.
-		{
-			_initComponentFromJson(components[i], entity);
-			GEARStudioEvents::onManagedEntityModified(this, entity);
-		}
+		mLoadedEntities[entityDesc["name"].asString()] = std::move(ManagedEntity(entityDesc));
+		auto* entity = &mLoadedEntities[entityDesc["name"].asString()];
+
+		// whoever wants to add something to the ManagedEntity will have to register to this event.
+		GEARStudioEvents::onDeserializeManagedEntity(entity, entityDesc);
 	}
-
-
-	// Mesh importer should return G2::Entity WITHOUT a shared pointer!!!!!
-	// Shared pointer should be included into template arguments of baseImporter class
-	//ManagedEntity e;...
-	//G2::Entity g;
-	//e = std::move(g);
-}
-
-void
-Scene::_initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* entity)
-{
-	if (componentDesc.isMember("type"))
+	else
 	{
-		std::string type = componentDesc["type"].asString();
-		if ("G2::RenderComponent" == type)
-		{
-			auto* comp = entity->addComponent<G2::RenderComponent>();
-
-			std::string meshPath = componentDesc["mesh"].asString();
-			std::transform(meshPath.begin(), meshPath.end(), meshPath.begin(), ::tolower);
-			if (boost::algorithm::ends_with(meshPath, "fbx"))
-			{
-				// load with FBX importer and let him attach the imported mesh to the entity pointer
-				mFbxImporter.import(mProjectDirectory + "/" + componentDesc["mesh"].asString(), true, true, true, false, false, nullptr, entity);
-			}
-		}
-		else if ("G2::LightComponent" == type)
-		{
-			if (componentDesc["light"]["type"].asString() == "DIRECTIONAL")
-			{
-				auto* comp = entity->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-
-				comp->diffuse = glm::vec4(
-					componentDesc["light"]["diffuse"]["x"].asFloat(),
-					componentDesc["light"]["diffuse"]["y"].asFloat(),
-					componentDesc["light"]["diffuse"]["z"].asFloat(),
-					componentDesc["light"]["diffuse"]["a"].asFloat()
-					);
-				comp->attenuation = componentDesc["light"]["attenuation"]["constant"].asFloat();
-				comp->linearAttenuation = componentDesc["light"]["attenuation"]["linear"].asFloat();
-				comp->exponentialAttenuation = componentDesc["light"]["attenuation"]["exponential"].asFloat();
-			}
-
-		}
-		else if ("G2::TransformComponent" == type)
-		{
-			auto* comp = entity->addComponent<G2::TransformComponent>();
-
-			if (componentDesc.isMember("rotation"))
-			{
-				comp->rotateAxis(componentDesc["rotation"]["angle"].asFloat(), glm::vec3(
-					componentDesc["rotation"]["axis"]["x"].asFloat(),
-					componentDesc["rotation"]["axis"]["y"].asFloat(),
-					componentDesc["rotation"]["axis"]["z"].asFloat()
-				));
-			}
-		}
+		// TODO log warning!
 	}
 }
+
+//void
+//Scene::_initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* entity)
+//{
+//	if (componentDesc.isMember("type"))
+//	{
+//		std::string type = componentDesc["type"].asString();
+//		if ("G2::RenderComponent" == type)
+//		{
+//			auto* comp = entity->addComponent<G2::RenderComponent>();
+//
+//			std::string meshPath = componentDesc["mesh"].asString();
+//			std::transform(meshPath.begin(), meshPath.end(), meshPath.begin(), ::tolower);
+//			if (boost::algorithm::ends_with(meshPath, "fbx"))
+//			{
+//				// load with FBX importer and let him attach the imported mesh to the entity pointer
+//				mFbxImporter.import(mProjectDirectory + "/" + componentDesc["mesh"].asString(), true, true, true, false, false, nullptr, entity);
+//			}
+//		}
+//		else if ("G2::LightComponent" == type)
+//		{
+//			if (componentDesc["light"]["type"].asString() == "DIRECTIONAL")
+//			{
+//				auto* comp = entity->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
+//
+//				comp->diffuse = glm::vec4(
+//					componentDesc["light"]["diffuse"]["x"].asFloat(),
+//					componentDesc["light"]["diffuse"]["y"].asFloat(),
+//					componentDesc["light"]["diffuse"]["z"].asFloat(),
+//					componentDesc["light"]["diffuse"]["a"].asFloat()
+//					);
+//				comp->attenuation = componentDesc["light"]["attenuation"]["constant"].asFloat();
+//				comp->linearAttenuation = componentDesc["light"]["attenuation"]["linear"].asFloat();
+//				comp->exponentialAttenuation = componentDesc["light"]["attenuation"]["exponential"].asFloat();
+//			}
+//
+//		}
+//		else if ("G2::TransformComponent" == type)
+//		{
+//			auto* comp = entity->addComponent<G2::TransformComponent>();
+//
+//			if (componentDesc.isMember("rotation"))
+//			{
+//				comp->rotateAxis(componentDesc["rotation"]["angle"].asFloat(), glm::vec3(
+//					componentDesc["rotation"]["axis"]["x"].asFloat(),
+//					componentDesc["rotation"]["axis"]["y"].asFloat(),
+//					componentDesc["rotation"]["axis"]["z"].asFloat()
+//				));
+//			}
+//		}
+//	}
+//}
 
 void
 Scene::load()
@@ -165,8 +155,15 @@ Scene::save()
 	if (!error())
 	{
 		// save all ManagedEntities of the scene into a new Json
+		Json::Value entities(Json::arrayValue);
 
-
+		for (auto it = mLoadedEntities.begin(); it != mLoadedEntities.end(); ++it)
+		{
+			// every ManagedEntity has it's entire description as Json for fast access.
+			// we always assume that this description is up to date!
+			entities.append(it->second.getEntityDescription());
+		}
+		mResource["entities"] = entities;
 
 		serialize(mResource);
 	}

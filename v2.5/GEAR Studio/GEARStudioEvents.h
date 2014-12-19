@@ -49,4 +49,10 @@ public:
 	* ManagedEntity* A pointer to the ManagedEntity which was created.
 	*/
 	static G2::Event<ManagedEntity*>					onManagedEntitySelected;
+	/** Trigger:
+	* A new ManagedEntity instance is abount to be instantiated from a JSON description 
+	* ManagedEntity* A pointer to the ManagedEntity which will be the instantiated one.
+	* Json::Value const& a reference to the entities entire JSON document containing it's name, properties and so on.
+	*/
+	static G2::Event<ManagedEntity*, Json::Value const&> onDeserializeManagedEntity;
 };
