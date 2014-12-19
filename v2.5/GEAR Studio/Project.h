@@ -25,6 +25,10 @@ class Project : public JsonDeserializer, JsonSerializer
 		void loadScene(std::string const& sceneFile);
 
 		std::shared_ptr<Scene>& getCurrentScene() { return mCurrentScene; }
+		/** Returns the projects directory.
+		 * @return The projects directory.
+		 */
+		std::string const& getProjectDirectory() const { return mProjectDirectory; }
 
 		~Project();
 	private:

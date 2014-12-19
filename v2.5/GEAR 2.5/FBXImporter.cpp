@@ -465,7 +465,12 @@ FBXImporter::~FBXImporter()
 	if(gSdkManager != nullptr)
 	{
 		// IMPORTANT - call destructor on all builders BEFORE deleting the FBX SDK Manager!
-		mCache.clear();
+
+		for (auto it = mCache.begin(); it != mCache.end(); ++it)
+		{
+			it->second = std::shared_ptr<FBXMesh::Builder>();
+		}
+
 		gSdkManager->Destroy();
 		gSdkManager = nullptr;
 	}

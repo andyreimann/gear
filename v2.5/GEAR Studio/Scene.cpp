@@ -77,9 +77,9 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 	{
 		mLoadedEntities[entityDesc["name"].asString()] = std::move(ManagedEntity(entityDesc));
 		auto* entity = &mLoadedEntities[entityDesc["name"].asString()];
-
+		GEARStudioEvents::onManagedEntityCreated(this, entity);
 		// whoever wants to add something to the ManagedEntity will have to register to this event.
-		GEARStudioEvents::onDeserializeManagedEntity(entity, entityDesc);
+		GEARStudioEvents::onDeserializeManagedEntity(entity, entity->getEntityDescription());
 	}
 	else
 	{

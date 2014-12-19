@@ -46,7 +46,7 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		G2::FrameInfo				mFrameInfo;
 		G2::Entity					mLight;
 		G2::EffectImporter			mEffectImporter;
-		G2::FBXImporter				mFbxImporter;
+		//G2::FBXImporter				mFbxImporter;
 		G2Cameras::EditorCamera		mEditorCamera;
 		std::unordered_map<Qt::MouseButton,G2::MouseButton> mMouseButtonMapping;
 		std::unordered_map<Qt::Key,int>						mKeyMap;

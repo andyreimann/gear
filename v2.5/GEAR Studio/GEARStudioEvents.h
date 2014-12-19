@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene.h"
+#include "Project.h"
 
 #include <G2Core/Event.h>
 #include <string>
@@ -16,6 +16,11 @@ public:
 	 * std::string const& The directory of the created Project
 	 */
 	static G2::Event<std::string const&>				onProjectCreated;
+	/** Trigger:
+	* New project is opened.
+	* Project* The opened Project
+	*/
+	static G2::Event<Project*>							onProjectOpened;
 	/** Trigger:
 	* A Scene will be unloaded either due to the stop of the application or due to a new scene to load.
 	* Scene* A pointer to the Scene which will be unloaded after the callback.

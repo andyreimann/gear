@@ -51,6 +51,20 @@ class ManagedEntity : public G2::Entity
 		* @return True if the given properties entry is set, false if not.
 		*/
 		bool hasProperties(std::string technicalName) { return mEntityDesc["properties"].isMember(technicalName); }
+		/** This function will remove the 
+		* @param technicalName The technical name to get the properties for.
+		* @return A reference to the properties object registered on the given technicalName.
+		* @note If the given properties entry does not exist, a new empty one will be created!
+		*/
+		void removeProperties(std::string technicalName) 
+		{ 
+			Json::Value removed = mEntityDesc["properties"].removeMember(technicalName);
+			if (!removed.isNull())
+			{
+				// the property was present
+
+			}
+		}
 
 		/** Returns the entire entity description.
 		 */

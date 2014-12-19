@@ -8,12 +8,14 @@ PropertiesTab::PropertiesTab(std::string const& technicalName)
 {
 	GEARStudioEvents::onManagedEntitySelected.hook(this, &PropertiesTab::_onManagedEntitySelected);
 	GEARStudioEvents::onDeserializeManagedEntity.hook(this, &PropertiesTab::_onDeserializeManagedEntity);
+	GEARStudioEvents::onProjectOpened.hook(this, &PropertiesTab::_onProjectOpened);
 }
 
 PropertiesTab::~PropertiesTab()
 {
 	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 	GEARStudioEvents::onDeserializeManagedEntity.unHookAll(this);
+	GEARStudioEvents::onProjectOpened.unHookAll(this);
 }
 
 void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)
@@ -26,4 +28,9 @@ void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)
 void PropertiesTab::_onDeserializeManagedEntity(ManagedEntity* entity, Json::Value const& desc)
 {
 	_instantiateFromDescription(entity);
+}
+
+void PropertiesTab::_onProjectOpened(Project* project)
+{
+	mProjectDirectory = project->getProjectDirectory();
 }

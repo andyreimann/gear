@@ -59,8 +59,11 @@ GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 {
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
-	mProject->loadLastScene();
+	// fire event that a new project is opened
+	GEARStudioEvents::onProjectOpened(mProject.get());
+
 	ui.createEntity->setEnabled(true);
+	mProject->loadLastScene();
 }
 
 void

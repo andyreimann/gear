@@ -25,7 +25,7 @@ void ComponentListItemModel::_onManagedEntityCreated(Scene* scene, ManagedEntity
 	// Create new row for that EntityId since it is not yet existing and set the data for it.
 	insertRows(rowCount(), 1);
 	mComponents[rowCount() - 1] = entity; // set the data on the newly added row
-	//setData(index(rowCount() - 1, 0), QVariant(entity->getName().c_str()), entity->getId());
+	//setData(index(rowCount() - 1, 0), QVariant(entity->getName().c_str()), entity);
 }
 
 void ComponentListItemModel::_onManagedEntityRemoved(Scene* scene, ManagedEntity* entity)
