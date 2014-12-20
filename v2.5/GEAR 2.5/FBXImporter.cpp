@@ -7,6 +7,11 @@
 
 using namespace G2;
 
+FBXImporter::FBXImporter()
+{
+	initSdk();
+}
+
 G2::Entity
 FBXImporter::importResource(std::string const& fileName, bool importNormals, bool importTexCoords, bool importAnimations, bool flipTexU, bool flipTexV, TextureImporter* texImporter, G2::Entity* target)
 {
@@ -30,8 +35,6 @@ FBXImporter::produceResourceBuilder(std::string const& meshFileName, bool import
 		return std::make_pair(meshFileName,std::shared_ptr<FBXMesh::Builder>());
 	}
 	logger << "[FBXImporter] Import FBX file " << meshFileName << endl;
-
-	initSdk();
 
 	// Step 1: create builder and fill
 	std::shared_ptr<FBXMesh::Builder> builder = std::shared_ptr<FBXMesh::Builder>(new FBXMesh::Builder);
@@ -429,6 +432,7 @@ FBXImporter::_fillPoseArray(FbxScene* pScene, FbxArray<FbxPose*>& pPoseArray)
 }
 
 FbxManager* FBXImporter::gSdkManager = nullptr;
+RefCounter<int, 0> FBXImporter::gRefCounter = RefCounter<int,0>();
 
 void
 FBXImporter::initSdk() 
@@ -454,6 +458,7 @@ FBXImporter::initSdk()
 		FbxString lPath = FbxGetApplicationDirectory();
 		gSdkManager->LoadPluginsDirectory(lPath.Buffer());
 	}
+	gRefCounter.incr();
 }
 
 FBXImporter::~FBXImporter() 
@@ -462,6 +467,7 @@ FBXImporter::~FBXImporter()
 	// Delete the FBX SDK manager. All the objects that have been allocated 
 	// using the FBX SDK manager and that haven't been explicitly destroyed 
 	// are automatically destroyed at the same time.
+	int cnt = gRefCounter.decr();
 	if(gSdkManager != nullptr)
 	{
 		// IMPORTANT - call destructor on all builders BEFORE deleting the FBX SDK Manager!
@@ -470,8 +476,10 @@ FBXImporter::~FBXImporter()
 		{
 			it->second = std::shared_ptr<FBXMesh::Builder>();
 		}
-
-		gSdkManager->Destroy();
-		gSdkManager = nullptr;
+		if (cnt <= 0)
+		{
+			gSdkManager->Destroy();
+			gSdkManager = nullptr;
+		}
 	}
 }

@@ -3,6 +3,7 @@
 #pragma once
 #include "Importer.h"
 #include "FBXMesh.h"
+#include "RefCounter.h"
 
 namespace G2 
 {
@@ -16,6 +17,8 @@ namespace G2
 	class FBXImporter : public Importer<FBXImporter, G2::Entity, FBXMesh::Builder>
 	{
 		public:
+
+			FBXImporter();
 			
 			/** This function will load and import the given FBX file
 			 * @note Don't use this function directly, use import() instead!
@@ -49,6 +52,7 @@ namespace G2
 
 
 			static FbxManager*	gSdkManager;
+			static RefCounter<int,0>	gRefCounter;
 			static void			initSdk();
 	};
 };
