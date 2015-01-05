@@ -4,6 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_geareditor.h"
 #include "Project.h"
+#include "EditorGeometryManager.h"
 
 #include "MeshPropertiesTab.h"
 
@@ -41,6 +42,7 @@ class GEAREditor : public QMainWindow
 		std::shared_ptr<Project> mProject;					// The currently loaded Project
 
 		MeshPropertiesTab* mMeshTab;
+		std::shared_ptr<EditorGeometryManager> mEditorGeometryManager;
 
 	private slots:
 		void newProject();		// Menu callback for creating a new project

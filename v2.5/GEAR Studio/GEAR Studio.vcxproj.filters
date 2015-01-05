@@ -25,6 +25,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="EditorGeometryManager.h" />
+    <ClInclude Include="EditorGrid.h" />
     <ClInclude Include="GEARStudioEvents.h" />
     <ClInclude Include="JsonDeserializer.h" />
     <ClInclude Include="JsonSerializer.h" />
@@ -36,6 +38,8 @@
   <ItemGroup>
     <ClCompile Include="ComponentListItemModel.cpp" />
     <ClCompile Include="ComponentListView.cpp" />
+    <ClCompile Include="EditorGeometryManager.cpp" />
+    <ClCompile Include="EditorGrid.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
     <ClCompile Include="GEARStudioEvents.cpp" />
     <ClCompile Include="GLContext.cpp" />

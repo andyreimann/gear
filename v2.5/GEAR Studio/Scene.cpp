@@ -52,6 +52,7 @@ Scene::_init3D()
 	{
 		renderSystem->setDefaultEffect(effect);
 	}
+	/* we dont adjust the background of the editor since this color is ment to be used when the game runs and not the editor!
 	renderSystem->setClearColor(
 		glm::vec4(
 			mResource["rendersystem"]["default_color"]["x"].asFloat(),
@@ -60,6 +61,7 @@ Scene::_init3D()
 			mResource["rendersystem"]["default_color"]["a"].asFloat()
 		)
 	);
+	*/
 	renderSystem->reserveSize(mResource["rendersystem"]["size_hint"].asInt());
 
 	Json::Value const& entities = mResource["entities"];
