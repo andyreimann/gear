@@ -76,7 +76,7 @@ ProjectCreation::createProject()
 		// generate a main scene
 		generateSceneFile(ui.projectName->text().toStdString(), folder + "/scenes/main.json");
 		// generate a project file
-		generateProjectFile(ui.projectName->text().toStdString(), folder + "/project.json", "scenes/main.json");
+		generateProjectFile(ui.projectName->text().toStdString(), folder + "/project.json", "/scenes/main.json");
 
 		GEARStudioEvents::onProjectCreated(folder);
 	}

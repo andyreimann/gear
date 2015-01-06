@@ -12,6 +12,7 @@
 #include <G2/PropertiesFile.h>
 
 #include <memory>
+#include <vector>
 
 class ProjectCreation;
 
@@ -37,16 +38,13 @@ class GEAREditor : public QMainWindow
 		void _onSceneLoaded(Scene* scene);
 		void _onManagedEntitySelected(ManagedEntity* entity);
 
-		Ui::GEAREditorClass ui;								// The Qt UI object for the main editor.
-		std::unique_ptr<ProjectCreation> mNewProjectDialog;	// A pointer to the dialog for creating a new Project.
-		G2::PropertiesFile mStudioProperties;				// The properties of the entire GEAR Studio read from the settings.conf file
-		std::shared_ptr<Project> mProject;					// The currently loaded Project
+		Ui::GEAREditorClass ui;												// The Qt UI object for the main editor.
+		std::unique_ptr<ProjectCreation>			mNewProjectDialog;		// A pointer to the dialog for creating a new Project.
+		G2::PropertiesFile							mStudioProperties;		// The properties of the entire GEAR Studio read from the settings.conf file
+		std::shared_ptr<Project>					mProject;				// The currently loaded Project
 
-		MeshPropertiesTab* mMeshTab;
-		TransformationPropertiesTab* mTransformationTab;
-
-		std::shared_ptr<EditorGeometryManager> mEditorGeometryManager;
-
+		std::shared_ptr<EditorGeometryManager>		mEditorGeometryManager;	// The manager class for all the different geometry belonging to the editor
+		std::vector<std::shared_ptr<PropertiesTab>> mPropertyTabs;			// All the PropertyTab instances operating on ManagedEntity objects.
 
 	private slots:
 		void newProject();		// Menu callback for creating a new project

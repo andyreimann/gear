@@ -17,27 +17,23 @@ static const std::string TRANS_SCALE = "scale";
 
 TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
-	PropertiesTab("transf")
+	PropertiesTab("transf","Transformation")
 {
 	ui.setupUi(this);
-	ui.tabToggle->setText("Transformation"); // set display name on tab toggle
+	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
 
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
 
-	connect(ui.posX, SIGNAL(valueChanged(double)), this, SLOT(posXChanged(double)));
-	connect(ui.posY, SIGNAL(valueChanged(double)), this, SLOT(posYChanged(double)));
-	connect(ui.posZ, SIGNAL(valueChanged(double)), this, SLOT(posZChanged(double)));
-	connect(ui.rotX, SIGNAL(valueChanged(double)), this, SLOT(rotXChanged(double)));
-	connect(ui.rotY, SIGNAL(valueChanged(double)), this, SLOT(rotYChanged(double)));
-	connect(ui.rotZ, SIGNAL(valueChanged(double)), this, SLOT(rotZChanged(double)));
-	connect(ui.scaleX, SIGNAL(valueChanged(double)), this, SLOT(scaleXChanged(double)));
-	connect(ui.scaleY, SIGNAL(valueChanged(double)), this, SLOT(scaleYChanged(double)));
-	connect(ui.scaleZ, SIGNAL(valueChanged(double)), this, SLOT(scaleZChanged(double)));
-}
-
-TransformationPropertiesTab::~TransformationPropertiesTab()
-{
-	//GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	// connect to all input boxes to serialize on changes
+	connect(ui.posX, SIGNAL(valueChanged(double)), this, SLOT(posChanged(double)));
+	connect(ui.posY, SIGNAL(valueChanged(double)), this, SLOT(posChanged(double)));
+	connect(ui.posZ, SIGNAL(valueChanged(double)), this, SLOT(posChanged(double)));
+	connect(ui.rotX, SIGNAL(valueChanged(double)), this, SLOT(rotChanged(double)));
+	connect(ui.rotY, SIGNAL(valueChanged(double)), this, SLOT(rotChanged(double)));
+	connect(ui.rotZ, SIGNAL(valueChanged(double)), this, SLOT(rotChanged(double)));
+	connect(ui.scaleX, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
+	connect(ui.scaleY, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
+	connect(ui.scaleZ, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 }
 
 void TransformationPropertiesTab::_initWithEntity(ManagedEntity* entity)
@@ -107,9 +103,7 @@ void TransformationPropertiesTab::_instantiateFromDescription(ManagedEntity* ent
 		trans->setRotation(rotation);
 
 		trans->setScale(glm::vec3((float)ui.scaleX->value(), (float)ui.scaleY->value(), (float)ui.scaleZ->value()));
-
 	}
-
 }
 
 void TransformationPropertiesTab::toggleTab()
@@ -125,92 +119,41 @@ void TransformationPropertiesTab::toggleTab()
 	mOpen = !mOpen;
 }
 
-void TransformationPropertiesTab::posXChanged(double)
+void TransformationPropertiesTab::posChanged(double)
 {
 	if (hasEntity())
 	{
 		_serializeValue(TRANS_POSITION, "x", ui.posX->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::posYChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_POSITION, "y", ui.posY->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::posZChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_POSITION, "z", ui.posZ->value());
 		_instantiateFromDescription(mEntity);
+		// TODO WARNING: Saving everytime we change a single value will not work on large projects -> dirty flag and ctrl + S support needed!
 		mProject->getCurrentScene()->save();
 	}
 }
 
-void TransformationPropertiesTab::rotXChanged(double)
+void TransformationPropertiesTab::rotChanged(double)
 {
 	if (hasEntity())
 	{
 		_serializeValue(TRANS_ORIENTATION, "x", ui.rotX->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::rotYChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_ORIENTATION, "y", ui.rotY->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::rotZChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_ORIENTATION, "z", ui.rotZ->value());
 		_instantiateFromDescription(mEntity);
+		// TODO WARNING: Saving everytime we change a single value will not work on large projects -> dirty flag and ctrl + S support needed!
 		mProject->getCurrentScene()->save();
 	}
 }
 
-void TransformationPropertiesTab::scaleXChanged(double)
+void TransformationPropertiesTab::scaleChanged(double)
 {
 	if (hasEntity())
 	{
 		_serializeValue(TRANS_SCALE, "x", ui.scaleX->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::scaleYChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_SCALE, "y", ui.scaleY->value());
-		_instantiateFromDescription(mEntity);
-		mProject->getCurrentScene()->save();
-	}
-}
-
-void TransformationPropertiesTab::scaleZChanged(double)
-{
-	if (hasEntity())
-	{
 		_serializeValue(TRANS_SCALE, "z", ui.scaleZ->value());
 		_instantiateFromDescription(mEntity);
+		// TODO WARNING: Saving everytime we change a single value will not work on large projects -> dirty flag and ctrl + S support needed!
 		mProject->getCurrentScene()->save();
 	}
 }

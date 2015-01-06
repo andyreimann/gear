@@ -16,12 +16,15 @@ class PropertiesTab
 		 * The technical name of a PropertiesTab is used when serializing/deserializing a PropertiesTabs
 		 * settings into/from JSON.
 		 */
-		PropertiesTab(std::string const& technicalName);
+		PropertiesTab(std::string const& technicalName, std::string const& tabName);
 		/** This function will try to attach the property this tab is responsible for
 		 * to the currently selected ManagedEntity.
 		 * If no ManagedEntity is selected or the property is already attached, the function will change nothing.
+		 * @return True if the property was attached, false if not.
 		 */
-		void attachToSelectedEntity();
+		bool attachToSelectedEntity();
+
+		std::string const& getTabName() const { return mTabName; }
 
 		~PropertiesTab();
 
@@ -62,5 +65,6 @@ class PropertiesTab
 		Project*		mProject;			// A pointer to the current project
 		ManagedEntity*	mEntity;			// A pointer to the currently focused entity, might be nullptr - is automatically updated whenever a new ManagedEntity gets a focus
 		std::string		mTechnicalName;		// The technical name of this PropertiesTab
+		std::string		mTabName;			// The tab name of this PropertiesTab
 		std::string		mProjectDirectory;	// The directory of the currently loaded project - is automatically updated whenever a new Project is loaded
 };

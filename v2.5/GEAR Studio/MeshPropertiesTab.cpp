@@ -18,10 +18,10 @@ static const std::string RENDER_LAYER = "render_layer";
 
 MeshPropertiesTab::MeshPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
-	PropertiesTab("mesh")
+	PropertiesTab("mesh","Mesh")
 {
 	ui.setupUi(this);
-	ui.tabToggle->setText("Mesh"); // set display name on tab toggle
+	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
 
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
 	connect(ui.selectMesh, SIGNAL(clicked()), this, SLOT(selectMesh()));

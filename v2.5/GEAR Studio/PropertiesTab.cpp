@@ -4,8 +4,9 @@
 #include "G2/Logger.h"
 
 
-PropertiesTab::PropertiesTab(std::string const& technicalName)
+PropertiesTab::PropertiesTab(std::string const& technicalName, std::string const& tabName)
 	: mTechnicalName(technicalName),
+	mTabName(tabName),
 	mEntity(nullptr),
 	mProject(nullptr)
 {
@@ -21,8 +22,7 @@ PropertiesTab::~PropertiesTab()
 	GEARStudioEvents::onProjectOpened.unHookAll(this);
 }
 
-void
-PropertiesTab::attachToSelectedEntity()
+bool PropertiesTab::attachToSelectedEntity()
 {
 	if (mEntity != nullptr && !mEntity->hasProperties(mTechnicalName))
 	{
@@ -30,7 +30,9 @@ PropertiesTab::attachToSelectedEntity()
 		mEntity->getProperties(mTechnicalName);
 		// reinitialize the tab
 		_initWithEntity(mEntity);
+		return true;
 	}
+	return false;
 }
 
 void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)

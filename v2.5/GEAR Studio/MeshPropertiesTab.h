@@ -8,7 +8,7 @@
 #include <QtWidgets/QWidget>
 
 
-/** This is the main class of the GEAR Editor Studio.
+/** This class implements the ManagedEntity property regarding meshes.
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */

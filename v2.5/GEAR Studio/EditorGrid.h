@@ -21,9 +21,13 @@ class EditorGrid
 		/** Move assignment operator.
 		*/
 		EditorGrid& operator=(EditorGrid && rhs);
-
+		/** Returns the G2::Entity pointer of the EntityGrid object.
+		 * @return The G2::Entity pointer of the EntityGrid object.
+		 */
 		operator G2::Entity*() { return &mEditorGrid;  }
-
+		/** Returns the unit zise of this EditorGrid object.
+		 * @return The unit zise of this EditorGrid object.
+		 */
 		float getUnitSize() const { return mUnitSize; }
 	private:
 

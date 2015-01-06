@@ -19,12 +19,12 @@ class EditorGeometryManager
 
 		~EditorGeometryManager();
 	private:
-
+		/** Called every frame by the GEAR engine.
+		 */
 		void _updateEditorGrid(G2::FrameInfo const& frame);
 
-		G2::EffectImporter  mEffectImporter;
+		G2::EffectImporter  mEffectImporter;			// The effect importer used for the editor geometry
 		std::shared_ptr<G2::Effect>	mSolidFx;			// The effect for solid ambient lighting
-
-		std::list<EditorGrid>	mGrids;
+		std::list<EditorGrid>	mGrids;					// The different grids sorted by their unit size
 
 };

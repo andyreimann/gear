@@ -32,7 +32,7 @@ Project::loadLastScene()
 		lastSceneName = G2::Tools::String::trim(lastSceneName);
 		if (lastSceneName.size() > 0)
 		{
-			loadScene(mProjectDirectory + "/" + lastSceneName);
+			loadScene(mProjectDirectory + lastSceneName);
 		}
 	}
 }

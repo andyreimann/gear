@@ -4,8 +4,7 @@
 
 #include <QtWidgets/QWidget>
 
-
-/** 
+/** This class implements the ManagedEntity property regarding the transformation.
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
@@ -14,8 +13,6 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 	Q_OBJECT
 	public:
 		TransformationPropertiesTab(QWidget *parent = 0);
-
-		~TransformationPropertiesTab();
 
 	protected:
 		/** This callback function is called whenever the PropertiesTab
@@ -34,17 +31,23 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		/** Toggles the folding state of the tab.
 		 */
 		void toggleTab();
-		void posXChanged(double);
-		void posYChanged(double);
-		void posZChanged(double);
-		void rotXChanged(double);
-		void rotYChanged(double);
-		void rotZChanged(double);
-		void scaleXChanged(double);
-		void scaleYChanged(double);
-		void scaleZChanged(double);
+		/** Callback when position value is changed.
+		 */
+		void posChanged(double);
+		/** Callback when rotation value is changed.
+		*/
+		void rotChanged(double);
+		/** Callback when scale value is changed.
+		*/
+		void scaleChanged(double);
 
 	private:
+		/** Writes a given value into the selected entities property assigned to this Tab.
+		 * @param group The group key to use for the write operation.
+		 * @param component The component key to use for the write operation.
+		 * @param value The value to write.
+		 * @note The value is written into the following field: property[group][component].
+		 */
 		void _serializeValue(std::string const& group, std::string const& component, double value);
 
 		bool							mOpen;				// The flag if the tab is opened or not.

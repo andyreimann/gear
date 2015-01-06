@@ -29,14 +29,15 @@ GEAREditor::GEAREditor(QWidget *parent)
 	ui.propertiesRoot->layout()->setAlignment(Qt::AlignTop);
 
 	// setup all the tabs and hide them
+	auto* transformationTab = new TransformationPropertiesTab(ui.propertiesRoot);
+	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(transformationTab));
+	ui.propertiesRoot->layout()->addWidget(transformationTab);
+	transformationTab->hide();
 
-	mTransformationTab = new TransformationPropertiesTab(ui.propertiesRoot);
-	ui.propertiesRoot->layout()->addWidget(mTransformationTab);
-	mTransformationTab->hide();
-
-	mMeshTab = new MeshPropertiesTab(ui.propertiesRoot);
-	ui.propertiesRoot->layout()->addWidget(mMeshTab);
-	mMeshTab->hide();
+	auto* meshTab = new MeshPropertiesTab(ui.propertiesRoot);
+	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(meshTab));
+	ui.propertiesRoot->layout()->addWidget(meshTab);
+	meshTab->hide();
 }
 
 GEAREditor::~GEAREditor()
@@ -125,15 +126,13 @@ GEAREditor::addPropertyByIndex(int index)
 {
 	std::cout << "Selected index " << index << std::endl;
 
-	QString item = ui.addPropertyComboBox->itemText(index);
+	std::string item = ui.addPropertyComboBox->itemText(index).toStdString();
 
-	if (item == "Mesh")
+	for (auto it = mPropertyTabs.begin(); it != mPropertyTabs.end(); ++it)
 	{
-		mMeshTab->attachToSelectedEntity();
+		if (item == (*it)->getTabName())
+		{
+			(*it)->attachToSelectedEntity();
+		}
 	}
-	else if (item == "Transformation")
-	{
-		mTransformationTab->attachToSelectedEntity();
-	}
-
 }
