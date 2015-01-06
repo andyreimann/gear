@@ -1,24 +1,21 @@
 #pragma once
-#include "ui_MeshPropertiesTab.h"
+#include "ui_TransformationPropertiesTab.h"
 #include "PropertiesTab.h"
-
-#include <G2/FBXImporter.h>
-#include <G2/MD5Importer.h>
 
 #include <QtWidgets/QWidget>
 
 
-/** This is the main class of the GEAR Editor Studio.
+/** 
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
-class MeshPropertiesTab : public QWidget, public PropertiesTab
+class TransformationPropertiesTab : public QWidget, public PropertiesTab
 {
 	Q_OBJECT
 	public:
-		MeshPropertiesTab(QWidget *parent = 0);
+		TransformationPropertiesTab(QWidget *parent = 0);
 
-		~MeshPropertiesTab();
+		~TransformationPropertiesTab();
 
 	protected:
 		/** This callback function is called whenever the PropertiesTab
@@ -37,20 +34,19 @@ class MeshPropertiesTab : public QWidget, public PropertiesTab
 		/** Toggles the folding state of the tab.
 		 */
 		void toggleTab();
-		/** Openes a file select dialog to select the permitted mesh types.
-		 * After the selection, the mesh is tried to be loaded and assigned to the current ManagedEntity if one is set.
-		 */
-		void selectMesh();
+		void posXChanged(double);
+		void posYChanged(double);
+		void posZChanged(double);
+		void rotXChanged(double);
+		void rotYChanged(double);
+		void rotZChanged(double);
+		void scaleXChanged(double);
+		void scaleYChanged(double);
+		void scaleZChanged(double);
 
 	private:
-		/** Reimports the given target ManagedEntity according to it's document description.
-		 * This function will reimport the mesh with the defined settings.
-		 * Make sure to have all settings saved in the description inside the ManagedEntity before you call this function.
-		 */
-		void _reimportMesh(ManagedEntity* target);
+		void _serializeValue(std::string const& group, std::string const& component, double value);
 
-		G2::FBXImporter			mFbxImporter;		// The importer for FBX-Meshes to use.
-		G2::MD5Importer			mMd5Importer;		// The importer for MD5-Meshes to use.
-		bool					mOpen;				// The flag if the tab is opened or not.
-		Ui::MeshPropertiesTab	ui;					// The Qt UI class for the project creation dialog
+		bool							mOpen;				// The flag if the tab is opened or not.
+		Ui::TransformationPropertiesTab	ui;					// The Qt UI class for the project creation dialog
 };

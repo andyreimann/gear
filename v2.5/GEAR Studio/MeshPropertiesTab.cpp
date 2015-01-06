@@ -5,6 +5,7 @@
 
 #include <QtWidgets/QFileDialog>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string.hpp>
 #include <algorithm>
 
 // TODO Should these identifier be compiled into a separated DLL?
@@ -82,14 +83,31 @@ void MeshPropertiesTab::selectMesh()
 {
 	if (hasEntity())
 	{
-		QString meshPath = QFileDialog::getOpenFileName(this, "Select mesh file", "", "FBX (*.fbx);;MD5 (*.md5)");
+		std::string dialogDir = mProjectDirectory + "/assets/meshes";
+		QString meshPath = QFileDialog::getOpenFileName(this, "Select mesh file", dialogDir.c_str(), "FBX (*.fbx);;MD5 (*.md5)");
 		if (!meshPath.isNull())
 		{
 			Json::Value& props = mEntity->getProperties(mTechnicalName);
-			props[MESH_PATH] = meshPath.toStdString();
+			// 
+			std::string fullPath = meshPath.toStdString();
 			
-			// after mesh is selected, reimport the mesh to update the RenderComponent
-			_reimportMesh(mEntity);
+			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
+			{
+				std::cout << "[Mesh] Selected file is not contained in the project directory!" << std::endl;
+			}
+			else
+			{
+				// strip project directory
+				boost::replace_first(fullPath, mProjectDirectory, "");
+				props[MESH_PATH] = fullPath;
+				props[FLIP_TEX_U] = ui.flipUTexCoord->isChecked();
+				props[FLIP_TEX_V] = ui.flipVTexCoord->isChecked();
+
+				// after mesh is selected, reimport the mesh to update the RenderComponent
+				_reimportMesh(mEntity);
+
+				mProject->getCurrentScene()->save();
+			}
 		}
 	}
 }
@@ -111,7 +129,7 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 	{
 		// load with FBX importer and let him attach the imported mesh to the entity pointer
 		mFbxImporter.import(
-			mProjectDirectory + "/" + props.get(MESH_PATH, "").asString(),
+			mProjectDirectory + props.get(MESH_PATH, "").asString(),
 			props.get(IMPORT_NORMALS, true).asBool(),
 			props.get(IMPORT_TEX_COORDS, true).asBool(),
 			true,
@@ -125,7 +143,7 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 		// TODO How to remove a previously assigned mesh? Clear function on RenderComponent is missing!
 		// TODO MD5Importer does not yet have support for tex coord flip!
 		mMd5Importer.import(
-			mProjectDirectory + "/" + props.get(MESH_PATH, "").asString(),
+			mProjectDirectory + props.get(MESH_PATH, "").asString(),
 			props.get(IMPORT_NORMALS, true).asBool(),
 			props.get(IMPORT_TEX_COORDS, true).asBool(),
 			true,

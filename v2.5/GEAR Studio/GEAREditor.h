@@ -7,6 +7,7 @@
 #include "EditorGeometryManager.h"
 
 #include "MeshPropertiesTab.h"
+#include "TransformationPropertiesTab.h"
 
 #include <G2/PropertiesFile.h>
 
@@ -34,7 +35,7 @@ class GEAREditor : public QMainWindow
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
 		void _onSceneLoaded(Scene* scene);
-
+		void _onManagedEntitySelected(ManagedEntity* entity);
 
 		Ui::GEAREditorClass ui;								// The Qt UI object for the main editor.
 		std::unique_ptr<ProjectCreation> mNewProjectDialog;	// A pointer to the dialog for creating a new Project.
@@ -42,12 +43,16 @@ class GEAREditor : public QMainWindow
 		std::shared_ptr<Project> mProject;					// The currently loaded Project
 
 		MeshPropertiesTab* mMeshTab;
+		TransformationPropertiesTab* mTransformationTab;
+
 		std::shared_ptr<EditorGeometryManager> mEditorGeometryManager;
+
 
 	private slots:
 		void newProject();		// Menu callback for creating a new project
 		void openProject();		// Menu callback for opening an existing project
 		void createManagedEntity();
+		void addPropertyByIndex(int index);
 
 };
 

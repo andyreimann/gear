@@ -4,7 +4,6 @@
 #include "ManagedEntity.h"
 
 #include <G2/EffectImporter.h>
-#include <G2/FBXImporter.h>
 
 #include <unordered_map>
 
@@ -49,5 +48,4 @@ class Scene : public JsonDeserializer, JsonSerializer
 
 		// importer 
 		G2::EffectImporter			mEffectImporter;
-		G2::FBXImporter				mFbxImporter;
 };

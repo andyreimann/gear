@@ -17,6 +17,11 @@ class PropertiesTab
 		 * settings into/from JSON.
 		 */
 		PropertiesTab(std::string const& technicalName);
+		/** This function will try to attach the property this tab is responsible for
+		 * to the currently selected ManagedEntity.
+		 * If no ManagedEntity is selected or the property is already attached, the function will change nothing.
+		 */
+		void attachToSelectedEntity();
 
 		~PropertiesTab();
 
@@ -54,6 +59,7 @@ class PropertiesTab
 		*/
 		virtual void _instantiateFromDescription(ManagedEntity* entity) = 0;
 
+		Project*		mProject;			// A pointer to the current project
 		ManagedEntity*	mEntity;			// A pointer to the currently focused entity, might be nullptr - is automatically updated whenever a new ManagedEntity gets a focus
 		std::string		mTechnicalName;		// The technical name of this PropertiesTab
 		std::string		mProjectDirectory;	// The directory of the currently loaded project - is automatically updated whenever a new Project is loaded

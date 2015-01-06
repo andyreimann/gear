@@ -20,13 +20,20 @@ GEAREditor::GEAREditor(QWidget *parent)
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
 	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
+	connect(ui.addPropertyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(addPropertyByIndex(int)));
 
 	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
 	GEARStudioEvents::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
+	GEARStudioEvents::onManagedEntitySelected.hook(this, &GEAREditor::_onManagedEntitySelected);
 
 	ui.propertiesRoot->layout()->setAlignment(Qt::AlignTop);
 
 	// setup all the tabs and hide them
+
+	mTransformationTab = new TransformationPropertiesTab(ui.propertiesRoot);
+	ui.propertiesRoot->layout()->addWidget(mTransformationTab);
+	mTransformationTab->hide();
+
 	mMeshTab = new MeshPropertiesTab(ui.propertiesRoot);
 	ui.propertiesRoot->layout()->addWidget(mMeshTab);
 	mMeshTab->hide();
@@ -36,6 +43,7 @@ GEAREditor::~GEAREditor()
 {
 	GEARStudioEvents::onProjectCreated.unHookAll(this);
 	GEARStudioEvents::onSceneLoaded.unHookAll(this);
+	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 }
 
 void
@@ -97,4 +105,35 @@ void
 GEAREditor::_onSceneLoaded(Scene* scene)
 {
 	ui.sceneNameLabel->setText(scene->getName().c_str());
+}
+
+void
+GEAREditor::_onManagedEntitySelected(ManagedEntity* entity)
+{
+	if (entity == nullptr)
+	{
+		ui.addPropertyComboBox->setEnabled(false);
+	}
+	else
+	{
+		ui.addPropertyComboBox->setEnabled(true);
+	}
+}
+
+void
+GEAREditor::addPropertyByIndex(int index)
+{
+	std::cout << "Selected index " << index << std::endl;
+
+	QString item = ui.addPropertyComboBox->itemText(index);
+
+	if (item == "Mesh")
+	{
+		mMeshTab->attachToSelectedEntity();
+	}
+	else if (item == "Transformation")
+	{
+		mTransformationTab->attachToSelectedEntity();
+	}
+
 }

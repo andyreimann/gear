@@ -142,7 +142,7 @@ ProjectCreation::generateSceneFile(std::string sceneName, std::string const& des
 	root["gear_studio_ver"] = 1.0;
 	root["name"] = sceneName;
 	root["rendersystem"]["size_hint"] = 100;
-	root["rendersystem"]["default_effect"] = "assets/shader/Default.g2fx";
+	root["rendersystem"]["default_effect"] = "/assets/shader/Default.g2fx";
 	root["rendersystem"]["default_color"]["x"] = 0.8f;
 	root["rendersystem"]["default_color"]["y"] = 0.8f;
 	root["rendersystem"]["default_color"]["z"] = 0.8f;
@@ -153,7 +153,7 @@ ProjectCreation::generateSceneFile(std::string sceneName, std::string const& des
 	sampleEntity["name"] = "Sample Entity";
 
 	Json::Value renderComponent;
-	renderComponent["mesh_path"] = "assets/meshes/unit-sphere.fbx";
+	renderComponent["mesh_path"] = "/assets/meshes/unit-sphere.fbx";
 	sampleEntity["properties"]["mesh"] = renderComponent;
 
 	Json::Value lightComponent;

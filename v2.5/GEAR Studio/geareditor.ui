@@ -161,7 +161,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="addPropertyComboBox">
        <property name="enabled">
         <bool>false</bool>
        </property>

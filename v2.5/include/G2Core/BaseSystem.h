@@ -136,7 +136,7 @@ namespace G2
 				if(size > components.size())
 				{
 					// only allow upscale
-					components.resize(size);
+					components.reserve(size);
 				}
 			}
 			/// Returns true if the system runs in the main thread.
