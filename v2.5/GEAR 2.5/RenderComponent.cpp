@@ -111,14 +111,45 @@ G2::RenderComponent::setDrawcallEnabled(bool mode)
 		it->setEnabled(mode);
 	}
 }
+
+void
+G2::RenderComponent::removeAllMeshes()
+{
+	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem, RenderComponent>();
+	unsigned int numDrawCalls = mDrawCalls.size();
+
+	mDrawCalls.clear();
+	mIaos.clear();
+	mVaos.clear();
+
+	for (unsigned int v = 0; v < numDrawCalls; ++v)
+	{
+		renderSystem->_onDrawCallRemoved(getEntityId(), v);
+	}
+}
 void
 RenderComponent::addDrawCall(DrawCall const& drawCall) 
 {
+	// DEBUG FOR TRANSPARENT MESHES TO REINSERT NEW DRAW CALLS
+	if (material.isTransparent())
+	{
+		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem, RenderComponent>();
+		// remove old draw call amount
+		renderSystem->updateTransparencyMode(getEntityId(), false);
+	}
 	mDrawCalls.push_back(drawCall);
 	// set the internal parameters of the DrawCall to link it to this RenderComponent
 	mDrawCalls.back()._setDrawCallIndex((int)mDrawCalls.size()-1);
 	mDrawCalls.back()._setEntityId(getEntityId());
 	scheduleAABBRecalculation();
+
+	// DEBUG FOR TRANSPARENT MESHES TO REINSERT NEW DRAW CALLS
+	if (material.isTransparent())
+	{
+		auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem, RenderComponent>();
+		// add new draw call amount
+		material._connectToEntityId(getEntityId());
+	}
 }
 
 unsigned int
@@ -144,6 +175,7 @@ RenderComponent::_updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGro
 	}
 	mRenderStatesGroup = newGroup;
 }
+
 void
 RenderComponent::setEffect(std::shared_ptr<G2::Effect> const& value) 
 {

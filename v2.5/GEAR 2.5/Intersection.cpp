@@ -1,18 +1,21 @@
 // GEAR 2.5 - Game Engine Andy Reimann - Author: Andy Reimann <andy@moorlands-grove.de>
 // (c) 2014 GEAR 2.5
 #include "Intersection.h"
+#include <G2Core/Entity.h>
 
 using namespace G2;
 
 Intersection::Intersection() :
-	mState(NO_INTERSECTION)
+	mState(NO_INTERSECTION),
+	mEntityId(G2::Entity::UNINITIALIZED_ENTITY_ID)
 {
 }
 
 Intersection::Intersection(glm::vec3 const& point, glm::vec3 const& normal) :
 	mPoint(point), 
 	mNormal(normal), 
-	mState(INTERSECTION)
+	mState(INTERSECTION),
+	mEntityId(G2::Entity::UNINITIALIZED_ENTITY_ID)
 {
 }
 

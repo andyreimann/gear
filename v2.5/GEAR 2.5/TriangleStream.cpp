@@ -108,7 +108,7 @@ TriangleStream::TriangleStream(
 				_streamTriangle = _streamTriangleDrawModeTrianglesVec3;
 			}
 		}
-		else if (mVertexArrayObject->getNumBytesBySemantic(mSemantic) == sizeof(float) * 3)
+		else if (mVertexArrayObject->getNumBytesBySemantic(mSemantic) == sizeof(float) * 4)
 		{
 			mVertexStream = mVertexArrayObject->getDataPointer(mSemantic, G2Core::BufferAccessMode::READ_ONLY);
 			if (mIndexArrayObject != nullptr)
@@ -142,6 +142,8 @@ TriangleStream::TriangleStream(
 	case G2Core::DrawMode::LINE_STRIP:
 	case G2Core::DrawMode::POINTS:
 		// Not supported
+		mIndexArrayObject = nullptr;
+		mVertexArrayObject = nullptr;
 		break;
 	default:
 		break;

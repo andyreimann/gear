@@ -13,7 +13,7 @@ EditorGrid::EditorGrid(std::shared_ptr<G2::Effect> effect, float unitSize) :
 
 
 	int numLinesPerPlane = 401;
-	float numExtends = ((numLinesPerPlane - 1) / 2);
+	int numExtends = ((numLinesPerPlane - 1) / 2);
 
 	for (int start = 0 - numExtends; start <= numExtends; ++start)
 	{

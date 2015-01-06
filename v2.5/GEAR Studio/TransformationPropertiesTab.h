@@ -21,7 +21,7 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		 * @param properties A pointer to the properties of the given entity in regards to this PropertiesTab or a nullptr in case entity is a nullptr.
 		 * @note the given pointer entity is the exact same one as the mEntity member variable.
 		 */
-		virtual void _initWithEntity(ManagedEntity* entity) override;
+		virtual void _initUiWithEntity(ManagedEntity* entity) override;
 		/** This is a callback function which will be invoked whenever a new ManagedEntity is created and should be instantiated according to the contained entityDesc.
 		 * @param entity A pointer to the ManagedEntity which is selected.
 		 * @note Call the entity->getEntityDescription() to get the description.
@@ -40,7 +40,6 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		/** Callback when scale value is changed.
 		*/
 		void scaleChanged(double);
-
 	private:
 		/** Writes a given value into the selected entities property assigned to this Tab.
 		 * @param group The group key to use for the write operation.

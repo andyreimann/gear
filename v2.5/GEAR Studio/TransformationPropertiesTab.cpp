@@ -36,7 +36,7 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	connect(ui.scaleZ, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 }
 
-void TransformationPropertiesTab::_initWithEntity(ManagedEntity* entity)
+void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 {
 	if (!hasEntity() || !entity->hasProperties(mTechnicalName))
 	{
@@ -58,21 +58,42 @@ void TransformationPropertiesTab::_initWithEntity(ManagedEntity* entity)
 		// If one is absent, we just initialize it to it's default value.
 		if (props.isMember(TRANS_POSITION))
 		{
-			ui.posX->setValue(props[TRANS_POSITION].get("x", "0.0").asFloat());
-			ui.posY->setValue(props[TRANS_POSITION].get("y", "0.0").asFloat());
-			ui.posZ->setValue(props[TRANS_POSITION].get("z", "0.0").asFloat());
+			ui.posX->blockSignals(true); ui.posX->setValue(props[TRANS_POSITION].get("x", "0.0").asFloat()); ui.posX->blockSignals(false);
+			ui.posY->blockSignals(true); ui.posY->setValue(props[TRANS_POSITION].get("y", "0.0").asFloat()); ui.posY->blockSignals(false);
+			ui.posZ->blockSignals(true); ui.posZ->setValue(props[TRANS_POSITION].get("z", "0.0").asFloat()); ui.posZ->blockSignals(false);
+		}
+		else
+		{
+			// init UI with default
+			ui.posX->blockSignals(true); ui.posX->setValue(0.f); ui.posX->blockSignals(false);
+			ui.posY->blockSignals(true); ui.posY->setValue(0.f); ui.posY->blockSignals(false);
+			ui.posZ->blockSignals(true); ui.posZ->setValue(0.f); ui.posZ->blockSignals(false);
 		}
 		if (props.isMember(TRANS_ORIENTATION))
 		{
-			ui.rotX->setValue(props[TRANS_ORIENTATION].get("x", "0.0").asFloat());
-			ui.rotY->setValue(props[TRANS_ORIENTATION].get("y", "0.0").asFloat());
-			ui.rotZ->setValue(props[TRANS_ORIENTATION].get("z", "0.0").asFloat());
+			ui.rotX->blockSignals(true); ui.rotX->setValue(props[TRANS_ORIENTATION].get("x", "0.0").asFloat()); ui.rotX->blockSignals(false);
+			ui.rotY->blockSignals(true); ui.rotY->setValue(props[TRANS_ORIENTATION].get("y", "0.0").asFloat()); ui.rotY->blockSignals(false);
+			ui.rotZ->blockSignals(true); ui.rotZ->setValue(props[TRANS_ORIENTATION].get("z", "0.0").asFloat()); ui.rotZ->blockSignals(false);
+		}
+		else
+		{
+			// init UI with default
+			ui.rotX->blockSignals(true); ui.rotX->setValue(0.f); ui.rotX->blockSignals(false);
+			ui.rotY->blockSignals(true); ui.rotY->setValue(0.f); ui.rotY->blockSignals(false);
+			ui.rotZ->blockSignals(true); ui.rotZ->setValue(0.f); ui.rotZ->blockSignals(false);
 		}
 		if (props.isMember(TRANS_SCALE))
 		{
-			ui.scaleX->setValue(props[TRANS_SCALE].get("x", "1.0").asFloat());
-			ui.scaleY->setValue(props[TRANS_SCALE].get("y", "1.0").asFloat());
-			ui.scaleZ->setValue(props[TRANS_SCALE].get("z", "1.0").asFloat());
+			ui.scaleX->blockSignals(true); ui.scaleX->setValue(props[TRANS_SCALE].get("x", "1.0").asFloat()); ui.scaleX->blockSignals(false);
+			ui.scaleY->blockSignals(true); ui.scaleY->setValue(props[TRANS_SCALE].get("y", "1.0").asFloat()); ui.scaleY->blockSignals(false);
+			ui.scaleZ->blockSignals(true); ui.scaleZ->setValue(props[TRANS_SCALE].get("z", "1.0").asFloat()); ui.scaleZ->blockSignals(false);
+		}
+		else
+		{
+			// init UI with default
+			ui.scaleX->blockSignals(true); ui.scaleX->setValue(0.f); ui.scaleX->blockSignals(false);
+			ui.scaleY->blockSignals(true); ui.scaleY->setValue(0.f); ui.scaleY->blockSignals(false);
+			ui.scaleZ->blockSignals(true); ui.scaleZ->setValue(0.f); ui.scaleZ->blockSignals(false);
 		}
 	}
 }
@@ -92,17 +113,26 @@ void TransformationPropertiesTab::_instantiateFromDescription(ManagedEntity* ent
 	}
 	else
 	{
+		Json::Value const& props = entity->getProperties(mTechnicalName);
+
 		auto* trans = entity->addComponent<G2::TransformComponent>();
-		trans->setPosition(glm::vec3((float)ui.posX->value(), (float)ui.posY->value(), (float)ui.posZ->value()));
+		if (props.isMember(TRANS_POSITION))
+		{
+			trans->setPosition(glm::vec3(props[TRANS_POSITION]["x"].asFloat(), props[TRANS_POSITION]["y"].asFloat(), props[TRANS_POSITION]["z"].asFloat()));
+		}
+		if (props.isMember(TRANS_ORIENTATION))
+		{
+			glm::quat rotation;
+			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["x"].asFloat(), glm::vec3(1.f, 0.f, 0.f)));
+			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["y"].asFloat(), glm::vec3(0.f, 1.f, 0.f)));
+			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["z"].asFloat(), glm::vec3(0.f, 0.f, 1.f)));
 
-		glm::quat rotation;
-		rotation = glm::cross(rotation, glm::angleAxis((float)ui.rotX->value(), glm::vec3(1.f, 0.f, 0.f)));
-		rotation = glm::cross(rotation, glm::angleAxis((float)ui.rotY->value(), glm::vec3(0.f, 1.f, 0.f)));
-		rotation = glm::cross(rotation, glm::angleAxis((float)ui.rotZ->value(), glm::vec3(0.f, 0.f, 1.f)));
-
-		trans->setRotation(rotation);
-
-		trans->setScale(glm::vec3((float)ui.scaleX->value(), (float)ui.scaleY->value(), (float)ui.scaleZ->value()));
+			trans->setRotation(rotation);
+		}
+		if (props.isMember(TRANS_SCALE))
+		{
+			trans->setScale(glm::vec3(props[TRANS_SCALE]["x"].asFloat(), props[TRANS_SCALE]["y"].asFloat(), props[TRANS_SCALE]["z"].asFloat()));
+		}
 	}
 }
 

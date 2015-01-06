@@ -228,11 +228,11 @@ namespace G2
 			/** This function is called automatically whenever the viewport of the render window performed a resize.
 			 */
 			void _onViewportResize(int w, int h);
-			/** This function is called from a RenderComponent if a resize for the vertex array objects occurs.
-			 * @param entityId The entity id of the RenderComponent
-			 * @param sizeDifference The difference in size of the vertex array objects.
+			/** This function is called whenever the given draw call was removed.
+			 * @param entityId The entityId of the Entity, on which the given drawCall was removed from.
+			 * @param drawCallIndex The index of the draw call.
 			 */
-			void _onDrawCallResize(unsigned int entityId, int sizeDifference);
+			void _onDrawCallRemoved(unsigned int entityId, unsigned int drawCallIndex);
 			/** This function is called from the BaseSystem whenever a component was removed from the BaseSystem.
 			 * @param entityId The ID of the Entity, that was removed.
 			 * @note The BaseSystem components are locked when this function is called, so further modifications are not permitted!

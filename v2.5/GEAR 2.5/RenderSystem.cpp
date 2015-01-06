@@ -1001,13 +1001,29 @@ RenderSystem::updateTransparencyMode(unsigned int entityId, bool transparent)
 }
 
 void
-RenderSystem::_onDrawCallResize(unsigned int entityId, int sizeDifference) 
+G2::RenderSystem::_onDrawCallRemoved(unsigned int entityId, unsigned int drawCallIndex)
 {
-	auto* comp = get(entityId);
-	if(comp->material.isTransparent())
+	auto* renderComp = get(entityId);
+	if (renderComp != nullptr && renderComp->material.isTransparent())
 	{
-		// should be already registered
-		mZSortedTransparentEntityIdsToDrawCall.resize(mZSortedTransparentEntityIdsToDrawCall.size() + sizeDifference);
+		if (renderComp->getNumDrawCalls() == 0)
+		{
+			mTransparentEntityIds.erase(entityId);
+		}
+
+		auto* comp = get(entityId);
+
+		mZSortedTransparentEntityIdsToDrawCall.resize(mZSortedTransparentEntityIdsToDrawCall.size() - 1);
+		// rebuild mapping completely
+		unsigned int offset = 0;
+		for (auto it = mTransparentEntityIds.begin(); it != mTransparentEntityIds.end(); ++it)
+		{
+			auto* comp = get(*it);
+			for (unsigned int v = 0; v < comp->getNumDrawCalls(); ++v)
+			{
+				mZSortedTransparentEntityIdsToDrawCall[offset++] = std::make_pair(comp->getEntityId(), v);
+			}
+		}
 	}
 }
 
@@ -1103,12 +1119,14 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 							if (newDist < dist)
 							{
 								closestMatch = intersection;
+								closestMatch.setEntityId(comp.getEntityId());
 							}
 						}
 						else
 						{
 							// just take it as it is - already in world space coordinates
 							closestMatch = intersection;
+							closestMatch.setEntityId(comp.getEntityId());
 						}
 					}
 				}

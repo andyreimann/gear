@@ -44,6 +44,14 @@ namespace G2
 			* @return The IntersectionState of the Intersection.
 			*/
 			G2::IntersectionState const& getState() const { return mState; }
+			/** This function will return the id of the Entity, wich was intersected.
+			* @return The id of the Entity, wich was intersected.
+			*/
+			unsigned int const& getEntityId() const { return mEntityId; }
+			/** This function will set the Entity ID to the given value.
+			* @param value The EntityId.
+			*/
+			void setEntityId(unsigned int const& value) { mEntityId = value; }
 			/** Calculates an intersection between a ray and a triangle.
 			 * @param intersection The Intersection info object to write the result to in world space coordinates. Note that the object will not be changed in case there is no intersection!
 			 * @param worldSpaceMatrix The current world space matrix.
@@ -85,5 +93,7 @@ namespace G2
 			IntersectionState	mState;		// The state of the Intersection.
 			glm::vec3			mPoint;		// The intersection point in case there is an intersection.
 			glm::vec3			mNormal;	// The intersection points normal vector in case there is an intersection.
+			unsigned int		mEntityId;	// The ID of the Entity which was intersected, or G2::Entity::UNINITIALIZED_ENTITY_ID if no Entity was intersected.
+			
 	};
 };

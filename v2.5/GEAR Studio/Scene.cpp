@@ -66,7 +66,7 @@ Scene::_init3D()
 
 	Json::Value const& entities = mResource["entities"];
 
-	for (int i = 0; i < entities.size(); ++i)  // Iterates over the sequence elements.
+	for (unsigned int i = 0; i < entities.size(); ++i)  // Iterates over the sequence elements.
 	{
 		_initEntityFromJson(entities[i]);
 	}

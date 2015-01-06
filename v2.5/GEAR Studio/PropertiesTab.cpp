@@ -29,7 +29,7 @@ bool PropertiesTab::attachToSelectedEntity()
 		// create the property by just calling it's getter
 		mEntity->getProperties(mTechnicalName);
 		// reinitialize the tab
-		_initWithEntity(mEntity);
+		_initUiWithEntity(mEntity);
 		return true;
 	}
 	return false;
@@ -41,11 +41,11 @@ void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)
 
 	if (entity != nullptr)
 	{
-		G2::logger << "[PROP:"<<mTechnicalName<<"] Changed Entity-Context to " << entity->getName() << G2::endl;
+		G2::logger << "[PROP:"<<mTechnicalName<<"] Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]" << G2::endl;
 	}
 
 	// callback to initialize PropertiesTab for the entity
-	_initWithEntity(mEntity);
+	_initUiWithEntity(mEntity);
 }
 
 void PropertiesTab::_onDeserializeManagedEntity(ManagedEntity* entity, Json::Value const& desc)

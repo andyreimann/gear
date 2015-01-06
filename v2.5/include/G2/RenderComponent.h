@@ -42,6 +42,9 @@ namespace G2
 			/** Move assignment operator to move a RenderComponent.
 			 */
 			RenderComponent& operator=(RenderComponent && rhs);
+			/** This function will remove all draw calls, vertex buffers and index buffers contained.
+			 */
+			void removeAllMeshes();
 			/** This function will return the UberShader. 
 			* @return The current UberShader.
 			*/

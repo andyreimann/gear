@@ -34,7 +34,7 @@ MeshPropertiesTab::~MeshPropertiesTab()
 	//GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 }
 
-void MeshPropertiesTab::_initWithEntity(ManagedEntity* entity)
+void MeshPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 {
 	if (!hasEntity() || !entity->hasProperties(mTechnicalName))
 	{
@@ -127,6 +127,12 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 	// TODO Check if file exists
 	if (boost::algorithm::ends_with(meshPath, "fbx"))
 	{
+		// clear any meshes already loaded into the RenderComponent 
+		auto renderComponent = target->getComponent<G2::RenderComponent>();
+		if (renderComponent != nullptr)
+		{
+			renderComponent->removeAllMeshes();
+		}
 		// load with FBX importer and let him attach the imported mesh to the entity pointer
 		mFbxImporter.import(
 			mProjectDirectory + props.get(MESH_PATH, "").asString(),
@@ -140,7 +146,12 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 	}
 	else if (boost::algorithm::ends_with(meshPath, "md5"))
 	{
-		// TODO How to remove a previously assigned mesh? Clear function on RenderComponent is missing!
+		// clear any meshes already loaded into the RenderComponent 
+		auto renderComponent = target->getComponent<G2::RenderComponent>();
+		if (renderComponent != nullptr)
+		{
+			renderComponent->removeAllMeshes();
+		}
 		// TODO MD5Importer does not yet have support for tex coord flip!
 		mMd5Importer.import(
 			mProjectDirectory + props.get(MESH_PATH, "").asString(),

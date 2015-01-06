@@ -2,6 +2,12 @@
 #include "ComponentListItemModel.h"
 #include "ProjectCreation.h"
 #include "GEARStudioEvents.h"
+
+
+#include "MeshPropertiesTab.h"
+#include "TransformationPropertiesTab.h"
+#include "MaterialPropertiesTab.h"
+
 #include <QtWidgets/QFileDialog>
 #include <sstream>
 
@@ -38,6 +44,11 @@ GEAREditor::GEAREditor(QWidget *parent)
 	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(meshTab));
 	ui.propertiesRoot->layout()->addWidget(meshTab);
 	meshTab->hide();
+
+	auto* materialTab = new MaterialPropertiesTab(ui.propertiesRoot);
+	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(materialTab));
+	ui.propertiesRoot->layout()->addWidget(materialTab);
+	materialTab->hide();
 }
 
 GEAREditor::~GEAREditor()

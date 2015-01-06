@@ -5,9 +5,7 @@
 #include "ui_geareditor.h"
 #include "Project.h"
 #include "EditorGeometryManager.h"
-
-#include "MeshPropertiesTab.h"
-#include "TransformationPropertiesTab.h"
+#include "PropertiesTab.h"
 
 #include <G2/PropertiesFile.h>
 

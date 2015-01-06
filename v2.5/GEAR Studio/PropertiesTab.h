@@ -55,7 +55,7 @@ class PropertiesTab
 		 * @param entity A pointer to the entity to initialize the PropertiesTab with. This pointer might be a nullptr in case no ManagedEntity has focus!
 		 * @note the given pointer entity is the exact same one as the mEntity member variable.
 		 */
-		virtual void _initWithEntity(ManagedEntity* entity) = 0;
+		virtual void _initUiWithEntity(ManagedEntity* entity) = 0;
 		/** This is a callback function which will be invoked whenever a new ManagedEntity is created and should be instantiated according to the contained entityDesc.
 		* @param entity A pointer to the ManagedEntity which is selected. 
 		* @note Call the entity->getEntityDescription() to get the description.

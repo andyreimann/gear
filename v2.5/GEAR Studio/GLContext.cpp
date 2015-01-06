@@ -2,6 +2,9 @@
 #include <QtGui/QMouseEvent>
 #include <QtCore/QTimer>
 
+#include <G2/RenderComponent.h>
+#include <G2Core/ECSManager.h>
+
 
 static std::string ASSET_PATH = "../../tests/bin/Assets/";
 
@@ -53,6 +56,28 @@ void GLContext::paintGL()
 void GLContext::mousePressEvent(QMouseEvent *event)
 {
 	G2::EventDistributer::onMouseDown(mMouseButtonMapping[event->button()], glm::detail::tvec2<int>(event->x(), event->y()));
+
+	// intersect scene
+	if (mMouseButtonMapping[event->button()] == G2::MOUSE_LEFT)
+	{
+		auto* transform = mEditorCamera.getComponent<G2::TransformComponent>();
+		auto* camera = mEditorCamera.getComponent<G2::CameraComponent>();
+		
+		G2::Ray mouseRay = G2::Ray::createScreenProjectionRay(
+			event->x(), 
+			event->y(),
+			glm::vec3(mEditorCamera.getViewVec()),
+			transform->getWorldSpaceMatrix(),
+			camera->getProjectionMatrix(),
+			glm::detail::tvec4<int>(0, 0, camera->getViewportWidth(), camera->getViewportHeight()));
+
+		G2::Intersection intersection = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()->intersect(mouseRay);
+
+		if (intersection.getState() != G2::IntersectionState::NO_INTERSECTION)
+		{
+			std::cout << "Intersection " << intersection.getState() << " with entity " << intersection.getEntityId() << std::endl;
+		}
+	}
 }
 
 void GLContext::mouseReleaseEvent(QMouseEvent *event)
