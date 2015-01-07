@@ -45,6 +45,7 @@
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="JsonDeserializer.cpp" />
     <ClCompile Include="JsonSerializer.cpp" />
+    <ClCompile Include="MaterialPropertiesTab.cpp" />
     <ClCompile Include="MeshPropertiesTab.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="ProjectCreation.cpp" />
@@ -62,6 +63,9 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_GLContext.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_MeshPropertiesTab.cpp">
@@ -88,6 +92,9 @@
     <ClCompile Include="obj\x32\Release\moc_GLContext.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_MaterialPropertiesTab.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_MeshPropertiesTab.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -110,6 +117,9 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_GLContext.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_MeshPropertiesTab.cpp">
@@ -136,6 +146,9 @@
     <ClCompile Include="obj\x64\Release\moc_GLContext.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_MaterialPropertiesTab.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_MeshPropertiesTab.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -154,6 +167,8 @@
     <CustomBuild Include="ComponentListView.h" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
+    <CustomBuild Include="MaterialPropertiesTab.h" />
+    <CustomBuild Include="MaterialPropertiesTab.ui" />
     <CustomBuild Include="MeshPropertiesTab.h" />
     <CustomBuild Include="MeshPropertiesTab.ui" />
     <CustomBuild Include="ProjectCreation.h" />

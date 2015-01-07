@@ -1,4 +1,7 @@
 #include "GLContext.h"
+#include "Project.h"
+#include "GEARStudioEvents.h"
+
 #include <QtGui/QMouseEvent>
 #include <QtCore/QTimer>
 
@@ -11,7 +14,8 @@ static std::string ASSET_PATH = "../../tests/bin/Assets/";
 GLContext::GLContext(QWidget *parent) 
 	: QGLWidget(parent), 
 	mEditorCamera(this),
-	G2::AbstractWindow("GEAR Editor", 1024, 768, false) 
+	G2::AbstractWindow("GEAR Editor", 1024, 768, false),
+	mProject(nullptr)
 {
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -20,10 +24,13 @@ GLContext::GLContext(QWidget *parent)
 	setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
 	initKeyMap();
+
+	GEARStudioEvents::onProjectOpened.hook(this, &GLContext::_onProjectOpened);
 }
 
 GLContext::~GLContext()
 {
+	GEARStudioEvents::onProjectOpened.unHookAll(this);
 }
 
 void GLContext::initializeGL() 
@@ -58,7 +65,7 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 	G2::EventDistributer::onMouseDown(mMouseButtonMapping[event->button()], glm::detail::tvec2<int>(event->x(), event->y()));
 
 	// intersect scene
-	if (mMouseButtonMapping[event->button()] == G2::MOUSE_LEFT)
+	if (mProject != nullptr && mProject->getCurrentScene().get() != nullptr && mMouseButtonMapping[event->button()] == G2::MOUSE_LEFT)
 	{
 		auto* transform = mEditorCamera.getComponent<G2::TransformComponent>();
 		auto* camera = mEditorCamera.getComponent<G2::CameraComponent>();
@@ -66,17 +73,37 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 		G2::Ray mouseRay = G2::Ray::createScreenProjectionRay(
 			event->x(), 
 			event->y(),
-			glm::vec3(mEditorCamera.getViewVec()),
 			transform->getWorldSpaceMatrix(),
 			camera->getProjectionMatrix(),
 			glm::detail::tvec4<int>(0, 0, camera->getViewportWidth(), camera->getViewportHeight()));
-
+		 
 		G2::Intersection intersection = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>()->intersect(mouseRay);
 
 		if (intersection.getState() != G2::IntersectionState::NO_INTERSECTION)
 		{
 			std::cout << "Intersection " << intersection.getState() << " with entity " << intersection.getEntityId() << std::endl;
+			
+			auto* managedEntity = mProject->getCurrentScene()->get(intersection.getEntityId());
+			if (managedEntity != nullptr)
+			{
+				GEARStudioEvents::onManagedEntitySelected(managedEntity);
+			}
 		}
+		/*
+		mMouseRay.removeComponent<G2::RenderComponent>();
+		auto* rc = mMouseRay.addComponent<G2::RenderComponent>();
+
+		rc->allocateVertexArrays(1);
+		auto& vbo = rc->getVertexArray(0);
+
+		glm::vec3 data[2] = { mouseRay.getOrigin(), mouseRay.getOrigin() + (100.f * glm::vec3(mouseRay.getDir())) };
+
+		vbo.resizeElementCount(2);
+		vbo.writeData(G2Core::Semantics::POSITION, data, 2);
+		rc->setEffect(G2::EffectImporter().import("shader/Solid.g2fx"));
+		rc->addDrawCall(G2::DrawCall().setDrawMode(G2Core::DrawMode::LINES).setVaoIndex(0));
+		rc->material.setAmbient(glm::vec4(1, 0, 0, 1));
+		*/
 	}
 }
 
@@ -133,8 +160,12 @@ void GLContext::keyReleaseEvent(QKeyEvent* event)
 	G2::EventDistributer::onKeyUp(static_cast<G2::KeyCode>(key));
 }
 
-void
-GLContext::initKeyMap() 
+void GLContext::_onProjectOpened(Project* project)
+{
+	mProject = project;
+}
+
+void GLContext::initKeyMap() 
 {
 	mKeyMap.insert(std::make_pair(Qt::Key_Return,G2::KC_RETURN));
 	mKeyMap.insert(std::make_pair(Qt::Key_Escape,G2::KC_ESCAPE));
@@ -182,9 +213,9 @@ GLContext::loadDefaultScene()
 	mEditorCamera = G2Cameras::EditorCamera(this);
 	// set it as the main camera
 	mEditorCamera
-		.translate(0.f, 5.f)
-		.rotate(25.f, 0.f)
-		.zoom(-15.f)
+//		.translate(0.f, 5.f)
+//		.rotate(25.f, 0.f)
+//		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mEditorCamera.setInternals(70.f, 0.01f, 1000.f);
 }

@@ -33,10 +33,15 @@ class Scene : public JsonDeserializer, JsonSerializer
 		 */
 		ManagedEntity* createNewEntity(std::string const& name);
 		/** Returns a pointer to a ManagedEntity of the Scene.
-		 * @param name The name of the ManagedEntity to get a pointer for.
-		 * @return A pointer to the ManagedEntity if one could be find, nullptr otherwise.
-		 */
+		* @param name The name of the ManagedEntity to get a pointer for.
+		* @return A pointer to the ManagedEntity if one could be find, nullptr otherwise.
+		*/
 		ManagedEntity* get(std::string const& name);
+		/** Returns a pointer to a ManagedEntity of the Scene.
+		* @param entityId The Entity ID of the ManagedEntity to get a pointer for.
+		* @return A pointer to the ManagedEntity if one could be find, nullptr otherwise.
+		*/
+		ManagedEntity* get(unsigned int entityId);
 	private:
 
 		void _init3D();
@@ -45,6 +50,7 @@ class Scene : public JsonDeserializer, JsonSerializer
 
 		std::string mProjectDirectory;
 		std::unordered_map<std::string, ManagedEntity> mLoadedEntities;
+		std::unordered_map<unsigned int, std::string> mLoadedEntitiesIdToNameMapping;
 
 		// importer 
 		G2::EffectImporter			mEffectImporter;

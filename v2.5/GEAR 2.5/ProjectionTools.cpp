@@ -45,7 +45,7 @@ Projection::project(glm::vec3 const& obj, glm::mat4 const& modelviewMat, glm::ma
 int
 G2::Tools::Projection::unProject(glm::vec3 const& win, glm::mat4 const& modelviewMat, glm::mat4 const& projectionMat, glm::detail::tvec4<int> const& viewport, glm::vec3& obj)
 {
-	glm::mat4 finalMatrix = modelviewMat * projectionMat;
+	glm::mat4 finalMatrix = projectionMat * modelviewMat;
 	glm::vec4 in;
 	glm::vec4 out;
 
@@ -57,22 +57,19 @@ G2::Tools::Projection::unProject(glm::vec3 const& win, glm::mat4 const& modelvie
 	in.w = 1.0;
 
 	/* Map x and y from window coordinates */
-	in.x = (in.x - viewport.x) / viewport.z;
-	in.y = (in.y - viewport.y) / viewport.w;
+	in.x = (in.x - viewport.x) / (float)viewport.z * 2.f - 1.f;
+	in.y = (in.y - viewport.y) / (float)viewport.w * 2.f - 1.f;
 
 	/* Map to range -1 to 1 */
-	in.x = in.x * 2.f - 1.f;
-	in.y = in.y * 2.f - 1.f;
 	in.z = in.z * 2.f - 1.f;
 
 	out = finalMatrix * in;
 
 	if (out.w == 0.f) return(false);
-	out.x /= out.w;
-	out.y /= out.w;
-	out.z /= out.w;
-	obj.x = out.x;
-	obj.y = out.y;
-	obj.z = out.z;
+	out.w = 1.f / out.w;
+
+	obj.x = out.x*out.w;
+	obj.y = out.y*out.w;
+	obj.z = out.z*out.w;
 	return(true);
 }

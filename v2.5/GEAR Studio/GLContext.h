@@ -1,4 +1,5 @@
 #pragma once
+
 #include <G2/GEAR.h>
 #include <QtOpenGL/QGLWidget>
 #include <G2/AbstractWindow.h>
@@ -6,6 +7,7 @@
 
 #include <unordered_map>
 
+class Project;
 /** This is the OpenGL Context class of the GEAR Editor rendersurface.
 * @created	2014/12/09
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -41,14 +43,21 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		virtual void setHideMouseMode(bool mode) { }
 
 	private:
+		/** This is a callback function which will be invoked whenever a new Project was opened.
+		* @param project A pointer to the Project which was opened.
+		*/
+		void _onProjectOpened(Project* project);
+
 		void initKeyMap();
 
+		Project*		mProject;			// A pointer to the current project
 		G2::FrameInfo				mFrameInfo;
 		G2::Entity					mLight;
 		G2::EffectImporter			mEffectImporter;
 		//G2::FBXImporter				mFbxImporter;
 		G2Cameras::EditorCamera		mEditorCamera;
 		std::unordered_map<Qt::MouseButton,G2::MouseButton> mMouseButtonMapping;
-		std::unordered_map<Qt::Key,int>						mKeyMap;
+		std::unordered_map<Qt::Key, int>						mKeyMap;
+		G2::Entity					mMouseRay;
 };
 

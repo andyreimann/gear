@@ -41,12 +41,12 @@ Ray::getDir() const
 
 G2::Ray
 Ray::createScreenProjectionRay(int screenX, int screenY,
-							  glm::vec3 const& camViewDir, 
 							  glm::mat4 const& camModelView, 
 							  glm::mat4 const& camProjection, 
 							  glm::detail::tvec4<int> const& viewport) {
-	glm::vec3 obj;
-	G2::Tools::Projection::unProject(glm::vec3((float)screenX, /*invert y coord*/(float)(viewport.z - screenY), 0.f), camModelView, camProjection, viewport, obj);
-	glm::vec3 dir = camViewDir;
-	return Ray(obj, glm::vec4(dir, 0.f));
+	glm::vec3 nearPt;
+	glm::vec3 farPt;
+	G2::Tools::Projection::unProject(glm::vec3((float)screenX, /*invert y coord*/(float)(viewport.w - screenY), 0.f), camModelView, camProjection, viewport, nearPt);
+	G2::Tools::Projection::unProject(glm::vec3((float)screenX, /*invert y coord*/(float)(viewport.w - screenY), 1.f), camModelView, camProjection, viewport, farPt);
+	return Ray(nearPt, glm::vec4(farPt-nearPt, 0.f));
 }

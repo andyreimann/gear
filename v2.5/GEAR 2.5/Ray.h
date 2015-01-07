@@ -21,7 +21,6 @@ namespace G2
 
 			static Ray createScreenProjectionRay(int screenX, 
 												int screenY,
-												glm::vec3 const& camViewDir,
 												glm::mat4 const& camModelView, 
 												glm::mat4 const& camProjection, 
 												glm::detail::tvec4<int> const& viewport);

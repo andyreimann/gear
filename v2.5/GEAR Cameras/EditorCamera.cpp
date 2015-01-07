@@ -17,7 +17,7 @@ EditorCamera::EditorCamera(G2::AbstractWindow* window)
 	mTranslationMode(NO_TRANSLATION),
 	mRotationMode(NO_ROTATION),
 	mSpeedBoost(10.f),
-	mViewPlaneTranslationSpeed(0.05f),
+	mViewPlaneTranslationSpeed(0.005f),
 	mRotationSpeed(0.05f),
 	mWindow(window),
 	mFovY(70.f),

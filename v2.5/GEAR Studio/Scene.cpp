@@ -23,6 +23,7 @@ Scene::createNewEntity(std::string const& name)
 	{
 		mLoadedEntities[name] = std::move(ManagedEntity(name));
 		auto* entity = &mLoadedEntities[name];
+		mLoadedEntitiesIdToNameMapping[entity->getId()] = name;
 		GEARStudioEvents::onManagedEntityCreated(this, entity);
 		return entity;
 	}
@@ -35,6 +36,16 @@ Scene::get(std::string const& name)
 	if (mLoadedEntities.count(name) == 1)
 	{
 		return &mLoadedEntities[name];
+	}
+	return nullptr;
+}
+
+ManagedEntity*
+Scene::get(unsigned int entityId)
+{
+	if (mLoadedEntitiesIdToNameMapping.count(entityId) == 1)
+	{
+		return get(mLoadedEntitiesIdToNameMapping[entityId]);
 	}
 	return nullptr;
 }
@@ -77,8 +88,10 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 {
 	if (entityDesc.isMember("name"))
 	{
-		mLoadedEntities[entityDesc["name"].asString()] = std::move(ManagedEntity(entityDesc));
-		auto* entity = &mLoadedEntities[entityDesc["name"].asString()];
+		std::string name = entityDesc["name"].asString();
+		mLoadedEntities[name] = std::move(ManagedEntity(entityDesc));
+		auto* entity = &mLoadedEntities[name];
+		mLoadedEntitiesIdToNameMapping[entity->getId()] = name;
 		GEARStudioEvents::onManagedEntityCreated(this, entity);
 		// whoever wants to add something to the ManagedEntity will have to register to this event.
 		GEARStudioEvents::onDeserializeManagedEntity(entity, entity->getEntityDescription());
