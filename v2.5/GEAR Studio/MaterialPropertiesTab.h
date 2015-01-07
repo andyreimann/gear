@@ -2,12 +2,13 @@
 #include "ui_MaterialPropertiesTab.h"
 #include "PropertiesTab.h"
 
-#include <G2/FBXImporter.h>
-#include <G2/MD5Importer.h>
+#include <G2/TextureImporter.h>
 
 #include <QtWidgets/QWidget>
+#include <memory>
+#include <vector>
 
-
+class TextureSelector;
 /** This class implements the ManagedEntity property regarding materials.
 * @created	2015/01/06
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -43,9 +44,18 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void shininessSliderChanged(int value);
 		void shininessValueChanged(double value);
 		void selectEffect();
+		void addTextureSelector();
+
+		void selectTexture(int idx)
+		{
+			selectTexture(mTextureSelector[idx]);
+		}
 
 
 	private:
+
+		void selectTexture(std::shared_ptr<TextureSelector>& selector);
+
 		void _serializeShininess();
 		/** Reimports the given target ManagedEntity according to it's document description.
 		 * This function will reimport the material with the defined settings.
@@ -53,7 +63,11 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		void _reimportMaterial(ManagedEntity* target, bool reimportEffect);
 
+
 		G2::EffectImporter		mFxImporter;		// The importer for effect files to use.
+		G2::TextureImporter 	mTextureImporter;	// The importer for textures to use.
 		bool					mOpen;				// The flag if the tab is opened or not.
 		Ui::MaterialPropertiesTab	ui;					// The Qt UI class for the project creation dialog
+
+		std::vector<std::shared_ptr<TextureSelector>>	mTextureSelector;
 };

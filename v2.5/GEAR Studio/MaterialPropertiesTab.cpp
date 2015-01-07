@@ -1,5 +1,6 @@
 #include "MaterialPropertiesTab.h"
 #include "GEARStudioEvents.h"
+#include "TextureSelector.h"
 
 #include <G2/RenderComponent.h>
 
@@ -15,6 +16,7 @@ static const std::string MAT_AMBIENT = "amb";
 static const std::string MAT_DIFFUSE = "dif";
 static const std::string MAT_SPECULAR = "spe";
 static const std::string MAT_SHININESS = "sh";
+static const std::string TEX_DIFFUSE = "dif_tex";
 
 MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
@@ -30,10 +32,12 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	connect(ui.shininessSlider, SIGNAL(valueChanged(int)), this, SLOT(shininessSliderChanged(int)));
 	connect(ui.shininessValue, SIGNAL(valueChanged(double)), this, SLOT(shininessValueChanged(double)));
 	connect(ui.effectSelect, SIGNAL(clicked()), this, SLOT(selectEffect()));
+	connect(ui.addTextureSelector, SIGNAL(clicked()), this, SLOT(addTextureSelector()));
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 {
+
 	if (!hasEntity() || !entity->hasProperties(mTechnicalName))
 	{
 		// either no ManagedEntity has a focus, or the current ManagedEntity does not have the tabs property and hence do not have the property assigned.
@@ -107,6 +111,35 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		{
 			ui.effectPath->setText("");
 		}
+		/*
+		if (props.isMember(TEX_DIFFUSE))
+		{
+			if (entity->imageCache.count(G2::Sampler::DIFFUSE) == 1)
+			{
+				// use cached file
+				ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(entity->imageCache[G2::Sampler::DIFFUSE]));
+			}
+			else
+			{
+				QImage image((mProjectDirectory + props[TEX_DIFFUSE].asString()).c_str());
+				if (!image.isNull())
+				{
+					//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
+					image = image.scaled(ui.diffuseTexSurf->width(), ui.diffuseTexSurf->width(), Qt::KeepAspectRatio);
+					// cache imported image
+					entity->imageCache[G2::Sampler::DIFFUSE] = image;
+					ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(image));
+				}
+				else
+				{
+					ui.diffuseTexSurf->setPixmap(QPixmap());
+				}
+			}
+		}
+		else
+		{
+			ui.diffuseTexSurf->setPixmap(QPixmap());
+		}*/
 	}
 }
 
@@ -206,6 +239,25 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 		{
 			// TODO Log warning?
 		}
+	}
+
+	for (auto it = mTextureSelector.begin(); it != mTextureSelector.end(); ++it)
+	{
+		// unregister all texture selectors from the layout
+		ui.textureSelectorRoot->layout()->removeWidget((*it).get());
+	}
+	// delete all texture selector instances
+	mTextureSelector.clear();
+
+	if (props.isMember(TEX_DIFFUSE))
+	{
+		auto tex = mTextureImporter.import(
+			mProjectDirectory + props.get(TEX_DIFFUSE, "").asString(),
+			G2Core::DataFormat::Internal::R32G32B32A32_F,
+			G2Core::FilterMode::LINEAR,
+			G2Core::FilterMode::LINEAR);
+
+		renderComp->material.setTexture(G2::Sampler::DIFFUSE, tex);
 	}
 	show();
 }
@@ -328,6 +380,50 @@ void MaterialPropertiesTab::_serializeShininess()
 	props[MAT_SHININESS] = (float)ui.shininessValue->value();
 }
 
+/*
+void MaterialPropertiesTab::selectDiffuseTex()
+{
+	if (hasEntity())
+	{
+		std::string dialogDir = mProjectDirectory + "/assets/textures";
+		QString filePath = QFileDialog::getOpenFileName(this, "Select diffuse texture file", dialogDir.c_str());
+		if (!filePath.isNull())
+		{
+			Json::Value& props = mEntity->getProperties(mTechnicalName);
+			// 
+			std::string fullPath = filePath.toStdString();
+
+			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
+			{
+				std::cout << "[Texture] Selected file is not contained in the project directory!" << std::endl;
+			}
+			else
+			{
+
+				// update ui
+				QImage image(fullPath.c_str());
+				if (!image.isNull())
+				{
+					//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
+					image = image.scaled(ui.diffuseTexSurf->width(), ui.diffuseTexSurf->width(), Qt::KeepAspectRatio);
+					mEntity->imageCache[G2::Sampler::DIFFUSE] = image;
+					ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(image));
+
+
+					// strip project directory
+					boost::replace_first(fullPath, mProjectDirectory, "");
+					props[TEX_DIFFUSE] = fullPath;
+
+					// release the caching entry for the texture to reimport it from scratch
+					mTextureImporter.clearCache(mProjectDirectory + fullPath);
+					_reimportMaterial(mEntity, false);
+					mProject->getCurrentScene()->save();
+				}
+			}
+		}
+	}
+}*/
+
 void MaterialPropertiesTab::selectEffect()
 {
 	if (hasEntity())
@@ -360,4 +456,15 @@ void MaterialPropertiesTab::selectEffect()
 			}
 		}
 	}
+}
+
+void MaterialPropertiesTab::addTextureSelector()
+{
+	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector(mProjectDirectory, this)));
+	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
+}
+
+void MaterialPropertiesTab::selectTexture(std::shared_ptr<TextureSelector>& selector)
+{
+
 }

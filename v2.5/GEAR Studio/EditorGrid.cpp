@@ -31,7 +31,7 @@ EditorGrid::EditorGrid(std::shared_ptr<G2::Effect> effect, float unitSize) :
 	grid->addDrawCall(G2::DrawCall().setDrawMode(G2Core::DrawMode::LINES).setVaoIndex(0));
 	grid->setEffect(effect);
 
-	grid->material.setAmbient(glm::vec4(0.15f, 0.15f, 0.15f, 0.75f));
+	grid->material.setAmbient(glm::vec4(0.15f, 0.15f, 0.15f, 1.f));
 }
 
 EditorGrid::EditorGrid(EditorGrid && rhs)

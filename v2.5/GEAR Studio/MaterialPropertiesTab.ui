@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>361</width>
-    <height>287</height>
+    <height>296</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -195,6 +195,16 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="textureSelectorRoot"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addTextureSelector">
+          <property name="text">
+           <string>Add Texture Slot</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

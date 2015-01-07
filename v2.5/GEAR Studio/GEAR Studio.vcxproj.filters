@@ -51,6 +51,7 @@
     <ClCompile Include="ProjectCreation.cpp" />
     <ClCompile Include="PropertiesTab.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TextureSelector.cpp" />
     <ClCompile Include="TransformationPropertiesTab.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
@@ -72,6 +73,9 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ProjectCreation.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_TextureSelector.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_TransformationPropertiesTab.cpp">
@@ -101,6 +105,9 @@
     <ClCompile Include="obj\x32\Release\moc_ProjectCreation.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_TextureSelector.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_TransformationPropertiesTab.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -126,6 +133,9 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ProjectCreation.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_TextureSelector.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_TransformationPropertiesTab.cpp">
@@ -155,6 +165,9 @@
     <ClCompile Include="obj\x64\Release\moc_ProjectCreation.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_TextureSelector.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_TransformationPropertiesTab.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -173,6 +186,8 @@
     <CustomBuild Include="MeshPropertiesTab.ui" />
     <CustomBuild Include="ProjectCreation.h" />
     <CustomBuild Include="ProjectCreation.ui" />
+    <CustomBuild Include="TextureSelector.h" />
+    <CustomBuild Include="TextureSelector.ui" />
     <CustomBuild Include="TransformationPropertiesTab.h" />
     <CustomBuild Include="TransformationPropertiesTab.ui" />
     <CustomBuild Include="geareditor.qrc" />
