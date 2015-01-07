@@ -29,6 +29,7 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	connect(ui.specularSelect, SIGNAL(clicked()), this, SLOT(selectSpecular()));
 	connect(ui.shininessSlider, SIGNAL(valueChanged(int)), this, SLOT(shininessSliderChanged(int)));
 	connect(ui.shininessValue, SIGNAL(valueChanged(double)), this, SLOT(shininessValueChanged(double)));
+	connect(ui.effectSelect, SIGNAL(clicked()), this, SLOT(selectEffect()));
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -98,6 +99,14 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 			shininess = props[MAT_SHININESS].asFloat();
 		}
 		ui.shininessValue->blockSignals(true); ui.shininessValue->setValue(shininess); ui.shininessValue->blockSignals(false);
+		if (props.isMember(FX_PATH))
+		{
+			ui.effectPath->setText(props[FX_PATH].asCString());
+		}
+		else
+		{
+			ui.effectPath->setText("");
+		}
 	}
 }
 
@@ -188,6 +197,15 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 	if (props.isMember(MAT_SHININESS))
 	{
 		renderComp->material.setShininess(props[MAT_SHININESS].asFloat());
+	}
+	if (props.isMember(FX_PATH))
+	{
+		auto effect = mFxImporter.import(mProjectDirectory + props.get(FX_PATH, "").asString());
+		renderComp->setEffect(effect);
+		if (effect.get() == nullptr)
+		{
+			// TODO Log warning?
+		}
 	}
 	show();
 }
@@ -282,8 +300,7 @@ MaterialPropertiesTab::selectSpecular()
 	}
 }
 
-void
-MaterialPropertiesTab::shininessSliderChanged(int value)
+void MaterialPropertiesTab::shininessSliderChanged(int value)
 {
 	// sync
 	ui.shininessValue->blockSignals(true); ui.shininessValue->setValue((double)value); ui.shininessValue->blockSignals(false);
@@ -294,8 +311,7 @@ MaterialPropertiesTab::shininessSliderChanged(int value)
 	mProject->getCurrentScene()->save();
 }
 
-void
-MaterialPropertiesTab::shininessValueChanged(double value)
+void MaterialPropertiesTab::shininessValueChanged(double value)
 {
 	// sync
 	ui.shininessSlider->blockSignals(true); ui.shininessSlider->setValue((int)value); ui.shininessSlider->blockSignals(false);
@@ -306,9 +322,42 @@ MaterialPropertiesTab::shininessValueChanged(double value)
 	mProject->getCurrentScene()->save();
 }
 
-void
-MaterialPropertiesTab::_serializeShininess()
+void MaterialPropertiesTab::_serializeShininess()
 {
 	Json::Value& props = mEntity->getProperties(mTechnicalName);
 	props[MAT_SHININESS] = (float)ui.shininessValue->value();
+}
+
+void MaterialPropertiesTab::selectEffect()
+{
+	if (hasEntity())
+	{
+		std::string dialogDir = mProjectDirectory + "/assets/shader";
+		QString effectPath = QFileDialog::getOpenFileName(this, "Select effect file", dialogDir.c_str(), "GEAR Effect (*.g2fx)");
+		if (!effectPath.isNull())
+		{
+			Json::Value& props = mEntity->getProperties(mTechnicalName);
+			// 
+			std::string fullPath = effectPath.toStdString();
+
+			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
+			{
+				std::cout << "[Effect] Selected file is not contained in the project directory!" << std::endl;
+			}
+			else
+			{
+				// strip project directory
+				boost::replace_first(fullPath, mProjectDirectory, "");
+				props[FX_PATH] = fullPath;
+
+				// update ui
+				ui.effectPath->setText(fullPath.c_str());
+
+				// release the caching entry for the effect to reimport it from scratch
+				mFxImporter.clearCache(mProjectDirectory + fullPath);
+				_reimportMaterial(mEntity, true);
+				mProject->getCurrentScene()->save();
+			}
+		}
+	}
 }

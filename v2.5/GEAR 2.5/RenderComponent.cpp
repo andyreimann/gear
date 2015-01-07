@@ -116,7 +116,7 @@ void
 G2::RenderComponent::removeAllMeshes()
 {
 	auto* renderSystem = ECSManager::getShared().getSystem<RenderSystem, RenderComponent>();
-	unsigned int numDrawCalls = mDrawCalls.size();
+	unsigned int numDrawCalls = (unsigned int)mDrawCalls.size();
 
 	mDrawCalls.clear();
 	mIaos.clear();

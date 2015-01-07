@@ -85,6 +85,15 @@ namespace G2
 				std::lock_guard<std::mutex> lock(mResourceMutex);
 				mCache.clear();
 			}
+			/** Clears the cached resources for the given name.
+			* @note Thread safe.
+			* @param name The name of the cache entry to clear.
+			*/
+			void clearCache(std::string name)
+			{
+				std::lock_guard<std::mutex> lock(mResourceMutex);
+				mCache.erase(name);
+			}
 			/** Locks a mutex to make access to resources thread safe.
 			 * Normally the Importer takes care of locking and unlocking 
 			 * the mutex when running in a multi threaded environment.

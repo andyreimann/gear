@@ -42,6 +42,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void selectSpecular();
 		void shininessSliderChanged(int value);
 		void shininessValueChanged(double value);
+		void selectEffect();
 
 
 	private:
