@@ -1072,6 +1072,12 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 		glm::mat4 invWorldSpaceMatrix;
 		if(compTransformation != nullptr)
 		{
+			auto const& scale = compTransformation->getScale();
+			if (scale.x == 0.f || scale.y == 0.f || scale.z == 0.f)
+			{
+				// there is no inverse matrix if we have at least one scaling value of 0!
+				continue;
+			}
 			// TODO: accelerate!
 			worldSpaceMatrix = compTransformation->getWorldSpaceMatrix();
 			invWorldSpaceMatrix = glm::inverse(compTransformation->getWorldSpaceMatrix());

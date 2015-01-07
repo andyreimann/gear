@@ -14,7 +14,7 @@ static std::string ASSET_PATH = "../../tests/bin/Assets/";
 GLContext::GLContext(QWidget *parent) 
 	: QGLWidget(parent), 
 	mEditorCamera(this),
-	G2::AbstractWindow("GEAR Editor", 1024, 768, false),
+	G2::AbstractWindow("GEAR Esditor", 1024, 768, false),
 	mProject(nullptr)
 {
 	QTimer *timer = new QTimer(this);
@@ -213,9 +213,9 @@ GLContext::loadDefaultScene()
 	mEditorCamera = G2Cameras::EditorCamera(this);
 	// set it as the main camera
 	mEditorCamera
-//		.translate(0.f, 5.f)
-//		.rotate(25.f, 0.f)
-//		.zoom(-15.f)
+		.translate(0.f, 5.f)
+		.rotate(25.f, 0.f)
+		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mEditorCamera.setInternals(70.f, 0.01f, 1000.f);
 }

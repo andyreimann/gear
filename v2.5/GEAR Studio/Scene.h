@@ -46,8 +46,7 @@ class Scene : public JsonDeserializer, JsonSerializer
 
 		void _init3D();
 		void _initEntityFromJson(Json::Value const& entityDesc);
-		//void _initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* entity);
-
+		
 		std::string mProjectDirectory;
 		std::unordered_map<std::string, ManagedEntity> mLoadedEntities;
 		std::unordered_map<unsigned int, std::string> mLoadedEntitiesIdToNameMapping;

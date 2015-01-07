@@ -91,9 +91,9 @@ void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		else
 		{
 			// init UI with default
-			ui.scaleX->blockSignals(true); ui.scaleX->setValue(0.f); ui.scaleX->blockSignals(false);
-			ui.scaleY->blockSignals(true); ui.scaleY->setValue(0.f); ui.scaleY->blockSignals(false);
-			ui.scaleZ->blockSignals(true); ui.scaleZ->setValue(0.f); ui.scaleZ->blockSignals(false);
+			ui.scaleX->blockSignals(true); ui.scaleX->setValue(1.f); ui.scaleX->blockSignals(false);
+			ui.scaleY->blockSignals(true); ui.scaleY->setValue(1.f); ui.scaleY->blockSignals(false);
+			ui.scaleZ->blockSignals(true); ui.scaleZ->setValue(1.f); ui.scaleZ->blockSignals(false);
 		}
 	}
 }
