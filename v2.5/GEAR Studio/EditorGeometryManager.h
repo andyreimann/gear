@@ -33,12 +33,17 @@ class EditorGeometryManager
 		*/
 		void _onManagedEntitySelected(ManagedEntity* entity);
 
+		void _updateGridPosition();
+
 		G2::RenderSystem*	mRenderSystem;
 		G2::CameraSystem*	mCameraSystem;
 		G2::TransformSystem* mTransformSystem;
 
 		G2::EffectImporter  mEffectImporter;			// The effect importer used for the editor geometry
 		std::shared_ptr<G2::Effect>	mSolidFx;			// The effect for solid ambient lighting
+		
 		std::list<EditorGrid>	mGrids;					// The different grids sorted by their unit size
+		EditorGrid*				mActiveGrid;			// The currently active grid
+		
 		G2::Entity mSelectedEntityAABB;					// The AABB visualization of the currently selected entity
 };

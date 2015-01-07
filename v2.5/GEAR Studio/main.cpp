@@ -14,8 +14,7 @@ int main(int argc, char *argv[])
 		QApplication a(argc, argv);
 
 		GEAREditor w;
-		w.show();
-
+		w.showMaximized();
 		w.connectToGEARCore();
 
 		ret = a.exec();

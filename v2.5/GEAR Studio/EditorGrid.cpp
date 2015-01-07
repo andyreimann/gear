@@ -12,7 +12,7 @@ EditorGrid::EditorGrid(std::shared_ptr<G2::Effect> effect, float unitSize) :
 	std::vector<glm::vec3> gridVertices;
 
 
-	int numLinesPerPlane = 401;
+	int numLinesPerPlane = (int)((1.f / mUnitSize) * 50) + 1;
 	int numExtends = ((numLinesPerPlane - 1) / 2);
 
 	for (int start = 0 - numExtends; start <= numExtends; ++start)
@@ -31,7 +31,7 @@ EditorGrid::EditorGrid(std::shared_ptr<G2::Effect> effect, float unitSize) :
 	grid->addDrawCall(G2::DrawCall().setDrawMode(G2Core::DrawMode::LINES).setVaoIndex(0));
 	grid->setEffect(effect);
 
-	grid->material.setAmbient(glm::vec4(0.3f, 0.3f, 0.4f, 1.f));
+	grid->material.setAmbient(glm::vec4(0.15f, 0.15f, 0.15f, 0.75f));
 }
 
 EditorGrid::EditorGrid(EditorGrid && rhs)

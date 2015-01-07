@@ -3,7 +3,8 @@
 
 #include <G2Core/ECSManager.h>
 
-EditorGeometryManager::EditorGeometryManager()
+EditorGeometryManager::EditorGeometryManager() :
+	mActiveGrid(nullptr)
 {
 	mRenderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>();
 	mCameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>();
@@ -13,9 +14,13 @@ EditorGeometryManager::EditorGeometryManager()
 
 	// create different resolutions of the grid
 	mGrids.push_back(EditorGrid(mSolidFx, 0.01f));
+	mGrids.push_back(EditorGrid(mSolidFx, 0.05f));
 	mGrids.push_back(EditorGrid(mSolidFx, 0.1f));
+	mGrids.push_back(EditorGrid(mSolidFx, 0.5f));
 	mGrids.push_back(EditorGrid(mSolidFx, 1.f));
+	mGrids.push_back(EditorGrid(mSolidFx, 5.0));
 	mGrids.push_back(EditorGrid(mSolidFx, 10.0));
+	mGrids.push_back(EditorGrid(mSolidFx, 50.0));
 	mGrids.push_back(EditorGrid(mSolidFx, 100.0));
 
 	G2::EventDistributer::onFrameRendered.hook(this, &EditorGeometryManager::_updateEditorGrid);
@@ -50,10 +55,27 @@ void EditorGeometryManager::_updateEditorGrid(G2::FrameInfo const& frame)
 		{
 			// found the closest grid match
 			((G2::Entity*)(*it))->getComponent<G2::RenderComponent>()->enable();
+			mActiveGrid = &(*it);
+			_updateGridPosition();
 			return;
 		}
 	}
 	((G2::Entity*)(*mGrids.begin()))->getComponent<G2::RenderComponent>()->enable();
+	mActiveGrid = &(*mGrids.begin());
+	_updateGridPosition();
+}
+
+void EditorGeometryManager::_updateGridPosition()
+{
+	auto* renderCamera = mCameraSystem->getRenderCamera();
+	auto* cameraTransformation = mTransformSystem->get(renderCamera->getEntityId());
+
+	glm::vec3 const& camPos = cameraTransformation->getPosition();
+
+	// slot grid on xz plane based on it's unit size
+	float gridPosX = (float)(int)(-camPos.x / mActiveGrid->getUnitSize()) * mActiveGrid->getUnitSize();
+	float gridPosZ = (float)(int)(-camPos.z / mActiveGrid->getUnitSize()) * mActiveGrid->getUnitSize();
+	((G2::Entity*)(*mActiveGrid))->addComponent<G2::TransformComponent>()->setPosition(glm::vec3(gridPosX, 0.f, gridPosZ));
 }
 
 void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
