@@ -92,15 +92,6 @@ void TranslationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<i
 		if (mState != TRANSLATE_NOT)
 		{
 			mState = TRANSLATE_NOT;
-
-			auto* tc = mEntity->getComponent<G2::TransformComponent>();
-			if (tc != nullptr)
-			{
-				glm::vec3 p = tc->getPosition();
-				std::stringstream log;
-				log << "[" << p.x << "," << p.y << "," << p.z << "]";
-				GEARStudioEvents::onLog(INFO, log.str());
-			}
 			GEARStudioEvents::onTranslationHandleReleased();
 		}
 	}

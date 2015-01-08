@@ -161,6 +161,9 @@ Scene::load()
 	{
 		// init every object
 		_init3D();
+		std::stringstream log;
+		log << "Scene " << mResource["name"].asString() << " loaded";
+		GEARStudioEvents::onLog(INFO, log.str());
 	}
 }
 
@@ -181,6 +184,10 @@ Scene::save()
 		mResource["entities"] = entities;
 
 		serialize(mResource);
+
+		std::stringstream log;
+		log << "Scene " << mResource["name"].asString() << " saved";
+		GEARStudioEvents::onLog(INFO, log.str());
 	}
 }
 
