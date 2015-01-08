@@ -16,8 +16,14 @@ class TextureSelector : public QWidget
 {
 	Q_OBJECT
 	public:
-		TextureSelector(Json::Value const& target, std::string const& projectDirectory, QWidget *parent = 0);
-
+		/** Creates a new TextureSelector with the given information.
+		 * @param source The source data to initialize the TextureSelector with.
+		 * @param projectDirectory The directory of the currently loaded project.
+		 */
+		TextureSelector(Json::Value const& source, std::string const& projectDirectory, QWidget *parent = 0);
+		/** Returns the data of this TextureSelector in it's most recent state.
+		 * @return The data of this TextureSelector in it's most recent state.
+		 */
 		Json::Value const& getData() const { return mTarget; }
 
 		G2::Event<TextureSelector*>	onTextureSelected;
@@ -26,14 +32,12 @@ class TextureSelector : public QWidget
 		
 		Ui::TextureSelector	ui;					// The Qt UI class for the project creation dialog
 
-
 	private slots:
 		void selectTex();
 		void samplerChanged(int idx);
 		void removeSelector();
 
 	private:
-
 		void _initSampler(std::string const& samplerStr);
 		void _initPreview(std::string const& imagePath, bool useCache);
 		std::string _getSampler() const;

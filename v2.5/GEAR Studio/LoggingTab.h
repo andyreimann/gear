@@ -16,8 +16,8 @@ enum LogLevel
 	WARNING,
 	SEVERE,
 };
-/** This class implements the ManagedEntity property regarding materials.
-* @created	2015/01/06
+/** This class implements the logging tab functionality of the editor.
+* @created	2015/01/08
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
 class LoggingTab : public QWidget
@@ -27,8 +27,11 @@ class LoggingTab : public QWidget
 		LoggingTab(QWidget *parent = 0);
 		~LoggingTab();
 	private:
-
-		void _onLog(LogLevel, std::string const& msg);
+		/** Called whenever a new log message should be logged.
+		 * @param lvl The log level to log with.
+		 * @param msg The message to log
+		 */
+		void _onLog(LogLevel lvl, std::string const& msg);
 		
 		Ui::LoggingTab	ui;
 
