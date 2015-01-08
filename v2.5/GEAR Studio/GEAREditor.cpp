@@ -49,6 +49,10 @@ GEAREditor::GEAREditor(QWidget *parent)
 	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(materialTab));
 	ui.propertiesRoot->layout()->addWidget(materialTab);
 	materialTab->hide();
+
+
+	mLoggingTab = std::unique_ptr<LoggingTab>(new LoggingTab(this));
+	ui.loggingRoot->layout()->addWidget(mLoggingTab.get());
 }
 
 GEAREditor::~GEAREditor()

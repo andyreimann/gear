@@ -58,7 +58,7 @@ Scene::_init3D()
 	auto* renderSystem = G2::ECSManager::getShared()
 		.getSystem<G2::RenderSystem, G2::RenderComponent>();
 
-	std::shared_ptr<G2::Effect> effect = mEffectImporter.import(mProjectDirectory + "/" + mResource["rendersystem"]["default_effect"].asString());
+	std::shared_ptr<G2::Effect> effect = mEffectImporter.import("shader/Entity.g2fx");
 	if (effect.get() != nullptr)
 	{
 		renderSystem->setDefaultEffect(effect);

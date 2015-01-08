@@ -1,5 +1,6 @@
 #pragma once
 #include "Project.h"
+#include "LoggingTab.h"
 
 #include <G2Core/Event.h>
 #include <string>
@@ -60,4 +61,10 @@ public:
 	* Json::Value const& a reference to the entities entire JSON document containing it's name, properties and so on.
 	*/
 	static G2::Event<ManagedEntity*, Json::Value const&> onDeserializeManagedEntity;
+	/** Trigger:
+	* A log message should be displayed in the editor.
+	* LogLevel The log level to use.
+	* std::string const& The message to log.
+	*/
+	static G2::Event<LogLevel, std::string const&> onLog;
 };

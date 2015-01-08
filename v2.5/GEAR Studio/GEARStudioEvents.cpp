@@ -9,4 +9,5 @@ G2::Event<Scene*, ManagedEntity*>				GEARStudioEvents::onManagedEntityModified;
 G2::Event<Scene*, ManagedEntity*>				GEARStudioEvents::onManagedEntityRemoved;
 G2::Event<ManagedEntity*>						GEARStudioEvents::onManagedEntitySelected;
 G2::Event<ManagedEntity*, Json::Value const&>	GEARStudioEvents::onDeserializeManagedEntity;
+G2::Event<LogLevel, std::string const&>			GEARStudioEvents::onLog;
 

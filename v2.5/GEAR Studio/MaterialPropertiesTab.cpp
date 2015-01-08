@@ -35,6 +35,7 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	connect(ui.shininessValue, SIGNAL(valueChanged(double)), this, SLOT(shininessValueChanged(double)));
 	connect(ui.effectSelect, SIGNAL(clicked()), this, SLOT(selectEffect()));
 	connect(ui.addTextureSelector, SIGNAL(clicked()), this, SLOT(addTextureSelector()));
+
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -119,7 +120,6 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		// import textures
 		if (props.isMember(TEXTURES))
 		{
-
 			Json::Value const& textures = props[TEXTURES];
 
 			for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
@@ -159,18 +159,19 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 	Json::Value& props = target->getProperties(mTechnicalName);
 	auto renderComp = target->addComponent<G2::RenderComponent>();
 
+
+
 	if (reimportEffect)
 	{
 		// do load the effect
 		std::string fxPath = props.get(FX_PATH, "").asString();
 		std::transform(fxPath.begin(), fxPath.end(), fxPath.begin(), ::tolower);
 
-
 		// TODO Check if file exists
 		if (boost::algorithm::ends_with(fxPath, "g2fx"))
 		{
-			// load with effect importer and attach effect
-			renderComp->setEffect(mFxImporter.import(mProjectDirectory + props.get(FX_PATH, "").asString()));
+			// WE DON'T LOAD THE SHADERS IN THE EDITOR!
+			//renderComp->setEffect(mFxImporter.import(mProjectDirectory + props.get(FX_PATH, "").asString()));
 		}
 		else
 		{
@@ -442,7 +443,6 @@ MaterialPropertiesTab::_onRemoveTexture(TextureSelector* selector)
 	{
 		if (mTextureSelector[i] == selector)
 		{
-
 			std::swap(mTextureSelector[i], mTextureSelector.back());
 			mTextureSelector.back()->onTextureSelected.unHookAll(this);
 			mTextureSelector.back()->onSamplerSelected.unHookAll(this);

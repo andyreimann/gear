@@ -6,6 +6,7 @@
 #include "Project.h"
 #include "EditorGeometryManager.h"
 #include "PropertiesTab.h"
+#include "LoggingTab.h"
 
 #include <G2/PropertiesFile.h>
 
@@ -31,6 +32,12 @@ class GEAREditor : public QMainWindow
 
 		~GEAREditor();
 
+	private slots:
+		void newProject();		// Menu callback for creating a new project
+		void openProject();		// Menu callback for opening an existing project
+		void createManagedEntity();
+		void addPropertyByIndex(int index);
+
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
 		void _onSceneLoaded(Scene* scene);
@@ -44,11 +51,7 @@ class GEAREditor : public QMainWindow
 		std::shared_ptr<EditorGeometryManager>		mEditorGeometryManager;	// The manager class for all the different geometry belonging to the editor
 		std::vector<std::shared_ptr<PropertiesTab>> mPropertyTabs;			// All the PropertyTab instances operating on ManagedEntity objects.
 
-	private slots:
-		void newProject();		// Menu callback for creating a new project
-		void openProject();		// Menu callback for opening an existing project
-		void createManagedEntity();
-		void addPropertyByIndex(int index);
+		std::unique_ptr<LoggingTab>					mLoggingTab;
 
 };
 

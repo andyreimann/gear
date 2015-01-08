@@ -1,8 +1,6 @@
 #include "PropertiesTab.h"
 #include "GEARStudioEvents.h"
 
-#include "G2/Logger.h"
-
 
 PropertiesTab::PropertiesTab(std::string const& technicalName, std::string const& tabName)
 	: mTechnicalName(technicalName),
@@ -41,7 +39,9 @@ void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)
 
 	if (entity != nullptr)
 	{
-		G2::logger << "[PROP:"<<mTechnicalName<<"] Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]" << G2::endl;
+		std::stringstream log;
+		log << "[PROP:" << mTechnicalName << "] Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]";
+		GEARStudioEvents::onLog(INFO, log.str());
 	}
 
 	// callback to initialize PropertiesTab for the entity
