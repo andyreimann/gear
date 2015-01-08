@@ -124,10 +124,7 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 
 			for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
 			{
-				std::string sampler = textures[i][TEXTURES_SAMPLER].asString();
-				std::string path = textures[i][TEXTURES_PATH].asString();
-
-				addTextureSelector(entity, mProjectDirectory + path, sampler);
+				addTextureSelector(entity, textures[i]);
 			}
 		}
 	}
@@ -251,7 +248,7 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 			);
 			renderComp->material.setTexture(sampler, tex);
 
-			addTextureSelector(target, fullPath, samplerStr);
+			addTextureSelector(target, textures[i]);
 		}
 	}
 	show();
@@ -375,50 +372,6 @@ void MaterialPropertiesTab::_serializeShininess()
 	props[MAT_SHININESS] = (float)ui.shininessValue->value();
 }
 
-/*
-void MaterialPropertiesTab::selectDiffuseTex()
-{
-	if (hasEntity())
-	{
-		std::string dialogDir = mProjectDirectory + "/assets/textures";
-		QString filePath = QFileDialog::getOpenFileName(this, "Select diffuse texture file", dialogDir.c_str());
-		if (!filePath.isNull())
-		{
-			Json::Value& props = mEntity->getProperties(mTechnicalName);
-			// 
-			std::string fullPath = filePath.toStdString();
-
-			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
-			{
-				std::cout << "[Texture] Selected file is not contained in the project directory!" << std::endl;
-			}
-			else
-			{
-
-				// update ui
-				QImage image(fullPath.c_str());
-				if (!image.isNull())
-				{
-					//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
-					image = image.scaled(ui.diffuseTexSurf->width(), ui.diffuseTexSurf->width(), Qt::KeepAspectRatio);
-					mEntity->imageCache[G2::Sampler::DIFFUSE] = image;
-					ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(image));
-
-
-					// strip project directory
-					boost::replace_first(fullPath, mProjectDirectory, "");
-					props[TEX_DIFFUSE] = fullPath;
-
-					// release the caching entry for the texture to reimport it from scratch
-					mTextureImporter.clearCache(mProjectDirectory + fullPath);
-					_reimportMaterial(mEntity, false);
-					mProject->getCurrentScene()->save();
-				}
-			}
-		}
-	}
-}*/
-
 void MaterialPropertiesTab::selectEffect()
 {
 	if (hasEntity())
@@ -456,72 +409,112 @@ void MaterialPropertiesTab::selectEffect()
 void
 MaterialPropertiesTab::_onTextureSelected(TextureSelector* selector)
 {
-	std::string samplerStr = selector->getSampler();
-	G2::Sampler::Name sampler = G2::Sampler::getSampler(samplerStr);
-	mEntity->imageCache[samplerStr] = selector->getPreviewImage();
+	// remove the changed textures entry from the cache to newly import it
+	Json::Value const& changedTexture = selector->getData();
+	mTextureImporter.clearCache(mProjectDirectory + changedTexture[TEXTURES_PATH].asString());
 
-	Json::Value& props = mEntity->getProperties(mTechnicalName);
+	// save and reimport all textures - the changed one will be read newly
+	_rebuildTextures();
 
-	// strip project directory
-	std::string fullPath = selector->getSelectedTexturePath();
-	boost::replace_first(fullPath, mProjectDirectory, "");
+	// save entire scene
+	mProject->getCurrentScene()->save();
+}
 
-	Json::Value& textures = props[TEXTURES];
-
-	bool found = false;
-	for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
+void
+MaterialPropertiesTab::_onSamplerSelected(TextureSelector* selector)
+{
+	if (selector->getData().isMember(TEXTURES_PATH))
 	{
-		std::string currentSamplerStr = textures[i][TEXTURES_SAMPLER].asString();
+		// save and reimport all textures using the cache
+		_rebuildTextures();
 
-		if (samplerStr == currentSamplerStr)
+		// save entire scene
+		mProject->getCurrentScene()->save();
+	}
+}
+
+void
+MaterialPropertiesTab::_onRemoveTexture(TextureSelector* selector)
+{
+	G2::Sampler::Name sampler = G2::Sampler::getSampler(selector->getData()[TEXTURES_SAMPLER].asString());
+	// remove the texture selector from our list
+	for (int i = 0; i < mTextureSelector.size(); ++i)
+	{
+		if (mTextureSelector[i] == selector)
 		{
-			textures[i][TEXTURES_PATH] = fullPath;
-			found = true;
+
+			std::swap(mTextureSelector[i], mTextureSelector.back());
+			mTextureSelector.back()->onTextureSelected.unHookAll(this);
+			mTextureSelector.back()->onSamplerSelected.unHookAll(this);
+			mTextureSelector.back()->onRemoveSelector.unHookAll(this);
+			
+			ui.textureSelectorRoot->layout()->removeWidget(mTextureSelector.back());
+			mTextureSelector.back()->deleteLater();
+			mTextureSelector.pop_back();
 			break;
 		}
 	}
-	if (!found)
+	// save and reimport all textures using the cache
+	auto* renderComponent = mEntity->getComponent<G2::RenderComponent>();
+	renderComponent->material.setTexture(sampler, std::shared_ptr<G2::Texture>());
+
+	_rebuildTextures();
+
+	// save entire scene
+	mProject->getCurrentScene()->save();
+}
+
+void
+MaterialPropertiesTab::_rebuildTextures()
+{
+	Json::Value& props = mEntity->getProperties(mTechnicalName);
+
+	Json::Value textures(Json::arrayValue);
+	auto* renderComponent = mEntity->getComponent<G2::RenderComponent>();
+	for (int i = 0; i < G2::Sampler::NUM_SAMPLERS; ++i)
 	{
-		Json::Value texture;
-		texture[TEXTURES_PATH] = fullPath;
-		texture[TEXTURES_SAMPLER] = samplerStr;
-		textures.append(texture);
+		// reset every texture
+		renderComponent->material.setTexture(static_cast<G2::Sampler::Name>(i), std::shared_ptr<G2::Texture>());
 	}
 
-	// release the caching entry for the texture to reimport it from scratch
-	mTextureImporter.clearCache(mProjectDirectory + fullPath);
-	
-	auto tex = mTextureImporter.import(
-		mProjectDirectory + fullPath,
-		G2Core::DataFormat::Internal::R32G32B32A32_F,
-		G2Core::FilterMode::LINEAR,
-		G2Core::FilterMode::LINEAR
-		);
-	mEntity->getComponent<G2::RenderComponent>()->material.setTexture(sampler, tex);
-
-	mProject->getCurrentScene()->save();
+	// build the json array new from scratch and import the images
+	for (auto it = mTextureSelector.begin(); it != mTextureSelector.end(); ++it)
+	{
+		Json::Value const& texData = (*it)->getData();
+		G2::Sampler::Name sampler = G2::Sampler::getSampler(texData[TEXTURES_SAMPLER].asString());
+		if (sampler != G2::Sampler::SAMPLER_INVALID)
+		{
+			auto tex = mTextureImporter.import(
+				mProjectDirectory + texData[TEXTURES_PATH].asString(),
+				G2Core::DataFormat::Internal::R32G32B32A32_F,
+				G2Core::FilterMode::LINEAR,
+				G2Core::FilterMode::LINEAR);
+			renderComponent->material.setTexture(sampler, tex);
+		}
+		textures.append(texData);
+	}
+	// save the textures array
+	props[TEXTURES] = textures;
 }
 
 void MaterialPropertiesTab::addTextureSelector()
 {
-	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector("", mProjectDirectory, this)));
-	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
-	mTextureSelector.back()->onTextureSelected.hook(this, &MaterialPropertiesTab::_onTextureSelected);
+	if (hasEntity())
+	{
+		Json::Value& props = mEntity->getProperties(mTechnicalName);
+		Json::Value newTextureData;
+		props[TEXTURES].append(newTextureData);
+		addTextureSelector(mEntity, newTextureData);
+	}
 }
 
-void MaterialPropertiesTab::addTextureSelector(ManagedEntity* target, std::string const& imagePath, std::string const& samplerStr)
+void MaterialPropertiesTab::addTextureSelector(ManagedEntity* entity, Json::Value const& target)
 {
-	// TODO The Sampler isn't forwarded to the TextureSelector!
-	QImage image;
-	if (target->imageCache.count(samplerStr) == 1)
-	{
-		image = target->imageCache[samplerStr];
-	}
-	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector(imagePath, mProjectDirectory, image, samplerStr, this)));
-	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
+	mTextureSelector.push_back(new TextureSelector(target, mProjectDirectory, this));
+	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back());
 	mTextureSelector.back()->onTextureSelected.hook(this, &MaterialPropertiesTab::_onTextureSelected);
-	// cache newly in any case
-	target->imageCache[samplerStr] = mTextureSelector.back()->getPreviewImage();
+	mTextureSelector.back()->onSamplerSelected.hook(this, &MaterialPropertiesTab::_onSamplerSelected);
+	mTextureSelector.back()->onRemoveSelector.hook(this, &MaterialPropertiesTab::_onRemoveTexture);
 }
 
 void
@@ -530,7 +523,8 @@ MaterialPropertiesTab::removeAllTextureSelectors()
 	for (auto it = mTextureSelector.begin(); it != mTextureSelector.end(); ++it)
 	{
 		// unregister all texture selectors from the layout
-		ui.textureSelectorRoot->layout()->removeWidget((*it).get());
+		ui.textureSelectorRoot->layout()->removeWidget(*it);
+		delete (*it);
 	}
 	// delete all texture selector instances
 	mTextureSelector.clear();

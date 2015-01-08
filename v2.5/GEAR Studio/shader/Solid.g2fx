@@ -1,4 +1,4 @@
-Ubershader "Example/Simple" {
+Ubershader "GEARStudio/Editor/Solid" {
    LocationBindings {
      inPosition ("Vertex Position", vec4) = { POSITION } // define a location binding for incoming vertices
    }
@@ -12,8 +12,8 @@ Ubershader "Example/Simple" {
            vec4 color;
        } dataOut; // this data will be sent to the fragment program
  
-       void main(void) {
-
+       void main(void) 
+       {
            	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
 				    dataOut.color = g2_ambient;
        }
@@ -27,8 +27,8 @@ Ubershader "Example/Simple" {
        } dataIn; // this data comes from the vertex program
  
        void main() {
+          
 				  outColor = dataIn.color;
-           
        }
    }
  }

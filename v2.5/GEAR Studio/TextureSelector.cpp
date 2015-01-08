@@ -6,64 +6,67 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 
-TextureSelector::TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QWidget *parent /*= 0*/)
+static const std::string TEXTURES_PATH = "path";
+static const std::string TEXTURES_SAMPLER = "sampler";
+
+std::map<std::string, QImage> TextureSelector::gImageCache;
+
+TextureSelector::TextureSelector(Json::Value const& target, std::string const& projectDirectory, QWidget *parent)
 	: QWidget(parent),
 	mProjectDirectory(projectDirectory),
-	mSelectedTexture(imagePath)
+	mTarget(target)
 {
 	ui.setupUi(this);
 
 	connect(ui.texSelect, SIGNAL(clicked()), this, SLOT(selectTex()));
+	connect(ui.samplerBox, SIGNAL(currentIndexChanged(int)), this, SLOT(samplerChanged(int)));
+	connect(ui.deleteTextureSelector, SIGNAL(clicked()), this, SLOT(removeSelector()));
 
-	if (mSelectedTexture.size() > 0)
+	ui.texSurf->setPixmap(QPixmap::fromImage(QImage()));
+
+	if (mTarget.isMember(TEXTURES_PATH))
 	{
-		QImage image(mSelectedTexture.c_str());
-		if (!image.isNull())
+		_initSampler(mTarget[TEXTURES_SAMPLER].asString());
+
+		std::string fullPath = mProjectDirectory + mTarget[TEXTURES_PATH].asString();
+
+		_initPreview(fullPath, true);
+	}
+}
+
+void TextureSelector::_initSampler(std::string const& samplerStr)
+{
+	ui.samplerBox->setCurrentIndex(0);
+	for (int i = 0; i < ui.samplerBox->count(); ++i)
+	{
+		std::string itemText = ui.samplerBox->itemText(i).toStdString();
+		std::transform(itemText.begin(), itemText.end(), itemText.begin(), ::toupper);
+		if (itemText == samplerStr)
 		{
-			//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
-			mPreviewImage = image.scaled(ui.texSurf->width(), ui.texSurf->width(), Qt::KeepAspectRatio);
-			ui.texSelect->setText(mSelectedTexture.c_str());
-			ui.texSurf->setPixmap(QPixmap::fromImage(mPreviewImage));
+			ui.samplerBox->setCurrentIndex(i);
+			return;
 		}
 	}
 }
 
-TextureSelector::TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QImage const& image, std::string const& samplerStr, QWidget *parent /*= 0*/)
-	: QWidget(parent),
-	mProjectDirectory(projectDirectory),
-	mSelectedTexture(imagePath),
-	mPreviewImage(image)
+void TextureSelector::_initPreview(std::string const& imagePath, bool useCache)
 {
-	ui.setupUi(this);
-
-	connect(ui.texSelect, SIGNAL(clicked()), this, SLOT(selectTex()));
-	if (!image.isNull())
+	QImage image;
+	if (useCache && gImageCache.count(imagePath) == 1)
 	{
-		ui.texSelect->setText(mSelectedTexture.c_str());
-		ui.texSurf->setPixmap(QPixmap::fromImage(mPreviewImage));
+		image = gImageCache[imagePath];
 	}
-	else if (mSelectedTexture.size() > 0)
+	else
 	{
-		mPreviewImage = QImage(mSelectedTexture.c_str());
+		image = QImage(imagePath.c_str());
 		if (!image.isNull())
 		{
 			//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
-			mPreviewImage = mPreviewImage.scaled(ui.texSurf->width(), ui.texSurf->width(), Qt::KeepAspectRatio);
-			ui.texSelect->setText(mSelectedTexture.c_str());
-			ui.texSurf->setPixmap(QPixmap::fromImage(mPreviewImage));
+			image = image.scaled(ui.texSurf->width(), ui.texSurf->width(), Qt::KeepAspectRatio);
+			gImageCache[imagePath] = image;
 		}
 	}
-
-	for (int i = 0; i < ui.samplerBox->count(); ++i)
-	{
-		std::string currentSamplerStr = ui.samplerBox->itemText(i).toStdString();
-		std::transform(currentSamplerStr.begin(), currentSamplerStr.end(), currentSamplerStr.begin(), ::toupper);
-		if (currentSamplerStr == samplerStr)
-		{
-			ui.samplerBox->setCurrentIndex(i);
-			break;
-		}
-	}
+	ui.texSurf->setPixmap(QPixmap::fromImage(image));
 }
 
 void TextureSelector::selectTex()
@@ -73,40 +76,43 @@ void TextureSelector::selectTex()
 	if (!filePath.isNull())
 	{
 		// 
-		std::string fullPath = filePath.toStdString();
+		std::string path = filePath.toStdString();
 
-		if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
+		if (!boost::algorithm::starts_with(path, mProjectDirectory))
 		{
 			std::cout << "[Texture] Selected file is not contained in the project directory!" << std::endl;
 		}
 		else
 		{
-
-			// update ui
-			QImage image(fullPath.c_str());
-			if (!image.isNull())
-			{
-				//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
-				mPreviewImage = image.scaled(ui.texSurf->width(), ui.texSurf->width(), Qt::KeepAspectRatio);
-				mSelectedTexture = fullPath;
-				ui.texSurf->setPixmap(QPixmap::fromImage(mPreviewImage));
-				onTextureSelected(this);
-			}
+			// strip project directory
+			std::string fullPath = path;
+			boost::replace_first(path, mProjectDirectory, "");
+			// save in Json
+			mTarget[TEXTURES_PATH] = path;
+			mTarget[TEXTURES_SAMPLER] = _getSampler();
+			// update preview without using the cached version!
+			_initPreview(fullPath, false);
+			// invoke event to inform all listeners that a new texture was selected
+			onTextureSelected(this);
 		}
 	}
 	// invoke
 }
 
-std::string
-TextureSelector::getSampler() const
+void TextureSelector::samplerChanged(int idx)
+{
+	mTarget[TEXTURES_SAMPLER] = _getSampler();
+	onSamplerSelected(this);
+}
+
+void TextureSelector::removeSelector()
+{
+	onRemoveSelector(this);
+}
+
+std::string TextureSelector::_getSampler() const
 {
 	std::string sampler = ui.samplerBox->currentText().toStdString();
 	std::transform(sampler.begin(), sampler.end(), sampler.begin(), ::toupper);
 	return sampler;
-}
-
-QImage const&
-TextureSelector::getPreviewImage() const
-{
-	return mPreviewImage;
 }

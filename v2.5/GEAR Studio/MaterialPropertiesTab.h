@@ -51,7 +51,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		
 		void removeAllTextureSelectors();
 
-		void addTextureSelector(ManagedEntity* target, std::string const& imagePath, std::string const& samplerStr);
+		void addTextureSelector(ManagedEntity* entity, Json::Value const& target);
 
 		void _serializeShininess();
 		/** Reimports the given target ManagedEntity according to it's document description.
@@ -61,11 +61,15 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void _reimportMaterial(ManagedEntity* target, bool reimportEffect);
 
 		void _onTextureSelected(TextureSelector*);
+		void _onSamplerSelected(TextureSelector*);
+		void _onRemoveTexture(TextureSelector*);
+
+		void _rebuildTextures();
 
 		G2::EffectImporter		mFxImporter;		// The importer for effect files to use.
 		G2::TextureImporter 	mTextureImporter;	// The importer for textures to use.
 		bool					mOpen;				// The flag if the tab is opened or not.
 		Ui::MaterialPropertiesTab	ui;					// The Qt UI class for the project creation dialog
 
-		std::vector<std::shared_ptr<TextureSelector>>	mTextureSelector;
+		std::vector<TextureSelector*>	mTextureSelector;
 };

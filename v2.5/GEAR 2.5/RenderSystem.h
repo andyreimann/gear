@@ -8,6 +8,7 @@
 #include "ZSorter.h"
 #include "Intersection.h"
 #include "DefaultUniformBufferObjects.h"
+#include "Texture2D.h"
 
 #include <G2Core/BaseSystem.h>
 #include <G2Core/Entity.h>
@@ -291,6 +292,7 @@ namespace G2
 
 			DefaultUniformBufferObjects						mDefaultUBOs;
 			G2Core::ShaderView::Matrices					mMatricesData;			// The matrices in the format a shader needs
+			std::shared_ptr<Texture2D>						mDefaultTex;
 	};
 };
 

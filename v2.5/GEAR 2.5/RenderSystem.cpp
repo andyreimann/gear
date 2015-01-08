@@ -62,6 +62,27 @@ RenderSystem::RenderSystem() :
 	texCoord[2] = glm::vec2(1.f,1.f);
 	texCoord[3] = glm::vec2(0.f,1.f);
 	mFullScreenQuad.writeData(G2Core::Semantics::TEXCOORD_0, texCoord);
+
+	// setup the default texture
+	glm::vec4 data(1.f, 1.f, 1.f, 1.f);
+	mDefaultTex = std::shared_ptr<Texture2D>(
+		new Texture2D(
+		G2Core::FilterMode::NEAREST,
+		G2Core::FilterMode::NEAREST,
+		1u, 1u,
+		G2Core::DataFormat::Base::RGBA,
+		G2Core::DataFormat::Internal::R32G32B32A32_F,
+		G2Core::WrapMode::REPEAT,
+		G2Core::WrapMode::REPEAT,
+		false,
+		G2Core::DataType::FLOAT,
+		&(data.x)
+	));
+
+	for (int i = 0; i <= G2Core::TexSlot::TEX_SLOT32; ++i)
+	{
+		mDefaultTex->bind(static_cast<G2Core::TexSlot::Name>(i));
+	}
 }
 
 RenderSystem::~RenderSystem() 
@@ -536,6 +557,19 @@ RenderSystem::_render(glm::mat4 const& projectionMatrix, glm::mat4 const& camera
 			vao.draw(drawCall.getDrawMode());
 		}
 		vao.unbind();
+	}
+
+
+	// Bind back default texture on all slots this component has overridden
+	for (auto it = textures.begin(); it != textures.end(); ++it)
+	{
+		if (it->second.get() != nullptr)
+		{
+			// tex slots are continuous numbers and samplers start at 0 -> simple calculation
+			mDefaultTex->bind(
+				static_cast<G2Core::TexSlot::Name>(G2Core::TexSlot::TEX_SLOT1 + (int)it->first)
+			);
+		}
 	}
 }
 

@@ -1,6 +1,10 @@
 Ubershader "Example/Simple" {
    LocationBindings {
      inPosition ("Vertex Position", vec4) = { POSITION } // define a location binding for incoming vertices
+     inTexCoord ("Texture Coordinate", vec2) = { TEXCOORD_0 }
+   }
+   Properties {
+       _diffuseTex ("The diffuse texture", sampler2D) = { DIFFUSE } // define a uniform sampler on the diffuse channel
    }
    Shader "GLSL" {
      #VERTEXPROGRAM
@@ -10,10 +14,12 @@ Ubershader "Example/Simple" {
  
        out Data {
            vec4 color;
+           vec2 texCoord;
        } dataOut; // this data will be sent to the fragment program
  
-       void main(void) {
-
+       void main(void) 
+       {
+            dataOut.texCoord = inTexCoord;
            	gl_Position = (g2_projection_matrix * g2_modelview_matrix) * inPosition; // write position of vertex using GEAR default filled matrices
 				    dataOut.color = g2_ambient;
        }
@@ -24,11 +30,12 @@ Ubershader "Example/Simple" {
  
        in Data {
            vec4 color;
+           vec2 texCoord;
        } dataIn; // this data comes from the vertex program
  
        void main() {
-				  outColor = dataIn.color;
-           
+          
+				  outColor = texture(_diffuseTex, dataIn.texCoord) * dataIn.color;
        }
    }
  }

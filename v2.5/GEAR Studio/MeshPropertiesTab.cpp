@@ -138,7 +138,7 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 			mProjectDirectory + props.get(MESH_PATH, "").asString(),
 			props.get(IMPORT_NORMALS, true).asBool(),
 			props.get(IMPORT_TEX_COORDS, true).asBool(),
-			true,
+			false, // NO ANIMATIONS SO FAR!
 			props.get(FLIP_TEX_U, false).asBool(),
 			props.get(FLIP_TEX_V, false).asBool(),
 			nullptr,

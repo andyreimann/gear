@@ -5,34 +5,42 @@
 #include <G2/Sampler.h>
 
 #include <QtWidgets/QWidget>
+#include <json/json.h>
+#include <map>
 
-/** This class implements the ManagedEntity property regarding materials.
-* @created	2015/01/06
+/** This class implements a texture selector module.
+* @created	2015/01/07
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
 class TextureSelector : public QWidget
 {
 	Q_OBJECT
 	public:
-		TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QWidget *parent = 0);
-		TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QImage const& image, std::string const& samplerStr, QWidget *parent = 0);
+		TextureSelector(Json::Value const& target, std::string const& projectDirectory, QWidget *parent = 0);
+
+		Json::Value const& getData() const { return mTarget; }
 
 		G2::Event<TextureSelector*>	onTextureSelected;
-
-		std::string const& getSelectedTexturePath() const { return mSelectedTexture; }
-
-		QImage const& getPreviewImage() const;
-		std::string getSampler() const;
+		G2::Event<TextureSelector*>	onSamplerSelected;
+		G2::Event<TextureSelector*>	onRemoveSelector;
+		
 		Ui::TextureSelector	ui;					// The Qt UI class for the project creation dialog
+
 
 	private slots:
 		void selectTex();
+		void samplerChanged(int idx);
+		void removeSelector();
 
 	private:
+
+		void _initSampler(std::string const& samplerStr);
+		void _initPreview(std::string const& imagePath, bool useCache);
+		std::string _getSampler() const;
+
 		std::string			mProjectDirectory;	// The projects directory
-
-		std::string			mSelectedTexture;	// the full path of the selected texture
-		QImage				mPreviewImage;		// The preview image of the selected texture
-
+		Json::Value			mTarget;			// The json object to write the information to.
+		
+		static std::map<std::string, QImage>	gImageCache;	// The internal cache for the preview images
 
 };

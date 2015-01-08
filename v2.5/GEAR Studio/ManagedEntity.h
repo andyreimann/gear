@@ -73,9 +73,6 @@ class ManagedEntity : public G2::Entity
 		 */
 		Json::Value const& getEntityDescription() const { return mEntityDesc; }
 
-
-		std::map<std::string, QImage>	imageCache;
-
 	private:
 
 		Json::Value mEntityDesc;										// The name of the ManagedEntity
