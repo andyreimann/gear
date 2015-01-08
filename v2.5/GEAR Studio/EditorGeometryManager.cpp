@@ -3,8 +3,13 @@
 
 #include <G2Core/ECSManager.h>
 
+G2Core::RenderLayer::Name EditorGeometryManager::gHandleLayer = G2Core::RenderLayer::LAYER_30;
+
+G2Core::RenderLayer::RenderLayerMask EditorGeometryManager::gEditorGeometryLayers = EditorGeometryManager::gHandleLayer;
+
 EditorGeometryManager::EditorGeometryManager() :
-	mActiveGrid(nullptr)
+	mActiveGrid(nullptr),
+	isTranslatingOnX(false)
 {
 	mRenderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>();
 	mCameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>();
@@ -23,15 +28,61 @@ EditorGeometryManager::EditorGeometryManager() :
 	mGrids.push_back(EditorGrid(mSolidFx, 50.0));
 	mGrids.push_back(EditorGrid(mSolidFx, 100.0));
 
+	// register to GEAR events
 	G2::EventDistributer::onFrameRendered.hook(this, &EditorGeometryManager::_updateEditorGrid);
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &EditorGeometryManager::_onManagedEntitySelected);
 
+	// register to Editor events
+	GEARStudioEvents::onManagedEntitySelected.hook(this, &EditorGeometryManager::_onManagedEntitySelected);
+	
+	// init translation mesh
+	auto* tc = mTransAnchor.addComponent<G2::TransformComponent>();
+	tc->setPosition(glm::vec3(0.f,0.f,10.f));
+	mTransZMesh = mFbxImporter.import("meshes/translate.fbx");
+	auto* rc = mTransZMesh.getComponent<G2::RenderComponent>();
+	rc->setRenderLayerMask(gHandleLayer);
+	rc->setEffect(mSolidFx);
+	rc->material.setAmbient(glm::vec4(0.f, 0.f, 1.f, 1.f));
+	rc->setRenderDepth(false);
+	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS); 
+	tc = mTransZMesh.addComponent<G2::TransformComponent>();
+	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
+
+	mTransYMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mTransYMesh.getComponent<G2::RenderComponent>();
+	rc->setRenderLayerMask(gHandleLayer);
+	rc->setEffect(mSolidFx);
+	rc->material.setAmbient(glm::vec4(0.f, 1.f, 0.f, 1.f));
+	rc->setRenderDepth(false);
+	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
+	tc = mTransYMesh.addComponent<G2::TransformComponent>();
+	tc->rotateX(-90.f);
+	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
+
+	mTransXMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mTransXMesh.getComponent<G2::RenderComponent>();
+	rc->setRenderLayerMask(gHandleLayer);
+	rc->setEffect(mSolidFx);
+	rc->material.setAmbient(glm::vec4(1.f, 0.f, 0.f, 1.0f));
+	rc->setRenderDepth(false);
+	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
+	tc = mTransXMesh.addComponent<G2::TransformComponent>();
+	tc->rotateY(90.f);
+	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
+
+	_setTranslationMeshVisible(false);
 }
 
 EditorGeometryManager::~EditorGeometryManager() 
 {
+	// unhook from GEAR events
 	G2::EventDistributer::onFrameRendered.unHookAll(this);
+	G2::EventDistributer::onMouseUp.unHookAll(this);
+	G2::EventDistributer::onMouseDown.unHookAll(this);
+	G2::EventDistributer::onMouseMove.unHookAll(this);
+
+	// unhook from Editor events
 	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	GEARStudioEvents::onEditorHandleSelected.unHookAll(this);
 }
 
 void EditorGeometryManager::_updateEditorGrid(G2::FrameInfo const& frame)
@@ -76,22 +127,41 @@ void EditorGeometryManager::_updateGridPosition()
 	float gridPosX = (float)(int)(-camPos.x / mActiveGrid->getUnitSize()) * mActiveGrid->getUnitSize();
 	float gridPosZ = (float)(int)(-camPos.z / mActiveGrid->getUnitSize()) * mActiveGrid->getUnitSize();
 	((G2::Entity*)(*mActiveGrid))->addComponent<G2::TransformComponent>()->setPosition(glm::vec3(gridPosX, 0.f, gridPosZ));
+
+	// DEBUG
+
+	if (mSelectedEntityAABB.hasComponent<G2::TransformComponent>())
+	{
+		// sync position
+		auto* tc = mSelectedEntityAABB.getComponent<G2::TransformComponent>();
+		mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+	}
+	else
+	{
+		mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(0.f, 0.f, 0.f));
+	}
 }
 
 void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 {
+	if (entity != nullptr)
+	{
+		std::stringstream log;
+		log << "Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]";
+		GEARStudioEvents::onLog(INFO, log.str());
+	}
 	mSelectedEntityAABB = G2::Entity();
 	if (entity != nullptr && entity->hasComponent<G2::RenderComponent>())
 	{
 		auto* renderComp = entity->getComponent<G2::RenderComponent>();
 		// connect to transformation of model
-		auto* transformComp = entity->getComponent<G2::TransformComponent>();
-		if (transformComp)
-		{
-			auto* aabbVisTransform = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
-			// fetch it newly, because the pointer might already be invalid!
-			aabbVisTransform->setParent(entity->getComponent<G2::TransformComponent>());
-		}
+		auto* transformComp = entity->addComponent<G2::TransformComponent>();
+
+		auto* aabbVisTransform = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
+		// fetch it newly, because the pointer might already be invalid!
+		aabbVisTransform->setParent(entity->getComponent<G2::TransformComponent>());
+		_setTranslationMeshVisible(true);
+		
 		// visualize model space AABBs
 		auto* aabbVis = mSelectedEntityAABB.addComponent<G2::RenderComponent>();
 		aabbVis->allocateVertexArrays((unsigned int)renderComp->getNumDrawCalls());
@@ -149,4 +219,12 @@ void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 			mSolidFx
 		);
 	}
+}
+
+void
+EditorGeometryManager::_setTranslationMeshVisible(bool visible)
+{
+	mTransXMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
+	mTransYMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
+	mTransZMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
 }

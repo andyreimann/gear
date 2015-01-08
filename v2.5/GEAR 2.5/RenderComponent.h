@@ -145,6 +145,25 @@ namespace G2
 			* @param value The DestinationFactor.
 			*/
 			void setDestinationBlendFactor(G2Core::BlendFactor::Name const& value);
+			/** Sets the depth rendering mode of the RenderComponent.
+			* @param mode The mode to use.
+			* @note Meshes, which do not render depth values are drawn as last.
+			*/
+			void setRenderDepth(bool mode);
+			/** Sets the depth rendering mode of the RenderComponent.
+			* @param mode The mode to use.
+			* @note Meshes, which do not render depth values are drawn as last.
+			*/
+			bool getRenderDepth() const { return mRenderStatesGroup->getRenderStates().getRenderDepth(); }
+
+			/** This function will return the depth function.
+			* @return The depth function.
+			*/
+			G2Core::DepthFunc::Name const& getDepthFunc() const { return mRenderStatesGroup->getRenderStates().getDepthFunc(); }
+			/** This function will set the depth function to the given value.
+			* @param value The depth function.
+			*/
+			void setDepthFunc(G2Core::DepthFunc::Name const& value);
 			/** Schedules this RenderComponent in the RenderSystem to recalculate the model space
 			 * AABBs for all DrawCalls using a distinct AABBCalculationMode than MANUAL.
 			 * @note Use this function with caution
@@ -195,6 +214,7 @@ namespace G2
 			 */
 			void _updateRenderStatesGroupLinkage(std::shared_ptr<RenderStatesGroup> newGroup);
 			
+
 			RenderSystem*					mRenderSystem;
 			
 			std::vector<VertexArrayObject>	mVaos;					// The VertexArrayObject array of the RenderComponent

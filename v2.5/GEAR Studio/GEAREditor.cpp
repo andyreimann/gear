@@ -66,10 +66,11 @@ void
 GEAREditor::connectToGEARCore()
 {
 	// lost default scene
-	((GLContext*)ui.renderSurface)->loadDefaultScene();
+	((GLContext*)ui.renderSurface)->createEditorCamera();
 
 	// init editor geometry
 	mEditorGeometryManager = std::shared_ptr<EditorGeometryManager>(new EditorGeometryManager());
+	((GLContext*)ui.renderSurface)->setEditorGeometryManager(mEditorGeometryManager);
 }
 
 void

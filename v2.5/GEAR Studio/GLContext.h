@@ -1,5 +1,4 @@
 #pragma once
-
 #include <G2/GEAR.h>
 #include <QtOpenGL/QGLWidget>
 #include <G2/AbstractWindow.h>
@@ -7,8 +6,11 @@
 
 #include <unordered_map>
 
+class EditorGeometryManager;
 class Project;
-/** This is the OpenGL Context class of the GEAR Editor rendersurface.
+class TranslationHandler;
+class ManagedEntity;
+/** This is the OpenGL Context class of the GEAR Editor render surface.
 * @created	2014/12/09
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
@@ -18,11 +20,14 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 
 	public:
 		GLContext(QWidget *parent = 0);
-		/** Loads a default scene which is only needed for developing
-		 * purpose. Later this class shouldn't load any resources.
-		 */
-		void loadDefaultScene();
 
+		/** Initializes the editor camera.
+		 */
+		void createEditorCamera();
+		/** Sets the EditorGeometryManager instance holding all necessary editor geometry.
+		 * @param editorGeometryManager The EditorGeometryManager instance.
+		 */
+		void setEditorGeometryManager(std::shared_ptr<EditorGeometryManager> const& editorGeometryManager);
 		~GLContext();
 	protected:
 		void initializeGL();
@@ -47,17 +52,25 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		* @param project A pointer to the Project which was opened.
 		*/
 		void _onProjectOpened(Project* project);
+		/** This is a callback function which will be invoked whenever a new ManagedEntity is selected/gains focus.
+		* @param entity A pointer to the ManagedEntity which is selected.
+		*/
+		void _onManagedEntitySelected(ManagedEntity* entity);
+
+		void _onFocusEntity(G2::KeyCode keyCode);
 
 		void initKeyMap();
 
-		Project*		mProject;			// A pointer to the current project
-		G2::FrameInfo				mFrameInfo;
-		G2::Entity					mLight;
-		G2::EffectImporter			mEffectImporter;
-		//G2::FBXImporter				mFbxImporter;
-		G2Cameras::EditorCamera		mEditorCamera;
+		std::shared_ptr<EditorGeometryManager>	mEditorGeometryManager; // The EditorGeometryManager holding all necessary editor geometry
+		Project*								mProject;			// A pointer to the current project
+		G2::FrameInfo							mFrameInfo;
+		G2::Entity								mLight;
+		G2::EffectImporter						mEffectImporter;
+		//G2::FBXImporter						mFbxImporter;
+		G2Cameras::EditorCamera					mEditorCamera;
 		std::unordered_map<Qt::MouseButton,G2::MouseButton> mMouseButtonMapping;
-		std::unordered_map<Qt::Key, int>						mKeyMap;
-		G2::Entity					mMouseRay;
+		std::unordered_map<Qt::Key, int>		mKeyMap;
+		std::shared_ptr<TranslationHandler>		mTranslationHandler;
+		ManagedEntity*							mEntity;
 };
 

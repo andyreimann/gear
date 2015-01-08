@@ -11,7 +11,9 @@ RenderStates::RenderStates()
 	mPolygonOffsetFactor(0.f),
 	mPolygonOffsetUnits(0.f),
 	mSourceFactor(G2Core::BlendFactor::SRC_ALPHA),
-	mDestinationFactor(G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA)
+	mDestinationFactor(G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA),
+	mRenderDepth(true),
+	mDepthFunc(G2Core::DepthFunc::LESS)
 {
 	
 }
@@ -28,7 +30,9 @@ RenderStates::RenderStates(RenderStates && rhs)
 	mPolygonOffsetFactor(0.f),
 	mPolygonOffsetUnits(0.f),
 	mSourceFactor(G2Core::BlendFactor::SRC_ALPHA),
-	mDestinationFactor(G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA)
+	mDestinationFactor(G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA),
+	mRenderDepth(true),
+	mDepthFunc(G2Core::DepthFunc::LESS)
 {
 	// eliminates redundant code
 	*this = std::move(rhs); // rvalue property is kept with std::move!
@@ -44,6 +48,8 @@ RenderStates::operator=(RenderStates const& rhs)
 	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
 	mSourceFactor = rhs.mSourceFactor;
 	mDestinationFactor = rhs.mDestinationFactor;
+	mRenderDepth = rhs.mRenderDepth;
+	mDepthFunc = rhs.mDepthFunc;
 	return *this;
 }
 
@@ -58,6 +64,8 @@ RenderStates::operator=(RenderStates && rhs)
 	mPolygonOffsetUnits = rhs.mPolygonOffsetUnits;
 	mSourceFactor = rhs.mSourceFactor;
 	mDestinationFactor = rhs.mDestinationFactor;
+	mRenderDepth = rhs.mRenderDepth;
+	mDepthFunc = rhs.mDepthFunc;
 	// 3. Stage: modify src to a well defined state
 	rhs.mFaceCulling = G2Core::FaceCulling::BACK_FACE;
 	rhs.mPolygonDrawMode = G2Core::PolygonDrawMode::FILL;
@@ -65,6 +73,8 @@ RenderStates::operator=(RenderStates && rhs)
 	rhs.mPolygonOffsetUnits = 0.f;
 	rhs.mSourceFactor = G2Core::BlendFactor::SRC_ALPHA;
 	rhs.mDestinationFactor = G2Core::BlendFactor::ONE_MINUS_SRC_ALPHA;
+	rhs.mRenderDepth = true;
+	rhs.mDepthFunc = G2Core::DepthFunc::LESS;
 	return *this;
 }
 
@@ -77,11 +87,14 @@ RenderStates::operator==(RenderStates const& rhs)
 		mPolygonOffsetFactor == rhs.mPolygonOffsetFactor &&
 		mPolygonOffsetUnits == rhs.mPolygonOffsetUnits &&
 		mSourceFactor == rhs.mSourceFactor &&
-		mDestinationFactor == rhs.mDestinationFactor;
+		mDestinationFactor == rhs.mDestinationFactor &&
+		mRenderDepth == rhs.mRenderDepth &&
+		mDepthFunc == rhs.mDepthFunc;
 }
 
 void
 RenderStates::applyStates(bool inPass) const
 {
-	G2_gfxDevice()->updateRenderStates(mFaceCulling, mPolygonDrawMode, mPolygonOffsetFactor, mPolygonOffsetUnits, mSourceFactor, mDestinationFactor);
+	G2_gfxDevice()->updateRenderStates(mFaceCulling, mPolygonDrawMode, mPolygonOffsetFactor, mPolygonOffsetUnits, mSourceFactor, mDestinationFactor, mDepthFunc);
+	G2_gfxDevice()->setDepthWritesEnabled(mRenderDepth);
 }

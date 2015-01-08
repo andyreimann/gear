@@ -573,6 +573,29 @@ namespace G2Core
 		COREDLL_API UniformBufferBindingPoint::Name fromString(std::string const& name);
 	};
 
+	namespace DepthFunc
+	{
+		enum Name {
+			NEVER,
+			LESS,
+			EQUAL,
+			LEQUAL,
+			GREATER,
+			NOT_EQUAL,
+			GEQUAL,
+			ALWAYS,
+			DEPTH_FUNC_INVALID
+		};
+		/** Returns the string representation of the given enum value.
+		* @return The parsed value or an empty string in case it could not be parsed.
+		*/
+		COREDLL_API std::string toString(DepthFunc::Name name);
+		/** Returns the enum representation of the given string value.
+		* @return The parsed value or DEPTH_FUNC_INVALID in case it could not be parsed.
+		*/
+		COREDLL_API DepthFunc::Name fromString(std::string const& name);
+	};
+
 	namespace ECSPhase
 	{
 		std::string const PREUPDATE = "preUpdate";

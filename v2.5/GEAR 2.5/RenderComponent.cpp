@@ -127,6 +127,7 @@ G2::RenderComponent::removeAllMeshes()
 		renderSystem->_onDrawCallRemoved(getEntityId(), v);
 	}
 }
+
 void
 RenderComponent::addDrawCall(DrawCall const& drawCall) 
 {
@@ -245,6 +246,21 @@ RenderComponent::setDestinationBlendFactor(G2Core::BlendFactor::Name const& valu
 	mRenderSystem->_updateRenderStatesGroup(this, &copy);
 }
 
+void
+G2::RenderComponent::setRenderDepth(bool value)
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setRenderDepth(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
+
+void
+G2::RenderComponent::setDepthFunc(G2Core::DepthFunc::Name const& value)
+{
+	RenderStates copy(mRenderStatesGroup->getRenderStates());
+	copy.setDepthFunc(value);
+	mRenderSystem->_updateRenderStatesGroup(this, &copy);
+}
 void
 RenderComponent::calculateBinormalsAndTangents(G2Core::Semantics::Name vertexSemantic, G2Core::Semantics::Name texCoordsSemantic) 
 {

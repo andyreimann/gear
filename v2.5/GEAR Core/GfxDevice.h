@@ -20,7 +20,7 @@ namespace G2
 	typedef void (*ClearColor)(glm::vec4 const& color);
 	typedef void (*SetViewport)(G2::rect const& viewport);
 	typedef void (*ClearBuffers)(G2Core::BufferFlags flags, G2Core::GfxResource* buffer);
-	typedef void (*UpdateRenderStates)(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor);
+	typedef void (*UpdateRenderStates)(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor, G2Core::DepthFunc::Name depthFunc);
 	typedef void (*GetPerspectiveProjection)(glm::mat4& target, int width, int height, float zNear, float zFar, float fovY);
 	typedef void (*AdjustCameraSpaceMatrix)(glm::mat4& camSpaceMatrix);
 	typedef void (*SetCullFaceEnabled)(bool mode);

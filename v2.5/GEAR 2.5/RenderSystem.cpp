@@ -394,10 +394,17 @@ RenderSystem::_renderAllComponents(
 				unsigned int entityIdToSkip
 )
 {
+
 	// render for each RenderStatesGroup
 	for (int i = 0; i < mRenderSortedComponents.size() ; ++i) 
 	{
 		std::shared_ptr<RenderStatesGroup> componentGroup = mRenderSortedComponents[i];
+
+		if (componentGroup->getRenderStates().getRenderDepth() == false)
+		{
+			continue;
+		}
+
 		// send states to renderer
 		componentGroup->getRenderStates().applyStates(pass != nullptr);
 		auto const& renderComponentIds = componentGroup->getEntityIds();
@@ -466,6 +473,49 @@ RenderSystem::_renderAllComponents(
 		G2_gfxDevice()->setDepthWritesEnabled(true);
 		G2_gfxDevice()->setCullFaceEnabled(true);
 	}
+
+	// render for each RenderStatesGroup, which does not write depth values 
+	for (int i = 0; i < mRenderSortedComponents.size(); ++i)
+	{
+		std::shared_ptr<RenderStatesGroup> componentGroup = mRenderSortedComponents[i];
+
+		if (componentGroup->getRenderStates().getRenderDepth() == true)
+		{
+			continue;
+		}
+		// send states to renderer
+		componentGroup->getRenderStates().applyStates(pass != nullptr);
+		auto const& renderComponentIds = componentGroup->getEntityIds();
+		for (int k = 0; k < renderComponentIds.size(); ++k)
+		{
+			RenderComponent* comp = get(renderComponentIds[k]);
+			if (comp->getEntityId() == entityIdToSkip ||
+				comp->material.isTransparent() ||
+				(comp->getRenderLayerMask() & validRenderLayers) == G2Core::Flags::NO_FLAGS)
+			{
+				continue;
+			}
+			bool unculledFound = _performFrustumCulling(comp, frustum);
+			if (unculledFound)
+			{
+				// calc which shader to use for rendering
+				std::shared_ptr<Shader> shader;
+				if (pass != nullptr && pass->hasShader())
+				{
+					shader = _getPassRenderShader(comp, pass);
+				}
+				else
+				{
+					shader = _getRenderShader(comp);
+				}
+				// bind shader before call render()
+				shader->bind();
+				// regular rendering
+				_render(projectionMatrix, cameraSpaceMatrix, inverseCameraRotation, comp, shader, transformSystem, lightSystem);
+			}
+		}
+	}
+	G2_gfxDevice()->setDepthWritesEnabled(true);
 }
 
 void

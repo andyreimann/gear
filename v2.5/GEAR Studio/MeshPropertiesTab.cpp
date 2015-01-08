@@ -1,5 +1,6 @@
 #include "MeshPropertiesTab.h"
 #include "GEARStudioEvents.h"
+#include "EditorGeometryManager.h"
 
 #include <G2/RenderComponent.h>
 
@@ -164,5 +165,13 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 	else
 	{
 		// TODO log warning
+	}
+
+	if (target->hasComponent<G2::RenderComponent>())
+	{
+		// make sure the geometry in the scene does not share any render layer with the editor geometry 
+		// by assigning all layers except the used ones of the editor
+		auto renderComponent = target->getComponent<G2::RenderComponent>();
+		renderComponent->setRenderLayerMask(~EditorGeometryManager::gEditorGeometryLayers);
 	}
 }

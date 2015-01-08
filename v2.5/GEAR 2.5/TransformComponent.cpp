@@ -286,6 +286,18 @@ TransformComponent::_isDirty() const
 	return mIsDirty;
 }
 
+glm::vec3
+G2::TransformComponent::getParentsScale() const
+{
+	auto* parentTransformComponent = getSystem<TransformComponent>()->get(mParentEntityId);
+
+	if (parentTransformComponent != nullptr)
+	{
+		return parentTransformComponent->getScale() * parentTransformComponent->getParentsScale();
+	}
+	return glm::vec3(1.f, 1.f, 1.f);
+}
+
 void
 TransformComponent::_setDirty()
 {

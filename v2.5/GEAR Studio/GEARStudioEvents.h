@@ -2,6 +2,7 @@
 #include "Project.h"
 #include "LoggingTab.h"
 
+#include <G2/Intersection.h>
 #include <G2Core/Event.h>
 #include <string>
 
@@ -67,4 +68,18 @@ public:
 	* std::string const& The message to log.
 	*/
 	static G2::Event<LogLevel, std::string const&> onLog;
+	/** Trigger:
+	* A click on an editor handle occurred.
+	* unsigned int The entity id of the handle which was selected.
+	* G2::Intersection const& The G2::Intersection at the selection time.
+	*/
+	static G2::Event<unsigned int, G2::Intersection const&> onEditorHandleSelected;
+	/** Trigger:
+	* The translation handle was moved.
+	*/
+	static G2::Event<> onTranslationHandleMoved;
+	/** Trigger:
+	* The translation handle was released.
+	*/
+	static G2::Event<> onTranslationHandleReleased;
 };

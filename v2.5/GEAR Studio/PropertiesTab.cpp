@@ -37,13 +37,6 @@ void PropertiesTab::_onManagedEntitySelected(ManagedEntity* entity)
 {
 	mEntity = entity;
 
-	if (entity != nullptr)
-	{
-		std::stringstream log;
-		log << "[PROP:" << mTechnicalName << "] Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]";
-		GEARStudioEvents::onLog(INFO, log.str());
-	}
-
 	// callback to initialize PropertiesTab for the entity
 	_initUiWithEntity(mEntity);
 }

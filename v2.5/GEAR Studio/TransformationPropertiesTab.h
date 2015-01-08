@@ -13,7 +13,7 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 	Q_OBJECT
 	public:
 		TransformationPropertiesTab(QWidget *parent = 0);
-
+		~TransformationPropertiesTab();
 	protected:
 		/** This callback function is called whenever the PropertiesTab
 		 * should be initialized with the given ManagedEntity.
@@ -41,6 +41,9 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		*/
 		void scaleChanged(double);
 	private:
+
+		void _onTranslationHandleMoved();
+		void _onTranslationHandleReleased();
 		/** Writes a given value into the selected entities property assigned to this Tab.
 		 * @param group The group key to use for the write operation.
 		 * @param component The component key to use for the write operation.
@@ -49,6 +52,7 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		void _serializeValue(std::string const& group, std::string const& component, double value);
 
+		bool							mTranslationHandleChanged;
 		bool							mOpen;				// The flag if the tab is opened or not.
 		Ui::TransformationPropertiesTab	ui;					// The Qt UI class for the project creation dialog
 };

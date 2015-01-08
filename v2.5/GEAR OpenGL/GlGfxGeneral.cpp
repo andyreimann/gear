@@ -114,7 +114,7 @@ void ClearBuffers(G2Core::BufferFlags flags, G2Core::GfxResource* buffer)
 	GLCHECK( glClear(glFlags) );
 }
 
-void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor)
+void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::PolygonDrawMode::Name polygonDrawMode, float polygonOffsetFactor, float polygonOffsetUnits, G2Core::BlendFactor::Name blendFuncSourceFactor, G2Core::BlendFactor::Name blendFuncDestinationFactor, G2Core::DepthFunc::Name depthFunc)
 {
 	GLint glCullFaceState = toGlFaceCullingMode(cullFaceState);
 	GLCHECK(glCullFace(glCullFaceState));
@@ -125,6 +125,7 @@ void UpdateRenderStates(G2Core::FaceCulling::Name cullFaceState, G2Core::Polygon
 		GLCHECK( glPolygonOffset(polygonOffsetFactor,polygonOffsetUnits) );
 	}
 	GLCHECK(glBlendFunc(toGlBlendFunc(blendFuncSourceFactor), toGlBlendFunc(blendFuncDestinationFactor)));
+	GLCHECK(glDepthFunc(toGlDepthFunc(depthFunc)));
 }
 
 void FreeGfxResource(G2Core::GfxResource* resource)

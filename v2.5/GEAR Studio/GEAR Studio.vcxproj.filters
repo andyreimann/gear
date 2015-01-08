@@ -34,6 +34,7 @@
     <ClInclude Include="Project.h" />
     <ClInclude Include="PropertiesTab.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="TranslationHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComponentListItemModel.cpp" />
@@ -54,6 +55,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="TextureSelector.cpp" />
     <ClCompile Include="TransformationPropertiesTab.cpp" />
+    <ClCompile Include="TranslationHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
       <Filter>obj\x32\Debug</Filter>

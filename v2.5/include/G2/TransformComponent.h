@@ -134,6 +134,11 @@ namespace G2
 			 * @return The scale of the TransformComponent.
 			 */
 			glm::vec3 const& getScale() const;
+			/**
+			* This function will return the accumulated scale of the TransformComponents parents.
+			* @return The accumulated scale of the TransformComponents parents.
+			*/
+			glm::vec3 getParentsScale() const;
 			/** This function will return the composed local space matrix.
 			 * @note The returned matrix is a cached version. To get an updated
 			 * version, call updateLocalSpaceMatrix() before calling this function!

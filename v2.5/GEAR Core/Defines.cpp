@@ -984,6 +984,48 @@ BlendFactor::Name BlendFactor::fromString(std::string const& name)
 	return BLEND_FACTOR_INVALID;
 }
 
+std::string DepthFunc::toString(DepthFunc::Name name)
+{
+	if (name == NEVER)
+		return "NEVER";
+	if (name == LESS)
+		return "LESS";
+	if (name == EQUAL)
+		return "EQUAL";
+	if (name == LEQUAL)
+		return "LEQUAL";
+	if (name == GREATER)
+		return "GREATER";
+	if (name == NOT_EQUAL)
+		return "NOT_EQUAL";
+	if (name == GEQUAL)
+		return "GEQUAL";
+	if (name == ALWAYS)
+		return "ALWAYS";
+	return "";
+}
+
+DepthFunc::Name DepthFunc::fromString(std::string const& name)
+{
+	if (name == "NEVER")
+		return NEVER;
+	if (name == "LESS")
+		return LESS;
+	if (name == "EQUAL")
+		return EQUAL;
+	if (name == "LEQUAL")
+		return LEQUAL;
+	if (name == "GREATER")
+		return GREATER;
+	if (name == "NOT_EQUAL")
+		return NOT_EQUAL;
+	if (name == "GEQUAL")
+		return GEQUAL;
+	if (name == "ALWAYS")
+		return ALWAYS;
+	return DEPTH_FUNC_INVALID;
+}
+
 RenderLayer::RenderLayerMask
 G2Core::RenderLayer::fromString(std::string const& renderLayer)
 {

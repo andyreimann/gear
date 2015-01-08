@@ -74,6 +74,24 @@ namespace G2
 			* @param value The DestinationFactor.
 			*/
 			void setDestinationFactor(G2Core::BlendFactor::Name const& value) { mDestinationFactor = value; }
+			/** Sets the depth rendering mode.
+			* @param mode The mode to use.
+			* @note Meshes, which do not render depth values are drawn as last.
+			*/
+			void setRenderDepth(bool mode) { mRenderDepth = mode; }
+			/** Sets the depth rendering mode.
+			* @param mode The mode to use.
+			* @note Meshes, which do not render depth values are drawn as last.
+			*/
+			bool getRenderDepth() const { return mRenderDepth; }
+			/** This function will return the depth function.
+			* @return The depth function.
+			*/
+			G2Core::DepthFunc::Name const& getDepthFunc() const { return mDepthFunc; }
+			/** This function will set the depth function to the given value.
+			* @param value The depth function.
+			*/
+			void setDepthFunc(G2Core::DepthFunc::Name const& value) { mDepthFunc = value; }
 			/** This function will apply all states to the renderer.
 			 * @note Try to minimize the amount of calls to this function, since it triggers a bunch of state changes to the renderer.
 			 */
@@ -87,5 +105,7 @@ namespace G2
 			
 			G2Core::BlendFactor::Name		mSourceFactor;			// The sFactor of the blend function
 			G2Core::BlendFactor::Name		mDestinationFactor;		// The dFactor of the blend function
+			bool							mRenderDepth;			// The depth buffer write mode
+			G2Core::DepthFunc::Name			mDepthFunc;				// The depth function to use. Default G2Core::DepthFunc::LESS
 	};
 };

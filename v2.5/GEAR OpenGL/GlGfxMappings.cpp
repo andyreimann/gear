@@ -18,6 +18,7 @@ std::unordered_map<G2Core::PolygonDrawMode::Name, unsigned int> polygonDrawModeM
 std::unordered_map<G2Core::FaceCulling::Name, unsigned int> faceCullingModeMapping;
 std::unordered_map<G2Core::BlendFactor::Name, unsigned int> blendFuncMapping;
 std::unordered_map<G2Core::BufferUsage::Name, unsigned int> bufferUsageMappingGl;
+std::unordered_map<G2Core::DepthFunc::Name, unsigned int> depthFuncMapping;
 
 void _initMappings()
 {
@@ -166,7 +167,16 @@ void _initMappings()
 	blendFuncMapping[G2Core::BlendFactor::SRC1_COLOR]				= GL_SRC1_COLOR;
 	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC1_COLOR]		= GL_ONE_MINUS_SRC1_COLOR;
 	blendFuncMapping[G2Core::BlendFactor::SRC1_ALPHA]				= GL_SRC1_ALPHA;
-	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC1_ALPHA]		= GL_ONE_MINUS_SRC1_ALPHA;
+	blendFuncMapping[G2Core::BlendFactor::ONE_MINUS_SRC1_ALPHA] = GL_ONE_MINUS_SRC1_ALPHA;
+
+	depthFuncMapping[G2Core::DepthFunc::NEVER] = GL_NEVER; // OpenGL default
+	depthFuncMapping[G2Core::DepthFunc::LESS] = GL_LESS;
+	depthFuncMapping[G2Core::DepthFunc::EQUAL] = GL_EQUAL;
+	depthFuncMapping[G2Core::DepthFunc::LEQUAL] = GL_LEQUAL;
+	depthFuncMapping[G2Core::DepthFunc::GREATER] = GL_GREATER;
+	depthFuncMapping[G2Core::DepthFunc::NOT_EQUAL] = GL_NOTEQUAL;
+	depthFuncMapping[G2Core::DepthFunc::GEQUAL] = GL_GEQUAL;
+	depthFuncMapping[G2Core::DepthFunc::ALWAYS] = GL_ALWAYS;
 }
 
 unsigned int toGlBufferAccessMode(G2Core::BufferAccessMode::Name mode)
@@ -236,4 +246,10 @@ unsigned int
 toGlBufferUsage(G2Core::BufferUsage::Name usage)
 {
 	return bufferUsageMappingGl[usage];
+}
+
+unsigned int
+toGlDepthFunc(G2Core::DepthFunc::Name depthFunc)
+{
+	return depthFuncMapping[depthFunc];
 }

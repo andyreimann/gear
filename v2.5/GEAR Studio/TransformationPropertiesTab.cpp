@@ -17,7 +17,8 @@ static const std::string TRANS_SCALE = "scale";
 
 TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
-	PropertiesTab("transf","Transformation")
+	PropertiesTab("transf", "Transformation"),
+	mTranslationHandleChanged(false)
 {
 	ui.setupUi(this);
 	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
@@ -34,6 +35,17 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	connect(ui.scaleX, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 	connect(ui.scaleY, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 	connect(ui.scaleZ, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
+
+	// register to Editor events
+	GEARStudioEvents::onTranslationHandleMoved.hook(this, &TransformationPropertiesTab::_onTranslationHandleMoved);
+	GEARStudioEvents::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTranslationHandleReleased);
+}
+
+
+TransformationPropertiesTab::~TransformationPropertiesTab()
+{
+	GEARStudioEvents::onTranslationHandleMoved.unHookAll(this);
+	GEARStudioEvents::onTranslationHandleReleased.unHookAll(this);
 }
 
 void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -192,4 +204,30 @@ void TransformationPropertiesTab::_serializeValue(std::string const& group, std:
 {
 	Json::Value& props = mEntity->getProperties(mTechnicalName);
 	props[group][component] = (float)value;
+}
+
+void
+TransformationPropertiesTab::_onTranslationHandleMoved()
+{
+	Json::Value& props = mEntity->getProperties(mTechnicalName);
+	
+	auto* tc = mEntity->getComponent<G2::TransformComponent>();
+
+	_serializeValue(TRANS_POSITION, "x", tc->getPosition().x);
+	_serializeValue(TRANS_POSITION, "y", tc->getPosition().y);
+	_serializeValue(TRANS_POSITION, "z", tc->getPosition().z);
+
+	_initUiWithEntity(mEntity);
+
+	mTranslationHandleChanged = true;
+}
+
+void
+TransformationPropertiesTab::_onTranslationHandleReleased()
+{
+	if (mTranslationHandleChanged)
+	{
+		mTranslationHandleChanged = false;
+		mProject->getCurrentScene()->save();
+	}
 }
