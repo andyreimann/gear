@@ -1,11 +1,10 @@
 #pragma once
 
 #include <G2Core/Entity.h>
-#include <G2/Sampler.h>
 
 #include <QtGui/qimage.h>
 
-#include <unordered_map>
+#include <map>
 
 /** This class defines an Entity in the domain of the GEAR Studio.
 * @created	2014/12/17
@@ -75,7 +74,7 @@ class ManagedEntity : public G2::Entity
 		Json::Value const& getEntityDescription() const { return mEntityDesc; }
 
 
-		std::unordered_map<G2::Sampler::Name, QImage>	imageCache;
+		std::map<std::string, QImage>	imageCache;
 
 	private:
 

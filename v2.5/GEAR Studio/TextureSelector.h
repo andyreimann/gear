@@ -2,6 +2,7 @@
 #include "ui_TextureSelector.h"
 
 #include <G2Core/Event.h>
+#include <G2/Sampler.h>
 
 #include <QtWidgets/QWidget>
 
@@ -13,11 +14,15 @@ class TextureSelector : public QWidget
 {
 	Q_OBJECT
 	public:
-		TextureSelector(std::string const& projectDirectory, QWidget *parent = 0);
-		TextureSelector(std::string const& projectDirectory, QImage const& image, QWidget *parent = 0);
+		TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QWidget *parent = 0);
+		TextureSelector(std::string const& imagePath, std::string const& projectDirectory, QImage const& image, std::string const& samplerStr, QWidget *parent = 0);
 
 		G2::Event<TextureSelector*>	onTextureSelected;
 
+		std::string const& getSelectedTexturePath() const { return mSelectedTexture; }
+
+		QImage const& getPreviewImage() const;
+		std::string getSampler() const;
 		Ui::TextureSelector	ui;					// The Qt UI class for the project creation dialog
 
 	private slots:
@@ -25,4 +30,9 @@ class TextureSelector : public QWidget
 
 	private:
 		std::string			mProjectDirectory;	// The projects directory
+
+		std::string			mSelectedTexture;	// the full path of the selected texture
+		QImage				mPreviewImage;		// The preview image of the selected texture
+
+
 };

@@ -16,7 +16,9 @@ static const std::string MAT_AMBIENT = "amb";
 static const std::string MAT_DIFFUSE = "dif";
 static const std::string MAT_SPECULAR = "spe";
 static const std::string MAT_SHININESS = "sh";
-static const std::string TEX_DIFFUSE = "dif_tex";
+static const std::string TEXTURES = "tex";
+static const std::string TEXTURES_PATH = "path";
+static const std::string TEXTURES_SAMPLER = "sampler";
 
 MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
@@ -111,35 +113,23 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		{
 			ui.effectPath->setText("");
 		}
-		/*
-		if (props.isMember(TEX_DIFFUSE))
+		
+		removeAllTextureSelectors();
+
+		// import textures
+		if (props.isMember(TEXTURES))
 		{
-			if (entity->imageCache.count(G2::Sampler::DIFFUSE) == 1)
+
+			Json::Value const& textures = props[TEXTURES];
+
+			for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
 			{
-				// use cached file
-				ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(entity->imageCache[G2::Sampler::DIFFUSE]));
-			}
-			else
-			{
-				QImage image((mProjectDirectory + props[TEX_DIFFUSE].asString()).c_str());
-				if (!image.isNull())
-				{
-					//std::cout << ui.label_6->width() << " --- " << ui.label_6->height() << std::endl;
-					image = image.scaled(ui.diffuseTexSurf->width(), ui.diffuseTexSurf->width(), Qt::KeepAspectRatio);
-					// cache imported image
-					entity->imageCache[G2::Sampler::DIFFUSE] = image;
-					ui.diffuseTexSurf->setPixmap(QPixmap::fromImage(image));
-				}
-				else
-				{
-					ui.diffuseTexSurf->setPixmap(QPixmap());
-				}
+				std::string sampler = textures[i][TEXTURES_SAMPLER].asString();
+				std::string path = textures[i][TEXTURES_PATH].asString();
+
+				addTextureSelector(entity, mProjectDirectory + path, sampler);
 			}
 		}
-		else
-		{
-			ui.diffuseTexSurf->setPixmap(QPixmap());
-		}*/
 	}
 }
 
@@ -241,23 +231,28 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 		}
 	}
 
-	for (auto it = mTextureSelector.begin(); it != mTextureSelector.end(); ++it)
-	{
-		// unregister all texture selectors from the layout
-		ui.textureSelectorRoot->layout()->removeWidget((*it).get());
-	}
-	// delete all texture selector instances
-	mTextureSelector.clear();
+	removeAllTextureSelectors();
 
-	if (props.isMember(TEX_DIFFUSE))
+	if (props.isMember(TEXTURES))
 	{
-		auto tex = mTextureImporter.import(
-			mProjectDirectory + props.get(TEX_DIFFUSE, "").asString(),
-			G2Core::DataFormat::Internal::R32G32B32A32_F,
-			G2Core::FilterMode::LINEAR,
-			G2Core::FilterMode::LINEAR);
+		Json::Value const& textures = props[TEXTURES];
 
-		renderComp->material.setTexture(G2::Sampler::DIFFUSE, tex);
+		for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
+		{
+			std::string samplerStr = textures[i][TEXTURES_SAMPLER].asString();
+			G2::Sampler::Name sampler = G2::Sampler::getSampler(samplerStr);
+			
+			std::string fullPath = mProjectDirectory + textures[i][TEXTURES_PATH].asString();
+			auto tex = mTextureImporter.import(
+				fullPath,
+				G2Core::DataFormat::Internal::R32G32B32A32_F,
+				G2Core::FilterMode::LINEAR,
+				G2Core::FilterMode::LINEAR
+			);
+			renderComp->material.setTexture(sampler, tex);
+
+			addTextureSelector(target, fullPath, samplerStr);
+		}
 	}
 	show();
 }
@@ -458,13 +453,85 @@ void MaterialPropertiesTab::selectEffect()
 	}
 }
 
-void MaterialPropertiesTab::addTextureSelector()
+void
+MaterialPropertiesTab::_onTextureSelected(TextureSelector* selector)
 {
-	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector(mProjectDirectory, this)));
-	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
+	std::string samplerStr = selector->getSampler();
+	G2::Sampler::Name sampler = G2::Sampler::getSampler(samplerStr);
+	mEntity->imageCache[samplerStr] = selector->getPreviewImage();
+
+	Json::Value& props = mEntity->getProperties(mTechnicalName);
+
+	// strip project directory
+	std::string fullPath = selector->getSelectedTexturePath();
+	boost::replace_first(fullPath, mProjectDirectory, "");
+
+	Json::Value& textures = props[TEXTURES];
+
+	bool found = false;
+	for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
+	{
+		std::string currentSamplerStr = textures[i][TEXTURES_SAMPLER].asString();
+
+		if (samplerStr == currentSamplerStr)
+		{
+			textures[i][TEXTURES_PATH] = fullPath;
+			found = true;
+			break;
+		}
+	}
+	if (!found)
+	{
+		Json::Value texture;
+		texture[TEXTURES_PATH] = fullPath;
+		texture[TEXTURES_SAMPLER] = samplerStr;
+		textures.append(texture);
+	}
+
+	// release the caching entry for the texture to reimport it from scratch
+	mTextureImporter.clearCache(mProjectDirectory + fullPath);
+	
+	auto tex = mTextureImporter.import(
+		mProjectDirectory + fullPath,
+		G2Core::DataFormat::Internal::R32G32B32A32_F,
+		G2Core::FilterMode::LINEAR,
+		G2Core::FilterMode::LINEAR
+		);
+	mEntity->getComponent<G2::RenderComponent>()->material.setTexture(sampler, tex);
+
+	mProject->getCurrentScene()->save();
 }
 
-void MaterialPropertiesTab::selectTexture(std::shared_ptr<TextureSelector>& selector)
+void MaterialPropertiesTab::addTextureSelector()
 {
+	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector("", mProjectDirectory, this)));
+	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
+	mTextureSelector.back()->onTextureSelected.hook(this, &MaterialPropertiesTab::_onTextureSelected);
+}
 
+void MaterialPropertiesTab::addTextureSelector(ManagedEntity* target, std::string const& imagePath, std::string const& samplerStr)
+{
+	// TODO The Sampler isn't forwarded to the TextureSelector!
+	QImage image;
+	if (target->imageCache.count(samplerStr) == 1)
+	{
+		image = target->imageCache[samplerStr];
+	}
+	mTextureSelector.push_back(std::shared_ptr<TextureSelector>(new TextureSelector(imagePath, mProjectDirectory, image, samplerStr, this)));
+	ui.textureSelectorRoot->layout()->addWidget(mTextureSelector.back().get());
+	mTextureSelector.back()->onTextureSelected.hook(this, &MaterialPropertiesTab::_onTextureSelected);
+	// cache newly in any case
+	target->imageCache[samplerStr] = mTextureSelector.back()->getPreviewImage();
+}
+
+void
+MaterialPropertiesTab::removeAllTextureSelectors()
+{
+	for (auto it = mTextureSelector.begin(); it != mTextureSelector.end(); ++it)
+	{
+		// unregister all texture selectors from the layout
+		ui.textureSelectorRoot->layout()->removeWidget((*it).get());
+	}
+	// delete all texture selector instances
+	mTextureSelector.clear();
 }

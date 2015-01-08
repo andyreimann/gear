@@ -3,6 +3,7 @@
 #include "PropertiesTab.h"
 
 #include <G2/TextureImporter.h>
+#include <G2/Sampler.h>
 
 #include <QtWidgets/QWidget>
 #include <memory>
@@ -46,15 +47,11 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void selectEffect();
 		void addTextureSelector();
 
-		void selectTexture(int idx)
-		{
-			selectTexture(mTextureSelector[idx]);
-		}
-
-
 	private:
+		
+		void removeAllTextureSelectors();
 
-		void selectTexture(std::shared_ptr<TextureSelector>& selector);
+		void addTextureSelector(ManagedEntity* target, std::string const& imagePath, std::string const& samplerStr);
 
 		void _serializeShininess();
 		/** Reimports the given target ManagedEntity according to it's document description.
@@ -63,6 +60,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		void _reimportMaterial(ManagedEntity* target, bool reimportEffect);
 
+		void _onTextureSelected(TextureSelector*);
 
 		G2::EffectImporter		mFxImporter;		// The importer for effect files to use.
 		G2::TextureImporter 	mTextureImporter;	// The importer for textures to use.
