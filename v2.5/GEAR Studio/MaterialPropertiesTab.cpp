@@ -49,6 +49,7 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	mSpecularSelector->onColorSelected.hook(this, &MaterialPropertiesTab::_specularColorSelected);
 	ui.specularColorRoot->layout()->addWidget(mSpecularSelector.get());
 
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 MaterialPropertiesTab::~MaterialPropertiesTab()
@@ -56,6 +57,7 @@ MaterialPropertiesTab::~MaterialPropertiesTab()
 	mAmbientSelector->onColorSelected.unHookAll(this);
 	mDiffuseSelector->onColorSelected.unHookAll(this);
 	mSpecularSelector->onColorSelected.unHookAll(this);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -283,7 +285,7 @@ void MaterialPropertiesTab::_reloadColors(ManagedEntity* target)
 		.setSpecular(_getColorFromProperties(target, MAT_SPECULAR, G2::Material::SPECULAR_DEFAULT));
 }
 
-glm::vec4 MaterialPropertiesTab::_getColorFromProperties(ManagedEntity* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const
+glm::vec4 MaterialPropertiesTab::_getColorFromProperties(ManagedEntity const* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const
 {
 	Json::Value const& props = target->getProperties(mTechnicalName);
 	if (props.isMember(propertyMember))
@@ -487,4 +489,65 @@ MaterialPropertiesTab::removeAllTextureSelectors()
 	}
 	// delete all texture selector instances
 	mTextureSelector.clear();
+}
+
+void MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+{
+	if (!entity->hasProperties(mTechnicalName))
+	{
+		return; // we are not responsible for that entity
+	}
+	/************************************************************************
+	* Here we generate all the code this PropertiesTab is responsible for.	*
+	************************************************************************/
+	std::string indention = "			";
+
+	Json::Value const& props = entity->getProperties(mTechnicalName);
+
+	// good practise to enclose the generated code in {}
+	out << "		{" << std::endl;
+	{
+		out << indention << "// Material" << std::endl;
+		out << indention << "auto* rc = " << entityVar << ".addComponent<RenderComponent>();" << std::endl;
+		if (props.isMember(FX_PATH))
+		{
+			out << indention << "rc->setEffect(mFxImporter.import(mProjectRoot + \"" << props[FX_PATH].asString() << "\"));" << std::endl;
+		}
+		if (props.isMember(MAT_AMBIENT))
+		{
+			glm::vec4 c = _getColorFromProperties(entity, MAT_AMBIENT, G2::Material::AMBIENT_DEFAULT);
+			out << indention << "rc->material.setAmbient(glm::vec4(" << c.r << "f," << c.g << "f," << c.b << "f," << c.a << "f));" << std::endl;
+		}
+		if (props.isMember(MAT_DIFFUSE))
+		{
+			glm::vec4 c = _getColorFromProperties(entity, MAT_DIFFUSE, G2::Material::DIFFUSE_DEFAULT);
+			out << indention << "rc->material.setDiffuse(glm::vec4(" << c.r << "f," << c.g << "f," << c.b << "f," << c.a << "f));" << std::endl;
+		}
+		if (props.isMember(MAT_SPECULAR))
+		{
+			glm::vec4 c = _getColorFromProperties(entity, MAT_SPECULAR, G2::Material::SPECULAR_DEFAULT);
+			out << indention << "rc->material.setSpecular(glm::vec4(" << c.r << "f," << c.g << "f," << c.b << "f," << c.a << "f));" << std::endl;
+		}
+		if (props.isMember(MAT_SHININESS))
+		{
+			out << indention << "rc->material.setShininess(" << props[MAT_SHININESS].asFloat() << "f);" << std::endl;
+		}
+		if (props.isMember(TEXTURES))
+		{
+			Json::Value const& textures = props[TEXTURES];
+
+			for (unsigned int i = 0; i < textures.size(); ++i)  // Iterates over the sequence elements.
+			{
+				std::string samplerStr = textures[i][TEXTURES_SAMPLER].asString();
+				G2::Sampler::Name sampler = G2::Sampler::getSampler(samplerStr);
+				if (sampler != G2::Sampler::SAMPLER_INVALID)
+				{
+					std::string texVar = "t" + std::to_string(i);
+					out << indention << "auto " << texVar << " = mTexImporter.import(mProjectRoot + \"" << textures[i][TEXTURES_PATH].asString() << "\",G2Core::DataFormat::Internal::R32G32B32A32_F,G2Core::FilterMode::LINEAR,G2Core::FilterMode::LINEAR);" << std::endl;
+					out << indention << "rc->material.setTexture(Sampler::" << samplerStr << "," << texVar << "); " << std::endl;
+				}
+			}
+		}
+	}
+	out << "		}" << std::endl;
 }

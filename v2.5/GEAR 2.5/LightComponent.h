@@ -57,7 +57,11 @@ namespace G2
 			float		attenuation;			// The constant attenuation of the Light. Default: 1.0
 			float		linearAttenuation;		// The linear attenuation of the Light. Default: 0.0
 			float		exponentialAttenuation; // The exponential attenuation of the Light. Default: 0.0
-			
+
+			static float ATTENUATION_CONST_DEFAULT;
+			static float ATTENUATION_LIN_DEFAULT;
+			static float ATTENUATION_EXP_DEFAULT;
+
 			/** Configures the shadow mapping used by this LightComponent.
 			 * @param shadowDescriptor The descriptor to use for setting up the shadows.
 			 * @return True if the configuration of the shadow information was done, false if not.

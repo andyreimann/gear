@@ -18,7 +18,8 @@ void Game::destroy()
 }
 
 Game::Game() :
-	mCurrentScene("")
+	mCurrentScene(""),
+	mProjectRoot("../../..")
 {
 	G2::EventDistributer::onRenderFrame.hook(this, &Game::_onRenderFrame);
 }
@@ -67,20 +68,5 @@ Game::_onRenderFrame(G2::FrameInfo const&)
 		mManagedEntities = std::unordered_map<std::string,G2::Entity>();
 		// load mCurrentScene
 		_auto_generated_loadCurrentScene();
-	}
-}
-
-void
-Game::_auto_generated_loadCurrentScene()
-{
-	// IDEA: We should move this function implementation into a separate source file and keep all the rest,
-	// so that the GEAR Studio only has to regenerate the implementation of this function every time.
-	if(mCurrentScene == "")
-	{
-		// do smth.
-	}
-	else if(mCurrentScene == "")
-	{
-		// do smth.
 	}
 }

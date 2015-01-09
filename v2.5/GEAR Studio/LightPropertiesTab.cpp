@@ -13,6 +13,9 @@ static const std::string LIGHT_COL_R = "r";
 static const std::string LIGHT_COL_G = "g";
 static const std::string LIGHT_COL_B = "b";
 static const std::string LIGHT_COL_A = "a";
+static const std::string LIGHT_ATT_CONST = "att_c";
+static const std::string LIGHT_ATT_LIN = "att_l";
+static const std::string LIGHT_ATT_EXP = "att_e";
 
 LightPropertiesTab::LightPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
@@ -22,6 +25,13 @@ LightPropertiesTab::LightPropertiesTab(QWidget *parent /*= 0*/)
 	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
 
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
+	connect(ui.lightTypeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLightType(int)));
+	connect(ui.constAttenuationSlider, SIGNAL(valueChanged(int)), this, SLOT(constAttSliderChanged(int)));
+	connect(ui.constAttenuationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(constAttValueChanged(double)));
+	connect(ui.linearAttenuationSlider, SIGNAL(valueChanged(int)), this, SLOT(linearAttSliderChanged(int)));
+	connect(ui.linearAttenuationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(linearAttValueChanged(double)));
+	connect(ui.exponentialAttenuationSlider, SIGNAL(valueChanged(int)), this, SLOT(exponentialAttSliderChanged(int)));
+	connect(ui.exponentialAttenuationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(exponentialAttValueChanged(double)));
 
 	mAmbientSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::LightComponent::AMBIENT_DEFAULT, Json::Value(), this));
 	mAmbientSelector->onColorSelected.hook(this, &LightPropertiesTab::_ambientColorSelected);
@@ -34,6 +44,17 @@ LightPropertiesTab::LightPropertiesTab(QWidget *parent /*= 0*/)
 	mSpecularSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::LightComponent::SPECULAR_DEFAULT, Json::Value(), this));
 	mSpecularSelector->onColorSelected.hook(this, &LightPropertiesTab::_specularColorSelected);
 	ui.specularColorRoot->layout()->addWidget(mSpecularSelector.get());
+
+	// init light type mapping
+	mLightTypeToIndex["POSITIONAL"] = 0;
+	mLightTypeToIndex["DIRECTIONAL"] = 1;
+	mLightTypeToIndex["SPOT"] = 2;
+
+	mIndexToLightType[0] = "POSITIONAL";
+	mIndexToLightType[1] = "DIRECTIONAL";
+	mIndexToLightType[2] = "SPOT";
+
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &LightPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 LightPropertiesTab::~LightPropertiesTab()
@@ -41,6 +62,7 @@ LightPropertiesTab::~LightPropertiesTab()
 	mAmbientSelector->onColorSelected.unHookAll(this);
 	mDiffuseSelector->onColorSelected.unHookAll(this);
 	mSpecularSelector->onColorSelected.unHookAll(this);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void LightPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -66,6 +88,10 @@ void LightPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		_initColorSelector(entity, mAmbientSelector, LIGHT_AMBIENT);
 		_initColorSelector(entity, mDiffuseSelector, LIGHT_DIFFUSE);
 		_initColorSelector(entity, mSpecularSelector, LIGHT_SPECULAR);
+		// init attenuations
+		_initColorSelector(entity, mSpecularSelector, LIGHT_SPECULAR);
+
+		_initLightType(entity);
 	}
 }
 
@@ -106,6 +132,19 @@ void LightPropertiesTab::_initColorSelector(ManagedEntity* entity, std::shared_p
 	}
 }
 
+void LightPropertiesTab::_initLightType(ManagedEntity* entity)
+{
+	Json::Value& props = entity->getProperties(mTechnicalName);
+	if (!props.isMember(LIGHT_TYPE))
+	{
+		props[LIGHT_TYPE] = "POSITIONAL";
+	}
+	if (mLightTypeToIndex.count(props[LIGHT_TYPE].asString()) > 0)
+	{
+		ui.lightTypeComboBox->setCurrentIndex(mLightTypeToIndex[props[LIGHT_TYPE].asString()]);
+	}
+}
+
 void LightPropertiesTab::_initEnabledFlag(ManagedEntity* entity, std::string const& propertyMember)
 {
 	Json::Value const& props = entity->getProperties(mTechnicalName);
@@ -117,6 +156,94 @@ void LightPropertiesTab::_initEnabledFlag(ManagedEntity* entity, std::string con
 	{
 		ui.enabledCheckBox->setChecked(true);
 	}
+}
+
+void LightPropertiesTab::_initAttenuation(float value, QDoubleSpinBox* spinBox, QSlider* slider)
+{
+	spinBox->setValue((double)value);
+	slider->setValue((int)value);
+}
+
+void LightPropertiesTab::changeLightType(int idx)
+{
+	if (hasEntity())
+	{
+		Json::Value& props = mEntity->getProperties(mTechnicalName);
+		props[LIGHT_TYPE] = mIndexToLightType[idx];
+
+		mProject->getCurrentScene()->save();
+
+		_initUiWithEntity(mEntity);
+		_instantiateFromDescription(mEntity);
+	}
+}
+
+void LightPropertiesTab::constAttSliderChanged(int value)
+{
+	// sync
+	ui.constAttenuationSpinBox->blockSignals(true); ui.constAttenuationSpinBox->setValue((double)value); ui.constAttenuationSpinBox->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::constAttValueChanged(double value)
+{
+	// sync
+	ui.constAttenuationSlider->blockSignals(true); ui.constAttenuationSlider->setValue((int)value); ui.constAttenuationSlider->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::linearAttSliderChanged(int value)
+{
+	// sync
+	ui.linearAttenuationSpinBox->blockSignals(true); ui.linearAttenuationSpinBox->setValue((double)value); ui.linearAttenuationSpinBox->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::linearAttValueChanged(double value)
+{
+	// sync
+	ui.linearAttenuationSlider->blockSignals(true); ui.linearAttenuationSlider->setValue((int)value); ui.linearAttenuationSlider->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::exponentialAttSliderChanged(int value)
+{
+	// sync
+	ui.exponentialAttenuationSpinBox->blockSignals(true); ui.exponentialAttenuationSpinBox->setValue((double)value); ui.exponentialAttenuationSpinBox->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::exponentialAttValueChanged(double value)
+{
+	// sync
+	ui.exponentialAttenuationSlider->blockSignals(true); ui.exponentialAttenuationSlider->setValue((int)value); ui.exponentialAttenuationSlider->blockSignals(false);
+
+	_serializeAttenuation();
+	_reloadAttenuation(mEntity);
+	mProject->getCurrentScene()->save();
+}
+
+void LightPropertiesTab::_serializeAttenuation()
+{
+	Json::Value& props = mEntity->getProperties(mTechnicalName);
+	props[LIGHT_ATT_CONST] = (float)ui.constAttenuationSpinBox->value();
+	props[LIGHT_ATT_LIN] = (float)ui.linearAttenuationSpinBox->value();
+	props[LIGHT_ATT_EXP] = (float)ui.exponentialAttenuationSpinBox->value();
 }
 
 void LightPropertiesTab::_ambientColorSelected(ColorSelector* colorSelector)
@@ -159,6 +286,25 @@ void LightPropertiesTab::_reloadColors(ManagedEntity* target)
 	);
 }
 
+void LightPropertiesTab::_reloadAttenuation(ManagedEntity* target)
+{
+	auto* lightComp = target->getComponent<G2::LightComponent>();
+
+	Json::Value const& props = target->getProperties(mTechnicalName);
+	if (props.isMember(LIGHT_ATT_CONST))
+	{
+		lightComp->attenuation = props[LIGHT_ATT_CONST].asFloat();
+	}
+	if (props.isMember(LIGHT_ATT_LIN))
+	{
+		lightComp->linearAttenuation = props[LIGHT_ATT_LIN].asFloat();
+	}
+	if (props.isMember(LIGHT_ATT_EXP))
+	{
+		lightComp->exponentialAttenuation = props[LIGHT_ATT_EXP].asFloat();
+	}
+}
+
 G2::LightType::Name LightPropertiesTab::_getLightTypeFromProperties(ManagedEntity* target) const
 {
 	Json::Value const& props = target->getProperties(mTechnicalName);
@@ -187,7 +333,7 @@ G2::LightType::Name LightPropertiesTab::_getLightTypeFromProperties(ManagedEntit
 	return G2::LightType::POSITIONAL;
 }
 
-glm::vec4 LightPropertiesTab::_getColorFromProperties(ManagedEntity* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const
+glm::vec4 LightPropertiesTab::_getColorFromProperties(ManagedEntity const* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const
 {
 	Json::Value const& props = target->getProperties(mTechnicalName);
 	if (props.isMember(propertyMember))
@@ -219,4 +365,44 @@ void LightPropertiesTab::toggleTab()
 		ui.groupBox->show();
 	}
 	mOpen = !mOpen;
+}
+
+void LightPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+{
+	if (!entity->hasProperties(mTechnicalName))
+	{
+		return; // we are not responsible for that entity
+	}
+	/************************************************************************
+	* Here we generate all the code this PropertiesTab is responsible for.	*
+	************************************************************************/
+	std::string indention = "			";
+
+	Json::Value const& props = entity->getProperties(mTechnicalName);
+
+
+
+	// good practise to enclose the generated code in {}
+
+	if (props.isMember(LIGHT_TYPE))
+	{
+		std::string typeStr = props[LIGHT_TYPE].asString();
+		out << "		{" << std::endl;
+		{
+			out << indention << "// Light" << std::endl;
+			out << indention << "auto* lc = " << entityVar << ".addComponent<LightComponent>(LightType::" << typeStr << "); " << std::endl;
+			if (props.isMember(LIGHT_AMBIENT) || props.isMember(LIGHT_DIFFUSE) || props.isMember(LIGHT_SPECULAR))
+			{
+				glm::vec4 a = _getColorFromProperties(entity, LIGHT_AMBIENT, G2::Material::AMBIENT_DEFAULT);
+				glm::vec4 d = _getColorFromProperties(entity, LIGHT_DIFFUSE, G2::Material::DIFFUSE_DEFAULT);
+				glm::vec4 s = _getColorFromProperties(entity, LIGHT_SPECULAR, G2::Material::SPECULAR_DEFAULT);
+				out << indention << "lc->setupColor(glm::vec4(" << a.r << "f," << a.g << "f," << a.b << "f," << a.a << "f),glm::vec4(" << d.r << "f," << d.g << "f," << d.b << "f," << d.a << "f),glm::vec4(" << s.r << "f," << s.g << "f," << s.b << "f," << s.a << "f));" << std::endl;
+			}
+			if (props.isMember(LIGHT_ENABLED) && props[LIGHT_ENABLED].asBool() == false)
+			{
+				out << indention << "lc->setEnabled(false);" << std::endl;
+			}
+		}
+		out << "		}" << std::endl;
+	}
 }

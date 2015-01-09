@@ -66,7 +66,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox">
+           <widget class="QComboBox" name="lightTypeComboBox">
             <item>
              <property name="text">
               <string>Positional Light</string>
@@ -120,7 +120,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="diffuseColorRoot" stretch=""/>
+           <layout class="QHBoxLayout" name="diffuseColorRoot"/>
           </item>
           <item>
            <widget class="QLabel" name="label_4">
@@ -130,7 +130,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="specularColorRoot" stretch=""/>
+           <layout class="QHBoxLayout" name="specularColorRoot"/>
           </item>
           <item>
            <widget class="QLabel" name="label_5">
@@ -148,10 +148,17 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+             <widget class="QDoubleSpinBox" name="constAttenuationSpinBox">
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="QSlider" name="horizontalSlider">
+             <widget class="QSlider" name="constAttenuationSlider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -172,10 +179,17 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+             <widget class="QDoubleSpinBox" name="linearAttenuationSpinBox">
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="QSlider" name="horizontalSlider_2">
+             <widget class="QSlider" name="linearAttenuationSlider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -196,10 +210,14 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+             <widget class="QDoubleSpinBox" name="exponentialAttenuationSpinBox">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="QSlider" name="horizontalSlider_3">
+             <widget class="QSlider" name="exponentialAttenuationSlider">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>

@@ -54,7 +54,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void _reloadColors(ManagedEntity* target);
 		void _initColorSelector(ManagedEntity* entity, std::shared_ptr<ColorSelector>& colorSelector, std::string const& propertyMember);
 
-		glm::vec4 _getColorFromProperties(ManagedEntity* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const;
+		glm::vec4 _getColorFromProperties(ManagedEntity const* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const;
 
 		void removeAllTextureSelectors();
 
@@ -74,6 +74,8 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void _rebuildTextures();
 
 		QColor _toQColor(glm::vec4 const& gearColor) const;
+
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
 
 		G2::EffectImporter		mFxImporter;		// The importer for effect files to use.
 		G2::TextureImporter 	mTextureImporter;	// The importer for textures to use.

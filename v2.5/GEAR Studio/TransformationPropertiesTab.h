@@ -44,6 +44,9 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 
 		void _onTranslationHandleMoved();
 		void _onTranslationHandleReleased();
+
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
+
 		/** Writes a given value into the selected entities property assigned to this Tab.
 		 * @param group The group key to use for the write operation.
 		 * @param component The component key to use for the write operation.

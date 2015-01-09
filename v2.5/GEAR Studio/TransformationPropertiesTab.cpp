@@ -39,6 +39,7 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	// register to Editor events
 	GEARStudioEvents::onTranslationHandleMoved.hook(this, &TransformationPropertiesTab::_onTranslationHandleMoved);
 	GEARStudioEvents::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTranslationHandleReleased);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 
@@ -46,6 +47,7 @@ TransformationPropertiesTab::~TransformationPropertiesTab()
 {
 	GEARStudioEvents::onTranslationHandleMoved.unHookAll(this);
 	GEARStudioEvents::onTranslationHandleReleased.unHookAll(this);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -230,4 +232,45 @@ TransformationPropertiesTab::_onTranslationHandleReleased()
 		mTranslationHandleChanged = false;
 		mProject->getCurrentScene()->save();
 	}
+}
+
+
+
+void TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+{
+	if (!entity->hasProperties(mTechnicalName))
+	{
+		return; // we are not responsible for that entity
+	}
+	/************************************************************************
+	* Here we generate all the code this PropertiesTab is responsible for.	*
+	************************************************************************/
+	std::string indention = "			";
+
+	Json::Value const& props = entity->getProperties(mTechnicalName);
+
+	// good practise to enclose the generated code in {}
+	out << "		{" << std::endl;
+	{
+		out << indention << "// Transformation" << std::endl;
+		out << indention << "auto* trans = " << entityVar << ".addComponent<TransformComponent>();" << std::endl;
+		if (props.isMember(TRANS_POSITION))
+		{
+			out << indention << "trans->setPosition(glm::vec3(" << props[TRANS_POSITION]["x"].asFloat() << "f," << props[TRANS_POSITION]["y"].asFloat() << "f," << props[TRANS_POSITION]["z"].asFloat() << "f));" << std::endl;
+		}
+
+		if (props.isMember(TRANS_ORIENTATION))
+		{
+			out << indention << "glm::quat rotation;" << std::endl;
+			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["y"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["z"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			out << indention << "trans->setRotation(rotation);" << std::endl;
+		}
+		if (props.isMember(TRANS_SCALE))
+		{
+			out << indention << "trans->setScale(glm::vec3(" << props[TRANS_SCALE]["x"].asFloat() << "f, " << props[TRANS_SCALE]["y"].asFloat() << "f," << props[TRANS_SCALE]["z"].asFloat() << "f));" << std::endl;
+		}
+	}
+	out << "		}" << std::endl;
 }

@@ -73,24 +73,38 @@ Project::loadScene(std::string const& sceneFile)
 
 void Project::exportProject()
 {
+	GEARStudioEvents::onLog(INFO, "Generate and compile project");
 
 	std::ofstream out(mProjectDirectory + "/generated-src/Game_generated.cpp");
+
+	// set some global settings
+	out.setf(std::ios::fixed, std::ios::floatfield);
+	out.precision(6);
+
 	out << "#include <Game.h>" << std::endl;
+	out << "#include <glm/ext.hpp>" << std::endl;
+	out << "using namespace G2;" << std::endl;
 	out << "void Game::_auto_generated_loadCurrentScene()" << std::endl;
 	out << "{" << std::endl;
 
 	out << "	if(mCurrentScene == \"" << mCurrentScene->getName() << "\")" << std::endl;
 	out << "	{" << std::endl;
 
-	// generate code for initializing all entities and push them into mManagedEntities
-
+	// export scene
 	out << (*(mCurrentScene.get()));
-
-
-
 
 	out << "	}" << std::endl;
 
 	out << "}" << std::endl;
 	out.close();
+
+	// call premake
+	std::string premakeCmd = mProjectDirectory.substr(0, 2) + " && cd " + mProjectDirectory + " && " + "premake5.exe --file=premake.lua vs2013";
+	system(premakeCmd.c_str());
+
+
+	std::string compileCmd = "\"" + mProjectDirectory.substr(0, 2) + " && cd " + mProjectDirectory + " && \"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe\" \"GEAR Studio Sample.sln\" /Build \"Debug|x64\" /Out gear.out /Log gear.log\"";
+	int status = system(compileCmd.c_str());
+
+	GEARStudioEvents::onLog(INFO, "Compilation has exited with code " + std::to_string(status));
 }

@@ -36,6 +36,17 @@ class LightPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		virtual void _instantiateFromDescription(ManagedEntity* entity) override;
 	private slots:
+		void changeLightType(int idx);
+
+		void constAttSliderChanged(int value);
+		void constAttValueChanged(double value);
+
+		void linearAttSliderChanged(int value);
+		void linearAttValueChanged(double value);
+
+		void exponentialAttSliderChanged(int value);
+		void exponentialAttValueChanged(double value);
+
 		/** Toggles the folding state of the tab.
 		*/
 		void toggleTab();
@@ -46,18 +57,19 @@ class LightPropertiesTab : public QWidget, public PropertiesTab
 		void _specularColorSelected(ColorSelector* colorSelector);
 		void _colorSelected(ColorSelector* colorSelector, std::string const& targetProperty);
 		void _reloadColors(ManagedEntity* target);
+		void _reloadAttenuation(ManagedEntity* target);
 
 		void _initColorSelector(ManagedEntity* entity, std::shared_ptr<ColorSelector>& colorSelector, std::string const& propertyMember);
 		void _initEnabledFlag(ManagedEntity* entity, std::string const& propertyMember);
+		void _initLightType(ManagedEntity* entity);
+		void _initAttenuation(float value, QDoubleSpinBox* spinBox, QSlider* slider);
 
-		/** Reimports the given target ManagedEntity according to it's document description.
-		 * This function will reimport the mesh with the defined settings.
-		 * Make sure to have all settings saved in the description inside the ManagedEntity before you call this function.
-		 */
-		void _reimportMesh(ManagedEntity* target);
+		void _serializeAttenuation();
 
 		G2::LightType::Name _getLightTypeFromProperties(ManagedEntity* target) const;
-		glm::vec4 _getColorFromProperties(ManagedEntity* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const;
+		glm::vec4 _getColorFromProperties(ManagedEntity const* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const;
+
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
 
 		bool					mOpen;				// The flag if the tab is opened or not.
 		Ui::LightPropertiesTab	ui;					// The Qt UI class for the project creation dialog
@@ -65,4 +77,7 @@ class LightPropertiesTab : public QWidget, public PropertiesTab
 		std::shared_ptr<ColorSelector> mAmbientSelector;
 		std::shared_ptr<ColorSelector> mDiffuseSelector;
 		std::shared_ptr<ColorSelector> mSpecularSelector;
+
+		std::map<std::string, int>	   mLightTypeToIndex;
+		std::map<int, std::string>	   mIndexToLightType;
 };

@@ -7,13 +7,13 @@
 #include <G2/GEAR.h>
 #include <G2/FBXImporter.h>
 #include <G2/MD5Importer.h>
+#include <G2/EffectImporter.h>
+#include <G2/TextureImporter.h>
 
 namespace G2
 {
 	/** This singleton class defines an environment to access the currently
 	 * loaded scene objects and to load new scenes.
-	 * @created	2014/12/11
-	 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 	 */
 	class Game
 	{
@@ -62,7 +62,10 @@ namespace G2
 
 			std::unordered_map<std::string,G2::Entity> 	mManagedEntities;
 
+			std::string 			mProjectRoot;		// The project root directory not ending with a slash
 			G2::FBXImporter			mFbxImporter;		// The importer for FBX-Meshes to use.
 			G2::MD5Importer			mMd5Importer;		// The importer for MD5-Meshes to use.
+			G2::EffectImporter		mFxImporter;		// The importer for Effects to use.
+			G2::TextureImporter		mTexImporter;		// The importer for textures to use.
 	};
 };

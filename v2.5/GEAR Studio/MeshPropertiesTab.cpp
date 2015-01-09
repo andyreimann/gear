@@ -189,24 +189,12 @@ void MeshPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* 
 
 	Json::Value const& props = entity->getProperties(mTechnicalName);
 
-	/*
-	mFbxImporter.import(
-			mProjectDirectory + props.get(MESH_PATH, "").asString(),
-			props.get(IMPORT_NORMALS, true).asBool(),
-			props.get(IMPORT_TEX_COORDS, true).asBool(),
-			false, // NO ANIMATIONS SO FAR!
-			props.get(FLIP_TEX_U, false).asBool(),
-			props.get(FLIP_TEX_V, false).asBool(),
-			nullptr,
-			target);
-	*/
-
 	if (props.isMember(MESH_PATH))
 	{
 		// good practise to enclose the generated code in {}
 		out << "		{" << std::endl;
 		{
-			out << indention << "// MeshPropertiesTab" << std::endl;
+			out << indention << "// Mesh" << std::endl;
 			out << indention <<
 				"mFbxImporter.import(" <<
 					"mProjectRoot + \"" << props[MESH_PATH].asString() << "\"," <<

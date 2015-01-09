@@ -5,7 +5,7 @@ solution "##PROJECTNAME##"
   location ""
   targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
   libdirs { "##GEARLIBDIR##", "lib/%{cfg.platform}/%{cfg.buildcfg}" }
-  includedirs { ".", "##GEARINCDIR##" }
+  includedirs { "src","generated-src", "##GEARINCDIR##" }
   defines { "_CRT_SECURE_NO_WARNINGS" }
 
   configuration "Debug"
@@ -28,7 +28,7 @@ solution "##PROJECTNAME##"
     location "src"
     targetname "GameRuntime"
     files { "src/**.h","src/**.cpp","generated-src/**.h","generated-src/**.cpp" }
-    links { "GEARCore", "GEAR" }
+    links { "GEARCore", "GEAR", "libfbxsdk-md.lib" }
 
     defines { "DLL_EXPORTS" }
 
