@@ -49,6 +49,8 @@ class MeshPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		void _reimportMesh(ManagedEntity* target);
 
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
+
 		G2::FBXImporter			mFbxImporter;		// The importer for FBX-Meshes to use.
 		G2::MD5Importer			mMd5Importer;		// The importer for MD5-Meshes to use.
 		bool					mOpen;				// The flag if the tab is opened or not.

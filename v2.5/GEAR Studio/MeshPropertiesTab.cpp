@@ -27,12 +27,12 @@ MeshPropertiesTab::MeshPropertiesTab(QWidget *parent /*= 0*/)
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
 	connect(ui.selectMesh, SIGNAL(clicked()), this, SLOT(selectMesh()));
 
-	//GEARStudioEvents::onManagedEntitySelected.hook(this, &MeshPropertiesTab::_init);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MeshPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 MeshPropertiesTab::~MeshPropertiesTab()
 {
-	//GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void MeshPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -173,5 +173,52 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 		// by assigning all layers except the used ones of the editor
 		auto renderComponent = target->getComponent<G2::RenderComponent>();
 		renderComponent->setRenderLayerMask(~EditorGeometryManager::gEditorGeometryLayers);
+	}
+}
+
+void MeshPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+{
+	if (!entity->hasProperties(mTechnicalName))
+	{
+		return; // we are not responsible for that entity
+	}
+	/************************************************************************
+	 * Here we generate all the code this PropertiesTab is responsible for.	*
+	 ************************************************************************/
+	std::string indention = "			";
+
+	Json::Value const& props = entity->getProperties(mTechnicalName);
+
+	/*
+	mFbxImporter.import(
+			mProjectDirectory + props.get(MESH_PATH, "").asString(),
+			props.get(IMPORT_NORMALS, true).asBool(),
+			props.get(IMPORT_TEX_COORDS, true).asBool(),
+			false, // NO ANIMATIONS SO FAR!
+			props.get(FLIP_TEX_U, false).asBool(),
+			props.get(FLIP_TEX_V, false).asBool(),
+			nullptr,
+			target);
+	*/
+
+	if (props.isMember(MESH_PATH))
+	{
+		// good practise to enclose the generated code in {}
+		out << "		{" << std::endl;
+		{
+			out << indention << "// MeshPropertiesTab" << std::endl;
+			out << indention <<
+				"mFbxImporter.import(" <<
+					"mProjectRoot + \"" << props[MESH_PATH].asString() << "\"," <<
+					props.get(IMPORT_NORMALS, true).asString() << "," <<
+					props.get(IMPORT_TEX_COORDS, true).asString() << "," <<
+					"false" << "/* no animations so far! */, " <<
+					props.get(FLIP_TEX_U, false).asString() << "," <<
+					props.get(FLIP_TEX_V, false).asString() << "," <<
+					"nullptr" << ", " <<
+					"&" << entityVar <<
+				");" << std::endl;
+		}
+		out << "		}" << std::endl;
 	}
 }

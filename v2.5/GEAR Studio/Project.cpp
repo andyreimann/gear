@@ -2,12 +2,22 @@
 #include "GEARStudioEvents.h"
 
 #include <G2/StringTools.h>
+#include <fstream>
 
 Project::Project(std::string const& projectDirectory) :
 	JsonDeserializer(projectDirectory + "/project.json"),
 	JsonSerializer(projectDirectory + "/project.json"),
 	mProjectDirectory(projectDirectory)
 {
+}
+
+Project::~Project()
+{
+	// unload existing scene and replace with new scene
+	if (mCurrentScene.get() != nullptr)
+	{
+		GEARStudioEvents::onSceneUnloaded(mCurrentScene.get());
+	}
 }
 
 void
@@ -61,12 +71,26 @@ Project::loadScene(std::string const& sceneFile)
 	}
 }
 
-
-Project::~Project()
+void Project::exportProject()
 {
-	// unload existing scene and replace with new scene
-	if (mCurrentScene.get() != nullptr)
-	{
-		GEARStudioEvents::onSceneUnloaded(mCurrentScene.get());
-	}
+
+	std::ofstream out(mProjectDirectory + "/generated-src/Game_generated.cpp");
+	out << "#include <Game.h>" << std::endl;
+	out << "void Game::_auto_generated_loadCurrentScene()" << std::endl;
+	out << "{" << std::endl;
+
+	out << "	if(mCurrentScene == \"" << mCurrentScene->getName() << "\")" << std::endl;
+	out << "	{" << std::endl;
+
+	// generate code for initializing all entities and push them into mManagedEntities
+
+	out << (*(mCurrentScene.get()));
+
+
+
+
+	out << "	}" << std::endl;
+
+	out << "}" << std::endl;
+	out.close();
 }

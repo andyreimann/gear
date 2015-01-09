@@ -9,6 +9,12 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <algorithm>
 
+std::ofstream& operator<<(std::ofstream& out, Scene const& scene)
+{
+	scene.generateEntityInitializationCode(out);
+	return out;
+}
+
 Scene::Scene(std::string projectDirectory, std::string const& sceneFile) :
 	JsonDeserializer(sceneFile),
 	JsonSerializer(sceneFile),
@@ -102,58 +108,6 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 	}
 }
 
-//void
-//Scene::_initComponentFromJson(Json::Value const& componentDesc, ManagedEntity* entity)
-//{
-//	if (componentDesc.isMember("type"))
-//	{
-//		std::string type = componentDesc["type"].asString();
-//		if ("G2::RenderComponent" == type)
-//		{
-//			auto* comp = entity->addComponent<G2::RenderComponent>();
-//
-//			std::string meshPath = componentDesc["mesh"].asString();
-//			std::transform(meshPath.begin(), meshPath.end(), meshPath.begin(), ::tolower);
-//			if (boost::algorithm::ends_with(meshPath, "fbx"))
-//			{
-//				// load with FBX importer and let him attach the imported mesh to the entity pointer
-//				mFbxImporter.import(mProjectDirectory + "/" + componentDesc["mesh"].asString(), true, true, true, false, false, nullptr, entity);
-//			}
-//		}
-//		else if ("G2::LightComponent" == type)
-//		{
-//			if (componentDesc["light"]["type"].asString() == "DIRECTIONAL")
-//			{
-//				auto* comp = entity->addComponent<G2::LightComponent>(G2::LightType::DIRECTIONAL);
-//
-//				comp->diffuse = glm::vec4(
-//					componentDesc["light"]["diffuse"]["x"].asFloat(),
-//					componentDesc["light"]["diffuse"]["y"].asFloat(),
-//					componentDesc["light"]["diffuse"]["z"].asFloat(),
-//					componentDesc["light"]["diffuse"]["a"].asFloat()
-//					);
-//				comp->attenuation = componentDesc["light"]["attenuation"]["constant"].asFloat();
-//				comp->linearAttenuation = componentDesc["light"]["attenuation"]["linear"].asFloat();
-//				comp->exponentialAttenuation = componentDesc["light"]["attenuation"]["exponential"].asFloat();
-//			}
-//
-//		}
-//		else if ("G2::TransformComponent" == type)
-//		{
-//			auto* comp = entity->addComponent<G2::TransformComponent>();
-//
-//			if (componentDesc.isMember("rotation"))
-//			{
-//				comp->rotateAxis(componentDesc["rotation"]["angle"].asFloat(), glm::vec3(
-//					componentDesc["rotation"]["axis"]["x"].asFloat(),
-//					componentDesc["rotation"]["axis"]["y"].asFloat(),
-//					componentDesc["rotation"]["axis"]["z"].asFloat()
-//				));
-//			}
-//		}
-//	}
-//}
-
 void
 Scene::load()
 {
@@ -191,8 +145,22 @@ Scene::save()
 	}
 }
 
-std::string
-Scene::getName() const
+std::string Scene::getName() const
 {
 	return mResource["name"].asString();
+}
+
+void Scene::generateEntityInitializationCode(std::ofstream& out) const
+{
+	std::string indention = "		";
+	std::stringstream name;
+	for (auto it = mLoadedEntities.begin(); it != mLoadedEntities.end(); ++it)
+	{
+		std::string entityVar = "e" + std::to_string(it->second.getId());
+		out << indention << "// START '" << it->first << "'" << std::endl;
+		out << indention << "mManagedEntities[\"" << it->first << "\"] = std::move(G2::Entity());" << std::endl; // create entity instance
+		out << indention << "auto& " << entityVar << " = mManagedEntities[\"" << it->first << "\"];" << std::endl; // create accessor
+		GEARStudioEvents::onGenerateCppCodeForManagedEntity(&it->second, entityVar, out);
+		out << indention << "// END '" << it->first << "'" << std::endl;
+	}
 }

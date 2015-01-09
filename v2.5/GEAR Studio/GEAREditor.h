@@ -37,11 +37,12 @@ class GEAREditor : public QMainWindow
 		void openProject();		// Menu callback for opening an existing project
 		void createManagedEntity();
 		void addPropertyByIndex(int index);
-
+		void exportAndStartProject();
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
 		void _onSceneLoaded(Scene* scene);
 		void _onManagedEntitySelected(ManagedEntity* entity);
+		
 
 		Ui::GEAREditorClass ui;												// The Qt UI object for the main editor.
 		std::unique_ptr<ProjectCreation>			mNewProjectDialog;		// A pointer to the dialog for creating a new Project.

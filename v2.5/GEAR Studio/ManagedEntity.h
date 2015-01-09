@@ -49,11 +49,17 @@ class ManagedEntity : public G2::Entity
 		 * @note If the given properties entry does not exist, a new empty one will be created!
 		 */
 		Json::Value& getProperties(std::string technicalName) { return mEntityDesc["properties"][technicalName]; }
+		/** This function will return a reference to the properties object registered on the given technicalName.
+		 * @param technicalName The technical name to get the properties for.
+		 * @return The properties object registered on the given technicalName.
+		 * @note If the given properties entry does not exist, an empty Json::Value will be returned!
+		 */
+		Json::Value getProperties(std::string technicalName) const { return mEntityDesc["properties"][technicalName]; }
 		/** This function will check if there is a properties entry set on the given technicalName.
 		* @param technicalName The technical name to get the properties for.
 		* @return True if the given properties entry is set, false if not.
 		*/
-		bool hasProperties(std::string technicalName) { return mEntityDesc["properties"].isMember(technicalName); }
+		bool hasProperties(std::string technicalName) const { return mEntityDesc["properties"].isMember(technicalName); }
 		/** This function will remove the 
 		* @param technicalName The technical name to get the properties for.
 		* @return A reference to the properties object registered on the given technicalName.

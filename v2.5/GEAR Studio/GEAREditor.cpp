@@ -28,6 +28,7 @@ GEAREditor::GEAREditor(QWidget *parent)
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
 	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
 	connect(ui.addPropertyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(addPropertyByIndex(int)));
+	connect(ui.playButton, SIGNAL(clicked()), this, SLOT(exportAndStartProject()));
 
 	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
 	GEARStudioEvents::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
@@ -68,8 +69,7 @@ GEAREditor::~GEAREditor()
 	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 }
 
-void
-GEAREditor::connectToGEARCore()
+void GEAREditor::connectToGEARCore()
 {
 	// lost default scene
 	((GLContext*)ui.renderSurface)->createEditorCamera();
@@ -79,8 +79,7 @@ GEAREditor::connectToGEARCore()
 	((GLContext*)ui.renderSurface)->setEditorGeometryManager(mEditorGeometryManager);
 }
 
-void
-GEAREditor::newProject()
+void GEAREditor::newProject()
 {
 	std::cout << "Creating new Project" << std::endl;
 	mNewProjectDialog = std::unique_ptr<ProjectCreation>(new ProjectCreation(this));
@@ -88,8 +87,7 @@ GEAREditor::newProject()
 	mNewProjectDialog->show();
 }
 
-void
-GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
+void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 {
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
@@ -100,8 +98,7 @@ GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 	mProject->loadLastScene();
 }
 
-void
-GEAREditor::openProject()
+void GEAREditor::openProject()
 {
 
 	QString directory = QFileDialog::getExistingDirectory(this,
@@ -109,8 +106,7 @@ GEAREditor::openProject()
 	_openProjectFromDirectory(directory.toStdString());
 }
 
-void
-GEAREditor::createManagedEntity()
+void GEAREditor::createManagedEntity()
 {
 	if (mProject.get() != nullptr && mProject->getCurrentScene().get() != nullptr)
 	{
@@ -124,14 +120,20 @@ GEAREditor::createManagedEntity()
 	}
 }
 
-void
-GEAREditor::_onSceneLoaded(Scene* scene)
+void GEAREditor::exportAndStartProject()
+{
+	if (mProject.get() != nullptr)
+	{
+		mProject->exportProject();
+	}
+}
+
+void GEAREditor::_onSceneLoaded(Scene* scene)
 {
 	ui.sceneNameLabel->setText(scene->getName().c_str());
 }
 
-void
-GEAREditor::_onManagedEntitySelected(ManagedEntity* entity)
+void GEAREditor::_onManagedEntitySelected(ManagedEntity* entity)
 {
 	if (entity == nullptr)
 	{
@@ -143,8 +145,7 @@ GEAREditor::_onManagedEntitySelected(ManagedEntity* entity)
 	}
 }
 
-void
-GEAREditor::addPropertyByIndex(int index)
+void GEAREditor::addPropertyByIndex(int index)
 {
 	std::cout << "Selected index " << index << std::endl;
 

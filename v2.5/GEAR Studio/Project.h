@@ -21,6 +21,10 @@ class Project : public JsonDeserializer, JsonSerializer
 		/** This will load all resources from the last scene, which was opened.
 		 */
 		void loadLastScene();
+		/** This function will trigger a full export of the project, which will generate all source files
+		 * and prepare them for compilation.
+		 */
+		void exportProject();
 		
 		void loadScene(std::string const& sceneFile);
 

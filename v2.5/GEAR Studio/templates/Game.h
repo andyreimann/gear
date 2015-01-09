@@ -5,6 +5,8 @@
 #include <unordered_map>
 
 #include <G2/GEAR.h>
+#include <G2/FBXImporter.h>
+#include <G2/MD5Importer.h>
 
 namespace G2
 {
@@ -59,5 +61,8 @@ namespace G2
 			bool 		mLoadScene;
 
 			std::unordered_map<std::string,G2::Entity> 	mManagedEntities;
+
+			G2::FBXImporter			mFbxImporter;		// The importer for FBX-Meshes to use.
+			G2::MD5Importer			mMd5Importer;		// The importer for MD5-Meshes to use.
 	};
 };

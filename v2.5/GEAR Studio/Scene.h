@@ -6,6 +6,7 @@
 #include <G2/EffectImporter.h>
 
 #include <unordered_map>
+#include <fstream>
 
 
 /** This class holds all information about a Scene.
@@ -27,6 +28,10 @@ class Scene : public JsonDeserializer, JsonSerializer
 		/** Saves the Scene in it's current state into it's Json file.
 		 */
 		void save();
+		/** This function will generate the C++ code to instantiate the entities contained in the Scene.
+		* @param out The file stream to write the code to
+		*/
+		void generateEntityInitializationCode(std::ofstream& out) const;
 		/** This function will try to create a new entity in the scene with the given name.
 		 * @param name The name of the entity to create.
 		 * @return A pointer to the newly created entity or nullptr, if an entity with the given name already exists.
@@ -54,3 +59,5 @@ class Scene : public JsonDeserializer, JsonSerializer
 		// importer 
 		G2::EffectImporter			mEffectImporter;
 };
+
+std::ofstream& operator<<(std::ofstream&, Scene const& scene);

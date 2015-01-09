@@ -13,3 +13,4 @@ G2::Event<LogLevel, std::string const&>				GEARStudioEvents::onLog;
 G2::Event<unsigned int, G2::Intersection const&>	GEARStudioEvents::onEditorHandleSelected;
 G2::Event<>											GEARStudioEvents::onTranslationHandleMoved;
 G2::Event<>											GEARStudioEvents::onTranslationHandleReleased;
+G2::Event<ManagedEntity const*, std::string const&, std::ofstream&> GEARStudioEvents::onGenerateCppCodeForManagedEntity;
