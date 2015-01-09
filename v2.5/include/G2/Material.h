@@ -107,7 +107,12 @@ namespace G2
 			 * The ShaderView is the view on the data of the material as it is seen by a Shader.
 			 * @return The ShaderView of the Material.
 			 */
-			G2Core::ShaderView::Material* getShaderView() { return &mMaterialData;  }
+			G2Core::ShaderView::Material* getShaderView() { return &mMaterialData; }
+
+			static glm::vec4 AMBIENT_DEFAULT;
+			static glm::vec4 DIFFUSE_DEFAULT;
+			static glm::vec4 SPECULAR_DEFAULT;
+			static float SHININESS_DEFAULT;
 		private:
 			void _updateTransparencyFlag();
 			/** This function will set the entity id the Material is connected to.

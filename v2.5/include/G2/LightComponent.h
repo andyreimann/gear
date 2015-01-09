@@ -72,6 +72,10 @@ namespace G2
 			 */
 			std::shared_ptr<LightEffectState> const& getLightEffectState() const { return mLightEffectState; }
 
+			static glm::vec4 AMBIENT_DEFAULT;
+			static glm::vec4 DIFFUSE_DEFAULT;
+			static glm::vec4 SPECULAR_DEFAULT;
+
 		private:
 			/** This function is called from the RenderSystem whenever a Pass
 			 * will be rendered, which is attached to a LightComponent.

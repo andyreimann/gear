@@ -171,7 +171,7 @@
           <x>0</x>
           <y>0</y>
           <width>130</width>
-          <height>410</height>
+          <height>629</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -199,12 +199,12 @@
            </item>
            <item>
             <property name="text">
-             <string>Animation</string>
+             <string>Mesh</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>C++ Scripts</string>
+             <string>Transformation</string>
             </property>
            </item>
            <item>
@@ -214,12 +214,17 @@
            </item>
            <item>
             <property name="text">
-             <string>Mesh</string>
+             <string>Light</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Transformation</string>
+             <string>Animation</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>C++ Scripts</string>
             </property>
            </item>
           </widget>

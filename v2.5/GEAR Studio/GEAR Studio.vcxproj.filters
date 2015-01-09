@@ -37,6 +37,7 @@
     <ClInclude Include="TranslationHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorSelector.cpp" />
     <ClCompile Include="ComponentListItemModel.cpp" />
     <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="EditorGeometryManager.cpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="JsonDeserializer.cpp" />
     <ClCompile Include="JsonSerializer.cpp" />
+    <ClCompile Include="LightPropertiesTab.cpp" />
     <ClCompile Include="LoggingTab.cpp" />
     <ClCompile Include="MaterialPropertiesTab.cpp" />
     <ClCompile Include="MeshPropertiesTab.cpp" />
@@ -57,6 +59,9 @@
     <ClCompile Include="TransformationPropertiesTab.cpp" />
     <ClCompile Include="TranslationHandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="obj\x32\Debug\moc_ColorSelector.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ComponentListItemModel.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
@@ -67,6 +72,9 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_GLContext.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_LightPropertiesTab.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_LoggingTab.cpp">
@@ -90,6 +98,9 @@
     <ClCompile Include="obj\x32\Debug\qrc_geareditor.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ColorSelector.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_ComponentListItemModel.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -100,6 +111,9 @@
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_GLContext.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_LightPropertiesTab.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_LoggingTab.cpp">
@@ -123,6 +137,9 @@
     <ClCompile Include="obj\x32\Release\qrc_geareditor.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ColorSelector.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ComponentListItemModel.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
@@ -133,6 +150,9 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_GLContext.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_LightPropertiesTab.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_LoggingTab.cpp">
@@ -156,6 +176,9 @@
     <ClCompile Include="obj\x64\Debug\qrc_geareditor.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ColorSelector.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_ComponentListItemModel.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -166,6 +189,9 @@
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_GLContext.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_LightPropertiesTab.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_LoggingTab.cpp">
@@ -191,10 +217,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="ColorSelector.h" />
+    <CustomBuild Include="ColorSelector.ui" />
     <CustomBuild Include="ComponentListItemModel.h" />
     <CustomBuild Include="ComponentListView.h" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
+    <CustomBuild Include="LightPropertiesTab.h" />
+    <CustomBuild Include="LightPropertiesTab.ui" />
     <CustomBuild Include="LoggingTab.h" />
     <CustomBuild Include="LoggingTab.ui" />
     <CustomBuild Include="MaterialPropertiesTab.h" />

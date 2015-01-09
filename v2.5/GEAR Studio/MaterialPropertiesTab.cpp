@@ -19,6 +19,10 @@ static const std::string MAT_SHININESS = "sh";
 static const std::string TEXTURES = "tex";
 static const std::string TEXTURES_PATH = "path";
 static const std::string TEXTURES_SAMPLER = "sampler";
+static const std::string MAT_COL_R = "r";
+static const std::string MAT_COL_G = "g";
+static const std::string MAT_COL_B = "b";
+static const std::string MAT_COL_A = "a";
 
 MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
@@ -28,14 +32,30 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
 
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
-	connect(ui.ambientSelect, SIGNAL(clicked()), this, SLOT(selectAmbient()));
-	connect(ui.diffuseSelect, SIGNAL(clicked()), this, SLOT(selectDiffuse()));
-	connect(ui.specularSelect, SIGNAL(clicked()), this, SLOT(selectSpecular()));
 	connect(ui.shininessSlider, SIGNAL(valueChanged(int)), this, SLOT(shininessSliderChanged(int)));
 	connect(ui.shininessValue, SIGNAL(valueChanged(double)), this, SLOT(shininessValueChanged(double)));
 	connect(ui.effectSelect, SIGNAL(clicked()), this, SLOT(selectEffect()));
 	connect(ui.addTextureSelector, SIGNAL(clicked()), this, SLOT(addTextureSelector()));
 
+	mAmbientSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::Material::AMBIENT_DEFAULT, Json::Value(), this));
+	mAmbientSelector->onColorSelected.hook(this, &MaterialPropertiesTab::_ambientColorSelected);
+	ui.ambientColorRoot->layout()->addWidget(mAmbientSelector.get());
+
+	mDiffuseSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::Material::DIFFUSE_DEFAULT, Json::Value(), this));
+	mDiffuseSelector->onColorSelected.hook(this, &MaterialPropertiesTab::_diffuseColorSelected);
+	ui.diffuseColorRoot->layout()->addWidget(mDiffuseSelector.get());
+
+	mSpecularSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::Material::SPECULAR_DEFAULT, Json::Value(), this));
+	mSpecularSelector->onColorSelected.hook(this, &MaterialPropertiesTab::_specularColorSelected);
+	ui.specularColorRoot->layout()->addWidget(mSpecularSelector.get());
+
+}
+
+MaterialPropertiesTab::~MaterialPropertiesTab()
+{
+	mAmbientSelector->onColorSelected.unHookAll(this);
+	mDiffuseSelector->onColorSelected.unHookAll(this);
+	mSpecularSelector->onColorSelected.unHookAll(this);
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -60,45 +80,10 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		// here we check for every member we expect inside of our property.
 		// If one is absent, we just initialize it to it's default value.
 
-
-		QPalette pal;
-		QColor color(50, 50, 50, 255); // default ambient
-		if (props.isMember(MAT_AMBIENT))
-		{
-			color = QColor(
-				props[MAT_AMBIENT]["r"].asInt(),
-				props[MAT_AMBIENT]["g"].asInt(),
-				props[MAT_AMBIENT]["b"].asInt(),
-				props[MAT_AMBIENT]["a"].asInt());
-		}
-		pal.setColor(QPalette::Background, color);
-		ui.ambientSurf->blockSignals(true); ui.ambientSurf->setPalette(pal); ui.ambientSurf->blockSignals(false);
-
-		pal = QPalette();
-		color = QColor(255, 255, 255, 255); // default diffuse
-		if (props.isMember(MAT_DIFFUSE))
-		{
-			color = QColor(
-				props[MAT_DIFFUSE]["r"].asInt(),
-				props[MAT_DIFFUSE]["g"].asInt(),
-				props[MAT_DIFFUSE]["b"].asInt(),
-				props[MAT_DIFFUSE]["a"].asInt());
-		}
-		pal.setColor(QPalette::Background, color);
-		ui.diffuseSurf->blockSignals(true); ui.diffuseSurf->setPalette(pal); ui.diffuseSurf->blockSignals(false);
-
-		pal = QPalette();
-		color = QColor(0, 0, 0, 255); // default specular
-		if (props.isMember(MAT_SPECULAR))
-		{
-			color = QColor(
-				props[MAT_SPECULAR]["r"].asInt(),
-				props[MAT_SPECULAR]["g"].asInt(),
-				props[MAT_SPECULAR]["b"].asInt(),
-				props[MAT_SPECULAR]["a"].asInt());
-		}
-		pal.setColor(QPalette::Background, color);
-		ui.specularSurf->blockSignals(true); ui.specularSurf->setPalette(pal); ui.specularSurf->blockSignals(false);
+		// init colors
+		_initColorSelector(entity, mAmbientSelector, MAT_AMBIENT);
+		_initColorSelector(entity, mDiffuseSelector, MAT_DIFFUSE);
+		_initColorSelector(entity, mSpecularSelector, MAT_SPECULAR);
 
 		float shininess = 0.f; // default shininess
 		if (props.isMember(MAT_SHININESS))
@@ -134,6 +119,29 @@ void MaterialPropertiesTab::_instantiateFromDescription(ManagedEntity* entity)
 {
 	// do everything the MeshPropertiesTab should do on a ManagedEntity
 	_reimportMaterial(entity, true);
+}
+
+QColor MaterialPropertiesTab::_toQColor(glm::vec4 const& gearColor) const
+{
+	return QColor(
+		(int)(gearColor.r * 255.f),
+		(int)(gearColor.g * 255.f),
+		(int)(gearColor.b * 255.f),
+		(int)(gearColor.a * 255.f)
+		);
+}
+
+void MaterialPropertiesTab::_initColorSelector(ManagedEntity* entity, std::shared_ptr<ColorSelector>& colorSelector, std::string const& propertyMember)
+{
+	Json::Value const& props = entity->getProperties(mTechnicalName);
+	if (props.isMember(propertyMember))
+	{
+		colorSelector->setData(props[propertyMember]);
+	}
+	else
+	{
+		colorSelector->setData(Json::Value());
+	}
 }
 
 void MaterialPropertiesTab::toggleTab()
@@ -186,39 +194,16 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 	* property we need for initialization of the UI of this tab.			*
 	************************************************************************/
 
-	// here we check for every member we expect inside of our property.
-	// If one is absent, we just initialize it to it's default value.
-	if (props.isMember(MAT_AMBIENT))
-	{
-		glm::vec4 col(
-			props[MAT_AMBIENT].get("r", "0.0").asInt() / 255.f,
-			props[MAT_AMBIENT].get("g", "0.0").asInt() / 255.f,
-			props[MAT_AMBIENT].get("b", "0.0").asInt() / 255.f,
-			props[MAT_AMBIENT].get("a", "0.0").asInt() / 255.f);
-		renderComp->material.setAmbient(col);
-	}
-	if (props.isMember(MAT_DIFFUSE))
-	{
-		glm::vec4 col(
-			props[MAT_DIFFUSE].get("r", "0.0").asInt() / 255.f,
-			props[MAT_DIFFUSE].get("g", "0.0").asInt() / 255.f,
-			props[MAT_DIFFUSE].get("b", "0.0").asInt() / 255.f,
-			props[MAT_DIFFUSE].get("a", "0.0").asInt() / 255.f);
-		renderComp->material.setDiffuse(col);
-	}
-	if (props.isMember(MAT_SPECULAR))
-	{
-		glm::vec4 col(
-			props[MAT_SPECULAR].get("r", "0.0").asInt() / 255.f,
-			props[MAT_SPECULAR].get("g", "0.0").asInt() / 255.f,
-			props[MAT_SPECULAR].get("b", "0.0").asInt() / 255.f,
-			props[MAT_SPECULAR].get("a", "0.0").asInt() / 255.f);
-		renderComp->material.setSpecular(col);
-	}
+
+	// set all the colors
+	_reloadColors(target);
+
 	if (props.isMember(MAT_SHININESS))
 	{
 		renderComp->material.setShininess(props[MAT_SHININESS].asFloat());
 	}
+
+	/*
 	if (props.isMember(FX_PATH))
 	{
 		auto effect = mFxImporter.import(mProjectDirectory + props.get(FX_PATH, "").asString());
@@ -228,6 +213,7 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 			// TODO Log warning?
 		}
 	}
+	*/
 
 	removeAllTextureSelectors();
 
@@ -256,93 +242,66 @@ void MaterialPropertiesTab::_reimportMaterial(ManagedEntity* target, bool reimpo
 }
 
 void
-MaterialPropertiesTab::selectAmbient()
+MaterialPropertiesTab::_ambientColorSelected(ColorSelector* colorSelector)
 {
-	Json::Value& props = mEntity->getProperties(mTechnicalName);
+	_colorSelected(colorSelector, MAT_AMBIENT);
+}
 
-	// calculate the selected alpha separately, since it is not stored in the background palette.
-	int alpha = 255;
-	if (props.isMember(MAT_AMBIENT))
+void
+MaterialPropertiesTab::_diffuseColorSelected(ColorSelector* colorSelector)
+{
+	_colorSelected(colorSelector, MAT_DIFFUSE);
+}
+
+void
+MaterialPropertiesTab::_specularColorSelected(ColorSelector* colorSelector)
+{
+	_colorSelected(colorSelector, MAT_SPECULAR);
+}
+
+void MaterialPropertiesTab::_colorSelected(ColorSelector* colorSelector, std::string const& targetProperty)
+{
+	if (hasEntity() && colorSelector != nullptr)
 	{
-		alpha = props[MAT_AMBIENT]["a"].asInt();
-	}
-	QColor color = ui.ambientSurf->palette().color(QPalette::Background);
-	color.setAlpha(alpha);
-	color = QColorDialog::getColor(color, this, "Select ambient color", QColorDialog::ShowAlphaChannel);
+		auto* renderComp = mEntity->getComponent<G2::RenderComponent>();
+		Json::Value& props = mEntity->getProperties(mTechnicalName);
+		props[targetProperty] = colorSelector->getData();
 
-	if (color.isValid())
-	{
-		QPalette pal;
-		pal.setColor(QPalette::Background, color);
-		ui.diffuseSurf->setPalette(pal);
+		_reloadColors(mEntity);
 
-		props[MAT_AMBIENT]["r"] = color.red();
-		props[MAT_AMBIENT]["g"] = color.green();
-		props[MAT_AMBIENT]["b"] = color.blue();
-		props[MAT_AMBIENT]["a"] = color.alpha();
-		_reimportMaterial(mEntity, false);
 		mProject->getCurrentScene()->save();
 	}
 }
 
-void
-MaterialPropertiesTab::selectDiffuse()
+void MaterialPropertiesTab::_reloadColors(ManagedEntity* target)
 {
-	Json::Value& props = mEntity->getProperties(mTechnicalName);
+	auto* renderComp = target->getComponent<G2::RenderComponent>();
 
-	// calculate the selected alpha separately, since it is not stored in the background palette.
-	int alpha = 255;
-	if (props.isMember(MAT_DIFFUSE))
-	{
-		alpha = props[MAT_DIFFUSE]["a"].asInt();
-	}
-	QColor color = ui.diffuseSurf->palette().color(QPalette::Background);
-	color.setAlpha(alpha);
-	color = QColorDialog::getColor(color, this, "Select diffuse color", QColorDialog::ShowAlphaChannel);
-
-	if (color.isValid())
-	{
-		QPalette pal;
-		pal.setColor(QPalette::Background, color);
-		ui.diffuseSurf->setPalette(pal);
-
-		props[MAT_DIFFUSE]["r"] = color.red();
-		props[MAT_DIFFUSE]["g"] = color.green();
-		props[MAT_DIFFUSE]["b"] = color.blue();
-		props[MAT_DIFFUSE]["a"] = color.alpha();
-		_reimportMaterial(mEntity, false);
-		mProject->getCurrentScene()->save();
-	}
+	renderComp->material
+		.setAmbient(_getColorFromProperties(target, MAT_AMBIENT, G2::Material::AMBIENT_DEFAULT))
+		.setDiffuse(_getColorFromProperties(target, MAT_DIFFUSE, G2::Material::DIFFUSE_DEFAULT))
+		.setSpecular(_getColorFromProperties(target, MAT_SPECULAR, G2::Material::SPECULAR_DEFAULT));
 }
 
-void
-MaterialPropertiesTab::selectSpecular()
+glm::vec4 MaterialPropertiesTab::_getColorFromProperties(ManagedEntity* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const
 {
-	Json::Value& props = mEntity->getProperties(mTechnicalName);
-
-	// calculate the selected alpha separately, since it is not stored in the background palette.
-	int alpha = 255;
-	if (props.isMember(MAT_SPECULAR))
+	Json::Value const& props = target->getProperties(mTechnicalName);
+	if (props.isMember(propertyMember))
 	{
-		alpha = props[MAT_SPECULAR]["a"].asInt();
+		if (props[propertyMember].isMember(MAT_COL_R) &&
+			props[propertyMember].isMember(MAT_COL_G) &&
+			props[propertyMember].isMember(MAT_COL_B) &&
+			props[propertyMember].isMember(MAT_COL_A))
+		{
+			return glm::vec4(
+				props[propertyMember][MAT_COL_R].asInt() / 255.f,
+				props[propertyMember][MAT_COL_G].asInt() / 255.f,
+				props[propertyMember][MAT_COL_B].asInt() / 255.f,
+				props[propertyMember][MAT_COL_A].asInt() / 255.f
+				);
+		}
 	}
-	QColor color = ui.specularSurf->palette().color(QPalette::Background);
-	color.setAlpha(alpha);
-	color = QColorDialog::getColor(color, this, "Select specular color", QColorDialog::ShowAlphaChannel);
-
-	if (color.isValid())
-	{
-		QPalette pal;
-		pal.setColor(QPalette::Background, color);
-		ui.specularSurf->setPalette(pal);
-
-		props[MAT_SPECULAR]["r"] = color.red();
-		props[MAT_SPECULAR]["g"] = color.green();
-		props[MAT_SPECULAR]["b"] = color.blue();
-		props[MAT_SPECULAR]["a"] = color.alpha();
-		_reimportMaterial(mEntity, false);
-		mProject->getCurrentScene()->save();
-	}
+	return defaultValue;
 }
 
 void MaterialPropertiesTab::shininessSliderChanged(int value)

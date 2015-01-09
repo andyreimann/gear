@@ -7,6 +7,7 @@
 #include "MeshPropertiesTab.h"
 #include "TransformationPropertiesTab.h"
 #include "MaterialPropertiesTab.h"
+#include "LightPropertiesTab.h"
 
 #include <QtWidgets/QFileDialog>
 #include <sstream>
@@ -49,6 +50,11 @@ GEAREditor::GEAREditor(QWidget *parent)
 	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(materialTab));
 	ui.propertiesRoot->layout()->addWidget(materialTab);
 	materialTab->hide();
+
+	auto* lightTab = new LightPropertiesTab(ui.propertiesRoot);
+	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(lightTab));
+	ui.propertiesRoot->layout()->addWidget(lightTab);
+	lightTab->hide();
 
 
 	mLoggingTab = std::unique_ptr<LoggingTab>(new LoggingTab(this));

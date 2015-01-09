@@ -9,14 +9,19 @@
 
 using namespace G2;
 
+glm::vec4 Material::AMBIENT_DEFAULT = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+glm::vec4 Material::DIFFUSE_DEFAULT = glm::vec4(1.f, 1.f, 1.f, 1.f);
+glm::vec4 Material::SPECULAR_DEFAULT = glm::vec4(0.f, 0.f, 0.f, 1.f);
+float Material::SHININESS_DEFAULT = 1.f;
+
 Material::Material() 
 	: mIsTransparent(false),
 	mEntityId(Entity::UNINITIALIZED_ENTITY_ID)
 {
-	mMaterialData.ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	mMaterialData.diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	mMaterialData.specular = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	mMaterialData.shininess = 0.f;
+	mMaterialData.ambient = AMBIENT_DEFAULT;
+	mMaterialData.diffuse = DIFFUSE_DEFAULT;
+	mMaterialData.specular = SPECULAR_DEFAULT;
+	mMaterialData.shininess = SHININESS_DEFAULT;
 }
 
 Material::Material(Material && rhs) 
@@ -39,6 +44,10 @@ Material& Material::operator=(Material && rhs)
 	// copy and increment the version!
 	setVersion(rhs.getVersion()+1);
 	rhs.mEntityId = Entity::UNINITIALIZED_ENTITY_ID;
+	rhs.mMaterialData.ambient = AMBIENT_DEFAULT;
+	rhs.mMaterialData.diffuse = DIFFUSE_DEFAULT;
+	rhs.mMaterialData.specular = SPECULAR_DEFAULT;
+	rhs.mMaterialData.shininess = SHININESS_DEFAULT;
 	return *this;
 }
 

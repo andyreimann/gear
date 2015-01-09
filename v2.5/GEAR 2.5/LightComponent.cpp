@@ -8,7 +8,6 @@
 #include <G2Core/ECSManager.h>
 #include <glm/ext.hpp>
 
- 
 static  glm::mat4 BIAS( 0.5f, 0.0f, 0.0f, 0.0f, 
 						0.0f, 0.5f, 0.0f, 0.0f,
 						0.0f, 0.0f, 0.5f, 0.0f,
@@ -16,11 +15,15 @@ static  glm::mat4 BIAS( 0.5f, 0.0f, 0.0f, 0.0f,
 
 using namespace G2;
 
+glm::vec4 LightComponent::AMBIENT_DEFAULT = glm::vec4(0.f, 0.f, 0.f, 0.f);
+glm::vec4 LightComponent::DIFFUSE_DEFAULT = glm::vec4(1.f, 1.f, 1.f, 1.f);
+glm::vec4 LightComponent::SPECULAR_DEFAULT = glm::vec4(1.f, 1.f, 1.f, 1.f);
+
 LightComponent::LightComponent(LightType::Name type)
 	: mType(type),
-	ambient(0.f,0.f,0.f,0.f),
-	diffuse(1.f,1.f,1.f,1.f),
-	specular(1.f,1.f,1.f,1.f),
+	ambient(AMBIENT_DEFAULT),
+	diffuse(DIFFUSE_DEFAULT),
+	specular(SPECULAR_DEFAULT),
 	mEnabled(true),
 	cutOffDegrees(360.f),
 	attenuation(1.f),

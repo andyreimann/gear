@@ -64,25 +64,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
-          <item>
-           <widget class="QWidget" name="ambientSurf" native="true">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="ambientSelect">
-            <property name="text">
-             <string>Select</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="ambientColorRoot" stretch=""/>
         </item>
         <item>
          <widget class="QLabel" name="label_2">
@@ -92,25 +74,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
-          <item>
-           <widget class="QWidget" name="diffuseSurf" native="true">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="diffuseSelect">
-            <property name="text">
-             <string>Select</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="diffuseColorRoot" stretch=""/>
         </item>
         <item>
          <widget class="QLabel" name="label_3">
@@ -120,25 +84,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
-          <item>
-           <widget class="QWidget" name="specularSurf" native="true">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="specularSelect">
-            <property name="text">
-             <string>Select</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="specularColorRoot" stretch=""/>
         </item>
         <item>
          <widget class="QLabel" name="label_4">
@@ -154,8 +100,11 @@
             <property name="decimals">
              <number>0</number>
             </property>
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
             <property name="maximum">
-             <double>1280.000000000000000</double>
+             <double>128.000000000000000</double>
             </property>
            </widget>
           </item>

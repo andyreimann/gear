@@ -78,7 +78,7 @@ Ubershader "GEAR/Default" {
           vec3 e = normalize(dataIn.eye);
 
           // set color to ambient material term
-          outColor = g2_ambient * texture(_diffuseTex, dataIn.texCoord);
+          outColor = g2_ambient;
 
           int i = 0;
           for(int i = 0; i < G2ActiveLights; ++i)
@@ -86,43 +86,18 @@ Ubershader "GEAR/Default" {
             if(light[i].position.w == 0.0)
             {
               // directional light
-              float intensity = max(dot(n,light[i].direction), 0.0);
+              float intensity = max(dot(n,normalize(vec3(light[i].direction))), 0.0);
 
               // if the vertex is lit compute the specular color
               if (intensity > 0.0) 
               {
-                float shadowMultiplier = 1.0;
-                if(light[i].type == 0)
-                {
-                  // CSM
-                  int csmIndex = getCascadeIndex(i);
-                  // transform this fragment's position from eye space to scaled light clip space
-                  // such that the xy coordinates are in [0;1]
-                  // note there is no need to divide by w for othogonal light sources
-                  vec4 shadowCoord = light[i].eyeToLightClip[csmIndex]*vec4(-dataIn.eye, 1.0);
-                  // store the depth
-                  shadowCoord.w = shadowCoord.z;
-                
-                  // tell glsl in which layer to do the look up
-                  shadowCoord.z = float(csmIndex);
-
-
-                  shadowMultiplier = shadow2DArray(_csmTex, shadowCoord).x;
-                  float diff = shadowMultiplier - shadowCoord.w;
-                  // smoothen the result a bit, to avoid aliasing at shadow contact point
-                  shadowMultiplier = clamp( diff*250.0 + 1.0, 0.0, 1.0);
-                }
                 // compute the half vector
                 vec3 h = normalize(light[i].direction + e);
                 // compute the specular term into spec
                 float intSpec = max(dot(h,n), 0.0);
-                spec = shadowMultiplier * light[i].specular * g2_specular * pow(intSpec,g2_shininess);
-                outColor += max(shadowMultiplier * intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
+                spec = light[i].specular * g2_specular * pow(intSpec,g2_shininess);
               }
-              else
-              {
-                outColor += light[i].ambient;
-              }
+              outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
             }
             else if(light[i].cosCutoff < 1.0)
             {
@@ -152,7 +127,6 @@ Ubershader "GEAR/Default" {
                 }
               }
               outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
-              //outColor = vec4(1.f,0.f,0.f,1.f);
             }
             else
             {
@@ -166,14 +140,6 @@ Ubershader "GEAR/Default" {
               l = normalize(l);
               float shadowDepth = texture(_shadowTex, -l).r; // pass l normalized for lookup
 
-              if( texDepth >= shadowDepth && texDepth < 1.0 )
-              {
-                // texel in shadow
-                outColor += light[i].ambient; // only ambient light component influences
-              }
-              else
-              {
-
                 float intensity = max(dot(n,l), 0.0);
                 if (intensity > 0.0) 
                 {
@@ -185,10 +151,9 @@ Ubershader "GEAR/Default" {
                   spec = att * light[i].specular * g2_specular * pow(intSpec, g2_shininess);
                 }
                 outColor += max(intensity * light[i].diffuse * g2_diffuse + spec, light[i].ambient);
-              }
-
             }
           }
+          outColor *= texture(_diffuseTex, dataIn.texCoord);
         }
    }
  }
