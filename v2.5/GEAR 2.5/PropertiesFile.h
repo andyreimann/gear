@@ -26,7 +26,13 @@ namespace G2
 			* @param defaultValue The default value to return in case the setting is not present.
 			*/
 			G2::Setting const& getSetting(std::string const& name, std::string const& defaultValue = "");
+			/** Sets the given setting to the given value.
+			 * @param name The name of the setting to set.
+			 * @param value The value of the setting.
+			 */
+			void setSetting(std::string const& name, std::string const& value);
 
+			void serialize(std::string const& file) const;
 		private:
 			// private members
 

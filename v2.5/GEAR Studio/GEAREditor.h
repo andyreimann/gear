@@ -38,6 +38,8 @@ class GEAREditor : public QMainWindow
 		void createManagedEntity();
 		void addPropertyByIndex(int index);
 		void exportAndStartProject();
+		void openLastProject();
+
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
 		void _onSceneLoaded(Scene* scene);

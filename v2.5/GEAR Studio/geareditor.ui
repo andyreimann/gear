@@ -39,8 +39,15 @@
      </property>
      <addaction name="actionProject"/>
     </widget>
+    <widget class="QMenu" name="menuOpenRecent">
+     <property name="title">
+      <string>Open recent...</string>
+     </property>
+     <addaction name="actionRecently_opened_Projects"/>
+    </widget>
     <addaction name="menuNew"/>
     <addaction name="actionOpen_2"/>
+    <addaction name="menuOpenRecent"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -331,6 +338,14 @@
   <action name="actionOpen_2">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionRecently_opened_Projects">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Recently opened Projects</string>
    </property>
   </action>
  </widget>

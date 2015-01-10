@@ -60,6 +60,14 @@ GEAREditor::GEAREditor(QWidget *parent)
 
 	mLoggingTab = std::unique_ptr<LoggingTab>(new LoggingTab(this));
 	ui.loggingRoot->layout()->addWidget(mLoggingTab.get());
+
+
+	auto& lastProject = mStudioProperties.getSetting("lastproject", "").value;
+	if (lastProject != "")
+	{
+		QAction* menuAction = ui.menuOpenRecent->addAction(lastProject.c_str());
+		connect(menuAction, SIGNAL(triggered()), this, SLOT(openLastProject()));
+	}
 }
 
 GEAREditor::~GEAREditor()
@@ -89,6 +97,11 @@ void GEAREditor::newProject()
 
 void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 {
+	if (projectDirectory != "")
+	{
+		mStudioProperties.setSetting("lastproject", projectDirectory);
+		mStudioProperties.serialize("settings.conf");
+	}
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
 	// fire event that a new project is opened
@@ -100,10 +113,15 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 
 void GEAREditor::openProject()
 {
-
 	QString directory = QFileDialog::getExistingDirectory(this,
 		tr("Select Project Directory"), QDir::currentPath());
 	_openProjectFromDirectory(directory.toStdString());
+}
+
+void GEAREditor::openLastProject()
+{
+	auto& lastProject = mStudioProperties.getSetting("lastproject", "").value;
+	_openProjectFromDirectory(lastProject);
 }
 
 void GEAREditor::createManagedEntity()
