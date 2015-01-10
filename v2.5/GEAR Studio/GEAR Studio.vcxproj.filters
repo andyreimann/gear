@@ -43,6 +43,7 @@
     <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="EditorGeometryManager.cpp" />
     <ClCompile Include="EditorGrid.cpp" />
+    <ClCompile Include="FileSelector.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
     <ClCompile Include="GEARStudioEvents.cpp" />
     <ClCompile Include="GEARStudioSettings.cpp" />
@@ -68,6 +69,9 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_FileSelector.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_GEAREditor.cpp">
@@ -109,6 +113,9 @@
     <ClCompile Include="obj\x32\Release\moc_ComponentListView.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_FileSelector.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_GEAREditor.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -146,6 +153,9 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_FileSelector.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_GEAREditor.cpp">
@@ -187,6 +197,9 @@
     <ClCompile Include="obj\x64\Release\moc_ComponentListView.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_FileSelector.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_GEAREditor.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -223,6 +236,8 @@
     <CustomBuild Include="ColorSelector.ui" />
     <CustomBuild Include="ComponentListItemModel.h" />
     <CustomBuild Include="ComponentListView.h" />
+    <CustomBuild Include="FileSelector.h" />
+    <CustomBuild Include="FileSelector.ui" />
     <CustomBuild Include="GEAREditor.h" />
     <CustomBuild Include="GLContext.h" />
     <CustomBuild Include="LightPropertiesTab.h" />

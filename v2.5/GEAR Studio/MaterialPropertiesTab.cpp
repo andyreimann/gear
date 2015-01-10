@@ -11,7 +11,8 @@
 #include <algorithm>
 
 // TODO Should these identifier be compiled into a separated DLL?
-static const std::string FX_PATH = "fx_path";
+static const std::string FX = "fx";
+static const std::string FX_PATH = "path";
 static const std::string MAT_AMBIENT = "amb";
 static const std::string MAT_DIFFUSE = "dif";
 static const std::string MAT_SPECULAR = "spe";
@@ -34,7 +35,6 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
 	connect(ui.shininessSlider, SIGNAL(valueChanged(int)), this, SLOT(shininessSliderChanged(int)));
 	connect(ui.shininessValue, SIGNAL(valueChanged(double)), this, SLOT(shininessValueChanged(double)));
-	connect(ui.effectSelect, SIGNAL(clicked()), this, SLOT(selectEffect()));
 	connect(ui.addTextureSelector, SIGNAL(clicked()), this, SLOT(addTextureSelector()));
 
 	mAmbientSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::Material::AMBIENT_DEFAULT, Json::Value(), this));
@@ -48,6 +48,10 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	mSpecularSelector = std::shared_ptr<ColorSelector>(new ColorSelector(G2::Material::SPECULAR_DEFAULT, Json::Value(), this));
 	mSpecularSelector->onColorSelected.hook(this, &MaterialPropertiesTab::_specularColorSelected);
 	ui.specularColorRoot->layout()->addWidget(mSpecularSelector.get());
+
+	mEffectSelector = std::shared_ptr<FileSelector>(new FileSelector("/assets/shader", Json::Value(), mProjectDirectory, "GEAR Effect (*.g2fx)", this));
+	mEffectSelector->onFileSelected.hook(this, &MaterialPropertiesTab::_effectSelected);
+	ui.effectFileRoot->layout()->addWidget(mEffectSelector.get());
 
 	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
@@ -93,15 +97,15 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 			shininess = props[MAT_SHININESS].asFloat();
 		}
 		ui.shininessValue->blockSignals(true); ui.shininessValue->setValue(shininess); ui.shininessValue->blockSignals(false);
-		if (props.isMember(FX_PATH))
+
+		if (props.isMember(FX))
 		{
-			ui.effectPath->setText(props[FX_PATH].asCString());
+			mEffectSelector->setData(props[FX]);
 		}
 		else
 		{
-			ui.effectPath->setText("");
+			mEffectSelector->setData(Json::Value());
 		}
-		
 		removeAllTextureSelectors();
 
 		// import textures
@@ -275,6 +279,18 @@ void MaterialPropertiesTab::_colorSelected(ColorSelector* colorSelector, std::st
 	}
 }
 
+void MaterialPropertiesTab::_effectSelected(FileSelector* fileSelector)
+{
+	if (hasEntity() && fileSelector != nullptr)
+	{
+		Json::Value& props = mEntity->getProperties(mTechnicalName);
+		props[FX] = fileSelector->getData();
+		// release the caching entry for the effect to reimport it from scratch
+		mFxImporter.clearCache(mProjectDirectory + props[FX][FX_PATH].asString());
+		mProject->getCurrentScene()->save();
+	}
+}
+
 void MaterialPropertiesTab::_reloadColors(ManagedEntity* target)
 {
 	auto* renderComp = target->getComponent<G2::RenderComponent>();
@@ -332,40 +348,6 @@ void MaterialPropertiesTab::_serializeShininess()
 {
 	Json::Value& props = mEntity->getProperties(mTechnicalName);
 	props[MAT_SHININESS] = (float)ui.shininessValue->value();
-}
-
-void MaterialPropertiesTab::selectEffect()
-{
-	if (hasEntity())
-	{
-		std::string dialogDir = mProjectDirectory + "/assets/shader";
-		QString effectPath = QFileDialog::getOpenFileName(this, "Select effect file", dialogDir.c_str(), "GEAR Effect (*.g2fx)");
-		if (!effectPath.isNull())
-		{
-			Json::Value& props = mEntity->getProperties(mTechnicalName);
-			// 
-			std::string fullPath = effectPath.toStdString();
-
-			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
-			{
-				std::cout << "[Effect] Selected file is not contained in the project directory!" << std::endl;
-			}
-			else
-			{
-				// strip project directory
-				boost::replace_first(fullPath, mProjectDirectory, "");
-				props[FX_PATH] = fullPath;
-
-				// update ui
-				ui.effectPath->setText(fullPath.c_str());
-
-				// release the caching entry for the effect to reimport it from scratch
-				mFxImporter.clearCache(mProjectDirectory + fullPath);
-				_reimportMaterial(mEntity, true);
-				mProject->getCurrentScene()->save();
-			}
-		}
-	}
 }
 
 void
@@ -509,9 +491,9 @@ void MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity con
 	{
 		out << indention << "// Material" << std::endl;
 		out << indention << "auto* rc = " << entityVar << ".addComponent<RenderComponent>();" << std::endl;
-		if (props.isMember(FX_PATH))
+		if (props.isMember(FX) && props[FX].isMember(FX_PATH))
 		{
-			out << indention << "rc->setEffect(mFxImporter.import(mProjectRoot + \"" << props[FX_PATH].asString() << "\"));" << std::endl;
+			out << indention << "rc->setEffect(mFxImporter.import(mProjectRoot + \"" << props[FX][FX_PATH].asString() << "\"));" << std::endl;
 		}
 		if (props.isMember(MAT_AMBIENT))
 		{

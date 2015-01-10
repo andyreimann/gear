@@ -2,6 +2,7 @@
 #include "ui_MaterialPropertiesTab.h"
 #include "PropertiesTab.h"
 #include "ColorSelector.h"
+#include "FileSelector.h"
 
 #include <G2/TextureImporter.h>
 #include <G2/Sampler.h>
@@ -42,7 +43,6 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 
 		void shininessSliderChanged(int value);
 		void shininessValueChanged(double value);
-		void selectEffect();
 		void addTextureSelector();
 
 	private:
@@ -51,6 +51,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		void _diffuseColorSelected(ColorSelector* colorSelector);
 		void _specularColorSelected(ColorSelector* colorSelector);
 		void _colorSelected(ColorSelector* colorSelector, std::string const& targetProperty);
+		void _effectSelected(FileSelector* fileSelector);
 		void _reloadColors(ManagedEntity* target);
 		void _initColorSelector(ManagedEntity* entity, std::shared_ptr<ColorSelector>& colorSelector, std::string const& propertyMember);
 
@@ -87,4 +88,6 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		std::shared_ptr<ColorSelector> mAmbientSelector;
 		std::shared_ptr<ColorSelector> mDiffuseSelector;
 		std::shared_ptr<ColorSelector> mSpecularSelector;
+
+		std::shared_ptr<FileSelector>	mEffectSelector;
 };

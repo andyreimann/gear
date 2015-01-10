@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>303</width>
-    <height>325</height>
+    <height>225</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -64,7 +64,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="ambientColorRoot" stretch=""/>
+         <layout class="QHBoxLayout" name="ambientColorRoot"/>
         </item>
         <item>
          <widget class="QLabel" name="label_2">
@@ -74,7 +74,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="diffuseColorRoot" stretch=""/>
+         <layout class="QHBoxLayout" name="diffuseColorRoot"/>
         </item>
         <item>
          <widget class="QLabel" name="label_3">
@@ -84,7 +84,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="specularColorRoot" stretch=""/>
+         <layout class="QHBoxLayout" name="specularColorRoot"/>
         </item>
         <item>
          <widget class="QLabel" name="label_4">
@@ -128,22 +128,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0">
-          <item>
-           <widget class="QLineEdit" name="effectPath">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="effectSelect">
-            <property name="text">
-             <string>Select</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="effectFileRoot" stretch=""/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="textureSelectorRoot"/>

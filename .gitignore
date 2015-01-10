@@ -317,3 +317,7 @@ v2.5/GEAR Studio/templates/x64/Debug/GEARLauncher.exe
 v2.5/bin/x64/Debug/GEARStudio.exe
 tests/bin/x64/Debug/Spline Animation Test.exe
 tests/bin/x64/Debug/Terrain Test.exe
+v2.5/GEAR Launcher/GEAR Launcher.vcxproj
+v2.5/GEAR Launcher/GEAR Launcher.vcxproj.user
+v2.5/GEAR Launcher/obj/x32/Debug/GEAR Launcher.vcxprojResolveAssemblyReference.cache
+v2.5/GEAR Launcher/obj/x64/Debug/GEAR Launcher.vcxprojResolveAssemblyReference.cache
