@@ -14,7 +14,7 @@ static const std::string IMPORT_NORMALS = "normals";
 static const std::string IMPORT_TEX_COORDS = "tex_coords";
 static const std::string FLIP_TEX_U = "flip_tex_u";
 static const std::string FLIP_TEX_V = "flip_tex_v";
-static const std::string MESH_PATH = "mesh_path";
+static const std::string MESH_PATH = "path";
 static const std::string RENDER_LAYER = "render_layer";
 
 MeshPropertiesTab::MeshPropertiesTab(QWidget *parent /*= 0*/)
@@ -25,7 +25,10 @@ MeshPropertiesTab::MeshPropertiesTab(QWidget *parent /*= 0*/)
 	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
 
 	connect(ui.tabToggle, SIGNAL(clicked()), this, SLOT(toggleTab()));
-	connect(ui.selectMesh, SIGNAL(clicked()), this, SLOT(selectMesh()));
+
+	mMeshSelector = std::shared_ptr<FileSelector>(new FileSelector("/assets/meshes", Json::Value(), mProjectDirectory, "FBX (*.fbx);;MD5 (*.md5)", this));
+	mMeshSelector->onFileSelected.hook(this, &MeshPropertiesTab::_meshSelected);
+	ui.meshFileRoot->layout()->addWidget(mMeshSelector.get());
 
 	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MeshPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
@@ -55,7 +58,9 @@ void MeshPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 
 		// here we check for every member we expect inside of our property.
 		// If one is absent, we just initialize it to it's default value.
-		ui.meshPath->setText(props.get(MESH_PATH, "").asCString());
+
+		mMeshSelector->setData(props);
+
 		ui.flipUTexCoord->setChecked(props.get(FLIP_TEX_U, false).asBool());
 		ui.flipVTexCoord->setChecked(props.get(FLIP_TEX_V, false).asBool());
 	}
@@ -80,36 +85,19 @@ void MeshPropertiesTab::toggleTab()
 	mOpen = !mOpen;
 }
 
-void MeshPropertiesTab::selectMesh()
+void MeshPropertiesTab::_meshSelected(FileSelector* fileSelector)
 {
-	if (hasEntity())
+	if (hasEntity() && fileSelector != nullptr)
 	{
-		std::string dialogDir = mProjectDirectory + "/assets/meshes";
-		QString meshPath = QFileDialog::getOpenFileName(this, "Select mesh file", dialogDir.c_str(), "FBX (*.fbx);;MD5 (*.md5)");
-		if (!meshPath.isNull())
-		{
-			Json::Value& props = mEntity->getProperties(mTechnicalName);
-			// 
-			std::string fullPath = meshPath.toStdString();
-			
-			if (!boost::algorithm::starts_with(fullPath, mProjectDirectory))
-			{
-				std::cout << "[Mesh] Selected file is not contained in the project directory!" << std::endl;
-			}
-			else
-			{
-				// strip project directory
-				boost::replace_first(fullPath, mProjectDirectory, "");
-				props[MESH_PATH] = fullPath;
-				props[FLIP_TEX_U] = ui.flipUTexCoord->isChecked();
-				props[FLIP_TEX_V] = ui.flipVTexCoord->isChecked();
+		Json::Value& props = mEntity->getProperties(mTechnicalName);
+		props[MESH_PATH] = fileSelector->getData()[MESH_PATH];
+		// release the caching entry for the effect to reimport it from scratch
+		mFbxImporter.clearCache(mProjectDirectory + props[MESH_PATH].asString());
+		mMd5Importer.clearCache(mProjectDirectory + props[MESH_PATH].asString());
+		// after mesh is selected, reimport the mesh to update the RenderComponent
+		_reimportMesh(mEntity);
 
-				// after mesh is selected, reimport the mesh to update the RenderComponent
-				_reimportMesh(mEntity);
-
-				mProject->getCurrentScene()->save();
-			}
-		}
+		mProject->getCurrentScene()->save();
 	}
 }
 

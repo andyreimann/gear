@@ -88,6 +88,5 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 		std::shared_ptr<ColorSelector> mAmbientSelector;
 		std::shared_ptr<ColorSelector> mDiffuseSelector;
 		std::shared_ptr<ColorSelector> mSpecularSelector;
-
 		std::shared_ptr<FileSelector>	mEffectSelector;
 };

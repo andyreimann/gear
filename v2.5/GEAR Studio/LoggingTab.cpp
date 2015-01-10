@@ -1,5 +1,6 @@
 #include "LoggingTab.h"
 #include "GEARStudioEvents.h"
+#include <QtWidgets/QFileDialog>
 
 const std::string currentDateTime() 
 {
@@ -18,7 +19,12 @@ LoggingTab::LoggingTab(QWidget *parent /*= 0*/)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+
+	connect(ui.clearLogsButton, SIGNAL(clicked()), this, SLOT(clearAll()));
+	connect(ui.saveLogsButton, SIGNAL(clicked()), this, SLOT(saveLogs()));
+
 	GEARStudioEvents::onLog.hook(this, &LoggingTab::_onLog);
+	GEARStudioEvents::onProjectOpened.hook(this, &LoggingTab::_onProjectOpened);
 }
 
 LoggingTab::~LoggingTab()
@@ -36,4 +42,45 @@ void LoggingTab::_onLog(LogLevel, std::string const& msg)
 	ui.tableWidget->setItem(row, 1, new QTableWidgetItem(currentDateTime().c_str()));
 	ui.tableWidget->setItem(row, 2, new QTableWidgetItem(msg.c_str()));
 	ui.tableWidget->scrollToBottom();
+}
+
+void LoggingTab::clearAll()
+{
+	while (ui.tableWidget->rowCount() > 0)
+	{
+		ui.tableWidget->removeRow(0);
+	}
+}
+
+void
+LoggingTab::saveLogs()
+{
+	if (ui.tableWidget->rowCount() == 0)
+	{
+		return;
+	}
+	QString logFilePath = QFileDialog::getSaveFileName(this, "Select file to save to", mProjectDirectory.c_str(), "Log-Files (*.log *.txt)");
+
+	std::ofstream out(logFilePath.toStdString());
+	for (int i = 0; i < ui.tableWidget->rowCount(); ++i)
+	{
+		out << 
+			ui.tableWidget->item(i, 1)->text().toStdString() << " - " <<
+			ui.tableWidget->item(i, 0)->text().toStdString() << " - " <<
+			ui.tableWidget->item(i, 2)->text().toStdString() << std::endl;
+	}
+	out.close();
+}
+
+void
+LoggingTab::_onProjectOpened(Project* project)
+{
+	if (project != nullptr)
+	{
+		mProjectDirectory = project->getProjectDirectory();
+	}
+	else
+	{
+		mProjectDirectory = "";
+	}
 }

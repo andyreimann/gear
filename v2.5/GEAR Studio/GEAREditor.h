@@ -40,6 +40,9 @@ class GEAREditor : public QMainWindow
 		void addPropertyByIndex(int index);
 		void exportAndStartProject();
 		void openLastProject();
+		void renderSolid();
+		void renderWire();
+		void renderPoint();
 
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
@@ -57,6 +60,7 @@ class GEAREditor : public QMainWindow
 		std::unique_ptr<LoggingTab>					mLoggingTab;
 		GEARStudioSettings							mStudioSettings;		// The settings of the GEAR Studio
 
+		ManagedEntity*								mEntity;
 };
 
 #endif // GEAREDITOR_H

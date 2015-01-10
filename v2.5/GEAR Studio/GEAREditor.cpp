@@ -14,7 +14,8 @@
 
 GEAREditor::GEAREditor(QWidget *parent)
 	: QMainWindow(parent),
-	mStudioSettings("settings.json")
+	mStudioSettings("settings.json"),
+	mEntity(nullptr)
 {
 	ui.setupUi(this);
 
@@ -25,7 +26,13 @@ GEAREditor::GEAREditor(QWidget *parent)
 	auto* model = new ComponentListItemModel();
 	ui.componentListView->setModel(model);
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
+	connect(ui.newProjectButton, SIGNAL(clicked()), this, SLOT(newProject()));
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
+	connect(ui.openProjectButton, SIGNAL(clicked()), this, SLOT(openProject()));
+	connect(ui.renderSolidButton, SIGNAL(clicked()), this, SLOT(renderSolid()));
+	connect(ui.renderWireButton, SIGNAL(clicked()), this, SLOT(renderWire()));
+	connect(ui.renderPointButton, SIGNAL(clicked()), this, SLOT(renderPoint()));
+
 	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
 	connect(ui.addPropertyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(addPropertyByIndex(int)));
 	connect(ui.playButton, SIGNAL(clicked()), this, SLOT(exportAndStartProject()));
@@ -162,6 +169,7 @@ void GEAREditor::_onManagedEntitySelected(ManagedEntity* entity)
 	{
 		ui.addPropertyComboBox->setEnabled(true);
 	}
+	mEntity = entity;
 }
 
 void GEAREditor::addPropertyByIndex(int index)
@@ -177,4 +185,37 @@ void GEAREditor::addPropertyByIndex(int index)
 			(*it)->attachToSelectedEntity();
 		}
 	}
+}
+
+void
+GEAREditor::renderSolid()
+{
+	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
+	{
+		return;
+	}
+	auto* rc = mEntity->getComponent<G2::RenderComponent>();
+	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
+}
+
+void
+GEAREditor::renderWire()
+{
+	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
+	{
+		return;
+	}
+	auto* rc = mEntity->getComponent<G2::RenderComponent>();
+	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
+}
+
+void
+GEAREditor::renderPoint()
+{
+	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
+	{
+		return;
+	} 
+	auto* rc = mEntity->getComponent<G2::RenderComponent>();
+	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::POINT);
 }

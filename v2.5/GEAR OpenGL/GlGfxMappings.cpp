@@ -131,7 +131,7 @@ void _initMappings()
 
 	polygonDrawModeMapping[G2Core::PolygonDrawMode::FILL] = GL_FILL;
 	polygonDrawModeMapping[G2Core::PolygonDrawMode::LINE] = GL_LINE;
-	polygonDrawModeMapping[G2Core::PolygonDrawMode::POINT] = GL_POINTS;
+	polygonDrawModeMapping[G2Core::PolygonDrawMode::POINT] = GL_POINT;
 
 
 	faceCullingModeMapping[G2Core::FaceCulling::BACK_FACE] = GL_BACK;

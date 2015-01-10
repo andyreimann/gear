@@ -1,4 +1,6 @@
 <RCC>
-    <qresource prefix="GEAREditor">
-    </qresource>
+  <qresource prefix="Buttons">
+    <file>EditorResources/Save_24x24.png</file>
+    <file>EditorResources/RecycleBin_24x24.png</file>
+  </qresource>
 </RCC>
