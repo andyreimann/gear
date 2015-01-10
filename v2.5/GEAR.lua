@@ -275,6 +275,33 @@ solution "GEAR 2.5"
 
     configuration {} -- Clear configuration
 
+------------------- GEAR Launcher -----------------------------------------------------
+
+  project "GEAR Launcher"
+    language "C++"
+    kind "ConsoleApp"
+    location "GEAR Launcher"
+    targetname "GEARLauncher"
+    files { "GEAR Launcher/**.h","GEAR Launcher/**.cpp" }
+    links { "GEAR Core", "GEAR 2.5", "GEAR SDL Context", "libfbxsdk-md.lib" }
+    defines { "_CRT_SECURE_NO_WARNINGS" }
+
+    postbuildcommands { 
+      "XCOPY \"..\\lib\\%{cfg.platform}\\%{cfg.buildcfg}\\GEARLauncher.exe\" \"..\\GEAR Studio\\templates\\%{cfg.platform}\\%{cfg.buildcfg}\" /R /I /Y"
+    }
+
+    configuration "Debug"
+      buildoptions { "/MP8", "/MDd" }  
+      flags{ "Symbols", "NoMinimalRebuild" }
+      optimize "Off"
+
+    configuration "Release"
+      buildoptions { "/MP8" }  
+      flags { "NoFramePointer", "NoMinimalRebuild" }
+      optimize "Speed"
+
+    configuration {} -- Clear configuration
+
 ------------------- GEAR Studio -----------------------------------------------------
 
   project "GEAR Studio"

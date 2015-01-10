@@ -14,7 +14,8 @@
 
 
 ProjectCreation::ProjectCreation(QWidget *parent /*= 0*/)
-	: QDialog(parent)
+	: QDialog(parent),
+	mStudioSettings(nullptr)
 {
 	ui.setupUi(this);
 
@@ -53,6 +54,7 @@ ProjectCreation::createProject()
 	}
 	try
 	{
+		std::string templatesDir = (*mStudioSettings)["templatesdir"].asString();
 		// start project creation
 		std::string folder = ui.projectFolder->text().toStdString();
 		// create all folders we might need
@@ -65,11 +67,11 @@ ProjectCreation::createProject()
 		boost::filesystem::create_directory(folder + "/assets/meshes");
 		boost::filesystem::create_directory(folder + "/assets/shader");
 
-		boost::filesystem::copy_file("templates/Defines.h", folder + "/src/Defines.h", boost::filesystem::copy_option::overwrite_if_exists);
-		boost::filesystem::copy_file("templates/Game.h", folder + "/src/Game.h", boost::filesystem::copy_option::overwrite_if_exists);
-		boost::filesystem::copy_file("templates/Game.cpp", folder + "/src/Game.cpp", boost::filesystem::copy_option::overwrite_if_exists);
-		boost::filesystem::copy_file("templates/resources.conf", folder + "/resources.conf", boost::filesystem::copy_option::overwrite_if_exists);
-		boost::filesystem::copy_file("templates/Default.g2fx", folder + "/assets/shader/Default.g2fx", boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(templatesDir + "Defines.h", folder + "/src/Defines.h", boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(templatesDir + "Game.h", folder + "/src/Game.h", boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(templatesDir + "Game.cpp", folder + "/src/Game.cpp", boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(templatesDir + "resources.conf", folder + "/resources.conf", boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(templatesDir + "Default.g2fx", folder + "/assets/shader/Default.g2fx", boost::filesystem::copy_option::overwrite_if_exists);
 
 		// makefile has some placeholder, which need to be replaced
 		generatePremakeFile(ui.projectName->text().toStdString(), folder + "/premake.lua");
@@ -107,11 +109,12 @@ ProjectCreation::selectProjectFolder()
 void
 ProjectCreation::generatePremakeFile(std::string const& projectName, std::string const& destinationFile)
 {
-	G2::FileResource premakeSrc("templates/premake.lua");
+	std::string templatesDir = (*mStudioSettings)["templatesdir"].asString();
+	G2::FileResource premakeSrc(templatesDir + "premake.lua");
 
-	std::string gearIncDir = mStudioProperties->getSetting("gearincdir").value;
+	std::string gearIncDir = (*mStudioSettings)["gearincdir"].asString();
 	boost::replace_all(gearIncDir, "\\", "\\\\");
-	std::string gearLibDir = mStudioProperties->getSetting("gearlibdir").value;
+	std::string gearLibDir = (*mStudioSettings)["gearlibdir"].asString();
 	boost::replace_all(gearLibDir, "\\", "\\\\");
 
 	std::string premakeDst;

@@ -14,7 +14,7 @@
 
 GEAREditor::GEAREditor(QWidget *parent)
 	: QMainWindow(parent),
-	mStudioProperties("settings.conf")
+	mStudioSettings("settings.json")
 {
 	ui.setupUi(this);
 
@@ -62,7 +62,7 @@ GEAREditor::GEAREditor(QWidget *parent)
 	ui.loggingRoot->layout()->addWidget(mLoggingTab.get());
 
 
-	auto& lastProject = mStudioProperties.getSetting("lastproject", "").value;
+	auto& lastProject = mStudioSettings.getSettings().get("lastproject", "").asString();
 	if (lastProject != "")
 	{
 		QAction* menuAction = ui.menuOpenRecent->addAction(lastProject.c_str());
@@ -91,7 +91,8 @@ void GEAREditor::newProject()
 {
 	std::cout << "Creating new Project" << std::endl;
 	mNewProjectDialog = std::unique_ptr<ProjectCreation>(new ProjectCreation(this));
-	mNewProjectDialog->mStudioProperties = &mStudioProperties;
+
+	mNewProjectDialog->mStudioSettings = &mStudioSettings.getSettings();
 	mNewProjectDialog->show();
 }
 
@@ -99,8 +100,8 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 {
 	if (projectDirectory != "")
 	{
-		mStudioProperties.setSetting("lastproject", projectDirectory);
-		mStudioProperties.serialize("settings.conf");
+		mStudioSettings.getSettings().get("lastproject", "").asString();
+		mStudioSettings.save();
 	}
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
@@ -120,7 +121,7 @@ void GEAREditor::openProject()
 
 void GEAREditor::openLastProject()
 {
-	auto& lastProject = mStudioProperties.getSetting("lastproject", "").value;
+	auto& lastProject = mStudioSettings.getSettings().get("lastproject", "").asString();
 	_openProjectFromDirectory(lastProject);
 }
 

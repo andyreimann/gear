@@ -402,6 +402,18 @@ void LightPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const*
 			{
 				out << indention << "lc->setEnabled(false);" << std::endl;
 			}
+			if (props.isMember(LIGHT_ATT_CONST))
+			{
+				out << indention << "lc->attenuation = " << props[LIGHT_ATT_CONST].asFloat() << "f;" << std::endl;
+			}
+			if (props.isMember(LIGHT_ATT_LIN))
+			{
+				out << indention << "lc->linearAttenuation = " << props[LIGHT_ATT_LIN].asFloat() << "f;" << std::endl;
+			}
+			if (props.isMember(LIGHT_ATT_EXP))
+			{
+				out << indention << "lc->exponentialAttenuation = " << props[LIGHT_ATT_EXP].asFloat() << "f;" << std::endl;
+			}
 		}
 		out << "		}" << std::endl;
 	}

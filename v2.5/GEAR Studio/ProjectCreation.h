@@ -4,6 +4,7 @@
 #include "ui_ProjectCreation.h"
 
 #include <G2/PropertiesFile.h>
+#include <json/json.h>
 
 /** This is the main class of the GEAR Editor Studio.
 * @created	2014/12/17
@@ -19,7 +20,7 @@ class ProjectCreation : public QDialog, public Ui::ProjectCreation
 
 	private:
 		Ui::ProjectCreation ui;					// The Qt UI class for the project creation dialog
-		G2::PropertiesFile* mStudioProperties;	// A pointer to the properties of GEAR Studio
+		Json::Value* mStudioSettings;			// A pointer to the settings of GEAR Studio
 
 	private slots:
 		/** This trigger function is called whenever the user accepts the dialog.

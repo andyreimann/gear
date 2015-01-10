@@ -19,7 +19,6 @@
 *.obj
 *.idb
 *.sdf
-*.exe
 *.suo
 *.opensdf
 v2.5/lib/x64/Debug/g2.lib
@@ -294,3 +293,27 @@ v2.5/GEAR Studio/GEAR Studio.vcxproj
 v2.5/GEAR Studio/GEAR Studio.vcxproj.user
 boost/boost_1_57_0/
 boost/boost_1_57_0.zip
+DX11Samples/Debug/DX11Samples.exe
+DX11Samples/x64/Debug/1 Open Context.exe
+DX11Samples/x64/Debug/3 Drawing a Triangle with CG Shader.exe
+DX11Samples/x64/Debug/4 Adding Depth.exe
+DX11Samples/x64/Debug/5 World View and Projection Space (LH).exe
+DX11Samples/x64/Debug/5 World View and Projection Space.exe
+DX11Samples/x64/Debug/6 World View and Projection Space (RH).exe
+DX11Samples/x64/Debug/DX11Samples.exe
+GEAR Editor/bin/x64/Debug/GEAR Editor.exe
+GEAR Editor/x64/Debug/GEAR Editor.exe
+tests/Tests/x64/Debug/Load Scene.exe
+tests/bin/x64/Debug/DX11 Test.exe
+tests/bin/x64/Debug/Load Scene.exe
+tests/bin/x64/Debug/Physics Test - Newton.exe
+tests/bin/x64/Debug/Solarsystem.exe
+v2.5/lib/x64/Debug/GEARLauncher.exe
+v2.5/premake5.exe
+tests/bin/x64/Debug/Texturing Test.exe
+tests/bin/x64/Debug/UI Test - CEGUI.exe
+tests/bin/x64/Release/Solarsystem.exe
+v2.5/GEAR Studio/templates/x64/Debug/GEARLauncher.exe
+v2.5/bin/x64/Debug/GEARStudio.exe
+tests/bin/x64/Debug/Spline Animation Test.exe
+tests/bin/x64/Debug/Terrain Test.exe

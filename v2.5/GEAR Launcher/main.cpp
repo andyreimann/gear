@@ -11,18 +11,18 @@
 
 int main(int argc, char *argv[])
 {
-G2_loadGfxDevice("GEARGL.dll");
+	G2_loadGfxDevice("GEARGL.dll");
 
 	G2::SDL::Window window("GEAR Launcher",1024,768,false);
 
 	G2_gfxDevice()->init(nullptr); 
 	G2_init();
 	{
-		Launcher launcher(window);
+		G2::Launcher launcher(window);
 
 		G2_loop(window); 
 	}
 	G2_shutdown();
 
-	return ret;
+	return 0;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "GameRuntime.h"
+#include "GameRuntimeApi.h"
 
 #include <G2/GEAR.h>
 #include <G2SdlContext/SDLWindow.h>
