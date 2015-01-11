@@ -1,10 +1,31 @@
 #pragma once
+
+//#define GEAR_QT_5_4
+
 #include <G2/GEAR.h>
-#include <QtOpenGL/QGLWidget>
+#ifndef GEAR_QT_5_4
+	#include <QtOpenGL/QGLWidget>
+#else
+	#include <QOpenGLWidget>
+#endif
 #include <G2/AbstractWindow.h>
 #include <G2Cameras/EditorCamera.h>
 
 #include <unordered_map>
+
+#include <QTimer>
+#include <QMatrix4x4>
+QT_FORWARD_DECLARE_CLASS(QOpenGLContext)
+QT_FORWARD_DECLARE_CLASS(QOpenGLFramebufferObject)
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
+QT_FORWARD_DECLARE_CLASS(QOpenGLBuffer)
+QT_FORWARD_DECLARE_CLASS(QOpenGLVertexArrayObject)
+QT_FORWARD_DECLARE_CLASS(QOffscreenSurface)
+QT_FORWARD_DECLARE_CLASS(QQuickRenderControl)
+QT_FORWARD_DECLARE_CLASS(QQuickWindow)
+QT_FORWARD_DECLARE_CLASS(QQmlEngine)
+QT_FORWARD_DECLARE_CLASS(QQmlComponent)
+QT_FORWARD_DECLARE_CLASS(QQuickItem)
 
 class EditorGeometryManager;
 class Project;
@@ -14,7 +35,11 @@ class ManagedEntity;
 * @created	2014/12/09
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
 */
+#ifndef GEAR_QT_5_4
 class GLContext : public QGLWidget, public G2::AbstractWindow
+#else
+class GLContext : public QOpenGLWidget, public G2::AbstractWindow
+#endif
 {
 	Q_OBJECT // must include this if you use Qt signals/slots
 
@@ -72,5 +97,34 @@ class GLContext : public QGLWidget, public G2::AbstractWindow
 		std::unordered_map<Qt::Key, int>		mKeyMap;
 		std::shared_ptr<TranslationHandler>		mTranslationHandler;
 		ManagedEntity*							mEntity;
+
+		// QML TEST
+		void initQuick();
+		QTimer									m_updateTimer;
+		bool									m_quickInitialized;
+		bool									m_quickReady;
+		QOffscreenSurface*						m_offscreenSurface;
+		QQuickRenderControl*					m_renderControl;
+		QQuickWindow*							m_quickWindow;
+		QQmlEngine*								m_qmlEngine;
+		QQmlComponent*							m_qmlComponent;
+		QQuickItem*								m_rootItem;
+		QOpenGLFramebufferObject*				m_fbo;
+		QOpenGLShaderProgram*					m_program;
+		QOpenGLBuffer*							m_vbo;
+		QOpenGLVertexArrayObject*				m_vao;
+		int m_matrixLoc;
+		bool gearInitialized;
+		QMatrix4x4 m_proj;
+		void startQuick(const QString &filename);
+		void setupVertexAttribs();
+		void updateSizes();
+	private slots:
+		void updateQuick();
+		void run();
+		void createFbo();
+		void destroyFbo();
+		void requestUpdate();
+	
 };
 

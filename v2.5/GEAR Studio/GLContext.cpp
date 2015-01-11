@@ -3,28 +3,59 @@
 #include "GEARStudioEvents.h"
 #include "EditorGeometryManager.h"
 #include "TranslationHandler.h"
+#include "QmlOverlay.h"
 
 #include <QtGui/QMouseEvent>
 #include <QtCore/QTimer>
+#include <QQmlEngine>
+#include <QtQml/qqml.h>
+#include <QQmlComponent>
+
 
 #include <G2/RenderComponent.h>
 #include <G2Core/ECSManager.h>
 #include <G2Core/EventDistributer.h>
 
+// QML TEST
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
+#include <QOpenGLVertexArrayObject>
+#include <QOffscreenSurface>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QQuickWindow>
+#include <QQuickRenderControl>
+#include <QtOpenGL/QGLContext>
 
 static std::string ASSET_PATH = "../../tests/bin/Assets/";
 
 GLContext::GLContext(QWidget *parent) 
+#ifndef GEAR_QT_5_4
 	: QGLWidget(parent), 
+#else
+	: QOpenGLWidget(parent),
+#endif
 	mEditorCamera(this),
 	G2::AbstractWindow("GEAR Editor", 1024, 768, false),
 	mProject(nullptr),
 	mEditorGeometryManager(nullptr),
-	mEntity(nullptr)
+	mEntity(nullptr),
+	m_rootItem(0),
+	m_fbo(0),
+	m_program(0),
+	m_vbo(0),
+	m_quickInitialized(false),
+	m_quickReady(false),
+	gearInitialized(false)
 {
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(10);
+	timer->start(10); 
 
 	setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
@@ -42,6 +73,226 @@ GLContext::~GLContext()
 	G2::EventDistributer::onKeyDown.unHookAll(this);
 }
 
+void GLContext::initQuick()
+{
+	//QSurfaceFormat format;
+	////// Qt Quick may need a depth and stencil buffer. Always make sure these are available.
+	//format.setDepthBufferSize(16);
+	//format.setStencilBufferSize(8);
+	////setFormat(format);
+
+	///*m_context = new QOpenGLContext;
+	//m_context->setFormat(format);
+	//m_context->create();*/
+
+	//m_offscreenSurface = new QOffscreenSurface;
+	//// Pass m_context->format(), not format. Format does not specify and color buffer
+	//// sizes, while the context, that has just been created, reports a format that has
+	//// these values filled in. Pass this to the offscreen surface to make sure it will be
+	//// compatible with the context's configuration.
+	//m_offscreenSurface->setFormat(format);
+	//m_offscreenSurface->create();
+
+	//m_renderControl = new QQuickRenderControl(this);
+
+	//// Create a QQuickWindow that is associated with out render control. Note that this
+	//// window never gets created or shown, meaning that it will never get an underlying
+	//// native (platform) window.
+	//m_quickWindow = new QQuickWindow(m_renderControl);
+
+	//// Create a QML engine.
+	//m_qmlEngine = new QQmlEngine;
+	//if (!m_qmlEngine->incubationController())
+	//	m_qmlEngine->setIncubationController(m_quickWindow->incubationController());
+
+	//// When Quick says there is a need to render, we will not render immediately. Instead,
+	//// a timer with a small interval is used to get better performance.
+	//m_updateTimer.setSingleShot(true);
+	//m_updateTimer.setInterval(5);
+	//connect(&m_updateTimer, &QTimer::timeout, this, &GLContext::updateQuick);
+
+	// Now hook up the signals. For simplicy we don't differentiate between
+	// renderRequested (only render is needed, no sync) and sceneChanged (polish and sync
+	// is needed too).
+	//connect(m_quickWindow, &QQuickWindow::sceneGraphInitialized, this, &GLContext::createFbo);
+	//connect(m_quickWindow, &QQuickWindow::sceneGraphInvalidated, this, &GLContext::destroyFbo);
+	//connect(m_renderControl, &QQuickRenderControl::renderRequested, this, &GLContext::requestUpdate);
+	//connect(m_renderControl, &QQuickRenderControl::sceneChanged, this, &GLContext::requestUpdate);
+}
+
+void GLContext::updateQuick()
+{
+}
+
+void GLContext::run()
+{
+	//disconnect(m_qmlComponent, SIGNAL(statusChanged(QQmlComponent::Status)), this, SLOT(run()));
+
+	//if (m_qmlComponent->isError()) {
+	//	QList<QQmlError> errorList = m_qmlComponent->errors();
+	//	foreach(const QQmlError &error, errorList)
+	//		qWarning() << error.url() << error.line() << error;
+	//	return;
+	//}
+
+	//QObject *rootObject = m_qmlComponent->create();
+	//if (m_qmlComponent->isError()) {
+	//	QList<QQmlError> errorList = m_qmlComponent->errors();
+	//	foreach(const QQmlError &error, errorList)
+	//		qWarning() << error.url() << error.line() << error;
+	//	return;
+	//}
+
+	//m_rootItem = qobject_cast<QQuickItem *>(rootObject);
+	//if (!m_rootItem) {
+	//	qWarning("run: Not a QQuickItem");
+	//	delete rootObject;
+	//	return;
+	//}
+
+	//// The root item is ready. Associate it with the window.
+	//m_rootItem->setParentItem(m_quickWindow->contentItem());
+
+	//// Update item and rendering related geometries.
+	//updateSizes();
+
+	//// Initialize the render control and our OpenGL resources.
+	//context()->makeCurrent(m_offscreenSurface);
+	//m_renderControl->initialize(context());
+
+	//static const char *vertexShaderSource =
+	//	"attribute highp vec4 vertex;\n"
+	//	"attribute lowp vec2 coord;\n"
+	//	"varying lowp vec2 v_coord;\n"
+	//	"uniform highp mat4 matrix;\n"
+	//	"void main() {\n"
+	//	"   v_coord = coord;\n"
+	//	"   gl_Position = matrix * vertex;\n"
+	//	"}\n";
+	//static const char *fragmentShaderSource =
+	//	"varying lowp vec2 v_coord;\n"
+	//	"uniform sampler2D sampler;\n"
+	//	"void main() {\n"
+	//	"   gl_FragColor = vec4(texture2D(sampler, v_coord).rgb, 1.0);\n"
+	//	"}\n";
+	//m_program = new QOpenGLShaderProgram;
+	//m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+	//m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
+	//m_program->bindAttributeLocation("vertex", 0);
+	//m_program->bindAttributeLocation("coord", 1);
+	//m_program->link();
+	//m_matrixLoc = m_program->uniformLocation("matrix");
+
+	//m_vao = new QOpenGLVertexArrayObject;
+	//m_vao->create();
+	//m_vao->bind();
+
+	//m_vbo = new QOpenGLBuffer;
+	//m_vbo->create();
+	//m_vbo->bind();
+
+	//GLfloat v[] = {
+	//	-0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+	//	0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+	//	-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5,
+	//	0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5,
+
+	//	0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5,
+	//	0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5,
+	//	-0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5,
+	//	-0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5,
+
+	//	0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5,
+	//	-0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5,
+	//	-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5,
+	//	0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5
+	//};
+	//GLfloat texCoords[] = {
+	//	0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	//	1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+	//	1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+	//	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+
+	//	1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+	//	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	//	0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	//	1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+
+	//	0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+	//	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	//	1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	//	0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f
+	//};
+
+	//const int vertexCount = 36;
+	//m_vbo->allocate(sizeof(GLfloat) * vertexCount * 5);
+	//m_vbo->write(0, v, sizeof(GLfloat) * vertexCount * 3);
+	//m_vbo->write(sizeof(GLfloat) * vertexCount * 3, texCoords, sizeof(GLfloat) * vertexCount * 2);
+	//m_vbo->release();
+
+	//if (m_vao->isCreated())
+	//	setupVertexAttribs();
+
+	//// Must unbind before changing the current context. Hence the absence of
+	//// QOpenGLVertexArrayObject::Binder here.
+	//m_vao->release();
+
+	//context()->doneCurrent();
+	m_quickInitialized = true;
+}
+
+void GLContext::createFbo()
+{
+	// The scene graph has been initialized. It is now time to create an FBO and associate
+	// it with the QQuickWindow.
+	//m_fbo = new QOpenGLFramebufferObject(size(), QOpenGLFramebufferObject::CombinedDepthStencil);
+	//m_quickWindow->setRenderTarget(m_fbo);
+}
+
+void GLContext::destroyFbo()
+{
+	//delete m_fbo;
+	//m_fbo = 0;
+}
+
+void GLContext::requestUpdate()
+{
+	//if (!m_updateTimer.isActive())
+	//	m_updateTimer.start();
+}
+
+void GLContext::setupVertexAttribs()
+{
+	//m_vbo->bind();
+	//m_program->enableAttributeArray(0);
+	//m_program->enableAttributeArray(1);
+	//context()->functions()->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//context()->functions()->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0,
+	//	(const void *)(36 * 3 * sizeof(GLfloat)));
+	//m_vbo->release();
+}
+
+void GLContext::startQuick(const QString &filename)
+{
+	//m_qmlComponent = new QQmlComponent(m_qmlEngine, QUrl(filename));
+	//if (m_qmlComponent->isLoading())
+	//	connect(m_qmlComponent, &QQmlComponent::statusChanged, this, &GLContext::run);
+	//else
+	//	run();
+}
+
+void GLContext::updateSizes()
+{
+	//// Behave like SizeRootObjectToView.
+	//m_rootItem->setWidth(width());
+	//m_rootItem->setHeight(height());
+
+	//m_quickWindow->setGeometry(0, 0, width(), height());
+
+	//m_proj.setToIdentity();
+	//m_proj.perspective(45, width() / float(height()), 0.01f, 100.0f);
+}
+
 void GLContext::initializeGL() 
 {
 	// Initialize the GEAR Gfx device - this cannot hapen earlier
@@ -52,6 +303,13 @@ void GLContext::initializeGL()
 	mMouseButtonMapping.insert(std::make_pair(Qt::LeftButton,G2::MOUSE_LEFT));
 	mMouseButtonMapping.insert(std::make_pair(Qt::MiddleButton,G2::MOUSE_MIDDLE));
 	mMouseButtonMapping.insert(std::make_pair(Qt::RightButton,G2::MOUSE_RIGHT));
+
+	// QML TEST
+	// http://doc.qt.io/qt-5/qtquick-rendercontrol-window-cpp.html
+	//initQuick();
+
+	//if (!m_quickInitialized)
+	//	startQuick(QStringLiteral("qrc:/rendercontrol/demo.qml"));
 }
 
 void GLContext::resizeGL(int w, int h) 
@@ -66,7 +324,10 @@ void GLContext::resizeGL(int w, int h)
 
 void GLContext::paintGL() 
 {
-	G2_singleFrame(*this, mFrameInfo);
+	if (gearInitialized)
+	{
+		G2_singleFrame(*this, mFrameInfo);
+	}
 }
 
 void GLContext::mousePressEvent(QMouseEvent *event)
@@ -245,6 +506,7 @@ GLContext::createEditorCamera()
 		.zoom(-15.f)
 		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
 	mEditorCamera.setInternals(70.f, 0.01f, 300.f);
+	gearInitialized = true;
 }
 
 void

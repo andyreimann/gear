@@ -3,4 +3,7 @@
     <file>EditorResources/Save_24x24.png</file>
     <file>EditorResources/RecycleBin_24x24.png</file>
   </qresource>
+  <qresource prefix="qml">
+    <file>QMLTest.qml</file>
+  </qresource>
 </RCC>

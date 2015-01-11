@@ -310,7 +310,7 @@ solution "GEAR 2.5"
     location "GEAR Studio"
     targetname "GEARStudio"
     targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-    files { "GEAR Studio/*.h","GEAR Studio/*.cpp","GEAR Studio/**.ui","GEAR Studio/**.qrc" }
+    files { "GEAR Studio/*.h","GEAR Studio/*.cpp","GEAR Studio/**.ui","GEAR Studio/**.qrc","GEAR Studio/**.qml" }
     links { "GEAR Core", "GEAR 2.5", "GEAR Cameras", "GEAR CEGUI", "OpenGL32", "glu32", "libfbxsdk-md.lib", "jsoncpp" }
     includedirs { "C:/Qt/Qt5.3.2/5.3/msvc2013_64_opengl/include" }
 
@@ -333,14 +333,14 @@ solution "GEAR 2.5"
     -- will return an error since it won't be able to find the path
     -- to your Qt installation.
     --
-    qtpath "C:/Qt/Qt5.3.2/5.3/msvc2013_64_opengl"
+    qtpath "C:/Qt/Qt5.4.0/5.4/msvc2013_64_opengl"
 
     --
     -- Setup which Qt modules will be used. This also apply to the
     -- current configuration, so can you choose to deactivate a module
     -- for a specific configuration.
     --
-    qtmodules { "core", "gui", "quick", "widgets", "opengl" }
+    qtmodules { "core", "gui", "quick", "widgets", "opengl", "qml" }
 
     --
     -- Setup the prefix of the Qt libraries. Usually it's Qt4 for Qt 4.x
