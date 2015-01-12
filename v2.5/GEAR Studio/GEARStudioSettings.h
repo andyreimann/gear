@@ -15,7 +15,9 @@ public:
 	* @param projectDirectory The project directory to load.
 	*/
 	GEARStudioSettings(std::string const& settingsFile);
-
+	/** Returns the json value of the requested setting.
+	 * @return The json value of the requested setting.
+	 */
 	Json::Value& getSettings() { return mResource; }
 	/** Saves the settings in it's current state into it's Json file.
 	*/

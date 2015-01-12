@@ -17,7 +17,7 @@ class FileSelector : public QWidget
 {
 	Q_OBJECT
 	public:
-		/** Creates a new ColorSelector with the given information.
+		/** Creates a new FileSelector with the given information.
 		 * @param defaultPath The default path to open when file is about to be selected.
 		 * @param source The source data to initialize the TextureSelector with.
 		 * @param projectDirectory The directory of the currently opened project
@@ -25,11 +25,11 @@ class FileSelector : public QWidget
 		 */
 		FileSelector(std::string const& defaultPath, Json::Value const& source, std::string const& projectDirectory, std::string const& fileTypes, QWidget *parent = 0);
 		~FileSelector();
-		/** Returns the data of this ColorSelector in it's most recent state.
-		* @return The data of this ColorSelector in it's most recent state.
+		/** Returns the data of this FileSelector in it's most recent state.
+		* @return The data of this FileSelector in it's most recent state.
 		*/
 		Json::Value const& getData() const { return mTarget; }
-		/** Updates the data of this ColorSelector.
+		/** Updates the data of this FileSelector.
 		* @param source The new data to use for initialization.
 		*/
 		void setData(Json::Value const& source);
