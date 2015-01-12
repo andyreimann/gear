@@ -1,5 +1,6 @@
 #include "LightPropertiesTab.h"
 #include "GEARStudioEvents.h"
+#include "Defines.h"
 
 #include <G2/RenderComponent.h>
 
@@ -181,7 +182,7 @@ void LightPropertiesTab::changeLightType(int idx)
 void LightPropertiesTab::constAttSliderChanged(int value)
 {
 	// sync
-	ui.constAttenuationSpinBox->blockSignals(true); ui.constAttenuationSpinBox->setValue((double)value); ui.constAttenuationSpinBox->blockSignals(false);
+	GEAR_QTNOEVENT(ui.constAttenuationSpinBox, ui.constAttenuationSpinBox->setValue((double)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);
@@ -191,7 +192,7 @@ void LightPropertiesTab::constAttSliderChanged(int value)
 void LightPropertiesTab::constAttValueChanged(double value)
 {
 	// sync
-	ui.constAttenuationSlider->blockSignals(true); ui.constAttenuationSlider->setValue((int)value); ui.constAttenuationSlider->blockSignals(false);
+	GEAR_QTNOEVENT(ui.constAttenuationSlider, ui.constAttenuationSlider->setValue((int)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);
@@ -201,7 +202,7 @@ void LightPropertiesTab::constAttValueChanged(double value)
 void LightPropertiesTab::linearAttSliderChanged(int value)
 {
 	// sync
-	ui.linearAttenuationSpinBox->blockSignals(true); ui.linearAttenuationSpinBox->setValue((double)value); ui.linearAttenuationSpinBox->blockSignals(false);
+	GEAR_QTNOEVENT(ui.linearAttenuationSpinBox, ui.linearAttenuationSpinBox->setValue((double)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);
@@ -211,7 +212,7 @@ void LightPropertiesTab::linearAttSliderChanged(int value)
 void LightPropertiesTab::linearAttValueChanged(double value)
 {
 	// sync
-	ui.linearAttenuationSlider->blockSignals(true); ui.linearAttenuationSlider->setValue((int)value); ui.linearAttenuationSlider->blockSignals(false);
+	GEAR_QTNOEVENT(ui.linearAttenuationSlider, ui.linearAttenuationSlider->setValue((int)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);
@@ -221,7 +222,7 @@ void LightPropertiesTab::linearAttValueChanged(double value)
 void LightPropertiesTab::exponentialAttSliderChanged(int value)
 {
 	// sync
-	ui.exponentialAttenuationSpinBox->blockSignals(true); ui.exponentialAttenuationSpinBox->setValue((double)value); ui.exponentialAttenuationSpinBox->blockSignals(false);
+	GEAR_QTNOEVENT(ui.exponentialAttenuationSpinBox, ui.exponentialAttenuationSpinBox->setValue((double)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);
@@ -231,7 +232,7 @@ void LightPropertiesTab::exponentialAttSliderChanged(int value)
 void LightPropertiesTab::exponentialAttValueChanged(double value)
 {
 	// sync
-	ui.exponentialAttenuationSlider->blockSignals(true); ui.exponentialAttenuationSlider->setValue((int)value); ui.exponentialAttenuationSlider->blockSignals(false);
+	GEAR_QTNOEVENT(ui.exponentialAttenuationSlider, ui.exponentialAttenuationSlider->setValue((int)value));
 
 	_serializeAttenuation();
 	_reloadAttenuation(mEntity);

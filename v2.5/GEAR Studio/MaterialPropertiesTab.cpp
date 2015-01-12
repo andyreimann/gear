@@ -1,6 +1,7 @@
 #include "MaterialPropertiesTab.h"
 #include "GEARStudioEvents.h"
 #include "TextureSelector.h"
+#include "Defines.h"
 
 #include <G2/RenderComponent.h>
 
@@ -96,7 +97,7 @@ void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		{
 			shininess = props[MAT_SHININESS].asFloat();
 		}
-		ui.shininessValue->blockSignals(true); ui.shininessValue->setValue(shininess); ui.shininessValue->blockSignals(false);
+		GEAR_QTNOEVENT(ui.shininessValue, ui.shininessValue->setValue(shininess));
 
 		if (props.isMember(FX))
 		{
@@ -325,7 +326,7 @@ glm::vec4 MaterialPropertiesTab::_getColorFromProperties(ManagedEntity const* ta
 void MaterialPropertiesTab::shininessSliderChanged(int value)
 {
 	// sync
-	ui.shininessValue->blockSignals(true); ui.shininessValue->setValue((double)value); ui.shininessValue->blockSignals(false);
+	GEAR_QTNOEVENT(ui.shininessValue, ui.shininessValue->setValue((double)value));
 
 	_serializeShininess();
 
@@ -336,7 +337,7 @@ void MaterialPropertiesTab::shininessSliderChanged(int value)
 void MaterialPropertiesTab::shininessValueChanged(double value)
 {
 	// sync
-	ui.shininessSlider->blockSignals(true); ui.shininessSlider->setValue((int)value); ui.shininessSlider->blockSignals(false);
+	GEAR_QTNOEVENT(ui.shininessSlider, ui.shininessSlider->setValue((int)value));
 	
 	_serializeShininess();
 

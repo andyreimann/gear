@@ -46,6 +46,7 @@
     <ClCompile Include="ComponentListView.cpp" />
     <ClCompile Include="EditorGeometryManager.cpp" />
     <ClCompile Include="EditorGrid.cpp" />
+    <ClCompile Include="EditorPanel.cpp" />
     <ClCompile Include="FileSelector.cpp" />
     <ClCompile Include="GEAREditor.cpp" />
     <ClCompile Include="GEARStudioEvents.cpp" />
@@ -73,6 +74,9 @@
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_EditorPanel.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_FileSelector.cpp">
@@ -120,6 +124,9 @@
     <ClCompile Include="obj\x32\Release\moc_ComponentListView.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_EditorPanel.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_FileSelector.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -163,6 +170,9 @@
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ComponentListView.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_EditorPanel.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_FileSelector.cpp">
@@ -210,6 +220,9 @@
     <ClCompile Include="obj\x64\Release\moc_ComponentListView.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_EditorPanel.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_FileSelector.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -252,6 +265,8 @@
     <CustomBuild Include="ColorSelector.ui" />
     <CustomBuild Include="ComponentListItemModel.h" />
     <CustomBuild Include="ComponentListView.h" />
+    <CustomBuild Include="EditorPanel.h" />
+    <CustomBuild Include="EditorPanel.ui" />
     <CustomBuild Include="FileSelector.h" />
     <CustomBuild Include="FileSelector.ui" />
     <CustomBuild Include="GEAREditor.h" />

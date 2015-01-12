@@ -1,19 +1,10 @@
 #pragma once
 
-namespace G2
-{
-	namespace Studio
-	{
-		typedef int ComponentMask;
-		namespace ComponentFlag
-		{
-			enum Name
-			{
-				CAMERA_COMPONENT = 1,
-				RENDER_COMPONENT = 2,
-				TRANSFORM_COMPONENT = 4,
-				SPLINE_ANIMATION = 8
-			};
-		};
-	};
-};
+/** This is a helper macro for suppressing signals while invoking a certain action.
+ * @param w The QObject pointer to block the signals for.
+ * @param a The action to perform.
+ */
+#define GEAR_QTNOEVENT(w,a) \
+w->blockSignals(true); \
+a; \
+w->blockSignals(false);

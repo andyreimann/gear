@@ -26,16 +26,10 @@ GEAREditor::GEAREditor(QWidget *parent)
 	auto* model = new ComponentListItemModel();
 	ui.componentListView->setModel(model);
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
-	connect(ui.newProjectButton, SIGNAL(clicked()), this, SLOT(newProject()));
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
-	connect(ui.openProjectButton, SIGNAL(clicked()), this, SLOT(openProject()));
-	connect(ui.renderSolidButton, SIGNAL(clicked()), this, SLOT(renderSolid()));
-	connect(ui.renderWireButton, SIGNAL(clicked()), this, SLOT(renderWire()));
-	connect(ui.renderPointButton, SIGNAL(clicked()), this, SLOT(renderPoint()));
 
 	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
 	connect(ui.addPropertyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(addPropertyByIndex(int)));
-	connect(ui.playButton, SIGNAL(clicked()), this, SLOT(exportAndStartProject()));
 
 	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
 	GEARStudioEvents::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
@@ -67,6 +61,9 @@ GEAREditor::GEAREditor(QWidget *parent)
 
 	mLoggingTab = std::unique_ptr<LoggingTab>(new LoggingTab(this));
 	ui.loggingRoot->layout()->addWidget(mLoggingTab.get());
+
+	mEditorPanel = std::unique_ptr<EditorPanel>(new EditorPanel(this, this));
+	ui.editorPanelRoot->layout()->addWidget(mEditorPanel.get());
 
 
 	auto& lastProject = mStudioSettings.getSettings().get("lastproject", "").asString();
@@ -110,6 +107,10 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 		mStudioSettings.getSettings().get("lastproject", "").asString();
 		mStudioSettings.save();
 	}
+	else
+	{
+		return;
+	}
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
 	// fire event that a new project is opened
@@ -132,8 +133,9 @@ void GEAREditor::openLastProject()
 	_openProjectFromDirectory(lastProject);
 }
 
-void GEAREditor::createManagedEntity()
+ManagedEntity* GEAREditor::createManagedEntity()
 {
+	ManagedEntity* instance = nullptr;
 	if (mProject.get() != nullptr && mProject->getCurrentScene().get() != nullptr)
 	{
 		std::stringstream name;
@@ -142,8 +144,10 @@ void GEAREditor::createManagedEntity()
 		{
 			name.str("");
 			name << "Entity " << i++;
-		} while (mProject->getCurrentScene()->createNewEntity(name.str()) == nullptr);
+			instance = mProject->getCurrentScene()->createNewEntity(name.str());
+		} while (instance == nullptr);
 	}
+	return instance;
 }
 
 void GEAREditor::exportAndStartProject()
@@ -185,37 +189,4 @@ void GEAREditor::addPropertyByIndex(int index)
 			(*it)->attachToSelectedEntity();
 		}
 	}
-}
-
-void
-GEAREditor::renderSolid()
-{
-	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
-	{
-		return;
-	}
-	auto* rc = mEntity->getComponent<G2::RenderComponent>();
-	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::FILL);
-}
-
-void
-GEAREditor::renderWire()
-{
-	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
-	{
-		return;
-	}
-	auto* rc = mEntity->getComponent<G2::RenderComponent>();
-	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::LINE);
-}
-
-void
-GEAREditor::renderPoint()
-{
-	if (mEntity == nullptr || !mEntity->hasComponent<G2::RenderComponent>())
-	{
-		return;
-	} 
-	auto* rc = mEntity->getComponent<G2::RenderComponent>();
-	rc->setPolygonDrawMode(G2Core::PolygonDrawMode::POINT);
 }
