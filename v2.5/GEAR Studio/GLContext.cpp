@@ -3,6 +3,7 @@
 #include "GEARStudioEvents.h"
 #include "EditorGeometryManager.h"
 #include "TranslationHandler.h"
+#include "TransformationHandler.h"
 #include "QmlOverlay.h"
 
 #include <QtGui/QMouseEvent>
@@ -514,6 +515,9 @@ GLContext::setEditorGeometryManager(std::shared_ptr<EditorGeometryManager> const
 {
 	mEditorGeometryManager = editorGeometryManager;
 
+	mTransformationHandler = std::shared_ptr<TransformationHandler>(new TransformationHandler(
+		mEditorGeometryManager->getTransformationHandleId()
+	));
 	mTranslationHandler = std::shared_ptr<TranslationHandler>(new TranslationHandler(
 		mEditorGeometryManager->getXTranslationHandleId(),
 		mEditorGeometryManager->getYTranslationHandleId(),

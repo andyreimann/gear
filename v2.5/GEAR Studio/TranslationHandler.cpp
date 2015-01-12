@@ -28,7 +28,6 @@ TranslationHandler::~TranslationHandler()
 {
 	// unhook from GEAR events
 	G2::EventDistributer::onFrameRendered.unHookAll(this);
-	G2::EventDistributer::onFrameRendered.unHookAll(this);
 	G2::EventDistributer::onMouseUp.unHookAll(this);
 	G2::EventDistributer::onMouseDown.unHookAll(this);
 	G2::EventDistributer::onMouseMove.unHookAll(this);

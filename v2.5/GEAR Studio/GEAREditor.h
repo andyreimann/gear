@@ -10,6 +10,8 @@
 #include "GEARStudioSettings.h"
 #include "EditorPanel.h"
 
+#include <QProgressDialog>
+
 #include <G2/PropertiesFile.h>
 
 #include <memory>
@@ -52,11 +54,10 @@ class GEAREditor : public QMainWindow
 		*/
 		ManagedEntity* createManagedEntity();
 		void addPropertyByIndex(int index);
-		/** DEBUG callback for opening the last loaded project.
-		 * @note This function is only a dummy function and will be replaced 
-		 * by a real history functionality as soon as the project history is saved in the GEAR Studio settings.
+		/** Callback for opening the selected project from the open recent projects menu.
+		 * @note The sender calling this function is expected to be a QAction.
 		 */
-		G2_DEPRECATED void openLastProject();
+		void openRecentProject();
 
 	private:
 		void _openProjectFromDirectory(std::string const& projectDirectory);
@@ -72,8 +73,12 @@ class GEAREditor : public QMainWindow
 		std::vector<std::shared_ptr<PropertiesTab>> mPropertyTabs;			// All the PropertyTab instances operating on ManagedEntity objects.
 
 		std::unique_ptr<LoggingTab>					mLoggingTab;			// The instance of the logging tab
-		std::unique_ptr<EditorPanel>				mEditorPanel;			// The instance of the editor panel
 		GEARStudioSettings							mStudioSettings;		// The settings of the GEAR Studio
+
+
+		std::unique_ptr<EditorPanel>				mEditorPanel;			// The instance of the editor panel
+
+		std::unique_ptr<QProgressDialog>			mProgressDialog;		
 
 		ManagedEntity*								mEntity;				// The currently selected ManagedEntity instance.
 };

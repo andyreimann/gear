@@ -5,7 +5,7 @@
 
 #include <memory>
 
-
+class QProgressDialog;
 /** This class holds all information about a Project.
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -24,7 +24,7 @@ class Project : public JsonDeserializer, JsonSerializer
 		/** This function will trigger a full export of the project, which will generate all source files
 		 * and prepare them for compilation.
 		 */
-		void exportProject();
+		void exportProject(QProgressDialog* progress);
 		
 		void loadScene(std::string const& sceneFile);
 

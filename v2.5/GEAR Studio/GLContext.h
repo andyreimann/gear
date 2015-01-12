@@ -29,6 +29,7 @@ QT_FORWARD_DECLARE_CLASS(QQuickItem)
 
 class EditorGeometryManager;
 class Project;
+class TransformationHandler;
 class TranslationHandler;
 class ManagedEntity;
 /** This is the OpenGL Context class of the GEAR Editor render surface.
@@ -95,7 +96,10 @@ class GLContext : public QOpenGLWidget, public G2::AbstractWindow
 		G2Cameras::EditorCamera					mEditorCamera;
 		std::unordered_map<Qt::MouseButton,G2::MouseButton> mMouseButtonMapping;
 		std::unordered_map<Qt::Key, int>		mKeyMap;
+
+		std::shared_ptr<TransformationHandler>	mTransformationHandler;
 		std::shared_ptr<TranslationHandler>		mTranslationHandler;
+
 		ManagedEntity*							mEntity;
 
 		// QML TEST

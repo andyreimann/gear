@@ -3,6 +3,7 @@
 
 #include <G2/StringTools.h>
 #include <fstream>
+#include <QProgressDialog>
 
 Project::Project(std::string const& projectDirectory) :
 	JsonDeserializer(projectDirectory + "/project.json"),
@@ -71,8 +72,9 @@ Project::loadScene(std::string const& sceneFile)
 	}
 }
 
-void Project::exportProject()
+void Project::exportProject(QProgressDialog* progress)
 {
+	progress->setLabelText("Generating C++ Code");
 	GEARStudioEvents::onLog(INFO, "Generate and compile project");
 
 	std::ofstream out(mProjectDirectory + "/generated-src/Game_generated.cpp");
@@ -91,20 +93,28 @@ void Project::exportProject()
 	out << "	{" << std::endl;
 
 	// export scene
-	out << (*(mCurrentScene.get()));
+	mCurrentScene->generateEntityInitializationCode(out, progress);
 
 	out << "	}" << std::endl;
 
 	out << "}" << std::endl;
 	out.close();
 
+	progress->setLabelText("Generating Visual Studio Solution");
+	progress->setValue(progress->value());
+
+	progress->setMaximum(progress->maximum() + 1);
 	// call premake
 	std::string premakeCmd = mProjectDirectory.substr(0, 2) + " && cd " + mProjectDirectory + " && " + "premake5.exe --file=premake.lua vs2013";
 	system(premakeCmd.c_str());
 
+	progress->setLabelText("Compiling Visual Studio Solution");
+	progress->setValue(progress->value() + 1);
 
+	progress->setMaximum(progress->maximum() + 10);
 	std::string compileCmd = "\"" + mProjectDirectory.substr(0, 2) + " && cd " + mProjectDirectory + " && \"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe\" \"GEAR Studio Sample.sln\" /Build \"Debug|x64\" /Out gear.out /Log gear.log\"";
 	int status = system(compileCmd.c_str());
+	progress->setValue(progress->value() + 10);
 
 	GEARStudioEvents::onLog(INFO, "Compilation has exited with code " + std::to_string(status));
 }

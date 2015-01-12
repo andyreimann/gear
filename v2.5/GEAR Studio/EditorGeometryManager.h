@@ -33,6 +33,10 @@ class EditorGeometryManager
 		* @return The entity id of the translation handle mesh for the Z-Axis.
 		*/
 		unsigned int getZTranslationHandleId() const { return mTransZMesh.getId(); };
+		/** Returns the entity id of the transformation handle mesh.
+		* @return The entity id of the transformation handle mesh.
+		*/
+		unsigned int getTransformationHandleId() const { return mTransAnchor.getId(); };
 
 		~EditorGeometryManager();
 

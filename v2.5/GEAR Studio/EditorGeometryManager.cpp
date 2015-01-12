@@ -36,7 +36,6 @@ EditorGeometryManager::EditorGeometryManager() :
 	
 	// init translation mesh
 	auto* tc = mTransAnchor.addComponent<G2::TransformComponent>();
-	tc->setPosition(glm::vec3(0.f,0.f,10.f));
 	mTransZMesh = mFbxImporter.import("meshes/translate.fbx");
 	auto* rc = mTransZMesh.getComponent<G2::RenderComponent>();
 	rc->setRenderLayerMask(gHandleLayer);
@@ -131,8 +130,8 @@ void EditorGeometryManager::_updateGridPosition()
 	// DEBUG
 
 	// sync position - add transform component if not already there
-	auto* tc = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
-	mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+	//auto* tc = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
+	//mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
 }
 
 void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)

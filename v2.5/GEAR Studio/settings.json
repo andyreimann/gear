@@ -2,6 +2,13 @@
 {
 	"gearincdir" : "H:\\repositories\\gear.git\\v2.5\\include",
 	"gearlibdir" : "H:\\repositories\\gear.git\\v2.5\\lib\\%{cfg.platform}\\%{cfg.buildcfg}",
+	"hist" : 
+	[
+		
+		{
+			"n" : "C:/Users/andy/Desktop/GEAR Studio Sample"
+		}
+	],
 	"lastproject" : "C:/Users/andy/Desktop/GEAR Studio Sample",
 	"pluginsdir" : "plugins/",
 	"templatesdir" : "templates/"

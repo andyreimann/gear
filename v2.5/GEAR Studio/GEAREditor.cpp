@@ -12,6 +12,9 @@
 #include <QtWidgets/QFileDialog>
 #include <sstream>
 
+static const std::string PROJECT_HISTORY = "hist";
+static const std::string PROJECT_HISTORY_NAME = "n";
+
 GEAREditor::GEAREditor(QWidget *parent)
 	: QMainWindow(parent),
 	mStudioSettings("settings.json"),
@@ -66,11 +69,12 @@ GEAREditor::GEAREditor(QWidget *parent)
 	ui.editorPanelRoot->layout()->addWidget(mEditorPanel.get());
 
 
-	auto& lastProject = mStudioSettings.getSettings().get("lastproject", "").asString();
-	if (lastProject != "")
+	Json::Value const& projectHistory = mStudioSettings.getSettings()[PROJECT_HISTORY];
+
+	for (int i = projectHistory.size()-1; i >= 0; --i)  // Iterates over the sequence elements.
 	{
-		QAction* menuAction = ui.menuOpenRecent->addAction(lastProject.c_str());
-		connect(menuAction, SIGNAL(triggered()), this, SLOT(openLastProject()));
+		QAction* menuAction = ui.menuOpenRecent->addAction(projectHistory[i][PROJECT_HISTORY_NAME].asCString());
+		connect(menuAction, SIGNAL(triggered()), this, SLOT(openRecentProject()));
 	}
 }
 
@@ -104,8 +108,25 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 {
 	if (projectDirectory != "")
 	{
-		mStudioSettings.getSettings().get("lastproject", "").asString();
-		mStudioSettings.save();
+
+		Json::Value& projectHistory = mStudioSettings.getSettings()[PROJECT_HISTORY];
+		bool found = false;
+		for (unsigned int i = 0; i < projectHistory.size(); ++i)  // Iterates over the sequence elements.
+		{
+			if (projectHistory[i][PROJECT_HISTORY_NAME].asString() == projectDirectory)
+			{
+				found = true;
+				// TODO update TS
+			}
+		}
+		if (!found)
+		{
+			// create a new history entry
+			Json::Value historyEntry;
+			historyEntry[PROJECT_HISTORY_NAME] = projectDirectory;
+			Json::Value const& projectHistory = mStudioSettings.getSettings()[PROJECT_HISTORY].append(historyEntry);
+			mStudioSettings.save();
+		}
 	}
 	else
 	{
@@ -127,10 +148,9 @@ void GEAREditor::openProject()
 	_openProjectFromDirectory(directory.toStdString());
 }
 
-void GEAREditor::openLastProject()
+void GEAREditor::openRecentProject()
 {
-	auto& lastProject = mStudioSettings.getSettings().get("lastproject", "").asString();
-	_openProjectFromDirectory(lastProject);
+	_openProjectFromDirectory(((QAction*)sender())->text().toStdString());
 }
 
 ManagedEntity* GEAREditor::createManagedEntity()
@@ -152,10 +172,21 @@ ManagedEntity* GEAREditor::createManagedEntity()
 
 void GEAREditor::exportAndStartProject()
 {
+	QProgressDialog progress("Task in progress...", "Cancel", 0, 10, this);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.show();
+	progress.raise();
+	progress.activateWindow();
+
+	QApplication::processEvents();
+	//progress.setMinimum(0);
+	//progress.setMaximum(0);
+	//progress.setValue(0);
 	if (mProject.get() != nullptr)
 	{
-		mProject->exportProject();
+		mProject->exportProject(&progress);
 	}
+
 }
 
 void GEAREditor::_onSceneLoaded(Scene* scene)

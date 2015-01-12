@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <fstream>
 
-
+class QProgressDialog;
 /** This class holds all information about a Scene.
 * @created	2014/12/17
 * @author Andy Reimann <a.reimann@moorlands-grove.de>
@@ -32,9 +32,10 @@ class Scene : public JsonDeserializer, JsonSerializer
 		 */
 		void save();
 		/** This function will generate the C++ code to instantiate the entities contained in the Scene.
-		* @param out The file stream to write the code to
-		*/
-		void generateEntityInitializationCode(std::ofstream& out) const;
+		 * @param out The file stream to write the code to.
+		 * @param progress The instance to a progress dialog.
+		 */
+		void generateEntityInitializationCode(std::ofstream& out, QProgressDialog* progress) const;
 		/** This function will try to create a new entity in the scene with the given name.
 		 * @param name The name of the entity to create.
 		 * @return A pointer to the newly created entity or nullptr, if an entity with the given name already exists.
@@ -62,5 +63,3 @@ class Scene : public JsonDeserializer, JsonSerializer
 		// importer 
 		G2::EffectImporter			mEffectImporter;
 };
-
-std::ofstream& operator<<(std::ofstream&, Scene const& scene);

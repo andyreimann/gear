@@ -8,12 +8,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <algorithm>
-
-std::ofstream& operator<<(std::ofstream& out, Scene const& scene)
-{
-	scene.generateEntityInitializationCode(out);
-	return out;
-}
+#include <QProgressDialog>
 
 Scene::Scene(std::string projectDirectory, std::string const& sceneFile) :
 	JsonDeserializer(sceneFile),
@@ -150,12 +145,14 @@ std::string Scene::getName() const
 	return mResource["name"].asString();
 }
 
-void Scene::generateEntityInitializationCode(std::ofstream& out) const
+void Scene::generateEntityInitializationCode(std::ofstream& out, QProgressDialog* progress) const
 {
+	progress->setMaximum(progress->maximum() + mLoadedEntities.size());
 	std::string indention = "		";
 	std::stringstream name;
 	for (auto it = mLoadedEntities.begin(); it != mLoadedEntities.end(); ++it)
 	{
+		progress->setValue(progress->value() + 1);
 		std::string entityVar = "e" + std::to_string(it->second.getId());
 		out << indention << "// START '" << it->first << "'" << std::endl;
 		out << indention << "mManagedEntities[\"" << it->first << "\"] = std::move(G2::Entity());" << std::endl; // create entity instance
