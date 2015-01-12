@@ -130,16 +130,9 @@ void EditorGeometryManager::_updateGridPosition()
 
 	// DEBUG
 
-	if (mSelectedEntityAABB.hasComponent<G2::TransformComponent>())
-	{
-		// sync position
-		auto* tc = mSelectedEntityAABB.getComponent<G2::TransformComponent>();
-		mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
-	}
-	else
-	{
-		mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(0.f, 0.f, 0.f));
-	}
+	// sync position - add transform component if not already there
+	auto* tc = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
+	mTransAnchor.getComponent<G2::TransformComponent>()->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
 }
 
 void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)

@@ -61,7 +61,7 @@ void ColorSelector::_initializeUiFromData()
 		mTarget.isMember("b") &&
 		mTarget.isMember("a"))
 	{
-		QColor color(mTarget["r"].asInt(), mTarget["r"].asInt(), mTarget["r"].asInt(), mTarget["r"].asInt());
+		color = QColor(mTarget["r"].asInt(), mTarget["g"].asInt(), mTarget["b"].asInt(), mTarget["a"].asInt());
 	}
 	pal.setColor(QPalette::Background, color);
 	ui.colorSurf->blockSignals(true); ui.colorSurf->setPalette(pal); ui.colorSurf->blockSignals(false);

@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="Buttons">
+    <file>EditorResources/Rotate_3d_24x24.png</file>
+    <file>EditorResources/Scale_3d_24x24.png</file>
+    <file>EditorResources/Translate_3d_24x24.png</file>
     <file>EditorResources/Save_24x24.png</file>
     <file>EditorResources/RecycleBin_24x24.png</file>
   </qresource>

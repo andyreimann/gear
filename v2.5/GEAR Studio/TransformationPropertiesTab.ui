@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
+    <width>381</width>
     <height>182</height>
    </rect>
   </property>
@@ -64,7 +64,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0,1,0,1">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0,1,0,1,0">
           <item>
            <widget class="QLabel" name="posXLabel">
             <property name="text">
@@ -134,17 +134,35 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="translation3DToggle">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <activeon>:/Buttons/EditorResources/Translate_3d_24x24.png</activeon>
+             </iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Orientation:</string>
+           <string>Rotation:</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0,1,0,1">
+         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0,1,0,1,0">
           <item>
            <widget class="QLabel" name="rotXLabel">
             <property name="text">
@@ -214,6 +232,24 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="rotation3DToggle">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <activeon>:/Buttons/EditorResources/Rotate_3d_24x24.png</activeon>
+             </iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -224,7 +260,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,1,0,1">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,1,0,1,0">
           <item>
            <widget class="QLabel" name="scaleXLabel">
             <property name="text">
@@ -303,6 +339,24 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="scale3DToggle">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <activeon>:/Buttons/EditorResources/Scale_3d_24x24.png</activeon>
+             </iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -312,6 +366,11 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="geareditor.qrc"/>
+ </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
