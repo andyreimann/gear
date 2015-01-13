@@ -10,6 +10,7 @@
 #include "LightPropertiesTab.h"
 
 #include <QtWidgets/QFileDialog>
+#include <boost/filesystem.hpp>
 #include <sstream>
 
 static const std::string PROJECT_HISTORY = "hist";
@@ -73,8 +74,12 @@ GEAREditor::GEAREditor(QWidget *parent)
 
 	for (int i = projectHistory.size()-1; i >= 0; --i)  // Iterates over the sequence elements.
 	{
-		QAction* menuAction = ui.menuOpenRecent->addAction(projectHistory[i][PROJECT_HISTORY_NAME].asCString());
-		connect(menuAction, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+		std::string path = projectHistory[i][PROJECT_HISTORY_NAME].asString();
+		if (boost::filesystem::exists(path))
+		{
+			QAction* menuAction = ui.menuOpenRecent->addAction(path.c_str());
+			connect(menuAction, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+		}
 	}
 }
 
