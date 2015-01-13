@@ -33,42 +33,11 @@ EditorGeometryManager::EditorGeometryManager() :
 
 	// register to Editor events
 	GEARStudioEvents::onManagedEntitySelected.hook(this, &EditorGeometryManager::_onManagedEntitySelected);
-	
-	// init translation mesh
+
 	auto* tc = mTransAnchor.addComponent<G2::TransformComponent>();
-	mTransZMesh = mFbxImporter.import("meshes/translate.fbx");
-	auto* rc = mTransZMesh.getComponent<G2::RenderComponent>();
-	rc->setRenderLayerMask(gHandleLayer);
-	rc->setEffect(mSolidFx);
-	rc->material.setAmbient(glm::vec4(0.f, 0.f, 1.f, 1.f));
-	rc->setRenderDepth(false);
-	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS); 
-	tc = mTransZMesh.addComponent<G2::TransformComponent>();
-	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
-
-	mTransYMesh = mFbxImporter.import("meshes/translate.fbx");
-	rc = mTransYMesh.getComponent<G2::RenderComponent>();
-	rc->setRenderLayerMask(gHandleLayer);
-	rc->setEffect(mSolidFx);
-	rc->material.setAmbient(glm::vec4(0.f, 1.f, 0.f, 1.f));
-	rc->setRenderDepth(false);
-	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
-	tc = mTransYMesh.addComponent<G2::TransformComponent>();
-	tc->rotateX(-90.f);
-	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
-
-	mTransXMesh = mFbxImporter.import("meshes/translate.fbx");
-	rc = mTransXMesh.getComponent<G2::RenderComponent>();
-	rc->setRenderLayerMask(gHandleLayer);
-	rc->setEffect(mSolidFx);
-	rc->material.setAmbient(glm::vec4(1.f, 0.f, 0.f, 1.0f));
-	rc->setRenderDepth(false);
-	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
-	tc = mTransXMesh.addComponent<G2::TransformComponent>();
-	tc->rotateY(90.f);
-	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
-
-	_setTranslationMeshVisible(false);
+	_initTranslationHandles();
+	_initScaleHandles();
+	_initRotationHandles();
 }
 
 EditorGeometryManager::~EditorGeometryManager() 
@@ -82,6 +51,72 @@ EditorGeometryManager::~EditorGeometryManager()
 	// unhook from Editor events
 	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 	GEARStudioEvents::onEditorHandleSelected.unHookAll(this);
+}
+
+void EditorGeometryManager::_initTranslationHandles()
+{
+	mTransZMesh = mFbxImporter.import("meshes/translate.fbx");
+	auto* rc = mTransZMesh.getComponent<G2::RenderComponent>();
+	auto* tc = mTransZMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 0.f, 1.f, 1.f), 0.f, glm::vec3(0.f, 0.f, 1.f));
+
+	mTransYMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mTransYMesh.getComponent<G2::RenderComponent>();
+	tc = mTransYMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 1.f, 0.f, 1.f), -90.f, glm::vec3(1.f, 0.f, 0.f));
+
+	mTransXMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mTransXMesh.getComponent<G2::RenderComponent>();
+	tc = mTransXMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(1.f, 0.f, 0.f, 1.f), 90.f, glm::vec3(0.f, 1.f, 0.f));
+}
+
+void EditorGeometryManager::_initScaleHandles()
+{
+	mScaleZMesh = mFbxImporter.import("meshes/translate.fbx");
+	auto* rc = mScaleZMesh.getComponent<G2::RenderComponent>();
+	auto* tc = mScaleZMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 0.f, 1.f, 1.f), 0.f, glm::vec3(0.f, 0.f, 1.f));
+
+	mScaleYMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mScaleYMesh.getComponent<G2::RenderComponent>();
+	tc = mScaleYMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 1.f, 0.f, 1.f), -90.f, glm::vec3(1.f, 0.f, 0.f));
+
+	mScaleXMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mScaleXMesh.getComponent<G2::RenderComponent>();
+	tc = mScaleXMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(1.f, 0.f, 0.f, 1.f), 90.f, glm::vec3(0.f, 1.f, 0.f));
+}
+
+void EditorGeometryManager::_initRotationHandles()
+{
+	mRotateZMesh = mFbxImporter.import("meshes/translate.fbx");
+	auto* rc = mRotateZMesh.getComponent<G2::RenderComponent>();
+	auto* tc = mRotateZMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 0.f, 1.f, 1.f), 0.f, glm::vec3(0.f, 0.f, 1.f));
+
+	mRotateYMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mRotateYMesh.getComponent<G2::RenderComponent>();
+	tc = mRotateYMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(0.f, 1.f, 0.f, 1.f), -90.f, glm::vec3(1.f, 0.f, 0.f));
+
+	mRotateXMesh = mFbxImporter.import("meshes/translate.fbx");
+	rc = mRotateXMesh.getComponent<G2::RenderComponent>();
+	tc = mRotateXMesh.addComponent<G2::TransformComponent>();
+	_initHandleSettings(rc, tc, glm::vec4(1.f, 0.f, 0.f, 1.f), 90.f, glm::vec3(0.f, 1.f, 0.f));
+}
+
+void EditorGeometryManager::_initHandleSettings(G2::RenderComponent* rc, G2::TransformComponent* tc, glm::vec4 const& ambientColor, float degrees, glm::vec3 const& axis)
+{
+	rc->setRenderLayerMask(gHandleLayer);
+	rc->setEffect(mSolidFx);
+	rc->material.setAmbient(ambientColor);
+	rc->setRenderDepth(false);
+	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
+	rc->setDrawcallEnabled(false);
+	tc->rotateAxis(degrees, axis);
+	tc->setParent(mTransAnchor.getComponent<G2::TransformComponent>());
 }
 
 void EditorGeometryManager::_updateEditorGrid(G2::FrameInfo const& frame)
@@ -152,12 +187,10 @@ void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 		auto* aabbVisTransform = mSelectedEntityAABB.addComponent<G2::TransformComponent>();
 		// fetch it newly, because the pointer might already be invalid!
 		aabbVisTransform->setParent(entity->getComponent<G2::TransformComponent>());
-		_setTranslationMeshVisible(true);
 		
 		// visualize model space AABBs
 		auto* aabbVis = mSelectedEntityAABB.addComponent<G2::RenderComponent>();
 		aabbVis->allocateVertexArrays((unsigned int)renderComp->getNumDrawCalls());
-		//aabbVis->drawMode = GL_LINES;
 		aabbVis->material.setAmbient(glm::vec4(0.f, 1.f, 0.f, 1.f));
 		for (unsigned int i = 0; i < renderComp->getNumDrawCalls(); ++i)
 		{
@@ -211,12 +244,4 @@ void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 			mSolidFx
 		);
 	}
-}
-
-void
-EditorGeometryManager::_setTranslationMeshVisible(bool visible)
-{
-	mTransXMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
-	mTransYMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
-	mTransZMesh.getComponent<G2::RenderComponent>()->setDrawcallEnabled(visible);
 }

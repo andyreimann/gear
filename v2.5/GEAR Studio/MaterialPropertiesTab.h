@@ -76,7 +76,7 @@ class MaterialPropertiesTab : public QWidget, public PropertiesTab
 
 		QColor _toQColor(glm::vec4 const& gearColor) const;
 
-		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out);
 
 		G2::EffectImporter		mFxImporter;		// The importer for effect files to use.
 		G2::TextureImporter 	mTextureImporter;	// The importer for textures to use.

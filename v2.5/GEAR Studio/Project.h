@@ -20,13 +20,13 @@ class Project : public JsonDeserializer, JsonSerializer
 
 		/** This will load all resources from the last scene, which was opened.
 		 */
-		void loadLastScene();
+		void loadLastScene(QProgressDialog* progress);
 		/** This function will trigger a full export of the project, which will generate all source files
 		 * and prepare them for compilation.
 		 */
 		void exportProject(QProgressDialog* progress);
 		
-		void loadScene(std::string const& sceneFile);
+		void loadScene(std::string const& sceneFile, QProgressDialog* progress);
 
 		std::shared_ptr<Scene>& getCurrentScene() { return mCurrentScene; }
 		/** Returns the projects directory.

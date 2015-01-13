@@ -1,6 +1,7 @@
 #include "LoggingTab.h"
 #include "GEARStudioEvents.h"
 #include <QtWidgets/QFileDialog>
+#include <fstream>
 
 const std::string currentDateTime() 
 {

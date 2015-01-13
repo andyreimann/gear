@@ -474,7 +474,7 @@ MaterialPropertiesTab::removeAllTextureSelectors()
 	mTextureSelector.clear();
 }
 
-void MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+void MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out)
 {
 	if (!entity->hasProperties(mTechnicalName))
 	{

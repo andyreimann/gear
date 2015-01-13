@@ -1177,6 +1177,10 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 		{
 
 			DrawCall& drawCall = comp.getDrawCall(k);
+			if (!drawCall.isEnabled())
+			{
+				continue; // skip invisible meshes
+			}
 			if (drawCall.getWorldSpaceAABB().intersects(ray))
 			{
 				glm::vec3* p1, *p2, *p3;

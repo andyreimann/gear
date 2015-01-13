@@ -8,3 +8,18 @@
 w->blockSignals(true); \
 a; \
 w->blockSignals(false);
+
+namespace G2S
+{
+	namespace HandleMode
+	{
+		enum Name
+		{
+			NO_HANDLE = 0,
+			TRANSLATION_HANDLE = 1,
+			SCALE_HANDLE = 2,
+			ROTATION_HANDLE = 3,
+			HANDLE_INVALID = 4,
+		};
+	};
+};

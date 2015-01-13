@@ -1,5 +1,6 @@
 #pragma once
 #include "EditorGrid.h"
+#include "HandlerBase.h"
 
 #include <G2Core/Entity.h>
 #include <G2/EffectImporter.h>
@@ -16,7 +17,7 @@ class ManagedEntity;
  * @created:	2014/01/12
  * @author Andy Reimann <a.reimann@moorlands-grove.de>
  */
-class ScaleHandler 
+class ScaleHandler : private G2S::HandlerBase
 {
 	public:
 		/** This constructs a new TranslationHandler.
@@ -38,6 +39,9 @@ class ScaleHandler
 			SCALE_Y_AXIS,
 			SCALE_Z_AXIS,
 		};
+		/** Automatically called whenever this ScaleHandler's handle becomes active/inactive.
+		*/
+		void handleActivityChanged() override;
 
 		/** Called whenever an intersection occurred with an object assigned to the RenderLayer defined
 		 * in EditorGeometryManager::gHandleLayer.
@@ -47,11 +51,7 @@ class ScaleHandler
 		* @param entity A pointer to the ManagedEntity which is selected.
 		*/
 		void _onManagedEntitySelected(ManagedEntity* entity);
-		/** Called every frame by the GEAR engine.
-		*/
-		void _onFrameRendered(G2::FrameInfo const& frame);
 		void _onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& pos);
-		void _onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& pos);
 		void _onMouseMove(glm::detail::tvec2<int> const& pos);
 
 		/** Calculates the intersection point with the current translation plane and the given Ray.
@@ -63,11 +63,13 @@ class ScaleHandler
 
 		G2::CameraSystem*	mCameraSystem;
 		G2::TransformSystem* mTransformSystem;
+		G2::RenderSystem* mRenderSystem;
 
 		ManagedEntity*	mEntity;				// The ManagedEntity which is currently selected
 		
 		glm::vec3		mHandlerStartPoint;		// The intersection point with the last selected handler
 		glm::vec3		mEntityStartPosition;	// The position of the selected ManagedEntity at the time were a handler was selected.
+		glm::vec3		mEntityStartScale;		// The scale of the selected ManagedEntity at the time were a handler was selected.
 		glm::vec3		mPickOffset;			// The offset between the intersection on the handle and the origin of the selected mesh
 		glm::vec3		mScalePlaneNormal;		// The normal vector of the current scale plane
 		float 			mScalePlaneOffset;		// The offset to 0 of the current scale plane

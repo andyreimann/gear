@@ -53,7 +53,7 @@ Scene::get(unsigned int entityId)
 
 
 void
-Scene::_init3D()
+Scene::_init3D(QProgressDialog* progress)
 {
 	// load default effect
 	auto* renderSystem = G2::ECSManager::getShared()
@@ -78,8 +78,10 @@ Scene::_init3D()
 
 	Json::Value const& entities = mResource["entities"];
 
+	progress->setMaximum(progress->maximum() + entities.size());
 	for (unsigned int i = 0; i < entities.size(); ++i)  // Iterates over the sequence elements.
 	{
+		progress->setValue(progress->value() + i);
 		_initEntityFromJson(entities[i]);
 	}
 }
@@ -104,12 +106,12 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 }
 
 void
-Scene::load()
+Scene::load(QProgressDialog* progress)
 {
 	if (!error())
 	{
 		// init every object
-		_init3D();
+		_init3D(progress);
 		std::stringstream log;
 		log << "Scene " << mResource["name"].asString() << " loaded";
 		GEARStudioEvents::onLog(INFO, log.str());
@@ -145,7 +147,7 @@ std::string Scene::getName() const
 	return mResource["name"].asString();
 }
 
-void Scene::generateEntityInitializationCode(std::ofstream& out, QProgressDialog* progress) const
+void Scene::generateEntityInitializationCode(std::ostream& out, QProgressDialog* progress) const
 {
 	progress->setMaximum(progress->maximum() + mLoadedEntities.size());
 	std::string indention = "		";

@@ -93,6 +93,8 @@ void GEAREditor::connectToGEARCore()
 	// init editor geometry
 	mEditorGeometryManager = std::shared_ptr<EditorGeometryManager>(new EditorGeometryManager());
 	((GLContext*)ui.renderSurface)->setEditorGeometryManager(mEditorGeometryManager);
+	// translation handle is activated by default
+	GEARStudioEvents::activateHandle(G2S::HandleMode::NO_HANDLE);
 }
 
 void GEAREditor::newProject()
@@ -138,7 +140,17 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 	GEARStudioEvents::onProjectOpened(mProject.get());
 
 	ui.createEntity->setEnabled(true);
-	mProject->loadLastScene();
+
+
+	QProgressDialog progress("Importing Scene...", "Cancel", 0, 10, this);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.show();
+	progress.raise();
+	progress.activateWindow();
+
+	QApplication::processEvents();
+
+	mProject->loadLastScene(&progress);
 }
 
 void GEAREditor::openProject()

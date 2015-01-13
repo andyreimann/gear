@@ -40,12 +40,20 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		/** Callback when scale value is changed.
 		*/
 		void scaleChanged(double);
-	private:
+
+		void activateTranslationHandle();
+		void activateScaleHandle();
+		void activateRotationHandle();
 
 		void _onTranslationHandleMoved();
-		void _onTranslationHandleReleased();
+		void _onScaleHandleMoved();
+		void _onRotationHandleMoved();
+	private:
+		
+		void _onTransformationHandleMoved(std::string const& propertyName, float x, float y, float z);
+		void _onTransformationHandleReleased();
 
-		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out);
 
 		/** Writes a given value into the selected entities property assigned to this Tab.
 		 * @param group The group key to use for the write operation.
@@ -55,7 +63,7 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		 */
 		void _serializeValue(std::string const& group, std::string const& component, double value);
 
-		bool							mTranslationHandleChanged;
+		bool							mTransformationHandleChanged;
 		bool							mOpen;				// The flag if the tab is opened or not.
 		Ui::TransformationPropertiesTab	ui;					// The Qt UI class for the project creation dialog
 };

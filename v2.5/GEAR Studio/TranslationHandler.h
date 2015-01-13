@@ -1,5 +1,6 @@
 #pragma once
 #include "EditorGrid.h"
+#include "HandlerBase.h"
 
 #include <G2Core/Entity.h>
 #include <G2/EffectImporter.h>
@@ -16,7 +17,7 @@ class ManagedEntity;
  * @created:	2014/01/08
  * @author Andy Reimann <a.reimann@moorlands-grove.de>
  */
-class TranslationHandler 
+class TranslationHandler : private G2S::HandlerBase
 {
 	public:
 		/** This constructs a new TranslationHandler.
@@ -29,8 +30,6 @@ class TranslationHandler
 		~TranslationHandler();
 	private:
 
-
-
 		enum State
 		{
 			TRANSLATE_NOT,
@@ -38,7 +37,9 @@ class TranslationHandler
 			TRANSLATE_Y_AXIS,
 			TRANSLATE_Z_AXIS,
 		};
-
+		/** Automatically called whenever this TranslationHandler's handle becomes active/inactive.
+		 */
+		void handleActivityChanged() override;
 		/** Called whenever an intersection occurred with an object assigned to the RenderLayer defined
 		 * in EditorGeometryManager::gHandleLayer.
 		*/
@@ -47,11 +48,7 @@ class TranslationHandler
 		* @param entity A pointer to the ManagedEntity which is selected.
 		*/
 		void _onManagedEntitySelected(ManagedEntity* entity);
-		/** Called every frame by the GEAR engine.
-		*/
-		void _onFrameRendered(G2::FrameInfo const& frame);
 		void _onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& pos);
-		void _onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& pos);
 		void _onMouseMove(glm::detail::tvec2<int> const& pos);
 
 		/** Calculates the intersection point with the current translation plane and the given Ray.
@@ -63,6 +60,7 @@ class TranslationHandler
 
 		G2::CameraSystem*	mCameraSystem;
 		G2::TransformSystem* mTransformSystem;
+		G2::RenderSystem* mRenderSystem;
 
 		ManagedEntity*	mEntity;				// The ManagedEntity which is currently selected
 		

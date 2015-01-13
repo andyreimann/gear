@@ -22,7 +22,7 @@ Project::~Project()
 }
 
 void
-Project::loadLastScene()
+Project::loadLastScene(QProgressDialog* progress)
 {
 	if (!error())
 	{
@@ -43,14 +43,15 @@ Project::loadLastScene()
 		lastSceneName = G2::Tools::String::trim(lastSceneName);
 		if (lastSceneName.size() > 0)
 		{
-			loadScene(mProjectDirectory + lastSceneName);
+			loadScene(mProjectDirectory + lastSceneName, progress);
 		}
 	}
 }
 
 void
-Project::loadScene(std::string const& sceneFile)
+Project::loadScene(std::string const& sceneFile, QProgressDialog* progress)
 {
+
 	std::shared_ptr<Scene> scene(new Scene(mProjectDirectory, sceneFile));
 	if (scene->error())
 	{
@@ -64,7 +65,8 @@ Project::loadScene(std::string const& sceneFile)
 			GEARStudioEvents::onSceneUnloaded(mCurrentScene.get());
 		}
 		mCurrentScene = scene;
-		mCurrentScene->load();
+		
+		mCurrentScene->load(progress);
 		if (mCurrentScene.get() != nullptr)
 		{
 			GEARStudioEvents::onSceneLoaded(mCurrentScene.get());

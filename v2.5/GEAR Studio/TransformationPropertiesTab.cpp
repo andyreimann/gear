@@ -18,7 +18,7 @@ static const std::string TRANS_SCALE = "scale";
 TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/)
 	: QWidget(parent),
 	PropertiesTab("transf", "Transformation"),
-	mTranslationHandleChanged(false)
+	mTransformationHandleChanged(false)
 {
 	ui.setupUi(this);
 	ui.tabToggle->setText(mTabName.c_str()); // set display name on tab toggle
@@ -35,10 +35,17 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	connect(ui.scaleX, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 	connect(ui.scaleY, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 	connect(ui.scaleZ, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
+	connect(ui.translation3DToggle, SIGNAL(clicked()), this, SLOT(activateTranslationHandle()));
+	connect(ui.rotation3DToggle, SIGNAL(clicked()), this, SLOT(activateRotationHandle()));
+	connect(ui.scale3DToggle, SIGNAL(clicked()), this, SLOT(activateScaleHandle()));
 
 	// register to Editor events
 	GEARStudioEvents::onTranslationHandleMoved.hook(this, &TransformationPropertiesTab::_onTranslationHandleMoved);
-	GEARStudioEvents::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTranslationHandleReleased);
+	GEARStudioEvents::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	GEARStudioEvents::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onScaleHandleMoved);
+	GEARStudioEvents::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	GEARStudioEvents::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onRotationHandleMoved);
+	GEARStudioEvents::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
 	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
@@ -202,41 +209,70 @@ void TransformationPropertiesTab::scaleChanged(double)
 	}
 }
 
+void TransformationPropertiesTab::activateTranslationHandle()
+{
+	GEARStudioEvents::activateHandle(G2S::HandleMode::TRANSLATION_HANDLE);
+}
+
+void TransformationPropertiesTab::activateScaleHandle()
+{
+	GEARStudioEvents::activateHandle(G2S::HandleMode::SCALE_HANDLE);
+}
+
+void TransformationPropertiesTab::activateRotationHandle()
+{
+	GEARStudioEvents::activateHandle(G2S::HandleMode::ROTATION_HANDLE);
+}
+
 void TransformationPropertiesTab::_serializeValue(std::string const& group, std::string const& component, double value)
 {
 	Json::Value& props = mEntity->getProperties(mTechnicalName);
 	props[group][component] = (float)value;
 }
 
-void
-TransformationPropertiesTab::_onTranslationHandleMoved()
+void TransformationPropertiesTab::_onTranslationHandleMoved()
+{
+	auto* tc = mEntity->getComponent<G2::TransformComponent>();
+	_onTransformationHandleMoved(TRANS_POSITION, tc->getPosition().x, tc->getPosition().y, tc->getPosition().z);
+}
+
+void TransformationPropertiesTab::_onScaleHandleMoved()
+{
+	auto* tc = mEntity->getComponent<G2::TransformComponent>();
+	_onTransformationHandleMoved(TRANS_SCALE, tc->getScale().x, tc->getScale().y, tc->getScale().z);
+}
+
+void TransformationPropertiesTab::_onRotationHandleMoved()
+{
+	auto* tc = mEntity->getComponent<G2::TransformComponent>();
+	_onTransformationHandleMoved(TRANS_ORIENTATION, tc->getRotation().x, tc->getRotation().y, tc->getRotation().z);
+}
+
+void TransformationPropertiesTab::_onTransformationHandleMoved(std::string const& propertyName, float x, float y, float z)
 {
 	Json::Value& props = mEntity->getProperties(mTechnicalName);
-	
-	auto* tc = mEntity->getComponent<G2::TransformComponent>();
 
-	_serializeValue(TRANS_POSITION, "x", tc->getPosition().x);
-	_serializeValue(TRANS_POSITION, "y", tc->getPosition().y);
-	_serializeValue(TRANS_POSITION, "z", tc->getPosition().z);
+
+	_serializeValue(propertyName, "x", x);
+	_serializeValue(propertyName, "y", y);
+	_serializeValue(propertyName, "z", z);
 
 	_initUiWithEntity(mEntity);
 
-	mTranslationHandleChanged = true;
+	mTransformationHandleChanged = true;
+
 }
 
-void
-TransformationPropertiesTab::_onTranslationHandleReleased()
+void TransformationPropertiesTab::_onTransformationHandleReleased()
 {
-	if (mTranslationHandleChanged)
+	if (mTransformationHandleChanged)
 	{
-		mTranslationHandleChanged = false;
+		mTransformationHandleChanged = false;
 		mProject->getCurrentScene()->save();
 	}
 }
 
-
-
-void TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+void TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out)
 {
 	if (!entity->hasProperties(mTechnicalName))
 	{

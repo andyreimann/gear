@@ -31,6 +31,7 @@ class EditorGeometryManager;
 class Project;
 class TransformationHandler;
 class TranslationHandler;
+class ScaleHandler;
 class ManagedEntity;
 /** This is the OpenGL Context class of the GEAR Editor render surface.
 * @created	2014/12/09
@@ -99,6 +100,7 @@ class GLContext : public QOpenGLWidget, public G2::AbstractWindow
 
 		std::shared_ptr<TransformationHandler>	mTransformationHandler;
 		std::shared_ptr<TranslationHandler>		mTranslationHandler;
+		std::shared_ptr<ScaleHandler>			mScaleHandler;
 
 		ManagedEntity*							mEntity;
 

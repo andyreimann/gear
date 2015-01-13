@@ -8,15 +8,15 @@ TranslationHandler::TranslationHandler(unsigned int xAxisHandlerId, unsigned int
 	mYAxisHandlerId(yAxisHandlerId),
 	mZAxisHandlerId(zAxisHandlerId),
 	mState(TRANSLATE_NOT),
-	mEntity(nullptr)
+	mEntity(nullptr),
+	G2S::HandlerBase(G2S::HandleMode::TRANSLATION_HANDLE)
 {
+	mRenderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>();
 	mCameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>();
 	mTransformSystem = G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>();
 
 	// register to GEAR events
-	G2::EventDistributer::onFrameRendered.hook(this, &TranslationHandler::_onFrameRendered);
 	G2::EventDistributer::onMouseUp.hook(this, &TranslationHandler::_onMouseUp);
-	G2::EventDistributer::onMouseDown.hook(this, &TranslationHandler::_onMouseDown);
 	G2::EventDistributer::onMouseMove.hook(this, &TranslationHandler::_onMouseMove);
 
 	// register to Editor events
@@ -27,9 +27,7 @@ TranslationHandler::TranslationHandler(unsigned int xAxisHandlerId, unsigned int
 TranslationHandler::~TranslationHandler()
 {
 	// unhook from GEAR events
-	G2::EventDistributer::onFrameRendered.unHookAll(this);
 	G2::EventDistributer::onMouseUp.unHookAll(this);
-	G2::EventDistributer::onMouseDown.unHookAll(this);
 	G2::EventDistributer::onMouseMove.unHookAll(this);
 
 	// unhook from Editor events
@@ -39,6 +37,11 @@ TranslationHandler::~TranslationHandler()
 
 void TranslationHandler::_onEditorHandleSelected(unsigned int entityId, G2::Intersection const& intersection)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
+
 	mTranslationPlaneOffset = 0.f;
 	if (entityId == mXAxisHandlerId)
 	{
@@ -77,13 +80,20 @@ TranslationHandler::_onManagedEntitySelected(ManagedEntity* entity)
 	mEntity = entity;
 }
 
-void TranslationHandler::_onFrameRendered(G2::FrameInfo const& frame)
+void TranslationHandler::handleActivityChanged()
 {
-
+	// handle visibility
+	mRenderSystem->get(mXAxisHandlerId)->setDrawcallEnabled(isHandleActive());
+	mRenderSystem->get(mYAxisHandlerId)->setDrawcallEnabled(isHandleActive());
+	mRenderSystem->get(mZAxisHandlerId)->setDrawcallEnabled(isHandleActive());
 }
 
 void TranslationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& pos)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
 	// TODO Button should be defined in a button mapping to be configurable!
 	if (button == G2::MOUSE_LEFT)
 	{
@@ -96,13 +106,13 @@ void TranslationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<i
 	}
 }
 
-void TranslationHandler::_onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& pos)
-{
-
-}
-
 void TranslationHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
+
 	if (mState != TRANSLATE_NOT)
 	{
 		// intersect the mouse ray with the XZ-plane on the Y value of the 

@@ -164,7 +164,7 @@ void MeshPropertiesTab::_reimportMesh(ManagedEntity* target)
 	}
 }
 
-void MeshPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+void MeshPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out)
 {
 	if (!entity->hasProperties(mTechnicalName))
 	{

@@ -2,6 +2,7 @@
 #include "Project.h"
 #include "GEARStudioEvents.h"
 #include "EditorGeometryManager.h"
+#include "ScaleHandler.h"
 #include "TranslationHandler.h"
 #include "TransformationHandler.h"
 #include "QmlOverlay.h"
@@ -72,6 +73,41 @@ GLContext::~GLContext()
 	GEARStudioEvents::onProjectOpened.unHookAll(this);
 	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
 	G2::EventDistributer::onKeyDown.unHookAll(this);
+}
+
+void
+GLContext::createEditorCamera()
+{
+	// create a new EditorCamera
+	mEditorCamera = G2Cameras::EditorCamera(this);
+	// set it as the main camera
+	mEditorCamera
+		.translate(0.f, 5.f)
+		.rotate(25.f, 0.f)
+		.zoom(-15.f)
+		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
+	mEditorCamera.setInternals(70.f, 0.01f, 300.f);
+	gearInitialized = true;
+}
+
+void
+GLContext::setEditorGeometryManager(std::shared_ptr<EditorGeometryManager> const& editorGeometryManager)
+{
+	mEditorGeometryManager = editorGeometryManager;
+
+	mTransformationHandler = std::shared_ptr<TransformationHandler>(new TransformationHandler(
+		mEditorGeometryManager->getTransformationHandleId()
+	));
+	mTranslationHandler = std::shared_ptr<TranslationHandler>(new TranslationHandler(
+		mEditorGeometryManager->getXTranslationHandleId(),
+		mEditorGeometryManager->getYTranslationHandleId(),
+		mEditorGeometryManager->getZTranslationHandleId()
+	));
+	mScaleHandler = std::shared_ptr<ScaleHandler>(new ScaleHandler(
+		mEditorGeometryManager->getXScaleHandleId(),
+		mEditorGeometryManager->getYScaleHandleId(),
+		mEditorGeometryManager->getZScaleHandleId()
+	));
 }
 
 void GLContext::initQuick()
@@ -367,6 +403,10 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 					GEARStudioEvents::onManagedEntitySelected(managedEntity);
 				}
 			}
+			else
+			{
+				GEARStudioEvents::onManagedEntitySelected(nullptr); // deselect
+			}
 		}
 	}
 }
@@ -429,102 +469,6 @@ void GLContext::_onProjectOpened(Project* project)
 	mProject = project;
 }
 
-void GLContext::initKeyMap() 
-{
-	mKeyMap.insert(std::make_pair(Qt::Key_Return,G2::KC_RETURN));
-	mKeyMap.insert(std::make_pair(Qt::Key_Escape,G2::KC_ESCAPE));
-	
-	mKeyMap.insert(std::make_pair(Qt::Key_Backspace,G2::KC_BACKSPACE));
-	mKeyMap.insert(std::make_pair(Qt::Key_Tab,G2::KC_TAB));
-	mKeyMap.insert(std::make_pair(Qt::Key_Space,G2::KC_SPACE));
-	mKeyMap.insert(std::make_pair(Qt::Key_Exclam,G2::KC_EXCLAM));
-	mKeyMap.insert(std::make_pair(Qt::Key_QuoteDbl,G2::KC_QUOTEDBL));
-	mKeyMap.insert(std::make_pair(Qt::Key_Percent,G2::KC_PERCENT));
-	mKeyMap.insert(std::make_pair(Qt::Key_Dollar,G2::KC_DOLLAR));
-	mKeyMap.insert(std::make_pair(Qt::Key_Ampersand,G2::KC_AMPERSAND));
-	mKeyMap.insert(std::make_pair(Qt::Key_QuoteLeft,G2::KC_QUOTE));
-	mKeyMap.insert(std::make_pair(Qt::Key_ParenLeft,G2::KC_LEFTPAREN));
-	mKeyMap.insert(std::make_pair(Qt::Key_ParenRight,G2::KC_RIGHTPAREN));
-	mKeyMap.insert(std::make_pair(Qt::Key_Asterisk,G2::KC_ASTERISK));
-	mKeyMap.insert(std::make_pair(Qt::Key_Plus,G2::KC_PLUS));
-	mKeyMap.insert(std::make_pair(Qt::Key_Comma,G2::KC_COMMA));
-	mKeyMap.insert(std::make_pair(Qt::Key_Minus,G2::KC_MINUS));
-	mKeyMap.insert(std::make_pair(Qt::Key_Period,G2::KC_PERIOD));
-	mKeyMap.insert(std::make_pair(Qt::Key_Slash,G2::KC_SLASH));
-	mKeyMap.insert(std::make_pair(Qt::Key_F1,G2::KC_F1));
-	mKeyMap.insert(std::make_pair(Qt::Key_F2,G2::KC_F2));
-	mKeyMap.insert(std::make_pair(Qt::Key_F3,G2::KC_F3));
-	mKeyMap.insert(std::make_pair(Qt::Key_F4,G2::KC_F4));
-	mKeyMap.insert(std::make_pair(Qt::Key_F5,G2::KC_F5));
-	mKeyMap.insert(std::make_pair(Qt::Key_F6,G2::KC_F6));
-	mKeyMap.insert(std::make_pair(Qt::Key_F7,G2::KC_F7));
-	mKeyMap.insert(std::make_pair(Qt::Key_F8,G2::KC_F8));
-	mKeyMap.insert(std::make_pair(Qt::Key_F9,G2::KC_F9));
-	mKeyMap.insert(std::make_pair(Qt::Key_F10,G2::KC_F10));
-	mKeyMap.insert(std::make_pair(Qt::Key_F11,G2::KC_F11));
-	mKeyMap.insert(std::make_pair(Qt::Key_F12,G2::KC_F12));
-	mKeyMap.insert(std::make_pair(Qt::Key_Left,G2::KC_LEFT));
-	mKeyMap.insert(std::make_pair(Qt::Key_Right,G2::KC_RIGHT));
-	mKeyMap.insert(std::make_pair(Qt::Key_Up,G2::KC_UP));
-	mKeyMap.insert(std::make_pair(Qt::Key_Down, G2::KC_DOWN));
-	mKeyMap.insert(std::make_pair(Qt::Key_A, G2::KC_A));
-	mKeyMap.insert(std::make_pair(Qt::Key_B, G2::KC_B));
-	mKeyMap.insert(std::make_pair(Qt::Key_C, G2::KC_C));
-	mKeyMap.insert(std::make_pair(Qt::Key_D, G2::KC_D));
-	mKeyMap.insert(std::make_pair(Qt::Key_E, G2::KC_E));
-	mKeyMap.insert(std::make_pair(Qt::Key_F, G2::KC_F));
-	mKeyMap.insert(std::make_pair(Qt::Key_G, G2::KC_G));
-	mKeyMap.insert(std::make_pair(Qt::Key_H, G2::KC_H));
-	mKeyMap.insert(std::make_pair(Qt::Key_I, G2::KC_I));
-	mKeyMap.insert(std::make_pair(Qt::Key_J, G2::KC_J));
-	mKeyMap.insert(std::make_pair(Qt::Key_K, G2::KC_K));
-	mKeyMap.insert(std::make_pair(Qt::Key_L, G2::KC_L));
-	mKeyMap.insert(std::make_pair(Qt::Key_M, G2::KC_M));
-	mKeyMap.insert(std::make_pair(Qt::Key_N, G2::KC_N));
-	mKeyMap.insert(std::make_pair(Qt::Key_O, G2::KC_O));
-	mKeyMap.insert(std::make_pair(Qt::Key_P, G2::KC_P));
-	mKeyMap.insert(std::make_pair(Qt::Key_Q, G2::KC_Q));
-	mKeyMap.insert(std::make_pair(Qt::Key_R, G2::KC_R));
-	mKeyMap.insert(std::make_pair(Qt::Key_S, G2::KC_S));
-	mKeyMap.insert(std::make_pair(Qt::Key_T, G2::KC_T));
-	mKeyMap.insert(std::make_pair(Qt::Key_U, G2::KC_U));
-	mKeyMap.insert(std::make_pair(Qt::Key_V, G2::KC_V));
-	mKeyMap.insert(std::make_pair(Qt::Key_W, G2::KC_W));
-	mKeyMap.insert(std::make_pair(Qt::Key_X, G2::KC_X));
-	mKeyMap.insert(std::make_pair(Qt::Key_Y, G2::KC_Y));
-	mKeyMap.insert(std::make_pair(Qt::Key_Z, G2::KC_Z));
-}
-
-void
-GLContext::createEditorCamera()
-{
-	// create a new EditorCamera
-	mEditorCamera = G2Cameras::EditorCamera(this);
-	// set it as the main camera
-	mEditorCamera
-		.translate(0.f, 5.f)
-		.rotate(25.f, 0.f)
-		.zoom(-15.f)
-		.getComponent<G2::CameraComponent>()->setAsRenderCamera();
-	mEditorCamera.setInternals(70.f, 0.01f, 300.f);
-	gearInitialized = true;
-}
-
-void
-GLContext::setEditorGeometryManager(std::shared_ptr<EditorGeometryManager> const& editorGeometryManager)
-{
-	mEditorGeometryManager = editorGeometryManager;
-
-	mTransformationHandler = std::shared_ptr<TransformationHandler>(new TransformationHandler(
-		mEditorGeometryManager->getTransformationHandleId()
-	));
-	mTranslationHandler = std::shared_ptr<TranslationHandler>(new TranslationHandler(
-		mEditorGeometryManager->getXTranslationHandleId(),
-		mEditorGeometryManager->getYTranslationHandleId(),
-		mEditorGeometryManager->getZTranslationHandleId()
-	));
-}
-
 void
 GLContext::_onManagedEntitySelected(ManagedEntity* entity)
 {
@@ -560,4 +504,70 @@ GLContext::_onFocusEntity(G2::KeyCode keyCode)
 			camTc->setPosition(glm::vec3(-aabbCenter + (glm::length(halfExtends) * mEditorCamera.getViewVec())));
 		}
 	}
+}
+
+void GLContext::initKeyMap()
+{
+	mKeyMap.insert(std::make_pair(Qt::Key_Return, G2::KC_RETURN));
+	mKeyMap.insert(std::make_pair(Qt::Key_Escape, G2::KC_ESCAPE));
+
+	mKeyMap.insert(std::make_pair(Qt::Key_Backspace, G2::KC_BACKSPACE));
+	mKeyMap.insert(std::make_pair(Qt::Key_Tab, G2::KC_TAB));
+	mKeyMap.insert(std::make_pair(Qt::Key_Space, G2::KC_SPACE));
+	mKeyMap.insert(std::make_pair(Qt::Key_Exclam, G2::KC_EXCLAM));
+	mKeyMap.insert(std::make_pair(Qt::Key_QuoteDbl, G2::KC_QUOTEDBL));
+	mKeyMap.insert(std::make_pair(Qt::Key_Percent, G2::KC_PERCENT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Dollar, G2::KC_DOLLAR));
+	mKeyMap.insert(std::make_pair(Qt::Key_Ampersand, G2::KC_AMPERSAND));
+	mKeyMap.insert(std::make_pair(Qt::Key_QuoteLeft, G2::KC_QUOTE));
+	mKeyMap.insert(std::make_pair(Qt::Key_ParenLeft, G2::KC_LEFTPAREN));
+	mKeyMap.insert(std::make_pair(Qt::Key_ParenRight, G2::KC_RIGHTPAREN));
+	mKeyMap.insert(std::make_pair(Qt::Key_Asterisk, G2::KC_ASTERISK));
+	mKeyMap.insert(std::make_pair(Qt::Key_Plus, G2::KC_PLUS));
+	mKeyMap.insert(std::make_pair(Qt::Key_Comma, G2::KC_COMMA));
+	mKeyMap.insert(std::make_pair(Qt::Key_Minus, G2::KC_MINUS));
+	mKeyMap.insert(std::make_pair(Qt::Key_Period, G2::KC_PERIOD));
+	mKeyMap.insert(std::make_pair(Qt::Key_Slash, G2::KC_SLASH));
+	mKeyMap.insert(std::make_pair(Qt::Key_F1, G2::KC_F1));
+	mKeyMap.insert(std::make_pair(Qt::Key_F2, G2::KC_F2));
+	mKeyMap.insert(std::make_pair(Qt::Key_F3, G2::KC_F3));
+	mKeyMap.insert(std::make_pair(Qt::Key_F4, G2::KC_F4));
+	mKeyMap.insert(std::make_pair(Qt::Key_F5, G2::KC_F5));
+	mKeyMap.insert(std::make_pair(Qt::Key_F6, G2::KC_F6));
+	mKeyMap.insert(std::make_pair(Qt::Key_F7, G2::KC_F7));
+	mKeyMap.insert(std::make_pair(Qt::Key_F8, G2::KC_F8));
+	mKeyMap.insert(std::make_pair(Qt::Key_F9, G2::KC_F9));
+	mKeyMap.insert(std::make_pair(Qt::Key_F10, G2::KC_F10));
+	mKeyMap.insert(std::make_pair(Qt::Key_F11, G2::KC_F11));
+	mKeyMap.insert(std::make_pair(Qt::Key_F12, G2::KC_F12));
+	mKeyMap.insert(std::make_pair(Qt::Key_Left, G2::KC_LEFT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Right, G2::KC_RIGHT));
+	mKeyMap.insert(std::make_pair(Qt::Key_Up, G2::KC_UP));
+	mKeyMap.insert(std::make_pair(Qt::Key_Down, G2::KC_DOWN));
+	mKeyMap.insert(std::make_pair(Qt::Key_A, G2::KC_A));
+	mKeyMap.insert(std::make_pair(Qt::Key_B, G2::KC_B));
+	mKeyMap.insert(std::make_pair(Qt::Key_C, G2::KC_C));
+	mKeyMap.insert(std::make_pair(Qt::Key_D, G2::KC_D));
+	mKeyMap.insert(std::make_pair(Qt::Key_E, G2::KC_E));
+	mKeyMap.insert(std::make_pair(Qt::Key_F, G2::KC_F));
+	mKeyMap.insert(std::make_pair(Qt::Key_G, G2::KC_G));
+	mKeyMap.insert(std::make_pair(Qt::Key_H, G2::KC_H));
+	mKeyMap.insert(std::make_pair(Qt::Key_I, G2::KC_I));
+	mKeyMap.insert(std::make_pair(Qt::Key_J, G2::KC_J));
+	mKeyMap.insert(std::make_pair(Qt::Key_K, G2::KC_K));
+	mKeyMap.insert(std::make_pair(Qt::Key_L, G2::KC_L));
+	mKeyMap.insert(std::make_pair(Qt::Key_M, G2::KC_M));
+	mKeyMap.insert(std::make_pair(Qt::Key_N, G2::KC_N));
+	mKeyMap.insert(std::make_pair(Qt::Key_O, G2::KC_O));
+	mKeyMap.insert(std::make_pair(Qt::Key_P, G2::KC_P));
+	mKeyMap.insert(std::make_pair(Qt::Key_Q, G2::KC_Q));
+	mKeyMap.insert(std::make_pair(Qt::Key_R, G2::KC_R));
+	mKeyMap.insert(std::make_pair(Qt::Key_S, G2::KC_S));
+	mKeyMap.insert(std::make_pair(Qt::Key_T, G2::KC_T));
+	mKeyMap.insert(std::make_pair(Qt::Key_U, G2::KC_U));
+	mKeyMap.insert(std::make_pair(Qt::Key_V, G2::KC_V));
+	mKeyMap.insert(std::make_pair(Qt::Key_W, G2::KC_W));
+	mKeyMap.insert(std::make_pair(Qt::Key_X, G2::KC_X));
+	mKeyMap.insert(std::make_pair(Qt::Key_Y, G2::KC_Y));
+	mKeyMap.insert(std::make_pair(Qt::Key_Z, G2::KC_Z));
 }

@@ -33,6 +33,30 @@ class EditorGeometryManager
 		* @return The entity id of the translation handle mesh for the Z-Axis.
 		*/
 		unsigned int getZTranslationHandleId() const { return mTransZMesh.getId(); };
+		/** Returns the entity id of the scale handle mesh for the X-Axis.
+		* @return The entity id of the scale handle mesh for the X-Axis.
+		*/
+		unsigned int getXScaleHandleId() const { return mScaleXMesh.getId(); };
+		/** Returns the entity id of the scale handle mesh for the Y-Axis.
+		* @return The entity id of the scale handle mesh for the Y-Axis.
+		*/
+		unsigned int getYScaleHandleId() const { return mScaleYMesh.getId(); };
+		/** Returns the entity id of the scale handle mesh for the Z-Axis.
+		* @return The entity id of the scale handle mesh for the Z-Axis.
+		*/
+		unsigned int getZScaleHandleId() const { return mScaleZMesh.getId(); };
+		/** Returns the entity id of the rotation handle mesh for the X-Axis.
+		* @return The entity id of the rotation handle mesh for the X-Axis.
+		*/
+		unsigned int getXRotationHandleId() const { return mRotateXMesh.getId(); };
+		/** Returns the entity id of the rotation handle mesh for the Y-Axis.
+		* @return The entity id of the rotation handle mesh for the Y-Axis.
+		*/
+		unsigned int getYRotationHandleId() const { return mRotateYMesh.getId(); };
+		/** Returns the entity id of the rotation handle mesh for the Z-Axis.
+		* @return The entity id of the rotation handle mesh for the Z-Axis.
+		*/
+		unsigned int getZRotationHandleId() const { return mRotateZMesh.getId(); };
 		/** Returns the entity id of the transformation handle mesh.
 		* @return The entity id of the transformation handle mesh.
 		*/
@@ -53,7 +77,10 @@ class EditorGeometryManager
 
 		void _updateGridPosition();
 
-		void _setTranslationMeshVisible(bool visible);
+		void _initTranslationHandles();
+		void _initScaleHandles();
+		void _initRotationHandles();
+		void _initHandleSettings(G2::RenderComponent* rc, G2::TransformComponent* tc, glm::vec4 const& ambientColor, float degrees, glm::vec3 const& axis);
 
 		G2::RenderSystem*	mRenderSystem;
 		G2::CameraSystem*	mCameraSystem;
@@ -69,9 +96,18 @@ class EditorGeometryManager
 		G2::Entity mSelectedEntityAABB;					// The AABB visualization of the currently selected entity
 
 		G2::Entity mTransAnchor;
-		G2::Entity mTransZMesh;
-		G2::Entity mTransYMesh;
+		
+		G2::Entity mTransZMesh;							// The translation mesh for the Z axis
+		G2::Entity mTransYMesh;							// The translation mesh for the Y axis
 		G2::Entity mTransXMesh;							// The translation mesh for the X axis
+
+		G2::Entity mScaleZMesh;							// The scale mesh for the Z axis
+		G2::Entity mScaleYMesh;							// The scale mesh for the Y axis
+		G2::Entity mScaleXMesh;							// The scale mesh for the X axis
+
+		G2::Entity mRotateZMesh;						// The rotation mesh for the Z axis
+		G2::Entity mRotateYMesh;						// The rotation mesh for the Y axis
+		G2::Entity mRotateXMesh;						// The rotation mesh for the X axis
 
 		bool isTranslatingOnX;
 

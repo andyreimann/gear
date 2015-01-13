@@ -32,6 +32,7 @@
     <ClInclude Include="EditorGrid.h" />
     <ClInclude Include="GEARStudioEvents.h" />
     <ClInclude Include="GEARStudioSettings.h" />
+    <ClInclude Include="HandlerBase.h" />
     <ClInclude Include="JsonDeserializer.h" />
     <ClInclude Include="JsonSerializer.h" />
     <ClInclude Include="ManagedEntity.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="GEARStudioEvents.cpp" />
     <ClCompile Include="GEARStudioSettings.cpp" />
     <ClCompile Include="GLContext.cpp" />
+    <ClCompile Include="HandlerBase.cpp" />
     <ClCompile Include="JsonDeserializer.cpp" />
     <ClCompile Include="JsonSerializer.cpp" />
     <ClCompile Include="LightPropertiesTab.cpp" />

@@ -368,7 +368,7 @@ void LightPropertiesTab::toggleTab()
 	mOpen = !mOpen;
 }
 
-void LightPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out)
+void LightPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out)
 {
 	if (!entity->hasProperties(mTechnicalName))
 	{

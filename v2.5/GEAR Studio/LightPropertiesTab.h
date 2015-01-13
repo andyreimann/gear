@@ -69,7 +69,7 @@ class LightPropertiesTab : public QWidget, public PropertiesTab
 		G2::LightType::Name _getLightTypeFromProperties(ManagedEntity* target) const;
 		glm::vec4 _getColorFromProperties(ManagedEntity const* target, std::string const& propertyMember, glm::vec4 const& defaultValue) const;
 
-		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ofstream& out);
+		void _onGenerateCppCodeForManagedEntity(ManagedEntity const* entity, std::string const& entityVar, std::ostream& out);
 
 		bool					mOpen;				// The flag if the tab is opened or not.
 		Ui::LightPropertiesTab	ui;					// The Qt UI class for the project creation dialog

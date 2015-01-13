@@ -1,4 +1,5 @@
 #pragma once
+#include "Defines.h"
 #include "Project.h"
 #include "LoggingTab.h"
 
@@ -83,6 +84,22 @@ public:
 	*/
 	static G2::Event<> onTranslationHandleReleased;
 	/** Trigger:
+	* The scale handle was moved/changed.
+	*/
+	static G2::Event<> onScaleHandleMoved;
+	/** Trigger:
+	* The scale handle was released.
+	*/
+	static G2::Event<> onScaleHandleReleased;
+	/** Trigger:
+	* The rotation handle was moved/changed.
+	*/
+	static G2::Event<> onRotationHandleMoved;
+	/** Trigger:
+	* The rotation handle was released.
+	*/
+	static G2::Event<> onRotationHandleReleased;
+	/** Trigger:
 	* The generation of the C++ code for loading a ManagedEntity in the exported game
 	* is about to be generated.
 	* ManagedEntity* The ManagedEntity object pointer to export.
@@ -90,5 +107,9 @@ public:
 	* std::ofstream& The filestream to write the code to.
 	* @note Make sure to generate as less code as possible to reduce compilation time!
 	*/
-	static G2::Event<ManagedEntity const*, std::string const&, std::ofstream&> onGenerateCppCodeForManagedEntity;
+	static G2::Event<ManagedEntity const*, std::string const&, std::ostream&> onGenerateCppCodeForManagedEntity;
+	/** Trigger:
+	* The active 3D handle should be changed (scale, rotation, translation, ...).
+	*/
+	static G2::Event<G2S::HandleMode::Name> activateHandle;
 };

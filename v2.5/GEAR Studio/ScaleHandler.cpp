@@ -8,15 +8,15 @@ ScaleHandler::ScaleHandler(unsigned int xAxisHandlerId, unsigned int yAxisHandle
 	mYAxisHandlerId(yAxisHandlerId),
 	mZAxisHandlerId(zAxisHandlerId),
 	mState(SCALE_NOT),
-	mEntity(nullptr)
+	mEntity(nullptr),
+	G2S::HandlerBase(G2S::HandleMode::SCALE_HANDLE)
 {
+	mRenderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>();
 	mCameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>();
 	mTransformSystem = G2::ECSManager::getShared().getSystem<G2::TransformSystem, G2::TransformComponent>();
 
 	// register to GEAR events
-	G2::EventDistributer::onFrameRendered.hook(this, &ScaleHandler::_onFrameRendered);
 	G2::EventDistributer::onMouseUp.hook(this, &ScaleHandler::_onMouseUp);
-	G2::EventDistributer::onMouseDown.hook(this, &ScaleHandler::_onMouseDown);
 	G2::EventDistributer::onMouseMove.hook(this, &ScaleHandler::_onMouseMove);
 
 	// register to Editor events
@@ -27,9 +27,7 @@ ScaleHandler::ScaleHandler(unsigned int xAxisHandlerId, unsigned int yAxisHandle
 ScaleHandler::~ScaleHandler()
 {
 	// unhook from GEAR events
-	G2::EventDistributer::onFrameRendered.unHookAll(this);
 	G2::EventDistributer::onMouseUp.unHookAll(this);
-	G2::EventDistributer::onMouseDown.unHookAll(this);
 	G2::EventDistributer::onMouseMove.unHookAll(this);
 
 	// unhook from Editor events
@@ -67,19 +65,22 @@ void ScaleHandler::_onEditorHandleSelected(unsigned int entityId, G2::Intersecti
 		// save start state
 		mHandlerStartPoint = intersection.getPoint();
 		mEntityStartPosition = mEntity->getComponent<G2::TransformComponent>()->getPosition();
+		mEntityStartScale = mEntity->getComponent<G2::TransformComponent>()->getScale();
 		mPickOffset = mHandlerStartPoint - mEntityStartPosition;
 	}
 }
 
-void
-ScaleHandler::_onManagedEntitySelected(ManagedEntity* entity)
+void ScaleHandler::_onManagedEntitySelected(ManagedEntity* entity)
 {
 	mEntity = entity;
 }
 
-void ScaleHandler::_onFrameRendered(G2::FrameInfo const& frame)
+void ScaleHandler::handleActivityChanged()
 {
-
+	// handle visibility
+	mRenderSystem->get(mXAxisHandlerId)->setDrawcallEnabled(isHandleActive());
+	mRenderSystem->get(mYAxisHandlerId)->setDrawcallEnabled(isHandleActive());
+	mRenderSystem->get(mZAxisHandlerId)->setDrawcallEnabled(isHandleActive());
 }
 
 void ScaleHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& pos)
@@ -91,72 +92,60 @@ void ScaleHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> co
 		if (mState != SCALE_NOT)
 		{
 			mState = SCALE_NOT;
-			GEARStudioEvents::onTranslationHandleReleased();
+			GEARStudioEvents::onScaleHandleReleased();
 		}
 	}
 }
 
-void ScaleHandler::_onMouseDown(G2::MouseButton button, glm::detail::tvec2<int> const& pos)
-{
-
-}
-
 void ScaleHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 {
-	//if (mState != SCALE_NOT)
-	//{
-	//	// intersect the mouse ray with the XZ-plane on the Y value of the 
+	if (mState != SCALE_NOT)
+	{
+		// intersect the mouse ray with the XZ-plane on the Y value of the 
 
-	//	auto* camera = mCameraSystem->getRenderCamera();
-	//	auto* transform = mTransformSystem->get(camera->getEntityId());
+		auto* camera = mCameraSystem->getRenderCamera();
+		auto* transform = mTransformSystem->get(camera->getEntityId());
 
-	//	G2::Ray mouseRay = G2::Ray::createScreenProjectionRay(
-	//		pos.x,
-	//		pos.y,
-	//		transform->getWorldSpaceMatrix(),
-	//		camera->getProjectionMatrix(),
-	//		glm::detail::tvec4<int>(0, 0, camera->getViewportWidth(), camera->getViewportHeight()));
+		G2::Ray mouseRay = G2::Ray::createScreenProjectionRay(
+			pos.x,
+			pos.y,
+			transform->getWorldSpaceMatrix(),
+			camera->getProjectionMatrix(),
+			glm::detail::tvec4<int>(0, 0, camera->getViewportWidth(), camera->getViewportHeight()));
 
-	//	bool intersection;
-	//	glm::vec3 ptOnPlane = _getPlaneIntersection(mouseRay, &intersection);
-	//	if (intersection)
-	//	{
-	//		auto* tc = mEntity->addComponent<G2::TransformComponent>();
+		bool intersection;
+		glm::vec3 ptOnPlane = _getPlaneIntersection(mouseRay, &intersection);
+		if (intersection)
+		{
 
-	//		glm::vec3 pos = tc->getPosition();
-	//		glm::vec3 parentsScale = tc->getParentsScale();
+			glm::vec3 scale = mEntityStartScale;
 
-	//		if (mState == SCALE_X_AXIS)
-	//		{
-	//			if (parentsScale.x == 0.f)
-	//			{
-	//				// div by 0 prevention
-	//				parentsScale.x = 1.f;
-	//			}
-	//			pos.x = (ptOnPlane.x - mPickOffset.x) / parentsScale.x;
-	//		}
-	//		else if (mState == SCALE_Y_AXIS)
-	//		{
-	//			if (parentsScale.y == 0.f)
-	//			{
-	//				// div by 0 prevention
-	//				parentsScale.y = 1.f;
-	//			}
-	//			pos.y = (ptOnPlane.y - mPickOffset.y) / parentsScale.y;
-	//		}
-	//		else if (mState == SCALE_Z_AXIS)
-	//		{
-	//			if (parentsScale.z == 0.f)
-	//			{
-	//				// div by 0 prevention
-	//				parentsScale.z = 1.f;
-	//			}
-	//			pos.z = (ptOnPlane.z - mPickOffset.z) / parentsScale.z;
-	//		}
-	//		tc->setPosition(pos);
-	//		GEARStudioEvents::onTranslationHandleMoved();
-	//	}
-	//}
+			if (mState == SCALE_X_AXIS)
+			{
+				float dist = (ptOnPlane.x - mPickOffset.x);
+				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+				float localScale = dist / mEntityStartPosition.x;
+				scale.x *= localScale;
+			}
+			else if (mState == SCALE_Y_AXIS)
+			{
+				float dist = (ptOnPlane.y - mPickOffset.y);
+				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+				float localScale = dist / mEntityStartPosition.y;
+				scale.y *= localScale;
+			}
+			else if (mState == SCALE_Z_AXIS)
+			{
+				float dist = (ptOnPlane.z - mPickOffset.z);
+				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+				float localScale = dist / mEntityStartPosition.z;
+				scale.z *= localScale;
+			}
+			auto* tc = mEntity->addComponent<G2::TransformComponent>();
+			tc->setScale(scale);
+			GEARStudioEvents::onScaleHandleMoved();
+		}
+	}
 }
 
 glm::vec3

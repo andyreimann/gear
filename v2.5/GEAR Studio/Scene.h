@@ -6,7 +6,7 @@
 #include <G2/EffectImporter.h>
 
 #include <unordered_map>
-#include <fstream>
+#include <ostream>
 
 class QProgressDialog;
 /** This class holds all information about a Scene.
@@ -27,15 +27,15 @@ class Scene : public JsonDeserializer, JsonSerializer
 		std::string getName() const;
 		/** Loads the Scene into the editor creating all GEAR engine resources.
 		 */
-		void load();
+		void load(QProgressDialog* progress);
 		/** Saves the Scene in it's current state into it's Json file.
 		 */
 		void save();
 		/** This function will generate the C++ code to instantiate the entities contained in the Scene.
-		 * @param out The file stream to write the code to.
+		 * @param out The output stream to write the code to.
 		 * @param progress The instance to a progress dialog.
 		 */
-		void generateEntityInitializationCode(std::ofstream& out, QProgressDialog* progress) const;
+		void generateEntityInitializationCode(std::ostream& out, QProgressDialog* progress) const;
 		/** This function will try to create a new entity in the scene with the given name.
 		 * @param name The name of the entity to create.
 		 * @return A pointer to the newly created entity or nullptr, if an entity with the given name already exists.
@@ -53,7 +53,7 @@ class Scene : public JsonDeserializer, JsonSerializer
 		ManagedEntity* get(unsigned int entityId);
 	private:
 
-		void _init3D();
+		void _init3D(QProgressDialog* progress);
 		void _initEntityFromJson(Json::Value const& entityDesc);
 		
 		std::string mProjectDirectory;

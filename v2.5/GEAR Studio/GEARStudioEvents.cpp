@@ -13,4 +13,10 @@ G2::Event<LogLevel, std::string const&>				GEARStudioEvents::onLog;
 G2::Event<unsigned int, G2::Intersection const&>	GEARStudioEvents::onEditorHandleSelected;
 G2::Event<>											GEARStudioEvents::onTranslationHandleMoved;
 G2::Event<>											GEARStudioEvents::onTranslationHandleReleased;
-G2::Event<ManagedEntity const*, std::string const&, std::ofstream&> GEARStudioEvents::onGenerateCppCodeForManagedEntity;
+G2::Event<>											GEARStudioEvents::onScaleHandleMoved;
+G2::Event<>											GEARStudioEvents::onScaleHandleReleased;
+G2::Event<>											GEARStudioEvents::onRotationHandleMoved;
+G2::Event<>											GEARStudioEvents::onRotationHandleReleased;
+G2::Event<ManagedEntity const*, std::string const&, std::ostream&> GEARStudioEvents::onGenerateCppCodeForManagedEntity;
+G2::Event<G2S::HandleMode::Name>					GEARStudioEvents::activateHandle;
+
