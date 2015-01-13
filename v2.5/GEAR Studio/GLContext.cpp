@@ -3,6 +3,7 @@
 #include "GEARStudioEvents.h"
 #include "EditorGeometryManager.h"
 #include "ScaleHandler.h"
+#include "RotationHandler.h"
 #include "TranslationHandler.h"
 #include "TransformationHandler.h"
 #include "QmlOverlay.h"
@@ -63,15 +64,15 @@ GLContext::GLContext(QWidget *parent)
 
 	initKeyMap();
 
-	GEARStudioEvents::onProjectOpened.hook(this, &GLContext::_onProjectOpened);
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &GLContext::_onManagedEntitySelected);
+	G2S::onProjectOpened.hook(this, &GLContext::_onProjectOpened);
+	G2S::onManagedEntitySelected.hook(this, &GLContext::_onManagedEntitySelected);
 	G2::EventDistributer::onKeyDown.hook(this, &GLContext::_onFocusEntity);
 }
 
 GLContext::~GLContext()
 {
-	GEARStudioEvents::onProjectOpened.unHookAll(this);
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onProjectOpened.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 	G2::EventDistributer::onKeyDown.unHookAll(this);
 }
 
@@ -107,6 +108,11 @@ GLContext::setEditorGeometryManager(std::shared_ptr<EditorGeometryManager> const
 		mEditorGeometryManager->getXScaleHandleId(),
 		mEditorGeometryManager->getYScaleHandleId(),
 		mEditorGeometryManager->getZScaleHandleId()
+	));
+	mRotationHandler = std::shared_ptr<RotationHandler>(new RotationHandler(
+		mEditorGeometryManager->getXRotationHandleId(),
+		mEditorGeometryManager->getYRotationHandleId(),
+		mEditorGeometryManager->getZRotationHandleId()
 	));
 }
 
@@ -388,7 +394,7 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 
 		if (intersection.getState() != G2::IntersectionState::NO_INTERSECTION)
 		{
-			GEARStudioEvents::onEditorHandleSelected(intersection.getEntityId(), intersection);
+			G2S::onEditorHandleSelected(intersection.getEntityId(), intersection);
 		}
 		else
 		{
@@ -400,12 +406,12 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 				auto* managedEntity = mProject->getCurrentScene()->get(intersection.getEntityId());
 				if (managedEntity != nullptr)
 				{
-					GEARStudioEvents::onManagedEntitySelected(managedEntity);
+					G2S::onManagedEntitySelected(managedEntity);
 				}
 			}
 			else
 			{
-				GEARStudioEvents::onManagedEntitySelected(nullptr); // deselect
+				G2S::onManagedEntitySelected(nullptr); // deselect
 			}
 		}
 	}

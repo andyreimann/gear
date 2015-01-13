@@ -13,7 +13,7 @@ TransformationHandler::TransformationHandler(unsigned int transformationAnchorId
 	G2::EventDistributer::onRenderFrame.hook(this, &TransformationHandler::_onRenderFrame);
 
 	// register to Editor events
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &TransformationHandler::_onManagedEntitySelected);
+	G2S::onManagedEntitySelected.hook(this, &TransformationHandler::_onManagedEntitySelected);
 }
 
 TransformationHandler::~TransformationHandler()
@@ -21,7 +21,7 @@ TransformationHandler::~TransformationHandler()
 	// unhook from GEAR events
 	G2::EventDistributer::onFrameRendered.unHookAll(this);
 	// unhook from Editor events
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 }
 
 void

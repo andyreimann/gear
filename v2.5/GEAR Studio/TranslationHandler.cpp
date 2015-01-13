@@ -20,8 +20,8 @@ TranslationHandler::TranslationHandler(unsigned int xAxisHandlerId, unsigned int
 	G2::EventDistributer::onMouseMove.hook(this, &TranslationHandler::_onMouseMove);
 
 	// register to Editor events
-	GEARStudioEvents::onEditorHandleSelected.hook(this, &TranslationHandler::_onEditorHandleSelected);
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &TranslationHandler::_onManagedEntitySelected);
+	G2S::onEditorHandleSelected.hook(this, &TranslationHandler::_onEditorHandleSelected);
+	G2S::onManagedEntitySelected.hook(this, &TranslationHandler::_onManagedEntitySelected);
 }
 
 TranslationHandler::~TranslationHandler()
@@ -31,8 +31,8 @@ TranslationHandler::~TranslationHandler()
 	G2::EventDistributer::onMouseMove.unHookAll(this);
 
 	// unhook from Editor events
-	GEARStudioEvents::onEditorHandleSelected.unHookAll(this);
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onEditorHandleSelected.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 }
 
 void TranslationHandler::_onEditorHandleSelected(unsigned int entityId, G2::Intersection const& intersection)
@@ -101,7 +101,7 @@ void TranslationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<i
 		if (mState != TRANSLATE_NOT)
 		{
 			mState = TRANSLATE_NOT;
-			GEARStudioEvents::onTranslationHandleReleased();
+			G2S::onTranslationHandleReleased();
 		}
 	}
 }
@@ -164,7 +164,7 @@ void TranslationHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 				pos.z = (ptOnPlane.z - mPickOffset.z) / parentsScale.z;
 			}
 			tc->setPosition(pos);
-			GEARStudioEvents::onTranslationHandleMoved();
+			G2S::onTranslationHandleMoved();
 		}
 	}
 }

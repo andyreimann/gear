@@ -8,16 +8,16 @@ PropertiesTab::PropertiesTab(std::string const& technicalName, std::string const
 	mEntity(nullptr),
 	mProject(nullptr)
 {
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &PropertiesTab::_onManagedEntitySelected);
-	GEARStudioEvents::onDeserializeManagedEntity.hook(this, &PropertiesTab::_onDeserializeManagedEntity);
-	GEARStudioEvents::onProjectOpened.hook(this, &PropertiesTab::_onProjectOpened);
+	G2S::onManagedEntitySelected.hook(this, &PropertiesTab::_onManagedEntitySelected);
+	G2S::onDeserializeManagedEntity.hook(this, &PropertiesTab::_onDeserializeManagedEntity);
+	G2S::onProjectOpened.hook(this, &PropertiesTab::_onProjectOpened);
 }
 
 PropertiesTab::~PropertiesTab()
 {
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
-	GEARStudioEvents::onDeserializeManagedEntity.unHookAll(this);
-	GEARStudioEvents::onProjectOpened.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
+	G2S::onDeserializeManagedEntity.unHookAll(this);
+	G2S::onProjectOpened.unHookAll(this);
 }
 
 bool PropertiesTab::attachToSelectedEntity()

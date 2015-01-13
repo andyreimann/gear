@@ -55,7 +55,7 @@ LightPropertiesTab::LightPropertiesTab(QWidget *parent /*= 0*/)
 	mIndexToLightType[1] = "DIRECTIONAL";
 	mIndexToLightType[2] = "SPOT";
 
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &LightPropertiesTab::_onGenerateCppCodeForManagedEntity);
+	G2S::onGenerateCppCodeForManagedEntity.hook(this, &LightPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 LightPropertiesTab::~LightPropertiesTab()
@@ -63,7 +63,7 @@ LightPropertiesTab::~LightPropertiesTab()
 	mAmbientSelector->onColorSelected.unHookAll(this);
 	mDiffuseSelector->onColorSelected.unHookAll(this);
 	mSpecularSelector->onColorSelected.unHookAll(this);
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
+	G2S::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void LightPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -328,7 +328,7 @@ G2::LightType::Name LightPropertiesTab::_getLightTypeFromProperties(ManagedEntit
 		{
 			std::stringstream log;
 			log << "Unknown light type '" << typeStr << "' for " << target->getName() << ". Defaulting to Positional Light!";
-			GEARStudioEvents::onLog(WARNING, log.str());
+			G2S::onLog(WARNING, log.str());
 		}
 	}
 	return G2::LightType::POSITIONAL;

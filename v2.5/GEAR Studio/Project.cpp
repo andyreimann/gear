@@ -17,7 +17,7 @@ Project::~Project()
 	// unload existing scene and replace with new scene
 	if (mCurrentScene.get() != nullptr)
 	{
-		GEARStudioEvents::onSceneUnloaded(mCurrentScene.get());
+		G2S::onSceneUnloaded(mCurrentScene.get());
 	}
 }
 
@@ -62,14 +62,14 @@ Project::loadScene(std::string const& sceneFile, QProgressDialog* progress)
 		// unload existing scene and replace with new scene
 		if (mCurrentScene.get() != nullptr)
 		{
-			GEARStudioEvents::onSceneUnloaded(mCurrentScene.get());
+			G2S::onSceneUnloaded(mCurrentScene.get());
 		}
 		mCurrentScene = scene;
 		
 		mCurrentScene->load(progress);
 		if (mCurrentScene.get() != nullptr)
 		{
-			GEARStudioEvents::onSceneLoaded(mCurrentScene.get());
+			G2S::onSceneLoaded(mCurrentScene.get());
 		}
 	}
 }
@@ -77,7 +77,7 @@ Project::loadScene(std::string const& sceneFile, QProgressDialog* progress)
 void Project::exportProject(QProgressDialog* progress)
 {
 	progress->setLabelText("Generating C++ Code");
-	GEARStudioEvents::onLog(INFO, "Generate and compile project");
+	G2S::onLog(INFO, "Generate and compile project");
 
 	std::ofstream out(mProjectDirectory + "/generated-src/Game_generated.cpp");
 
@@ -118,5 +118,5 @@ void Project::exportProject(QProgressDialog* progress)
 	int status = system(compileCmd.c_str());
 	progress->setValue(progress->value() + 10);
 
-	GEARStudioEvents::onLog(INFO, "Compilation has exited with code " + std::to_string(status));
+	G2S::onLog(INFO, "Compilation has exited with code " + std::to_string(status));
 }

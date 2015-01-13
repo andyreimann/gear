@@ -18,14 +18,14 @@ FileSelector::FileSelector(std::string const& defaultPath, Json::Value const& so
 	ui.setupUi(this);
 	
 	connect(ui.fileSelect, SIGNAL(clicked()), this, SLOT(selectFile()));
-	GEARStudioEvents::onProjectOpened.hook(this, &FileSelector::_onProjectOpened);
+	G2S::onProjectOpened.hook(this, &FileSelector::_onProjectOpened);
 
 	_initializeUiFromData();
 }
 
 FileSelector::~FileSelector()
 {
-	GEARStudioEvents::onProjectOpened.unHookAll(this);
+	G2S::onProjectOpened.unHookAll(this);
 }
 
 void FileSelector::selectFile()
@@ -41,7 +41,7 @@ void FileSelector::selectFile()
 		{
 			std::stringstream log;
 			log << "Selected file '" << fullPath << "' is not contained in the project directory!";
-			GEARStudioEvents::onLog(SEVERE, log.str());
+			G2S::onLog(SEVERE, log.str());
 		}
 		else
 		{

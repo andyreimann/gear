@@ -17,13 +17,13 @@ EditorPanel::EditorPanel(GEAREditor* editor, QWidget *parent)
 	connect(ui.renderPointBtn, SIGNAL(clicked()), this, SLOT(renderPoint()));
 	connect(ui.playBtn, SIGNAL(clicked()), mEditor, SLOT(exportAndStartProject()));
 
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &EditorPanel::_onManagedEntitySelected);
+	G2S::onManagedEntitySelected.hook(this, &EditorPanel::_onManagedEntitySelected);
 }
 
 
 EditorPanel::~EditorPanel()
 {
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 }
 
 void

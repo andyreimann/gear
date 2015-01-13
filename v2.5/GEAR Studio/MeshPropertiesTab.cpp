@@ -30,12 +30,12 @@ MeshPropertiesTab::MeshPropertiesTab(QWidget *parent /*= 0*/)
 	mMeshSelector->onFileSelected.hook(this, &MeshPropertiesTab::_meshSelected);
 	ui.meshFileRoot->layout()->addWidget(mMeshSelector.get());
 
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MeshPropertiesTab::_onGenerateCppCodeForManagedEntity);
+	G2S::onGenerateCppCodeForManagedEntity.hook(this, &MeshPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 MeshPropertiesTab::~MeshPropertiesTab()
 {
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
+	G2S::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void MeshPropertiesTab::_initUiWithEntity(ManagedEntity* entity)

@@ -24,13 +24,13 @@ LoggingTab::LoggingTab(QWidget *parent /*= 0*/)
 	connect(ui.clearLogsButton, SIGNAL(clicked()), this, SLOT(clearAll()));
 	connect(ui.saveLogsButton, SIGNAL(clicked()), this, SLOT(saveLogs()));
 
-	GEARStudioEvents::onLog.hook(this, &LoggingTab::_onLog);
-	GEARStudioEvents::onProjectOpened.hook(this, &LoggingTab::_onProjectOpened);
+	G2S::onLog.hook(this, &LoggingTab::_onLog);
+	G2S::onProjectOpened.hook(this, &LoggingTab::_onProjectOpened);
 }
 
 LoggingTab::~LoggingTab()
 {
-	GEARStudioEvents::onLog.unHookAll(this);
+	G2S::onLog.unHookAll(this);
 
 }
 

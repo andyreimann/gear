@@ -38,6 +38,7 @@
     <ClInclude Include="ManagedEntity.h" />
     <ClInclude Include="Project.h" />
     <ClInclude Include="PropertiesTab.h" />
+    <ClInclude Include="RotationHandler.h" />
     <ClInclude Include="ScaleHandler.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="TransformationHandler.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="ProjectCreation.cpp" />
     <ClCompile Include="PropertiesTab.cpp" />
     <ClCompile Include="QmlOverlay.cpp" />
+    <ClCompile Include="RotationHandler.cpp" />
     <ClCompile Include="ScaleHandler.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="TextureSelector.cpp" />

@@ -10,13 +10,13 @@ HandlerBase::HandlerBase(G2S::HandleMode::Name responsibleMode) :
 	mActivated(false)
 {
 	// register to Editor events
-	GEARStudioEvents::activateHandle.hook(this, &HandlerBase::_tryActivate);
+	G2S::activateHandle.hook(this, &HandlerBase::_tryActivate);
 }
 
 HandlerBase::~HandlerBase()
 {
 	// unhook from Editor events
-	GEARStudioEvents::activateHandle.unHookAll(this);
+	G2S::activateHandle.unHookAll(this);
 }
 
 void HandlerBase::_tryActivate(G2S::HandleMode::Name mode)

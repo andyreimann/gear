@@ -80,7 +80,7 @@ ProjectCreation::createProject()
 		// generate a project file
 		generateProjectFile(ui.projectName->text().toStdString(), folder + "/project.json", "/scenes/main.json");
 
-		GEARStudioEvents::onProjectCreated(folder);
+		G2S::onProjectCreated(folder);
 	}
 	catch (const boost::filesystem::filesystem_error& ex)
 	{

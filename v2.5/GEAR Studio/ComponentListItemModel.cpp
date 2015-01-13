@@ -7,17 +7,17 @@ ComponentListItemModel::ComponentListItemModel(QObject *parent)
 	 * REMEMBER:
 	 * ListViews are only designed to work with one column!
 	 */
-	GEARStudioEvents::onSceneUnloaded.hook(this, &ComponentListItemModel::_onSceneUnloaded);
-	GEARStudioEvents::onManagedEntityCreated.hook(this, &ComponentListItemModel::_onManagedEntityCreated);
-	GEARStudioEvents::onManagedEntityRemoved.hook(this, &ComponentListItemModel::_onManagedEntityRemoved);
+	G2S::onSceneUnloaded.hook(this, &ComponentListItemModel::_onSceneUnloaded);
+	G2S::onManagedEntityCreated.hook(this, &ComponentListItemModel::_onManagedEntityCreated);
+	G2S::onManagedEntityRemoved.hook(this, &ComponentListItemModel::_onManagedEntityRemoved);
 }
 
 
 ComponentListItemModel::~ComponentListItemModel() 
 {
-	GEARStudioEvents::onSceneUnloaded.unHookAll(this);
-	GEARStudioEvents::onManagedEntityCreated.unHookAll(this);
-	GEARStudioEvents::onManagedEntityRemoved.unHookAll(this);
+	G2S::onSceneUnloaded.unHookAll(this);
+	G2S::onManagedEntityCreated.unHookAll(this);
+	G2S::onManagedEntityRemoved.unHookAll(this);
 }
 
 void ComponentListItemModel::_onManagedEntityCreated(Scene* scene, ManagedEntity* entity)

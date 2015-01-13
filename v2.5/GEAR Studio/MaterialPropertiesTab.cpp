@@ -54,7 +54,7 @@ MaterialPropertiesTab::MaterialPropertiesTab(QWidget *parent /*= 0*/)
 	mEffectSelector->onFileSelected.hook(this, &MaterialPropertiesTab::_effectSelected);
 	ui.effectFileRoot->layout()->addWidget(mEffectSelector.get());
 
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity);
+	G2S::onGenerateCppCodeForManagedEntity.hook(this, &MaterialPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 MaterialPropertiesTab::~MaterialPropertiesTab()
@@ -62,7 +62,7 @@ MaterialPropertiesTab::~MaterialPropertiesTab()
 	mAmbientSelector->onColorSelected.unHookAll(this);
 	mDiffuseSelector->onColorSelected.unHookAll(this);
 	mSpecularSelector->onColorSelected.unHookAll(this);
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
+	G2S::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void MaterialPropertiesTab::_initUiWithEntity(ManagedEntity* entity)

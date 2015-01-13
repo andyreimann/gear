@@ -35,9 +35,9 @@ GEAREditor::GEAREditor(QWidget *parent)
 	connect(ui.createEntity, SIGNAL(clicked()), this, SLOT(createManagedEntity()));
 	connect(ui.addPropertyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(addPropertyByIndex(int)));
 
-	GEARStudioEvents::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
-	GEARStudioEvents::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &GEAREditor::_onManagedEntitySelected);
+	G2S::onProjectCreated.hook(this, &GEAREditor::_openProjectFromDirectory);
+	G2S::onSceneLoaded.hook(this, &GEAREditor::_onSceneLoaded);
+	G2S::onManagedEntitySelected.hook(this, &GEAREditor::_onManagedEntitySelected);
 
 	ui.propertiesRoot->layout()->setAlignment(Qt::AlignTop);
 
@@ -85,9 +85,9 @@ GEAREditor::GEAREditor(QWidget *parent)
 
 GEAREditor::~GEAREditor()
 {
-	GEARStudioEvents::onProjectCreated.unHookAll(this);
-	GEARStudioEvents::onSceneLoaded.unHookAll(this);
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onProjectCreated.unHookAll(this);
+	G2S::onSceneLoaded.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 }
 
 void GEAREditor::connectToGEARCore()
@@ -99,7 +99,7 @@ void GEAREditor::connectToGEARCore()
 	mEditorGeometryManager = std::shared_ptr<EditorGeometryManager>(new EditorGeometryManager());
 	((GLContext*)ui.renderSurface)->setEditorGeometryManager(mEditorGeometryManager);
 	// translation handle is activated by default
-	GEARStudioEvents::activateHandle(G2S::HandleMode::NO_HANDLE);
+	G2S::activateHandle(G2S::HandleMode::NO_HANDLE);
 }
 
 void GEAREditor::newProject()
@@ -142,7 +142,7 @@ void GEAREditor::_openProjectFromDirectory(std::string const& projectDirectory)
 	// load the Project
 	mProject = std::shared_ptr<Project>(new Project(projectDirectory));
 	// fire event that a new project is opened
-	GEARStudioEvents::onProjectOpened(mProject.get());
+	G2S::onProjectOpened(mProject.get());
 
 	ui.createEntity->setEnabled(true);
 

@@ -8,7 +8,7 @@ GEARStudioSettings::GEARStudioSettings(std::string const& settingsFile) :
 {
 	if (this->error())
 	{
-		GEARStudioEvents::onLog(WARNING, "Could not load GEAR Studio settings from file " + settingsFile + ": " + this->getLastErrorMessage());
+		G2S::onLog(WARNING, "Could not load GEAR Studio settings from file " + settingsFile + ": " + this->getLastErrorMessage());
 	}
 }
 

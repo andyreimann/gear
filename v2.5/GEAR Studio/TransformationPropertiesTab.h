@@ -1,6 +1,7 @@
 #pragma once
 #include "ui_TransformationPropertiesTab.h"
 #include "PropertiesTab.h"
+#include "Defines.h"
 
 #include <QtWidgets/QWidget>
 
@@ -49,7 +50,11 @@ class TransformationPropertiesTab : public QWidget, public PropertiesTab
 		void _onScaleHandleMoved();
 		void _onRotationHandleMoved();
 	private:
-		
+		/** This callback function is called whenever the handle mode is changed.
+		 * The handle mode can be changed from many different sources.
+		 * @param mode The mode which was activated.
+		 */
+		void _onActivateHandle(G2S::HandleMode::Name mode);
 		void _onTransformationHandleMoved(std::string const& propertyName, float x, float y, float z);
 		void _onTransformationHandleReleased();
 

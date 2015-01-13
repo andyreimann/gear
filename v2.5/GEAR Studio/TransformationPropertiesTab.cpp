@@ -40,21 +40,22 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	connect(ui.scale3DToggle, SIGNAL(clicked()), this, SLOT(activateScaleHandle()));
 
 	// register to Editor events
-	GEARStudioEvents::onTranslationHandleMoved.hook(this, &TransformationPropertiesTab::_onTranslationHandleMoved);
-	GEARStudioEvents::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
-	GEARStudioEvents::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onScaleHandleMoved);
-	GEARStudioEvents::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
-	GEARStudioEvents::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onRotationHandleMoved);
-	GEARStudioEvents::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.hook(this, &TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity);
+	G2S::onTranslationHandleMoved.hook(this, &TransformationPropertiesTab::_onTranslationHandleMoved);
+	G2S::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	G2S::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onScaleHandleMoved);
+	G2S::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	G2S::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onRotationHandleMoved);
+	G2S::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	G2S::activateHandle.hook(this, &TransformationPropertiesTab::_onActivateHandle);
+	G2S::onGenerateCppCodeForManagedEntity.hook(this, &TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
 
 
 TransformationPropertiesTab::~TransformationPropertiesTab()
 {
-	GEARStudioEvents::onTranslationHandleMoved.unHookAll(this);
-	GEARStudioEvents::onTranslationHandleReleased.unHookAll(this);
-	GEARStudioEvents::onGenerateCppCodeForManagedEntity.unHookAll(this);
+	G2S::onTranslationHandleMoved.unHookAll(this);
+	G2S::onTranslationHandleReleased.unHookAll(this);
+	G2S::onGenerateCppCodeForManagedEntity.unHookAll(this);
 }
 
 void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
@@ -204,24 +205,52 @@ void TransformationPropertiesTab::scaleChanged(double)
 		_serializeValue(TRANS_SCALE, "y", ui.scaleY->value());
 		_serializeValue(TRANS_SCALE, "z", ui.scaleZ->value());
 		_instantiateFromDescription(mEntity);
-		// TODO WARNING: Saving everytime we change a single value will not work on large projects -> dirty flag and ctrl + S support needed!
+		// TODO WARNING: Saving every time we change a single value will not work on large projects -> dirty flag and ctrl + S support needed!
 		mProject->getCurrentScene()->save();
 	}
 }
 
 void TransformationPropertiesTab::activateTranslationHandle()
 {
-	GEARStudioEvents::activateHandle(G2S::HandleMode::TRANSLATION_HANDLE);
+	G2S::activateHandle(G2S::HandleMode::TRANSLATION_HANDLE);
 }
 
 void TransformationPropertiesTab::activateScaleHandle()
 {
-	GEARStudioEvents::activateHandle(G2S::HandleMode::SCALE_HANDLE);
+	G2S::activateHandle(G2S::HandleMode::SCALE_HANDLE);
 }
 
 void TransformationPropertiesTab::activateRotationHandle()
 {
-	GEARStudioEvents::activateHandle(G2S::HandleMode::ROTATION_HANDLE);
+	G2S::activateHandle(G2S::HandleMode::ROTATION_HANDLE);
+}
+
+void TransformationPropertiesTab::_onActivateHandle(G2S::HandleMode::Name mode)
+{
+	if (mode == G2S::HandleMode::TRANSLATION_HANDLE)
+	{
+		ui.translation3DToggle->setChecked(true);
+	}
+	else
+	{
+		ui.translation3DToggle->setChecked(false);
+	}
+	if (mode == G2S::HandleMode::SCALE_HANDLE)
+	{
+		ui.scale3DToggle->setChecked(true);
+	}
+	else
+	{
+		ui.scale3DToggle->setChecked(false);
+	}
+	if (mode == G2S::HandleMode::ROTATION_HANDLE)
+	{
+		ui.rotation3DToggle->setChecked(true);
+	}
+	else
+	{
+		ui.rotation3DToggle->setChecked(false);
+	}
 }
 
 void TransformationPropertiesTab::_serializeValue(std::string const& group, std::string const& component, double value)

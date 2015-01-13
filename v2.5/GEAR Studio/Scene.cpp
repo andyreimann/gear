@@ -25,7 +25,7 @@ Scene::createNewEntity(std::string const& name)
 		mLoadedEntities[name] = std::move(ManagedEntity(name));
 		auto* entity = &mLoadedEntities[name];
 		mLoadedEntitiesIdToNameMapping[entity->getId()] = name;
-		GEARStudioEvents::onManagedEntityCreated(this, entity);
+		G2S::onManagedEntityCreated(this, entity);
 		return entity;
 	}
 	return nullptr;
@@ -95,9 +95,9 @@ Scene::_initEntityFromJson(Json::Value const& entityDesc)
 		mLoadedEntities[name] = std::move(ManagedEntity(entityDesc));
 		auto* entity = &mLoadedEntities[name];
 		mLoadedEntitiesIdToNameMapping[entity->getId()] = name;
-		GEARStudioEvents::onManagedEntityCreated(this, entity);
+		G2S::onManagedEntityCreated(this, entity);
 		// whoever wants to add something to the ManagedEntity will have to register to this event.
-		GEARStudioEvents::onDeserializeManagedEntity(entity, entity->getEntityDescription());
+		G2S::onDeserializeManagedEntity(entity, entity->getEntityDescription());
 	}
 	else
 	{
@@ -114,7 +114,7 @@ Scene::load(QProgressDialog* progress)
 		_init3D(progress);
 		std::stringstream log;
 		log << "Scene " << mResource["name"].asString() << " loaded";
-		GEARStudioEvents::onLog(INFO, log.str());
+		G2S::onLog(INFO, log.str());
 	}
 }
 
@@ -138,7 +138,7 @@ Scene::save()
 
 		std::stringstream log;
 		log << "Scene " << mResource["name"].asString() << " saved";
-		GEARStudioEvents::onLog(INFO, log.str());
+		G2S::onLog(INFO, log.str());
 	}
 }
 
@@ -159,7 +159,7 @@ void Scene::generateEntityInitializationCode(std::ostream& out, QProgressDialog*
 		out << indention << "// START '" << it->first << "'" << std::endl;
 		out << indention << "mManagedEntities[\"" << it->first << "\"] = std::move(G2::Entity());" << std::endl; // create entity instance
 		out << indention << "auto& " << entityVar << " = mManagedEntities[\"" << it->first << "\"];" << std::endl; // create accessor
-		GEARStudioEvents::onGenerateCppCodeForManagedEntity(&it->second, entityVar, out);
+		G2S::onGenerateCppCodeForManagedEntity(&it->second, entityVar, out);
 		out << indention << "// END '" << it->first << "'" << std::endl;
 	}
 }

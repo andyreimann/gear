@@ -32,7 +32,7 @@ EditorGeometryManager::EditorGeometryManager() :
 	G2::EventDistributer::onFrameRendered.hook(this, &EditorGeometryManager::_updateEditorGrid);
 
 	// register to Editor events
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &EditorGeometryManager::_onManagedEntitySelected);
+	G2S::onManagedEntitySelected.hook(this, &EditorGeometryManager::_onManagedEntitySelected);
 
 	auto* tc = mTransAnchor.addComponent<G2::TransformComponent>();
 	_initTranslationHandles();
@@ -49,8 +49,8 @@ EditorGeometryManager::~EditorGeometryManager()
 	G2::EventDistributer::onMouseMove.unHookAll(this);
 
 	// unhook from Editor events
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
-	GEARStudioEvents::onEditorHandleSelected.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
+	G2S::onEditorHandleSelected.unHookAll(this);
 }
 
 void EditorGeometryManager::_initTranslationHandles()
@@ -73,17 +73,17 @@ void EditorGeometryManager::_initTranslationHandles()
 
 void EditorGeometryManager::_initScaleHandles()
 {
-	mScaleZMesh = mFbxImporter.import("meshes/translate.fbx");
+	mScaleZMesh = mFbxImporter.import("meshes/scale.fbx");
 	auto* rc = mScaleZMesh.getComponent<G2::RenderComponent>();
 	auto* tc = mScaleZMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(0.f, 0.f, 1.f, 1.f), 0.f, glm::vec3(0.f, 0.f, 1.f));
 
-	mScaleYMesh = mFbxImporter.import("meshes/translate.fbx");
+	mScaleYMesh = mFbxImporter.import("meshes/scale.fbx");
 	rc = mScaleYMesh.getComponent<G2::RenderComponent>();
 	tc = mScaleYMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(0.f, 1.f, 0.f, 1.f), -90.f, glm::vec3(1.f, 0.f, 0.f));
 
-	mScaleXMesh = mFbxImporter.import("meshes/translate.fbx");
+	mScaleXMesh = mFbxImporter.import("meshes/scale.fbx");
 	rc = mScaleXMesh.getComponent<G2::RenderComponent>();
 	tc = mScaleXMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(1.f, 0.f, 0.f, 1.f), 90.f, glm::vec3(0.f, 1.f, 0.f));
@@ -91,17 +91,17 @@ void EditorGeometryManager::_initScaleHandles()
 
 void EditorGeometryManager::_initRotationHandles()
 {
-	mRotateZMesh = mFbxImporter.import("meshes/translate.fbx");
+	mRotateZMesh = mFbxImporter.import("meshes/rotate.fbx");
 	auto* rc = mRotateZMesh.getComponent<G2::RenderComponent>();
 	auto* tc = mRotateZMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(0.f, 0.f, 1.f, 1.f), 0.f, glm::vec3(0.f, 0.f, 1.f));
 
-	mRotateYMesh = mFbxImporter.import("meshes/translate.fbx");
+	mRotateYMesh = mFbxImporter.import("meshes/rotate.fbx");
 	rc = mRotateYMesh.getComponent<G2::RenderComponent>();
 	tc = mRotateYMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(0.f, 1.f, 0.f, 1.f), -90.f, glm::vec3(1.f, 0.f, 0.f));
 
-	mRotateXMesh = mFbxImporter.import("meshes/translate.fbx");
+	mRotateXMesh = mFbxImporter.import("meshes/rotate.fbx");
 	rc = mRotateXMesh.getComponent<G2::RenderComponent>();
 	tc = mRotateXMesh.addComponent<G2::TransformComponent>();
 	_initHandleSettings(rc, tc, glm::vec4(1.f, 0.f, 0.f, 1.f), 90.f, glm::vec3(0.f, 1.f, 0.f));
@@ -175,7 +175,7 @@ void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 	{
 		std::stringstream log;
 		log << "Changed Entity-Context to " << entity->getName() << "[" << entity->getId() << "]";
-		GEARStudioEvents::onLog(INFO, log.str());
+		G2S::onLog(INFO, log.str());
 	}
 	mSelectedEntityAABB = G2::Entity();
 	if (entity != nullptr && entity->hasComponent<G2::RenderComponent>())

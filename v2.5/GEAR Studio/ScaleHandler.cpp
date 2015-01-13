@@ -20,8 +20,8 @@ ScaleHandler::ScaleHandler(unsigned int xAxisHandlerId, unsigned int yAxisHandle
 	G2::EventDistributer::onMouseMove.hook(this, &ScaleHandler::_onMouseMove);
 
 	// register to Editor events
-	GEARStudioEvents::onEditorHandleSelected.hook(this, &ScaleHandler::_onEditorHandleSelected);
-	GEARStudioEvents::onManagedEntitySelected.hook(this, &ScaleHandler::_onManagedEntitySelected);
+	G2S::onEditorHandleSelected.hook(this, &ScaleHandler::_onEditorHandleSelected);
+	G2S::onManagedEntitySelected.hook(this, &ScaleHandler::_onManagedEntitySelected);
 }
 
 ScaleHandler::~ScaleHandler()
@@ -31,8 +31,8 @@ ScaleHandler::~ScaleHandler()
 	G2::EventDistributer::onMouseMove.unHookAll(this);
 
 	// unhook from Editor events
-	GEARStudioEvents::onEditorHandleSelected.unHookAll(this);
-	GEARStudioEvents::onManagedEntitySelected.unHookAll(this);
+	G2S::onEditorHandleSelected.unHookAll(this);
+	G2S::onManagedEntitySelected.unHookAll(this);
 }
 
 void ScaleHandler::_onEditorHandleSelected(unsigned int entityId, G2::Intersection const& intersection)
@@ -92,7 +92,7 @@ void ScaleHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> co
 		if (mState != SCALE_NOT)
 		{
 			mState = SCALE_NOT;
-			GEARStudioEvents::onScaleHandleReleased();
+			G2S::onScaleHandleReleased();
 		}
 	}
 }
@@ -143,7 +143,7 @@ void ScaleHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 			}
 			auto* tc = mEntity->addComponent<G2::TransformComponent>();
 			tc->setScale(scale);
-			GEARStudioEvents::onScaleHandleMoved();
+			G2S::onScaleHandleMoved();
 		}
 	}
 }
