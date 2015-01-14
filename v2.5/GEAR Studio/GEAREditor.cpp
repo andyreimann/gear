@@ -8,6 +8,7 @@
 #include "TransformationPropertiesTab.h"
 #include "MaterialPropertiesTab.h"
 #include "LightPropertiesTab.h"
+#include "CameraPropertiesTab.h"
 
 #include <QtWidgets/QFileDialog>
 #include <boost/filesystem.hpp>
@@ -27,8 +28,8 @@ GEAREditor::GEAREditor(QWidget *parent)
 	// http://qt-project.org/doc/qt-4.8/mainwindows-dockwidgets.html
 	setCentralWidget(ui.renderSurface);
 
-	auto* model = new ComponentListItemModel();
-	ui.componentListView->setModel(model);
+	//auto* model = new ComponentListItemModel();
+	//ui.componentListView->setModel(model);
 	connect(ui.actionProject, SIGNAL(triggered()), this, SLOT(newProject()));
 	connect(ui.actionOpen_2, SIGNAL(triggered()), this, SLOT(openProject()));
 
@@ -62,12 +63,20 @@ GEAREditor::GEAREditor(QWidget *parent)
 	ui.propertiesRoot->layout()->addWidget(lightTab);
 	lightTab->hide();
 
+	auto* camTab = new CameraPropertiesTab(ui.propertiesRoot);
+	mPropertyTabs.push_back(std::shared_ptr<PropertiesTab>(camTab));
+	ui.propertiesRoot->layout()->addWidget(camTab);
+	camTab->hide();
+
 
 	mLoggingTab = std::unique_ptr<LoggingTab>(new LoggingTab(this));
 	ui.loggingRoot->layout()->addWidget(mLoggingTab.get());
 
 	mEditorPanel = std::unique_ptr<EditorPanel>(new EditorPanel(this, this));
 	ui.editorPanelRoot->layout()->addWidget(mEditorPanel.get());
+
+	mManagedEntitiesTab = std::unique_ptr<ManagedEntitiesTab>(new ManagedEntitiesTab(this));
+	ui.managedEntitiesRoot->layout()->addWidget(mManagedEntitiesTab.get());
 
 
 	Json::Value const& projectHistory = mStudioSettings.getSettings()[PROJECT_HISTORY];

@@ -7,6 +7,7 @@
 #include <G2/LightComponent.h>
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <algorithm>
 #include <QProgressDialog>
 
@@ -156,9 +157,14 @@ void Scene::generateEntityInitializationCode(std::ostream& out, QProgressDialog*
 	{
 		progress->setValue(progress->value() + 1);
 		std::string entityVar = "e" + std::to_string(it->second.getId());
+
+		std::string name = it->first;
+		boost::replace_all(name, "\\", "\\\\");
+		boost::replace_all(name, "\"", "\\\"");
+		
 		out << indention << "// START '" << it->first << "'" << std::endl;
-		out << indention << "mManagedEntities[\"" << it->first << "\"] = std::move(G2::Entity());" << std::endl; // create entity instance
-		out << indention << "auto& " << entityVar << " = mManagedEntities[\"" << it->first << "\"];" << std::endl; // create accessor
+		out << indention << "mManagedEntities[\"" << name << "\"] = std::move(G2::Entity());" << std::endl; // create entity instance
+		out << indention << "auto& " << entityVar << " = mManagedEntities[\"" << name << "\"];" << std::endl; // create accessor
 		G2S::onGenerateCppCodeForManagedEntity(&it->second, entityVar, out);
 		out << indention << "// END '" << it->first << "'" << std::endl;
 	}

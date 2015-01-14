@@ -129,7 +129,7 @@
       </widget>
      </item>
      <item>
-      <widget class="ComponentListView" name="componentListView"/>
+      <layout class="QVBoxLayout" name="managedEntitiesRoot"/>
      </item>
     </layout>
    </widget>
@@ -237,6 +237,11 @@
            </item>
            <item>
             <property name="text">
+             <string>Camera</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>C++ Scripts</string>
             </property>
            </item>
@@ -266,7 +271,7 @@
    <property name="minimumSize">
     <size>
      <width>294</width>
-     <height>0</height>
+     <height>40</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -328,17 +333,9 @@
    <header>glcontext.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>ComponentListView</class>
-   <extends>QListView</extends>
-   <header>ComponentListView.h</header>
-  </customwidget>
  </customwidgets>
  <resources>
   <include location="geareditor.qrc"/>
  </resources>
  <connections/>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>

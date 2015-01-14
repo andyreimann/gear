@@ -81,7 +81,7 @@ void TransformationPropertiesTab::_initUiWithEntity(ManagedEntity* entity)
 		// If one is absent, we just initialize it to it's default value.
 		if (props.isMember(TRANS_POSITION))
 		{
-			ui.posX->blockSignals(true); ui.posX->setValue(props[TRANS_POSITION].get("x", "0.0").asFloat()); ui.posX->blockSignals(false);
+			GEAR_QTNOEVENT(ui.posX, ui.posX->setValue(props[TRANS_POSITION].get("x", "0.0").asFloat()));
 			ui.posY->blockSignals(true); ui.posY->setValue(props[TRANS_POSITION].get("y", "0.0").asFloat()); ui.posY->blockSignals(false);
 			ui.posZ->blockSignals(true); ui.posZ->setValue(props[TRANS_POSITION].get("z", "0.0").asFloat()); ui.posZ->blockSignals(false);
 		}
@@ -331,10 +331,7 @@ void TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEnti
 
 		if (props.isMember(TRANS_ORIENTATION))
 		{
-			//out << indention << "glm::quat rotation;" << std::endl;
-			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
-			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["y"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
-			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["z"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			// initialize rotation from euler angles
 			out << indention << "trans->setRotation(glm::quat(glm::vec3(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f*" << G2S_PI << "f / 180.f, " << props[TRANS_ORIENTATION]["y"].asFloat() << "f*" << G2S_PI << "f / 180.f, " << props[TRANS_ORIENTATION]["z"].asFloat() << "f*" << G2S_PI << "f / 180.f))); " << std::endl;
 		}
 

@@ -36,7 +36,6 @@ namespace G2
 			 */
 			glm::mat4 const& getProjectionMatrix() const { return mProjectionMatrix; }
 			/** This function will set the projection matrix to the given value.
-			* @param value The projection matrix.
 			* @param width The width of the viewport
 			* @param height The height of the viewport
 			* @param zNear The near clip plane

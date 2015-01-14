@@ -9,6 +9,7 @@
 #include "LoggingTab.h"
 #include "GEARStudioSettings.h"
 #include "EditorPanel.h"
+#include "ManagedEntitiesTab.h"
 
 #include <QProgressDialog>
 
@@ -77,6 +78,7 @@ class GEAREditor : public QMainWindow
 
 
 		std::unique_ptr<EditorPanel>				mEditorPanel;			// The instance of the editor panel
+		std::unique_ptr<ManagedEntitiesTab>			mManagedEntitiesTab;	// The instance of the managed entities tab
 
 		std::unique_ptr<QProgressDialog>			mProgressDialog;		
 

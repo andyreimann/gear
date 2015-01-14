@@ -45,6 +45,7 @@
     <ClInclude Include="TranslationHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraPropertiesTab.cpp" />
     <ClCompile Include="ColorSelector.cpp" />
     <ClCompile Include="ComponentListItemModel.cpp" />
     <ClCompile Include="ComponentListView.cpp" />
@@ -61,6 +62,8 @@
     <ClCompile Include="JsonSerializer.cpp" />
     <ClCompile Include="LightPropertiesTab.cpp" />
     <ClCompile Include="LoggingTab.cpp" />
+    <ClCompile Include="ManagedEntitiesTab.cpp" />
+    <ClCompile Include="ManagedEntityPanel.cpp" />
     <ClCompile Include="MaterialPropertiesTab.cpp" />
     <ClCompile Include="MeshPropertiesTab.cpp" />
     <ClCompile Include="Project.cpp" />
@@ -75,6 +78,9 @@
     <ClCompile Include="TransformationPropertiesTab.cpp" />
     <ClCompile Include="TranslationHandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="obj\x32\Debug\moc_CameraPropertiesTab.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_ColorSelector.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
@@ -102,6 +108,12 @@
     <ClCompile Include="obj\x32\Debug\moc_LoggingTab.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_ManagedEntitiesTab.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Debug\moc_ManagedEntityPanel.cpp">
+      <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Debug\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x32\Debug</Filter>
     </ClCompile>
@@ -122,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="obj\x32\Debug\qrc_geareditor.cpp">
       <Filter>obj\x32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_CameraPropertiesTab.cpp">
+      <Filter>obj\x32\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_ColorSelector.cpp">
       <Filter>obj\x32\Release</Filter>
@@ -150,6 +165,12 @@
     <ClCompile Include="obj\x32\Release\moc_LoggingTab.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ManagedEntitiesTab.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x32\Release\moc_ManagedEntityPanel.cpp">
+      <Filter>obj\x32\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x32\Release\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x32\Release</Filter>
     </ClCompile>
@@ -170,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="obj\x32\Release\qrc_geareditor.cpp">
       <Filter>obj\x32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_CameraPropertiesTab.cpp">
+      <Filter>obj\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_ColorSelector.cpp">
       <Filter>obj\x64\Debug</Filter>
@@ -198,6 +222,12 @@
     <ClCompile Include="obj\x64\Debug\moc_LoggingTab.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ManagedEntitiesTab.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Debug\moc_ManagedEntityPanel.cpp">
+      <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Debug\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x64\Debug</Filter>
     </ClCompile>
@@ -218,6 +248,9 @@
     </ClCompile>
     <ClCompile Include="obj\x64\Debug\qrc_geareditor.cpp">
       <Filter>obj\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_CameraPropertiesTab.cpp">
+      <Filter>obj\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_ColorSelector.cpp">
       <Filter>obj\x64\Release</Filter>
@@ -246,6 +279,12 @@
     <ClCompile Include="obj\x64\Release\moc_LoggingTab.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ManagedEntitiesTab.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\x64\Release\moc_ManagedEntityPanel.cpp">
+      <Filter>obj\x64\Release</Filter>
+    </ClCompile>
     <ClCompile Include="obj\x64\Release\moc_MaterialPropertiesTab.cpp">
       <Filter>obj\x64\Release</Filter>
     </ClCompile>
@@ -269,6 +308,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="CameraPropertiesTab.h" />
+    <CustomBuild Include="CameraPropertiesTab.ui" />
     <CustomBuild Include="ColorSelector.h" />
     <CustomBuild Include="ColorSelector.ui" />
     <CustomBuild Include="ComponentListItemModel.h" />
@@ -283,6 +324,10 @@
     <CustomBuild Include="LightPropertiesTab.ui" />
     <CustomBuild Include="LoggingTab.h" />
     <CustomBuild Include="LoggingTab.ui" />
+    <CustomBuild Include="ManagedEntitiesTab.h" />
+    <CustomBuild Include="ManagedEntitiesTab.ui" />
+    <CustomBuild Include="ManagedEntityPanel.h" />
+    <CustomBuild Include="ManagedEntityPanel.ui" />
     <CustomBuild Include="MaterialPropertiesTab.h" />
     <CustomBuild Include="MaterialPropertiesTab.ui" />
     <CustomBuild Include="MeshPropertiesTab.h" />

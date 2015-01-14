@@ -31,6 +31,7 @@ LoggingTab::LoggingTab(QWidget *parent /*= 0*/)
 LoggingTab::~LoggingTab()
 {
 	G2S::onLog.unHookAll(this);
+	G2S::onProjectOpened.unHookAll(this);
 
 }
 
