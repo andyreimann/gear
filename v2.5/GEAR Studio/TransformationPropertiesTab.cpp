@@ -8,6 +8,7 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include <glm/ext.hpp>
+#include <math.h>
 
 // TODO Should these identifier be compiled into a separated DLL?
 static const std::string TRANS_TYPE = "type";
@@ -44,8 +45,8 @@ TransformationPropertiesTab::TransformationPropertiesTab(QWidget *parent /*= 0*/
 	G2S::onTranslationHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
 	G2S::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onScaleHandleMoved);
 	G2S::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
-	G2S::onScaleHandleMoved.hook(this, &TransformationPropertiesTab::_onRotationHandleMoved);
-	G2S::onScaleHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
+	G2S::onRotationHandleMoved.hook(this, &TransformationPropertiesTab::_onRotationHandleMoved);
+	G2S::onRotationHandleReleased.hook(this, &TransformationPropertiesTab::_onTransformationHandleReleased);
 	G2S::activateHandle.hook(this, &TransformationPropertiesTab::_onActivateHandle);
 	G2S::onGenerateCppCodeForManagedEntity.hook(this, &TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity);
 }
@@ -144,12 +145,11 @@ void TransformationPropertiesTab::_instantiateFromDescription(ManagedEntity* ent
 		}
 		if (props.isMember(TRANS_ORIENTATION))
 		{
-			glm::quat rotation;
-			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["x"].asFloat(), glm::vec3(1.f, 0.f, 0.f)));
-			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["y"].asFloat(), glm::vec3(0.f, 1.f, 0.f)));
-			rotation = glm::cross(rotation, glm::angleAxis(props[TRANS_ORIENTATION]["z"].asFloat(), glm::vec3(0.f, 0.f, 1.f)));
-
-			trans->setRotation(rotation);
+			// init from euler angles
+			trans->setRotation(glm::quat(glm::vec3(
+				props[TRANS_ORIENTATION]["x"].asFloat() * G2S_PI / 180.f,
+				props[TRANS_ORIENTATION]["y"].asFloat() * G2S_PI / 180.f,
+				props[TRANS_ORIENTATION]["z"].asFloat() * G2S_PI / 180.f)));
 		}
 		if (props.isMember(TRANS_SCALE))
 		{
@@ -274,7 +274,12 @@ void TransformationPropertiesTab::_onScaleHandleMoved()
 void TransformationPropertiesTab::_onRotationHandleMoved()
 {
 	auto* tc = mEntity->getComponent<G2::TransformComponent>();
-	_onTransformationHandleMoved(TRANS_ORIENTATION, tc->getRotation().x, tc->getRotation().y, tc->getRotation().z);
+	glm::quat norm = glm::normalize(tc->getRotation());
+
+	glm::vec3 eulerAngles = glm::eulerAngles(norm);
+
+	_onTransformationHandleMoved(TRANS_ORIENTATION, eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	//_serializeValue(TRANS_ORIENTATION, "w", norm.w);
 }
 
 void TransformationPropertiesTab::_onTransformationHandleMoved(std::string const& propertyName, float x, float y, float z)
@@ -326,12 +331,13 @@ void TransformationPropertiesTab::_onGenerateCppCodeForManagedEntity(ManagedEnti
 
 		if (props.isMember(TRANS_ORIENTATION))
 		{
-			out << indention << "glm::quat rotation;" << std::endl;
-			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
-			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["y"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
-			out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["z"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
-			out << indention << "trans->setRotation(rotation);" << std::endl;
+			//out << indention << "glm::quat rotation;" << std::endl;
+			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["y"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			//out << indention << "rotation = glm::cross(rotation, glm::angleAxis(" << props[TRANS_ORIENTATION]["z"].asFloat() << "f, glm::vec3(1.f, 0.f, 0.f)));" << std::endl;
+			out << indention << "trans->setRotation(glm::quat(glm::vec3(" << props[TRANS_ORIENTATION]["x"].asFloat() << "f*" << G2S_PI << "f / 180.f, " << props[TRANS_ORIENTATION]["y"].asFloat() << "f*" << G2S_PI << "f / 180.f, " << props[TRANS_ORIENTATION]["z"].asFloat() << "f*" << G2S_PI << "f / 180.f))); " << std::endl;
 		}
+
 		if (props.isMember(TRANS_SCALE))
 		{
 			out << indention << "trans->setScale(glm::vec3(" << props[TRANS_SCALE]["x"].asFloat() << "f, " << props[TRANS_SCALE]["y"].asFloat() << "f," << props[TRANS_SCALE]["z"].asFloat() << "f));" << std::endl;

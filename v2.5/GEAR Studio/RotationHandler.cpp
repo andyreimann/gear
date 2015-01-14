@@ -48,24 +48,21 @@ void RotationHandler::_onEditorHandleSelected(unsigned int entityId, G2::Interse
 	{
 		mState = ROTATION_X_AXIS;
 		mEntity->addComponent<G2::TransformComponent>();
-		mEntityStartWSMatrix = mEntity->getComponent<G2::TransformComponent>()->getWorldSpaceMatrix();
-		mRotationPlaneNormal = glm::vec3(mEntityStartWSMatrix * glm::vec4(1.f, 0.f, 0.f, 0.f));
+		mRotationPlaneNormal = glm::vec3(-1.f, 0.f, 0.f);
 		mRotationPlaneOffset = mEntity->getComponent<G2::TransformComponent>()->getPosition().x;
 	}
 	else if (entityId == mYAxisHandlerId)
 	{
 		mState = ROTATION_Y_AXIS;
 		mEntity->addComponent<G2::TransformComponent>();
-		mEntityStartWSMatrix = mEntity->getComponent<G2::TransformComponent>()->getWorldSpaceMatrix();
-		mRotationPlaneNormal = glm::vec3(mEntityStartWSMatrix * glm::vec4(0.f, 1.f, 0.f, 0.f));
+		mRotationPlaneNormal = glm::vec3(0.f,-1.f, 0.f);
 		mRotationPlaneOffset = mEntity->getComponent<G2::TransformComponent>()->getPosition().y;
 	}
 	else if (entityId == mZAxisHandlerId)
 	{
 		mState = ROTATION_Z_AXIS;
 		mEntity->addComponent<G2::TransformComponent>();
-		mEntityStartWSMatrix = mEntity->getComponent<G2::TransformComponent>()->getWorldSpaceMatrix();
-		mRotationPlaneNormal = glm::vec3(mEntityStartWSMatrix * glm::vec4(0.f, 0.f, 1.f, 0.f));
+		mRotationPlaneNormal = glm::vec3(0.f, 0.f,-1.f);
 		mRotationPlaneOffset = mEntity->getComponent<G2::TransformComponent>()->getPosition().z;
 	}
 
@@ -73,6 +70,22 @@ void RotationHandler::_onEditorHandleSelected(unsigned int entityId, G2::Interse
 	{
 		// save start state
 		mHandlerStartPoint = intersection.getPoint();
+
+		auto* camera = mCameraSystem->getRenderCamera();
+		auto* transform = mTransformSystem->get(camera->getEntityId());
+
+		G2::Ray mouseRay = G2::Ray::createScreenProjectionRay(
+			mMousePos.x,
+			mMousePos.y,
+			transform->getWorldSpaceMatrix(),
+			camera->getProjectionMatrix(),
+			glm::detail::tvec4<int>(0, 0, camera->getViewportWidth(), camera->getViewportHeight()));
+
+		// get the real picking point on the plane
+		bool res;
+		mHandlerStartPoint = _getPlaneIntersection(mouseRay, &res);
+
+
 		mEntityStartPosition = mEntity->getComponent<G2::TransformComponent>()->getPosition();
 		mEntityStartRotation = mEntity->getComponent<G2::TransformComponent>()->getRotation();
 		mPickOffset = mHandlerStartPoint - mEntityStartPosition;
@@ -102,17 +115,19 @@ void RotationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int>
 	// TODO Button should be defined in a button mapping to be configurable!
 	if (button == G2::MOUSE_LEFT)
 	{
+		EditorGeometryManager::clearGlobalGeometry("RotationHandler");
 		// reset state to become inactive
 		if (mState != ROTATION_NOT)
 		{
 			mState = ROTATION_NOT;
-			G2S::onScaleHandleReleased();
+			G2S::onRotationHandleReleased();
 		}
 	}
 }
 
 void RotationHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 {
+	mMousePos = pos;
 	if (!isHandleActive())
 	{
 		return;
@@ -156,49 +171,49 @@ void RotationHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 				pickDir = glm::normalize(mPickOffset);
 				currentDir = glm::normalize(ptOnPlane - mEntityStartPosition);
 				float dot = glm::dot(pickDir, currentDir);
-				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? 1.f : -1.f;
+				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? -1.f : 1.f;
 				degrees = std::acos(dot) * 180.f / 3.14f;
 				axis = glm::vec3(1.f, 0.f, 0.f);
-				G2S::onLog(INFO, "X sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
+				//G2S::onLog(INFO, "X sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
 			}
 			else if (mState == ROTATION_Y_AXIS)
 			{
 				pickDir = glm::normalize(mPickOffset);
 				currentDir = glm::normalize(ptOnPlane - mEntityStartPosition);
 				float dot = glm::dot(pickDir, currentDir);
-				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? 1.f : -1.f;
+				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? -1.f : 1.f;
 				degrees = std::acos(dot) * 180.f / 3.14f;
 				axis = glm::vec3(0.f, 1.f, 0.f);
-				G2S::onLog(INFO, "Y sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
+				//G2S::onLog(INFO, "Y sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
 			}
 			else if (mState == ROTATION_Z_AXIS)
 			{
 				pickDir = glm::normalize(mPickOffset);
 				currentDir = glm::normalize(ptOnPlane - mEntityStartPosition);
 				float dot = glm::dot(pickDir, currentDir);
-				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? 1.f : -1.f;
+				sign = (glm::dot(mRotationPlaneNormal, glm::cross(pickDir, currentDir)) >= 0.f) ? -1.f : 1.f;
 				degrees = std::acos(dot) * 180.f / 3.14f;
 				axis = glm::vec3(0.f, 0.f, 1.f);
-				G2S::onLog(INFO, "Z sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
+				//G2S::onLog(INFO, "Z sign=" + std::to_string(sign) + "Degrees=" + std::to_string(degrees) + ", PickDir[" + std::to_string(pickDir.x) + "," + std::to_string(pickDir.y) + "," + std::to_string(pickDir.z) + "]" + ", CurrentDir[" + std::to_string(currentDir.x) + "," + std::to_string(currentDir.y) + "," + std::to_string(currentDir.z) + "]");
 			}
-			tc->setRotation(glm::cross(mEntityStartRotation, glm::angleAxis(degrees * sign, glm::vec3(mEntityStartWSMatrix * glm::vec4(axis,0.f)))));
+			tc->setRotation(glm::normalize(glm::cross(glm::angleAxis(degrees * sign, axis), mEntityStartRotation)));
 			G2S::onRotationHandleMoved();
 
 			// DEBUG
 			// current dir - blue
-			geometry[0] = mEntityStartPosition;
-			geometry[1] = mEntityStartPosition + (1000.f * currentDir);
-			EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(0.f, 0.f, 1.f, 1.f));
+			//geometry[0] = mEntityStartPosition;
+			//geometry[1] = mEntityStartPosition + (1.f * currentDir);
+			//EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(0.f, 0.f, 1.f, 1.f));
 
-			// pick dir - red
-			geometry[0] = mEntityStartPosition;
-			geometry[1] = mEntityStartPosition + (1000.f * glm::normalize(mPickOffset));
-			EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(1.f, 0.f, 0.f, 1.f));
+			//// pick dir - red
+			//geometry[0] = mEntityStartPosition;
+			//geometry[1] = mEntityStartPosition + (1.f * glm::normalize(mPickOffset));
+			//EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 			// plane normal - green
-			geometry[0] = mEntityStartPosition;
-			geometry[1] = mEntityStartPosition + (1000.f * mRotationPlaneNormal);
-			EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(0.f, 1.f, 0.f, 1.f));
+			// geometry[0] = mEntityStartPosition;
+			// geometry[1] = mEntityStartPosition + (3.f * mRotationPlaneNormal);
+			// EditorGeometryManager::addGlobalGeometry("RotationHandler", geometry, 2, glm::vec4(0.f, 1.f, 0.f, 1.f));
 			// DEBUG END
 		}
 	}

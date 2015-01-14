@@ -261,6 +261,8 @@ void EditorGeometryManager::addGlobalGeometry(std::string const& name, glm::vec3
 
 	vao.writeData(G2Core::Semantics::POSITION, vertices);
 
+	rc->setRenderDepth(false);
+	rc->setDepthFunc(G2Core::DepthFunc::ALWAYS);
 	rc->addDrawCall(G2::DrawCall()
 		.setDrawMode(G2Core::DrawMode::LINES)
 		.setEnabled(true)

@@ -22,4 +22,6 @@ namespace G2S
 			HANDLE_INVALID = 4,
 		};
 	};
+
 };
+# define G2S_PI           3.14159265358979323846  /* pi */

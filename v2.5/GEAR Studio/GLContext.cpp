@@ -411,6 +411,7 @@ void GLContext::mousePressEvent(QMouseEvent *event)
 			}
 			else
 			{
+				G2S::activateHandle(G2S::HandleMode::NO_HANDLE);
 				G2S::onManagedEntitySelected(nullptr); // deselect
 			}
 		}

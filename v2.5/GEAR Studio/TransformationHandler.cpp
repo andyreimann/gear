@@ -45,11 +45,8 @@ TransformationHandler::_update()
 		// connect handles to selected entity
 		auto* anchorTc = mTransformSystem->get(mTransformationAnchorId);
 		auto* tc = mEntity->addComponent<G2::TransformComponent>();
-		if (anchorTc->getParentEntityId() != mEntity->getId())
-		{
-			anchorTc->setParent(tc);
-		}
-		anchorTc->setScale(1.f / (tc->getParentsScale() * tc->getScale())); // negate scale
+		anchorTc->setPosition(glm::vec3(tc->getWorldSpaceMatrix() * glm::vec4(0.f,0.f,0.f,1.f)));
+		//anchorTc->setScale(1.f / (tc->getParentsScale() * tc->getScale())); // negate scale
 		//anchorTc->setRotation(glm::inverse(tc->getRotation())); // invert parent rotation
 	}
 	else

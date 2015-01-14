@@ -65,7 +65,6 @@ class RotationHandler : private G2S::HandlerBase
 
 		ManagedEntity*	mEntity;				// The ManagedEntity which is currently selected
 
-		glm::mat4		mEntityStartWSMatrix;
 		glm::vec3		mHandlerStartPoint;		// The intersection point with the last selected handler
 		glm::vec3		mEntityStartPosition;	// The position of the selected ManagedEntity at the time were a handler was selected.
 		glm::quat		mEntityStartRotation;	// The rotation of the selected ManagedEntity at the time were a handler was selected.
@@ -76,4 +75,5 @@ class RotationHandler : private G2S::HandlerBase
 		unsigned int	mZAxisHandlerId;		// The Entity id of the handler for the X-Axis.
 		unsigned int	mYAxisHandlerId;		// The Entity id of the handler for the Y-Axis.
 		unsigned int	mXAxisHandlerId;		// The Entity id of the handler for the Z-Axis.
+		glm::detail::tvec2<int> mMousePos;
 };

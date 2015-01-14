@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
-    <height>182</height>
+    <width>268</width>
+    <height>194</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -64,7 +64,25 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0,1,0,1,0">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1,0,1,0,1">
+          <item>
+           <widget class="QPushButton" name="translation3DToggle">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <activeon>:/Buttons/EditorResources/Translate_3d_24x24.png</activeon>
+             </iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
           <item>
            <widget class="QLabel" name="posXLabel">
             <property name="text">
@@ -74,8 +92,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="posX">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -97,8 +121,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="posY">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -120,8 +150,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="posZ">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -134,14 +170,25 @@
             </property>
            </widget>
           </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Rotation (Euler XYZ):</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,1,0,1,0,1">
           <item>
-           <widget class="QPushButton" name="translation3DToggle">
+           <widget class="QPushButton" name="rotation3DToggle">
             <property name="text">
              <string/>
             </property>
             <property name="icon">
              <iconset>
-              <activeon>:/Buttons/EditorResources/Translate_3d_24x24.png</activeon>
+              <activeon>:/Buttons/EditorResources/Rotate_3d_24x24.png</activeon>
              </iconset>
             </property>
             <property name="checkable">
@@ -152,17 +199,6 @@
             </attribute>
            </widget>
           </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Rotation:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0,1,0,1,0">
           <item>
            <widget class="QLabel" name="rotXLabel">
             <property name="text">
@@ -172,8 +208,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="rotX">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -195,8 +237,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="rotY">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -218,8 +266,20 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="rotZ">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -232,24 +292,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="rotation3DToggle">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <activeon>:/Buttons/EditorResources/Rotate_3d_24x24.png</activeon>
-             </iconset>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -260,7 +302,25 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,1,0,1,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,1,0,1,0,1">
+          <item>
+           <widget class="QPushButton" name="scale3DToggle">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <activeon>:/Buttons/EditorResources/Scale_3d_24x24.png</activeon>
+             </iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
           <item>
            <widget class="QLabel" name="scaleXLabel">
             <property name="text">
@@ -270,8 +330,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="scaleX">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -296,8 +362,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="scaleY">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -322,8 +394,14 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="scaleZ">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="decimals">
-             <number>3</number>
+             <number>2</number>
             </property>
             <property name="minimum">
              <double>-10000000.000000000000000</double>
@@ -337,24 +415,6 @@
             <property name="value">
              <double>1.000000000000000</double>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="scale3DToggle">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <activeon>:/Buttons/EditorResources/Scale_3d_24x24.png</activeon>
-             </iconset>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
            </widget>
           </item>
          </layout>
