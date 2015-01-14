@@ -4,12 +4,11 @@
 #include <G2Core/ECSManager.h>
 
 G2Core::RenderLayer::Name EditorGeometryManager::gHandleLayer = G2Core::RenderLayer::LAYER_30;
-
 G2Core::RenderLayer::RenderLayerMask EditorGeometryManager::gEditorGeometryLayers = EditorGeometryManager::gHandleLayer;
+std::map<std::string, std::list<G2::Entity>> EditorGeometryManager::gGeometry;
 
 EditorGeometryManager::EditorGeometryManager() :
-	mActiveGrid(nullptr),
-	isTranslatingOnX(false)
+	mActiveGrid(nullptr)
 {
 	mRenderSystem = G2::ECSManager::getShared().getSystem<G2::RenderSystem, G2::RenderComponent>();
 	mCameraSystem = G2::ECSManager::getShared().getSystem<G2::CameraSystem, G2::CameraComponent>();
@@ -51,6 +50,8 @@ EditorGeometryManager::~EditorGeometryManager()
 	// unhook from Editor events
 	G2S::onManagedEntitySelected.unHookAll(this);
 	G2S::onEditorHandleSelected.unHookAll(this);
+
+	gGeometry.clear();
 }
 
 void EditorGeometryManager::_initTranslationHandles()
@@ -244,4 +245,36 @@ void EditorGeometryManager::_onManagedEntitySelected(ManagedEntity* entity)
 			mSolidFx
 		);
 	}
+}
+
+void EditorGeometryManager::addGlobalGeometry(std::string const& name, glm::vec3* vertices, unsigned int num, glm::vec4 ambient)
+{
+	static G2::EffectImporter gEffectImporter;
+	G2::Entity e;
+	auto* rc = e.addComponent<G2::RenderComponent>();
+
+	rc->allocateVertexArrays(1);
+	rc->material.setAmbient(ambient);
+
+	G2::VertexArrayObject& vao = rc->getVertexArray(0);
+	vao.resizeElementCount(num);
+
+	vao.writeData(G2Core::Semantics::POSITION, vertices);
+
+	rc->addDrawCall(G2::DrawCall()
+		.setDrawMode(G2Core::DrawMode::LINES)
+		.setEnabled(true)
+		.setVaoIndex(0)
+		);
+
+	rc->setEffect(
+		gEffectImporter.import("shader/Solid.g2fx")
+	);
+
+	gGeometry[name].push_back(std::move(e));
+}
+
+void EditorGeometryManager::clearGlobalGeometry(std::string const& name)
+{
+	gGeometry[name].clear();
 }

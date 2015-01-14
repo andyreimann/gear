@@ -64,9 +64,11 @@ class RotationHandler : private G2S::HandlerBase
 		G2::RenderSystem* mRenderSystem;
 
 		ManagedEntity*	mEntity;				// The ManagedEntity which is currently selected
-		
+
+		glm::mat4		mEntityStartWSMatrix;
 		glm::vec3		mHandlerStartPoint;		// The intersection point with the last selected handler
 		glm::vec3		mEntityStartPosition;	// The position of the selected ManagedEntity at the time were a handler was selected.
+		glm::quat		mEntityStartRotation;	// The rotation of the selected ManagedEntity at the time were a handler was selected.
 		glm::vec3		mPickOffset;			// The offset between the intersection on the handle and the origin of the selected mesh
 		glm::vec3		mRotationPlaneNormal;	// The normal vector of the current rotation plane
 		float 			mRotationPlaneOffset;	// The offset to 0 of the current rotation plane

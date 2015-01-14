@@ -94,6 +94,7 @@ void TranslationHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<i
 	{
 		return;
 	}
+
 	// TODO Button should be defined in a button mapping to be configurable!
 	if (button == G2::MOUSE_LEFT)
 	{

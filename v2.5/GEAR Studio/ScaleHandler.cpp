@@ -37,6 +37,11 @@ ScaleHandler::~ScaleHandler()
 
 void ScaleHandler::_onEditorHandleSelected(unsigned int entityId, G2::Intersection const& intersection)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
+
 	mScalePlaneOffset = 0.f;
 	if (entityId == mXAxisHandlerId)
 	{
@@ -85,6 +90,11 @@ void ScaleHandler::handleActivityChanged()
 
 void ScaleHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> const& pos)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
+
 	// TODO Button should be defined in a button mapping to be configurable!
 	if (button == G2::MOUSE_LEFT)
 	{
@@ -99,6 +109,11 @@ void ScaleHandler::_onMouseUp(G2::MouseButton button, glm::detail::tvec2<int> co
 
 void ScaleHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 {
+	if (!isHandleActive())
+	{
+		return;
+	}
+
 	if (mState != SCALE_NOT)
 	{
 		// intersect the mouse ray with the XZ-plane on the Y value of the 
@@ -117,29 +132,40 @@ void ScaleHandler::_onMouseMove(glm::detail::tvec2<int> const& pos)
 		glm::vec3 ptOnPlane = _getPlaneIntersection(mouseRay, &intersection);
 		if (intersection)
 		{
-
 			glm::vec3 scale = mEntityStartScale;
 
 			if (mState == SCALE_X_AXIS)
 			{
-				float dist = (ptOnPlane.x - mPickOffset.x);
-				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
-				float localScale = dist / mEntityStartPosition.x;
-				scale.x *= localScale;
+				float dist = (ptOnPlane.x - mEntityStartPosition.x);
+				if (dist != 0.f)
+				{
+					// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+					float initDist = mPickOffset.x;
+					float localScale = 1.f / (initDist / dist);
+					scale.x *= localScale;
+				}
 			}
 			else if (mState == SCALE_Y_AXIS)
 			{
-				float dist = (ptOnPlane.y - mPickOffset.y);
-				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
-				float localScale = dist / mEntityStartPosition.y;
-				scale.y *= localScale;
+				float dist = (ptOnPlane.y - mEntityStartPosition.y);
+				if (dist != 0.f)
+				{
+					// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+					float initDist = mPickOffset.y;
+					float localScale = 1.f / (initDist / dist);
+					scale.y *= localScale;
+				}
 			}
 			else if (mState == SCALE_Z_AXIS)
 			{
-				float dist = (ptOnPlane.z - mPickOffset.z);
-				// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
-				float localScale = dist / mEntityStartPosition.z;
-				scale.z *= localScale;
+				float dist = (ptOnPlane.z - mEntityStartPosition.z);
+				if (dist != 0.f)
+				{
+					// the distance from the pick position to the origin on the currrent axis is mapped to a scale multiplication of 1.0
+					float initDist = mPickOffset.z;
+					float localScale = 1.f / (initDist / dist);
+					scale.z *= localScale;
+				}
 			}
 			auto* tc = mEntity->addComponent<G2::TransformComponent>();
 			tc->setScale(scale);

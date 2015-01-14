@@ -50,6 +50,7 @@ TransformationHandler::_update()
 			anchorTc->setParent(tc);
 		}
 		anchorTc->setScale(1.f / (tc->getParentsScale() * tc->getScale())); // negate scale
+		//anchorTc->setRotation(glm::inverse(tc->getRotation())); // invert parent rotation
 	}
 	else
 	{

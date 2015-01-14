@@ -61,8 +61,25 @@ class EditorGeometryManager
 		* @return The entity id of the transformation handle mesh.
 		*/
 		unsigned int getTransformationHandleId() const { return mTransAnchor.getId(); };
+		/** Returns the solid effect file of the editor.
+		 * @note This function is supposed to be used as a quick debug functionality.
+		 */
+		std::shared_ptr<G2::Effect> _getSolidFx() const { return mSolidFx; }
 
 		~EditorGeometryManager();
+
+		/** Adds a global geometry with the given data.
+		 * @param name The name to register the global geometry.
+		 * @param vertices the vertex data.
+		 * @param num The number of vertices contained in the vertices array.
+		 * @param ambient The ambient color to use.
+		 * @note The geometry will always use the solid effect of the editor.
+		 */
+		static void addGlobalGeometry(std::string const& name, glm::vec3* vertices, unsigned int num, glm::vec4 ambient);
+		/** Clears all global geometry registered under the given name.
+		 * @param name The name of the geomety to clear.
+		 */
+		static void clearGlobalGeometry(std::string const& name);
 
 		static G2Core::RenderLayer::Name gHandleLayer;
 		static G2Core::RenderLayer::RenderLayerMask gEditorGeometryLayers;
@@ -109,7 +126,5 @@ class EditorGeometryManager
 		G2::Entity mRotateYMesh;						// The rotation mesh for the Y axis
 		G2::Entity mRotateXMesh;						// The rotation mesh for the X axis
 
-		bool isTranslatingOnX;
-
-
+		static std::map<std::string,std::list<G2::Entity>> gGeometry; // An anonymous geometry container containing any kind of geometry with fast access possibilities
 };
