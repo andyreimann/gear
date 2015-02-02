@@ -73,9 +73,11 @@ namespace G2
 			 */
 			AABB& setFromCenterAndHalfExtends( glm::vec3 const& center, glm::vec3 const& halfExtends);
 			/** This function performs a Ray- Axis-Aligned Bounding Box Intersection test.
+			 * @param ray The ray to use for the intersection calculation.
+			 * @param intersectionPoint The intersection point pointer to write the exact intersection point to if not nullptr.
 			 * @return true if the Ray intersects the Axis-Aligned Bounding Box, false if not
 			 */
-			bool intersects( Ray const& ray ) const;
+			bool intersects( Ray const& ray, glm::vec3* intersectionPoint = nullptr ) const;
 			/** Checks if the given AABB overlaps with the AABB
 			 * @param aabb The AABB to check.
 			 * @return True if the 2 AABB overlap, false if not.

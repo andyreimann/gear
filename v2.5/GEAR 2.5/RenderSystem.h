@@ -121,10 +121,11 @@ namespace G2
 			* @param ray The ray which is used for the intersection calculation.
 			* @param renderLayers The bit combined G2Core::RenderLayer::Name layers to intersect with. Only objects assigned to at least one of the 
 			* set G2Core::RenderLayer::Name layers will be taken into account.
+			* @param intersectionMode The mode of intersection to use.
 			* @return The Intersection containing the information.
 			* @TODO we have to return a struct here containing the entity-id, drawCall, vao index, ... of the entity the intersection comes from.
 			*/
-			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS);
+			Intersection intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers = G2Core::Flags::ALL_FLAGS, G2::IntersectionMode::Name intersectionMode = G2::IntersectionMode::EXACT_INTERSECTION_POINT);
 
 			UniformBufferObject* getMaterialUBO() { return &mDefaultUBOs.material; }
 

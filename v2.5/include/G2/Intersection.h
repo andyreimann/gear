@@ -13,6 +13,14 @@ namespace G2
 		NO_INTERSECTION,
 		INTERSECTION,
 	};
+	namespace IntersectionMode
+	{
+		enum Name
+		{
+			EXACT_INTERSECTION_POINT,	// The intersection will calculate exact points
+			AABB_INTERSECTION_POINT		// The intersection will calculate intersection points with the AABB only
+		};
+	}
 	/** This class holds all information about an Intersection object.
 	 * It also provides useful functions to calculate intersections.
 	 * @created:	2014/01/15

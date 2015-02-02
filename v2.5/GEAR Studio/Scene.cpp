@@ -150,7 +150,7 @@ std::string Scene::getName() const
 
 void Scene::generateEntityInitializationCode(std::ostream& out, QProgressDialog* progress) const
 {
-	progress->setMaximum(progress->maximum() + mLoadedEntities.size());
+	progress->setMaximum(progress->maximum() + (int)mLoadedEntities.size());
 	std::string indention = "		";
 	std::stringstream name;
 	for (auto it = mLoadedEntities.begin(); it != mLoadedEntities.end(); ++it)

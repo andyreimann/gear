@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>192</width>
+    <width>139</width>
     <height>74</height>
    </rect>
   </property>
@@ -54,7 +54,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="entityName"/>
+         <widget class="QLineEdit" name="entityName">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

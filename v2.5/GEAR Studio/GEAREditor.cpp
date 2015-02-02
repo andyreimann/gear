@@ -1,5 +1,4 @@
 #include "GEAREditor.h"
-#include "ComponentListItemModel.h"
 #include "ProjectCreation.h"
 #include "GEARStudioEvents.h"
 

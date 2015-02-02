@@ -7,4 +7,11 @@ ManagedEntityPanel::ManagedEntityPanel(Scene* currentScene, unsigned int entityI
 	mEntityId(entityId)
 {
 	ui.setupUi(this);
+
+	auto* entity = currentScene->get(entityId);
+	if (entity != nullptr)
+	{
+		ui.entityName->setText(entity->getName().c_str());
+	}
+
 }

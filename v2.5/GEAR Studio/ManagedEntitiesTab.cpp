@@ -15,6 +15,8 @@ ManagedEntitiesTab::ManagedEntitiesTab(QWidget *parent /*= 0*/)
 	G2S::onManagedEntityCreated.hook(this, &ManagedEntitiesTab::_onManagedEntityCreated);
 	G2S::onManagedEntitySelected.hook(this, &ManagedEntitiesTab::_onManagedEntitySelected);
 	G2S::onManagedEntityRemoved.hook(this, &ManagedEntitiesTab::_onManagedEntityRemoved);
+
+	ui.tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 ManagedEntitiesTab::~ManagedEntitiesTab()
@@ -32,12 +34,10 @@ void ManagedEntitiesTab::_onManagedEntityCreated(Scene* scene, ManagedEntity* en
 	ui.tableWidget->insertRow(row);
 
 	ui.tableWidget->setItem(row, 0, new QTableWidgetItem(std::to_string(entity->getId()).c_str()));
-	ui.tableWidget->setItem(row, 1, new QTableWidgetItem(entity->getName().c_str()));
 
 	ManagedEntityPanel* w = new ManagedEntityPanel(scene, entity->getId(), this);
 
-	ui.tableWidget->setCellWidget(row, 2, w);
-	ui.tableWidget->scrollToBottom();
+	ui.tableWidget->setCellWidget(row, 1, w);
 }
 
 void ManagedEntitiesTab::_onManagedEntitySelected(ManagedEntity* entity)
@@ -50,8 +50,6 @@ void ManagedEntitiesTab::_onManagedEntitySelected(ManagedEntity* entity)
 			QModelIndex index = ui.tableWidget->model()->index(i, 0);
 			ui.tableWidget->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 			index = ui.tableWidget->model()->index(i, 1);
-			ui.tableWidget->selectionModel()->select(index, QItemSelectionModel::Select);
-			index = ui.tableWidget->model()->index(i, 2);
 			ui.tableWidget->selectionModel()->select(index, QItemSelectionModel::Select);
 			return; // early terminate - can only be contained once
 		}

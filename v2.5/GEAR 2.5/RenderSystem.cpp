@@ -1135,7 +1135,7 @@ RenderSystem::onComponentRemoved(unsigned int entityId)
 }
 
 Intersection
-G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers)
+G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayerMask renderLayers, G2::IntersectionMode::Name intersectionMode)
 {
 	Intersection closestMatch, intersection;
 
@@ -1173,6 +1173,7 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 			invWorldSpaceMatrix * ray.getDir()
 		);
 
+		glm::vec3 aabbIntersection;
 		for (unsigned int k = 0; k < comp.getNumDrawCalls(); ++k)
 		{
 
@@ -1181,48 +1182,75 @@ G2::RenderSystem::intersect(G2::Ray const& ray, G2Core::RenderLayer::RenderLayer
 			{
 				continue; // skip invisible meshes
 			}
-			if (drawCall.getWorldSpaceAABB().intersects(ray))
+			if (drawCall.getWorldSpaceAABB().intersects(ray, &aabbIntersection))
 			{
-				glm::vec3* p1, *p2, *p3;
-				p1 = p2 = p3 = nullptr;
-				// create a uniform triangle stream
-				G2::TriangleStream triangleStream(
-					G2Core::Semantics::POSITION,
-					drawCall.getIaoIndex() == -1 ? nullptr : &comp.getIndexArray(drawCall.getIaoIndex()),
-					&comp.getVertexArray(drawCall.getVaoIndex()),
-					drawCall.getDrawMode()
-					);
-				// stream all data as triangles
-				while (triangleStream.hasNext())
+
+				if (intersectionMode == G2::IntersectionMode::AABB_INTERSECTION_POINT)
 				{
-					// stream triangle
-					triangleStream.next(&p1, &p2, &p3);
-					// run the intersection
-					if(Intersection::rayTriangle(
-						intersection,
-						worldSpaceMatrix,
-						ray, modelSpaceRay,
-						*p1, *p2, *p3))
+					glm::vec3 newPoint = glm::vec3(worldSpaceMatrix * glm::vec4(aabbIntersection, 1.f));
+					if (closestMatch.getState() == G2::IntersectionState::INTERSECTION)
 					{
-						if (closestMatch.getState() == G2::IntersectionState::INTERSECTION)
+						// calculate distances in world space for closest match
+						float dist = glm::length2(closestMatch.getPoint() - ray.getOrigin());
+						// calculate distances in world space for intersection point (already in world space)
+						float newDist = glm::length2(newPoint - ray.getOrigin());
+						if (newDist < dist)
 						{
-							// calculate distances in world space for closest match
-							float dist = glm::length2(closestMatch.getPoint() - ray.getOrigin());
-							// calculate distances in world space for intersection point (already in world space)
-							float newDist = glm::length2(intersection.getPoint() - ray.getOrigin());
-							if (newDist < dist)
+							closestMatch.set(newPoint,glm::vec3(0.f,1.f,0.f));
+							closestMatch.setEntityId(comp.getEntityId());
+						}
+					}
+					else
+					{
+						closestMatch.set(newPoint, glm::vec3(0.f, 1.f, 0.f));
+						closestMatch.setEntityId(comp.getEntityId());
+					}
+				}
+				else
+				{
+					// G2::IntersectionMode::EXACT_INTERSECTION_POINT
+					glm::vec3* p1, *p2, *p3;
+					p1 = p2 = p3 = nullptr;
+					// create a uniform triangle stream
+					G2::TriangleStream triangleStream(
+						G2Core::Semantics::POSITION,
+						drawCall.getIaoIndex() == -1 ? nullptr : &comp.getIndexArray(drawCall.getIaoIndex()),
+						&comp.getVertexArray(drawCall.getVaoIndex()),
+						drawCall.getDrawMode()
+						);
+					// stream all data as triangles
+					while (triangleStream.hasNext())
+					{
+						// stream triangle
+						triangleStream.next(&p1, &p2, &p3);
+						// run the intersection
+						if(Intersection::rayTriangle(
+							intersection,
+							worldSpaceMatrix,
+							ray, modelSpaceRay,
+							*p1, *p2, *p3))
+						{
+							if (closestMatch.getState() == G2::IntersectionState::INTERSECTION)
 							{
+								// calculate distances in world space for closest match
+								float dist = glm::length2(closestMatch.getPoint() - ray.getOrigin());
+								// calculate distances in world space for intersection point (already in world space)
+								float newDist = glm::length2(intersection.getPoint() - ray.getOrigin());
+								if (newDist < dist)
+								{
+									closestMatch = intersection;
+									closestMatch.setEntityId(comp.getEntityId());
+								}
+							}
+							else
+							{
+								// just take it as it is - already in world space coordinates
 								closestMatch = intersection;
 								closestMatch.setEntityId(comp.getEntityId());
 							}
 						}
-						else
-						{
-							// just take it as it is - already in world space coordinates
-							closestMatch = intersection;
-							closestMatch.setEntityId(comp.getEntityId());
-						}
 					}
+
 				}
 			}
 		}

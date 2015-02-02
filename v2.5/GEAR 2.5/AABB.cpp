@@ -109,13 +109,13 @@ AABB& AABB::setFromCenterAndHalfExtends( glm::vec3 const& center, glm::vec3 cons
 	return *this;
 }
 
-bool AABB::intersects( Ray const& ray ) const 
+bool AABB::intersects(Ray const& ray, glm::vec3* intersectionPoint) const
 {
 	glm::vec3 minimum = getMin();
 	glm::vec3 maximum = getMax();
 
 	///////////////////////////////////////////////////////////////////////////////
-	// AABB-Ray intersection - Really performance optimized implementation: @see http://courses.csusm.edu/cs697exz/ray_box.htm
+	// AABB-Ray intersection - Really performance optimized implementation: @see https://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 	///////////////////////////////////////////////////////////////////////////////
 	float tfar =  FLT_MAX;
 	float tnear = FLT_MIN;
@@ -140,6 +140,11 @@ bool AABB::intersects( Ray const& ray ) const
 
 	if(tnear <= tfar && (tnear > 0.0f || tfar > 0.0f) ) 
 	{
+		if (intersectionPoint != nullptr)
+		{
+			// calculate exact intersection point using tnear
+			*intersectionPoint = o + tnear * glm::vec3(d);
+		}
 		return true; // intersection - only if the target is in front of the ray
 	}
 	else 
